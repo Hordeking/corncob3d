@@ -4,7 +4,7 @@
 ; sqrt value is returned in ax
 
 _MODEL	equ	<SMALL>
-include model.inc
+include c:\sa\include\model.inc
 
 	public	dsqrt
 .dataseg

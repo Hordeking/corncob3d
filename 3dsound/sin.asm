@@ -11,7 +11,7 @@
 ; represented.
 
 _MODEL	equ	<SMALL>
-include model.inc
+include c:\sa\include\model.inc
 
 	public	negflg
 	public	sin

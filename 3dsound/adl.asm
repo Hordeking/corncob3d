@@ -8,7 +8,7 @@
 
 _MODEL	equ	<SMALL>
 
-include		MODEL.INC
+include		c:\sa\include\model.inc
 
 ADLIBREG	equ	388h
 ADLIBWRT	equ	ADLIBREG+1
@@ -195,8 +195,8 @@ klatbl		db	069h,095h
 ;
 ;IN:	DX		segment address of PSP
 ;
-;ASUMS:	DS,ES		@DATASEG  (same as @CODESEG in TINY model)
-;	SS		@STACKSEG (same as @CODESEG in TINY model)
+;ASUMS:	DS,ES		@DATASEG  (same as @CODESEG in TINY model.)
+;	SS		@STACKSEG (same as @CODESEG in TINY model.)
 ;=============================================================================
 
 .codeseg

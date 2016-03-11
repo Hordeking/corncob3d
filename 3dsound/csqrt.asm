@@ -5,7 +5,7 @@
 ;  integer value returned is sqrt(1-(x/1024)^2)*4096
 
 _MODEL	equ	<SMALL>
-include model.inc
+include c:\sa\include\model.inc
 
 	public	csqrt
 atnseg	segment	para 'horseshit'

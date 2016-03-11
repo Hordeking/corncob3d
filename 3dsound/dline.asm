@@ -6,7 +6,7 @@
 				; 'Programmer's guide to PC, and PS/2
 				; Video systems by Richard Wilton
 _MODEL	equ	<SMALL>
-include c:\sa\model.inc
+include c:\sa\include\model.inc
 include	extrns.inc		; get extrnals
 include 3dvid.inc
 include pixaddr1.inc
@@ -160,7 +160,7 @@ bbyte:
 	jz	ldone
 	add	si,bigadd	; proceed
 	jns	bbyte		; do we need another biggie?
-sbyte:
+s_byte:	;{ccb003: Replaced label "sbyte", as it was a masm 6.11 keyword.}
 	mov	ah,es:[di]	; latch bits 
 	mov	es:[di],al	; write new bits
 	add	di,bp		; go to next byte
@@ -168,7 +168,7 @@ sbyte:
 	jz	ldone
 	add	si,smladd	; proceed
 	jns	bbyte		; do we need another biggie?
-	jmp	sbyte
+	jmp	s_byte		;{ccb004: Replaced jump target "sbyte", as it was a masm 6.11 keyword.}
 
 ldone:	
 	mov	dx,3ceh		; dx := graphics controller port addr

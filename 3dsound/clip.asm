@@ -3,7 +3,7 @@
 
 
 _MODEL	equ	<SMALL>
-include c:\sa\model.inc
+include c:\sa\include\model.inc
 include extrns.inc
 
 

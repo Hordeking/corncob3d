@@ -1,8 +1,8 @@
 
 	title 'map'
 _MODEL	equ	<SMALL>
-include model.inc
-include	imath.INC
+include c:\sa\include\model.inc
+include	c:\sa\include\imath.inc
 include f3dequ.inc
 include	extrns.inc		; get extrnals
 include 3dvid.inc
@@ -1602,8 +1602,8 @@ letoklb:
 	mov	cx,15
 drawletloop:
 	push	cx
-	mov	al,[si+offset @dataseg:numx]
-	mov	bl,[si+offset @dataseg:numx+1]
+	mov	al,[si+ @dataseg:numx]		;{ccb012: Orig si+offset @dataseg:numx}
+	mov	bl,[si+ @dataseg:numx+1]	;{ccb013}
 	xor	ah,ah
 	xor	bh,bh
 	add	ax,letx
@@ -1612,8 +1612,8 @@ drawletloop:
 	mov	argx2,bx
 	sub	ax,bx
 	mov	dx,ax
-	mov	al,[si+offset @dataseg:numy]
-	mov	bl,[si+offset @dataseg:numy+1]
+	mov	al,[si+ @dataseg:numy]		;{ccb014}
+	mov	bl,[si+ @dataseg:numy+1]	;{ccb015}
 	xor	ah,ah
 	xor	bh,bh
 	push	ax

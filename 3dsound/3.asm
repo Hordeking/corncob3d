@@ -41,8 +41,8 @@ lrv	equ	3
 
 _MODEL	equ	<SMALL>
 
-include		MODEL.INC
-include		imath.INC
+include		c:\sa\include\model.inc
+include		c:\sa\include\imath.inc
 include		f3dequ.inc
 include		3dvid.inc
 include		pixaddr1.inc
@@ -1488,8 +1488,8 @@ ENDIF
 ;
 ;IN:	DX		segment address of PSP
 ;
-;ASUMS:	DS,ES		@DATASEG  (same as @CODESEG in TINY model)
-;	SS		@STACKSEG (same as @CODESEG in TINY model)
+;ASUMS:	DS,ES		@DATASEG  (same as @CODESEG in TINY model.)
+;	SS		@STACKSEG (same as @CODESEG in TINY model.)
 ;=============================================================================
 
 .codeseg
@@ -1562,14 +1562,14 @@ setkbit	proc	near			; sets key bit as pressed bit in DL
 	shr	al,1			; get byte offset of word
 	mov	bl,al
 	xor	bh,bh
-	mov	al,[bx+offset kbdtbl] 	; get byte of keyboard info
+	mov	al,[bx+kbdtbl] 	; get byte of keyboard info	{ccb008: Removed offset keyword. Orig bx+offset kbdtbl}
 ;	or	cl,cl			; is cl zero?
 ;	jz	noshft
 	rol	al,cl
 	and	al,0feh			; clear the bit
 	or	al,dl			; set the bit
 	ror	al,cl			; set back to the proper bit
-	mov	[bx+offset kbdtbl],al
+	mov	[bx+kbdtbl],al	;{ccb009: Removed offset keyword. Orig bx+offset kbdtbl}
 	ret
 setkbit	endp
 
@@ -1581,7 +1581,7 @@ getkbit	proc	near			; sets key bit as pressed bit in DL
 	shr	al,1			; get byte offset of word
 	mov	bl,al
 	xor	bh,bh
-	mov	al,[bx+offset kbdtbl] 	; get byte of keyboard info
+	mov	al,[bx+kbdtbl] 	; get byte of keyboard info {ccb010: Removed offset keyword. Orig bx+offset kbdtbl}
 ;	or	cl,cl			; is cl zero?
 ;	jz	noshft
 	rol	al,cl
@@ -10370,8 +10370,10 @@ ENDIF
 		mov	ax,starheight
 		cmp	oxeff+9,ax		; are we above 30000 ft?
 		jl	nodumpnow
+
+;{ccb011: Inserted this comment to get rid of a "line too long" error.}
 IF shareflag
-		cmp	aceflag,0		; don't do it if not ace
+		cmp aceflag,0		; don't do it if not ace
 		jz	nodumpnow
 ENDIF
 		mov	bhighflag,1		; lose control of plane
@@ -11520,6 +11522,10 @@ nosoundprob:
 ENDIF
 ENDIF
 
+IF noautoend			;{ccb020: Added this code to prevent auto-ending missions. Don't do any of the checks to save time, too}
+	jmp skipautoend
+ENDIF
+
 	cmp	crshlndflag,0
 	jnz	crshautocheck
 	cmp	totaldamage,35
@@ -11548,7 +11554,6 @@ crshautocheck:
 	cmp	freezeflag,0
 	jz	skipautoend
 doautoend:
-
 	mov	ax,300
 	wtadj
 	add	exitsum,ax

@@ -6,7 +6,7 @@
 				; 'Programmer's guide to PC, and PS/2
 				; Video systems by Richard Wilton
 _MODEL	equ	<SMALL>
-include model.inc
+include c:\sa\include\model.inc
 include	extrns.inc		; get extrnals
 include 3dvid.inc
 include	pixaddr1.inc

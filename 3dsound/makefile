@@ -1,116 +1,126 @@
+ofile = 3.lnk
 
 #3:  3.obj f3dvec.obj egaline.obj hline.obj dline.obj kline.obj\
 #  mat.obj cmdline.obj clip.obj sin.obj csqrt.obj inst.obj\
 #  dsqrt.obj strtxp.obj defobjs.obj map.obj adl.obj pict.obj
 #   link @$(ofile).lnk
 
-3r:  3_r.obj f3dvec_r.obj egaline.obj hline.obj kline.obj\
-  mat.obj cmdliner.obj sin.obj csqrt.obj inst.obj atn.obj\
-  dsqrt.obj strtxp_r.obj defobj_r.obj map_r.obj adl.obj pict.obj\
+default: 3
+
+3:  3.obj f3dvec.obj egaline.obj hline.obj kline.obj\
+  mat.obj cmdline.obj sin.obj csqrt.obj inst.obj atn.obj\
+  dsqrt.obj strtexp.obj defobjs.obj map.obj adl.obj pict.obj\
   usermac.inc
-	link @3r.lnk
+	link @$(ofile)
+#	link /MAP c:\sa\lib\starts 3_r f3dvec_r hline defobj_r kline egaline strtxp_r inst mat sin csqrt atn dsqrt cmdliner map_r adl pict, 3.exe, 3.map, c:\sa\lib\sas.lib
 
-3s:  3_s.obj f3dvec_s.obj egaline.obj hline.obj kline.obj\
-  mat.obj cmdlines.obj sin.obj csqrt.obj inst.obj atn.obj\
-  dsqrt.obj strtxp_s.obj defobj_s.obj map_s.obj pict.obj\
-  username.dat adl.obj
-	link @3s.lnk
+#3s:  3_s.obj f3dvec_s.obj egaline.obj hline.obj kline.obj\
+#  mat.obj cmdlines.obj sin.obj csqrt.obj inst.obj atn.obj\
+#  dsqrt.obj strtxp_s.obj defobj_s.obj map_s.obj pict.obj\
+#  username.dat adl.obj
+#	link @3s.lnk
 
-3_r.obj: 3.asm 3dvid.inc f3dequ.inc usermac.inc
-	masm /Dshareflag=0 /Dmbflag=1 3.asm;
-        mv 3.obj 3_r.obj
+3.obj: 3.asm 3dvid.inc f3dequ.inc usermac.inc
+	masm /t /Dshareflag=0 /Dmbflag=1 3.asm
+#	mv 3.obj 3_r.obj
 
-3_s.obj: 3.asm 3dvid.inc f3dequ.inc usermac.inc
-	masm /Dshareflag=1 /Dmbflag=0 3.asm;
-        mv 3.obj 3_s.obj
+#3_s.obj: 3.asm 3dvid.inc f3dequ.inc usermac.inc
+#	masm /t /Dshareflag=1 /Dmbflag=0 3.asm
+#	mv 3.obj 3_s.obj
 
-f3dvec_r.obj: f3dvec.asm 3dvid.inc f3dequ.inc
-        masm /Dshareflag=0 /Dmbflag=1 f3dvec;
-	mv f3dvec.obj f3dvec_r.obj
+f3dvec.obj: f3dvec.asm 3dvid.inc f3dequ.inc
+	masm /t /Dshareflag=0 /Dmbflag=1 f3dvec
+#	mv f3dvec.obj f3dvec_r.obj
 
-f3dvec_s.obj: f3dvec.asm 3dvid.inc f3dequ.inc
-        masm /Dshareflag=1 /Dmbflag=0 f3dvec;
-	mv f3dvec.obj f3dvec_s.obj
+#f3dvec_s.obj: f3dvec.asm 3dvid.inc f3dequ.inc
+#	masm /t /Dshareflag=1 /Dmbflag=0 f3dvec
+#	mv f3dvec.obj f3dvec_s.obj
 
-strtxp_r.obj: strtexp.asm f3dequ.inc
-	masm /Dshareflag=0 strtexp.asm;
-	mv strtexp.obj strtxp_r.obj
+strtexp.obj: strtexp.asm f3dequ.inc
+	masm /t /Dshareflag=0 strtexp.asm
+#	mv strtexp.obj strtxp_r.obj
 
-strtxp_s.obj: strtexp.asm f3dequ.inc
-	masm /Dshareflag=1 strtexp.asm;
-	mv strtexp.obj strtxp_s.obj
+#strtxp_s.obj: strtexp.asm f3dequ.inc
+#	masm /t /Dshareflag=1 strtexp.asm
+#	mv strtexp.obj strtxp_s.obj
 
-defobj_r.obj: defobjs.asm f3dequ.inc
-	masm /Dshareflag=0 /Dmbflag=1 defobjs.asm;
-	mv defobjs.obj defobj_r.obj
+defobjs.obj: defobjs.asm f3dequ.inc
+	masm /t /Dshareflag=0 /Dmbflag=1 defobjs.asm
+#	mv defobjs.obj defobj_r.obj
 
-defobj_s.obj: defobjs.asm f3dequ.inc
-	masm /Dshareflag=1 /Dmbflag=0 defobjs.asm;
-	mv defobjs.obj defobj_s.obj
+#defobj_s.obj: defobjs.asm f3dequ.inc
+#	masm /t /Dshareflag=1 /Dmbflag=0 defobjs.asm
+#	mv defobjs.obj defobj_s.obj
+
+cmdline.obj: cmdline.asm f3dequ.inc
+	masm /t /Dshareflag=0 cmdline
+#	mv cmdline.obj cmdliner.obj
+
+#cmdlines.obj: cmdline.asm f3dequ.inc
+#	masm /t /Dshareflag=1 cmdline
+#	mv cmdline.obj cmdlines.obj
+
+map.obj: map.asm f3dequ.inc
+	masm /t /Dshareflag=0 /Dmbflag=1 map.asm
+#	mv map.obj map_r.obj
+
+#map_s.obj: map.asm f3dequ.inc
+#	masm /t /Dshareflag=1 /Dmbflag=0 map.asm
+#	mv map.obj map_s.obj
 
 mat.obj: mat.asm
-	masm mat;
+	masm /t mat
 
 pict.obj: pict.asm
-	masm pict;
-
-cmdliner.obj: cmdline.asm f3dequ.inc
-	masm /Dshareflag=0 cmdline;
-	mv cmdline.obj cmdliner.obj
-
-cmdlines.obj: cmdline.asm f3dequ.inc
-	masm /Dshareflag=1 cmdline;
-	mv cmdline.obj cmdlines.obj
+	masm /t pict
 
 dsqrt.obj: dsqrt.asm
-	masm dsqrt;
+	masm /t dsqrt
 
 inst.obj: inst.asm 3dvid.inc
-	masm inst;
+	masm /t inst
 
 atn.obj: atn.asm
-	masm atn;
+	masm /t atn
 
 kline.obj: kline.asm 3dvid.inc
-	masm kline;
+	masm /t kline
 
 dline.obj: dline.asm
-	masm dline;
+	masm /t dline
 
 hline.obj: hline.asm 3dvid.inc
-	masm hline;
+	masm /t hline
 
 clip.obj: clip.asm
-	masm clip.asm;
-
+	masm /t clip.asm
 
 sin.obj: sin.asm
-	masm sin.asm;
-
-map_r.obj: map.asm f3dequ.inc
-	masm /Dshareflag=0 /Dmbflag=1 map.asm;
-	mv map.obj map_r.obj
-
-map_s.obj: map.asm f3dequ.inc
-	masm /Dshareflag=1 /Dmbflag=0 map.asm;
-	mv map.obj map_s.obj
+	masm /t sin.asm
 
 csqrt.obj: csqrt.asm
-	masm csqrt.asm;
+	masm /t csqrt.asm
 
 egaline.obj: egaline.asm 3dvid.inc
-	masm egaline.asm;
+	masm /t egaline.asm
 
 pixaddr1.obj: pixaddr1.asm 3dvid.inc
-	masm pixaddr1.asm;
+	masm /t pixaddr1.asm
 
-
-adl.obj:	adl.asm
-	masm adl;
+adl.obj: adl.asm
+	masm /t adl.asm
 
 clean:
-	-rm *.obj *.map
+	-rm *.obj
+	-rm *.map
+
+all-clean:
+	-rm *.exe
+	-rm *.obj
+	-rm *.map
 
 usermac.inc: username.dat
 	usermac > usermac.inc
 
+#usermac.exe: usermac.c
+#	gcc usermac.c -o usermac.exe

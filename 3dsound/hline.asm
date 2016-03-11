@@ -6,8 +6,8 @@
 				; 'Programmer's guide to PC, and PS/2
 				; Video systems by Richard Wilton
 _MODEL	equ	<SMALL>
-include	model.inc
-include	imath.INC
+include	c:\sa\include\model.inc
+include	c:\sa\include\imath.inc
 include	extrns.inc		; get extrnals
 include 3dvid.inc
 
@@ -476,8 +476,8 @@ jl449:
 	jmp	bbyte		; do we need another biggie?
 jl451:
 
-sbyte:
-	mov	ax,-1	; get mask
+s_byte:				;{ccb002: Label replaced because it was a keyword. Orig: sbyte
+	mov	ax,-1		; get mask
 	shr	ax,cl		; shift in proper direction
 	add	cl,nsml		; add to position
 	IF (vgmode EQ 10h) OR (vgmode EQ 0dh)
@@ -588,7 +588,7 @@ sskp3:	dec	bx
 jl552:
 	add	si,bp	; add a positive value
 	jns	jl558
-	jmp	sbyte		; do we need another biggie?
+	jmp s_byte	; do we need another biggie? {ccb001: orig jump target was sbyte, a keyword}
 jl558:
 	jmp	bbyte
 

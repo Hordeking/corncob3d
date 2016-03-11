@@ -60,29 +60,29 @@ OBJS_b = moag_b.$(OBJ) misn.$(OBJ) ryo.$(OBJ) roster.$(OBJ) hiscore.$(OBJ) \
 	3univs_m.$(OBJ) flash.$(OBJ) init_s.$(OBJ) scroll_m.$(OBJ) ugly.$(OBJ) \
 	uglylist.$(OBJ) version.$(OBJ)
 
-reg::  
+reg:
 	copy texto_r.h texto.h
 
-share:: 
-        copy texto_s.h texto.h
+share:
+	copy texto_s.h texto.h
 
-sofsrc:: 
-        copy texto_s.h texto.h
+sofsrc:
+	copy texto_s.h texto.h
 
-reg::  $(OBJS_r)
+reg: $(OBJS_r)
 	$(LINKM_r)
 
-share::  $(OBJS_s)
+share: $(OBJS_s)
 	$(LINKM_s)
 
-sofsrc::  $(OBJS_k)
+sofsrc: $(OBJS_k)
 	$(LINKM_k)
 
-oldshare:  $(OBJS_s) tower fixtower.exe
+oldshare: $(OBJS_s) tower fixtower.exe
 	$(LINKM_s)
 	fixtower
 
-beta:  $(OBJS_b) tower fixtower.exe
+beta: $(OBJS_b) tower fixtower.exe
 	$(LINKM_b)
 	fixtower
 

@@ -12,7 +12,7 @@
 ;				es = video buffer segment
 ;
 _MODEL	equ	<SMALL>
-include c:\sa\model.inc
+include c:\sa\include\model.inc
 include 3dvid.inc
 
 	public	pixeladdr10	; entry point

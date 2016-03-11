@@ -6,7 +6,7 @@
 				; 'Programmer's guide to PC, and PS/2
 				; Video systems by Richard Wilton
 _MODEL	equ	<SMALL>
-include model.inc
+include c:\sa\include\model.inc
 include	extrns.inc		; get extrnals
 include 3dvid.inc
 include	pixaddr1.inc
@@ -193,7 +193,7 @@ skp3:	dec	bx
 	add	si,dx	; add a negative value
 	jns	bbyte		; do we need another biggie?
 
-sbyte:
+s_byte:				;{ccb005: Replaced label "sbyte", as it was a masm 6.11 keyword.}
 	mov	ax,smlbits	; get mask
 	shr	ax,cl		; shift in proper direction
 	add	cl,nsml		; add to position
@@ -212,7 +212,7 @@ sskp3:	dec	bx
 	jz	ldone
 	add	si,bp	; add a positive value
 	jns	bbyte		; do we need another biggie?
-	jmp	sbyte
+	jmp	s_byte	;{ccb006: Replaced jump target "sbyte", as it was a masm 6.11 keyword.}
 
 ldone:	
 	mov	dx,3ceh		; dx := graphics controller port addr

@@ -1,7 +1,7 @@
 	title 'cmdline'
 _MODEL	equ	<SMALL>
 include f3dequ.inc
-include model.inc
+include c:\sa\include\model.inc
 include ka.inc
 
 	public	cmdline	; entry point

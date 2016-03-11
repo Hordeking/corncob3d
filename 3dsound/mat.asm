@@ -12,8 +12,8 @@
 ;				es = video buffer segment
 ;
 _MODEL	equ	<SMALL>
-include model.inc
-include		imath.INC
+include c:\sa\include\model.inc
+include		c:\sa\include\imath.inc
 
 hmul	macro	var1,var2
 	local	fxup

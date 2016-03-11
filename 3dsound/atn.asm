@@ -5,7 +5,7 @@
 ;  integer value returned is atn(i/32768)/(pi/4)*32768
 
 _MODEL	equ	<SMALL>
-include model.inc
+include c:\sa\include\model.inc
 
 	public	atn
 	public	atn2
