@@ -1,0 +1,18 @@
+  I have another copy of 3.exe for you to try, and a replacement
+universe for atkinsville.
+  The saucer bug occurs when there is only one object in a tile, and
+that object is destroyed, or leaves the tile.  In that case, that
+object will not be cleared from the tile memory when the universe
+is written out.
+  I tried to fix the bug, but just ended up with a version of 3.exe which
+erases whole sections of universes when F6 or F2 is used.  So I just
+added a few permanent objects to that tile of the theater.
+  I fixed the 'x' and 'y' keys typo in the pop up box, and attempted to
+fix the divide by zero overflow when crazy joystick values come in.
+Can you try that out for me.
+  The no-missiles bug maybe fixed now, but I couldn't recreate that one.
+If you have the hankering, please try a few missions to see if it works.
+I'm always worried I may have bollockesd something else up.
+  Demo's no longer work.  I haven't a clue why.....  I didn't touch any
+of that code.
+

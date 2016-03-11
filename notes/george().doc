@@ -1,0 +1,62 @@
+  
+  inp, inpw, outp, outpw           <CONIO.H>
+  
+    inp reads a byte from a hardware port
+    inpw reads a word from a hardware port
+    outp outputs a byte to a hardware port
+    outpw outputs a word to a hardware port
+
+  Declaration:
+    int inp(unsigned portid);
+    unsigned inpw(unsigned portid);
+    int outp(unsigned portid, int value);
+    unsigned outpw(unsigned portid, unsigned value);
+
+  Remarks
+ Both inp and inpw are macros that read from the input port specified by
+ portid.
+
+ Both outp and outpw are macros that write to the output port specified by
+ portid.
+-----------------------------------------------------------------------------
+
+  Get interrupt vector, set interrupt vector entry
+
+  Declaration:
+    void interrupt (*getvect(int interruptno))();
+    void setvect(int interruptno, void interrupt (*isr) ( ));
+    void interrupt(*_dos_getvect(unsigned interruptno)) ();
+    void _dos_setvect(unsigned interruptno, void interrupt (*isr) ());
+
+  Remarks:
+  _dos_getvect and getvect read the value of the interrupt vector given by
+ interruptno and return that value as a (far) pointer to an interrupt
+ function.
+
+  _dos_setvect and setvect set the value of the interrupt vector named by
+ interruptno to a new value, isr, which is a (far) pointer containing the
+ address of a new interrupt function.
+
+-----------------------------------------------------------------------------
+
+  Copies a block of n bytes from src to dest
+
+  Declaration:
+    void *memccpy(void *dest, const void *src, int c, size_t n);
+    void *memcpy (void *dest, const void *src, size_t n);
+    void *memmove(void *dest, const void *src, size_t n);
+
+    void far * far _fmemccpy(void far *dest, const void far *src,
+       int c, size_t n);
+    void far * far _fmemcpy (void far *dest, const void far *src,
+       size_t n);
+
+  Remarks:
+ Each of these functions copies a block of n bytes from src to dest.
+
+  With memccpy, the copying stops as soon as either of the following occurs:
+    the character c is first copied into dest
+    n bytes have been copied into dest
+
+  With memcpy, if src and dest overlap, the behavior is undefined.
+

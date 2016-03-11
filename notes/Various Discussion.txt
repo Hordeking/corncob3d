@@ -1,0 +1,87 @@
+Ok I think I get it now although I don't know why your walls are red.
+
+The polygon object structure is
+
+16 bit word : nSides
+16 bit word : color
+16 bit words  x, y, z
+                    x, y, z
+                    x, y, z   etc
+
+Color is a 16 bit word because it can either be an 'immediate' color where the color is specified in the lower byte and the upper byte is zero.  Or it can be a 16 bit pointer into memory.
+
+As far as 'walls' go there.  There seem to be two kinds.
+
+On line 2792 of defobjs.asm,   a global variable called 'wallc' is defined.
+
+Then the definitions of wallplyy, wallplyx, wallplyz follow.  Each of these uses 'wallc' for the color.   To set the color of the wall, the code would write the color to wallc,   then call drwply.
+
+Then there is another definition on line 2898 of defobjs.asm:   lwallclr
+
+lwallwry, lwallwrx, and lwallwrz use lwallclr instead of wallc.
+
+If you look at line 2260 of f3dvec.asm, you can see the following code:
+
+mov	bx,[si+2]
+mov	al,bl
+or	bh,bh	; check for color as immediate
+jz	pdrwl1
+mov	al,[bx]
+pdrwl1:	mov	n,a
+
+It loads the 16bit color into register bx, then sees if the upper 8 bits are zero.  If they are not, it treats the color value as a 16 bit memory pointer and reads the byte there.    The color code is stored in the global variable 'n'.  I apologize for the awful name.
+
+Now in the drwply procedure,  on line 4082 of f3dvec.asm,    we have
+
+mov	dx,3ceh	; dx := graphics controller port addr
+mov	ah,n	; write zero to this bit
+cmp	ah,15	; do we make a screen?
+jbe	normalcolor	; yes
+and	ah,15
+call	rand_w
+and	al,55h
+mov	ah,al
+mov	hlinemask,al
+mov	bhlinemask,ax
+normalcolor:	
+xor	al,al
+out	dx,ax	; put color selection in set/reset reg
+mov	ax,0f01h
+out	dx,ax	; put 0fh in bit plane enable
+
+
+So you see, the value of 'n' is retrieved.    A special value of '15' is interpreted as a special code.  If n is 15, then a 16 bit random number is generated in AX.   Then the lower 8 bits are anded with 0x55, and copied into the upper 8 bits.    hex 0x55 is a binary number with every other bit set to zero.   So AL and AH both have a number with every bit equal to zero.
+
+   It puts this number in the hlinemask and blinemask.     Normally when you write a byte to the graphics memory it will write 8 pixels in a time.  But if the bitmask register is not all ones, you can write to just some of the pixels.   This is how transparency is implemented, by anding the mask register with 0x55, you write every other pixel,  leaving stuff that was drawn earlier showing through.
+
+  It also lets uses ah in the set/reset register.  This is the color.   So the color is random, and every other bit is set.
+
+  So to get the transparent shimmer, the color of a poly needs to be set to 15.
+
+  Now, the code in walltim and lwalltim both look up the 'quality' of the wall to determine the color.   The quality is an 3 bit value so there are 8 possible values.   The quality bits are bits #12, #13, and #14 and are stored in the object attribute   [si+24].    So for example, if the object attribute is 0x7000 = 28672, this would be an object with quality set to 7.   No other attributes are 'or-ed' in, such as timed object (16), so in general the object attribute would be some number larger than 28672.
+
+  line 253 of strtexp.asm defines the quality table for walls.
+  walls with quality value set to 7 should make the color take on value 15, which should result in a shimmering wall.
+
+   So, any wall object you have which has a quality of 7, should shimmer.   How to make such a wall, I don't remember at all.
+
+>On that note, where are these procedures called from? What do SI and DI
+have in them? If you can't remember, it isn't a huge problem, but just
+curious.<
+I don't which procedures you are asking about.
+
+
+>There's a final one, which seems to be defined differently between a few
+files, cdct, which I'm not at all sure what it does.<
+
+  Every object definition has the option of running a function.   If the object is a 'timed' object,   ( a timed object has bit #4 set in the [si+24] attributes), then this routine is called every frame.   THis is for making things blink, etc.   If it is a destructable object (bit #3 set in attributes), then this function is called to tell the object to do the code required for destruction.
+
+  This specification of which code to execute in either of these cases is stored in the object definition at offset 72.   However, the value in this location can be specified either as a function pointer to be called directly, or as an integer offset into a table of function pointers.    cdct determines which is used.   
+
+Offset 72 into the offset structure is either a integer or a 16bit pointer into the code segment.    If defobjs.asm, if cdct is 0, then the value is interpreted as an index into the objtimtable.     If cdct is 1, then the value is the address of an actually routine to call.
+
+  Unfortunately I made a mistake in f3dvec.asm, and gave the cdct the same function, but got it reversed, so that in f3dvec.asm,  if cdct is 1, then the value is an integer index into the objtimtable., if it is zero, then it is treated as a function pointer.
+
+So, if you change the one in defobjs.asm from 0 to 1,   then you must also change the one in f3dvec.asm from 1 to 0,   (or else fix the mistake and change all the 'EQ 1' to 'EQ 0' in one of them so they are both interpreted the same). 
+
+  That would explain why it crashed if you only changed one.

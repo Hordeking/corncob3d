@@ -1,0 +1,2 @@
+Compiler seems to be Borland C++, from 1991
+	It is. Borland C++ 3.00.

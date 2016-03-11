@@ -1,0 +1,7 @@
+
+rimg.obj: rimg.asm
+        masm rimg.asm;
+
+rimg.exe: rimg.obj
+         link c:\sa\lib\starts+rimg,rimg,,c:\sa\lib\sas.lib
+

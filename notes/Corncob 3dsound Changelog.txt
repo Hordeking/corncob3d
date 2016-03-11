@@ -1,0 +1,25 @@
+Corncob Source Code Replacement Log.
+A semicolon-delimited spreadsheet with the following format:
+Reference number; Date; Name; Filename; LineNumber; Action
+--
+Reference number;Date;Name;Filename;LineNumber;Action
+ccb001;2012/11/03;JD;hline.asm;591;Replaced line with "jmp s_byte", since sbyte is a masm 6.11 keyword
+ccb002;2012/11/03;JD;hline.asm;479;Replaced label with "s_byte", since sbyte is a masm 6.11 keyword
+ccb004;2012/11/03;JD;dline.asm;163;Replaced label with "s_byte", since sbyte is a masm 6.11 keyword
+ccb003;2012/11/03;JD;dline.asm;171;Replaced line with "jmp s_byte", since sbyte is a masm 6.11 keyword
+ccb005;2012/11/03;JD;kline.asm;196;Replaced label with "s_byte", since sbyte is a masm 6.11 keyword
+ccb006;2012/11/03;JD;kline.asm;215;Replaced line with "jmp s_byte", since sbyte is a masm 6.11 keyword
+ccb007;2012/11/03;JD;usermac.c;000;Reformatted this file to ease reading. Added an include for stdlib.h
+ccb008;2012/11/03;JD;3.asm;1565;Removed offset keyword. Seems to be from Masm 5.1. Orig: bx+offset kbdtbl
+ccb009;2012/11/03;JD;3.asm;1572;Removed offset keyword. Seems to be from Masm 5.1. Orig: bx+offset kbdtbl
+ccb010;2012/11/03;JD;3.asm;1584;Removed offset keyword. Seems to be from Masm 5.1. Orig: bx+offset kbdtbl
+ccb011;2012/11/03;JD;3.asm;10373;Added a comment line because masm was throwing an extraneous "line too long" error.
+ccb012;2012/11/03;JD;map.asm;1605;Removed "offset". Orig: si+offset @dataseg:numx
+ccb013;2012/11/03;JD;map.asm;1606;Removed "offset". Orig: si+offset @dataseg:numx+1
+ccb014;2012/11/03;JD;map.asm;1615;Removed "offset". Orig: si+offset @dataseg:numy
+ccb015;2012/11/03;JD;map.asm;1616;Removed "offset". Orig: si+offset @dataseg:numy+1
+ccb016;2012/11/05;JD;soadl.asm;87;Replaced soadlmain with main
+ccb017;2012/11/05;JD;soadl.asm;87;Replaced soadlmain with main
+ccb018;2012/11/05;JD;soadl.asm;87;Replaced soadlmain with main
+ccb019;2012/11/05;JD;soadl.asm;87;Replaced soadlmain with main
+ccb020;2012/12/30;JD;3.asm;11525;Added this code to prevent auto-ending missions. Don't do any of the checks, either, to save time

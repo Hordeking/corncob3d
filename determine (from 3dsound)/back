@@ -1,0 +1,17 @@
+v.mix: v.asm
+  masm v.asm;
+  mix v
+
+readpal.mix: readpal.c
+  pc readpal
+
+back.mix: back.c
+  pc back.c
+
+ct.mix: ct.asm
+  masm ct;
+  mix ct
+
+back: back.mix v.mix readpal.mix ct.mix
+  pcl back.mix v.mix readpal.mix ct.mix
+

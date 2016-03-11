@@ -1,0 +1,30 @@
+Build targets remaining:
+
+
+Built:
+sin.obj
+clip.obj
+adl.obj
+egaline.obj
+pixaddr1.obj
+csqrt.obj
+dsqrt.obj
+inst.obj
+atn.obj
+mat.obj
+pict.obj
+hline.obj
+dline.obj
+kline.obj
+
+3_r.obj
+map_r.obj	(renamed to map_r.obj)
+cmdliner.obj	(renamed to cmdliner.obj)
+f3dvec_r.obj	(renamed to f3dvec_r.obj)
+strtxp_r.obj	(renamed to strtxp_r.obj)
+defobj_r.obj	(renamed to defobj_r.obj)
+
+
+Failed:
+
+

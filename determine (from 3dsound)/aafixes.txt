@@ -1,0 +1,41 @@
+1.) Automatic exit upon landing.   Done.
+2.) Incorrect response to flaps.  I took out the 'kick' when putting the
+        flaps down.  However, I disagree with Len's comment that it is 
+        incorrect.  He seems to confuse the added lift with change in 
+        attitude....
+3.) 'n' and 'i' options for mission 5.   Not fixed presently.
+4.) No mission credit in mission 5.      Fixed.
+5.) Plane speed.  I get about 350mph max speed at the optimum altitude.
+     If I recalibrate the speedometer the stall speed will be off.  I don't
+     want to mess with the flight model at this late stage.  Not fixed.
+6.)  Boss key removed.
+7.)  Eject light replaced with 'crash' light
+8.) Spelling mistake fixed.
+9.)  replaced word 'gunsite' with level sight.
+10.) throttle difficult to use.  In 3 years of Corncob's use I've never
+heard this complaint before. Would be difficult to change. Not fixed. 
+11.)  misspelling of aerial.  Fixed.
+12.) I don't understand the complaint.   Just as in LucasArts' battle of
+britain or Xwing, you must chose a pilot before you fly.  Otherwise you
+won't have anywhere to place the records upon mission completion.  In real
+enduser gameplay, the user won't be going leaving and starting the game
+up over and over again.
+13.)  Autopilot loses altitude when throttle not at max.  So much for
+1940's technology....  This would require alot of work to fix.  In the 
+original Corncob game, one flew with throttle maxed out all the time.
+It took weeks to get the present autopilot to work without cheating, and
+I'm not willing to make it work at lower throttle points.  Not fixed.
+15.)  Typo in keyboard menu information fixed. 
+16.)  Kills in mission report.  Fixed.
+17.)  Your misspelled as 'you'  fixed.
+18.)  If crashing during training, pilot is told mission is completed,
+       but after resurrection, pilot is told he can't continue with missions
+          until training mission is complete.  not fixed.
+19.) menu overlay bug when pilots are full.  not fixed.
+20.)  invulnerable plane spontaneously occuring.  Could not reproduce.
+21.) Dead pilot stuff.  Could not reproduce.  ? fixed?
+26.) Music cannot be easily added to the initial graphics screens.  The
+    opening screens are put up by a program in the batch file, therefore the
+music cannot continue when that program is exited and the next is started up.
+  not fixed.
+27.) Mention of the name COrncob 3D in joystick mission box removed.  Fixed.

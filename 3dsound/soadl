@@ -1,0 +1,10 @@
+
+soadl.obj: soadl.asm
+        masm soadl.asm;
+
+adl.obj:	adl.asm
+	masm adl;
+
+soadl.exe: soadl.obj adl.obj
+         link /M soadl+adl,soadl,,c:\sa\lib\sas.lib
+

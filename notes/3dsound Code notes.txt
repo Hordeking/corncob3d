@@ -1,0 +1,8 @@
+A sphere is defined like so:
+
+hqsph	dw	1
+	dw	0,0,0,lhq*2,clrhq
+
+0,0,0 is the center
+lhq*2 is the _diameter_ (not sure why it takes a diameter, radius makes more sense)
+clrhq is the color to make it.

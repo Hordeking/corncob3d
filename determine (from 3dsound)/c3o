@@ -1,0 +1,5 @@
+c3o.obj : c3o.asm
+  masm c3o;
+
+c3o.exe:  c3o.obj
+         link c:\sa\lib\starts+c3o, c3o, ,c:\sa\lib\sas.lib

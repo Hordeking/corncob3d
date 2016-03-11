@@ -1,0 +1,1138 @@
+aC&8
+bMY@
+vePV
+ FYY
+t^<%t]
+R<:t
+t&<]t%<-u
+|ERQ
+|Z<+t
+r)<0uk
+Y<xtQ<XtM
+<Xu-
+>?YY
+u/SQR
+&tf:
+rft-
+>rf@s
+>rf@t
+!ZYr-3
+=.cu
+[[XP3
+SPQP
+[]_^
+I,"t
+"<\u
+]_^]
+QSPR3
+7)8K8[8
+!r.RP
+!r$RP
+t&Ot#
+tz#>
+YY^]
+YY_^]
+(M(M"M(MU
+NnN5NU
+H_^]
+P"r3
+8"PR
+8"PR
+YPR3
+wsul
+=\t-
+=/t(
+\FVW
+1,r)w
+/,v!
+YG;>
+YY_^]
+YY^]
+?\u.
+YY_^
+YY_^
+YG;>V
+YY^]
+YF;6
+;D"u
+;G"uF
+G$;F
+YY_^
+YF;6
+FG;~
+FG;~
+ FG;~
+ FG;~
+YG;~
+ FG;~
+FG;~
+YG;~
+FG;~
+FG;~
+YY^]
+YF;6^
+YF;6x
+YY_^
+YF;6
+YY^]
+YF;6p
+u-;v
+E";F
+F;6p
+YY_^
+F;6p
+YY_^]
+FG;~
+ FG;~
+ FG;~
+ FG;~
+FG;~
+?$PW
+O$PW
+Y_^]
+YF;6
+YY^]
+YYGW
+YY_^
+YYGW
+YY_^
+YYGW
+YY_^
+YF;6
+YY^]
+DH;EH~
+DH;EH}
+YF;6|)|
+YY^]
+YY^]
+ FG;~
+FG;>`
+ FG;~
+FG;~
+FG;~
+ FG;~
+FG;>`
+ FG;~
+ FG;~
+ FG;~
+ FG;~
+FG;>`
+ FG;~
+ FG;~
+FG;~
+YY_^
+FG;~
+ FG;~
+FG;~
+YY_^
+FG;~
+ FG;~
+FG;~
+YY_^
+<\ueF
+ FG;~
+YY_^
+N/PW
+J-PW
+J-PW
+O0PV
+[0PV
+YY_^
+Y_^]
+Y_^]
+YYGW
+YY_^
+(?K+^
+< tM
+(?K+
+G;>(?|
+(?K+
+G;>(?}
+E ;F
+YYG;~
+YY_^
+YYG;~
+YY_^
+NVW3
+YY+E
+YYF;v
+YYF;v
+L)PV
+P)PV
+")PV
+&)PV
+L)PV
+P)PV
+")PV
+&)PV
+G;>p
+$ZPV
+uZPV
+{ZPV
+G;>p
+YY_^
+i\P3
+YY_^]
+(aPV
+YY;>
+YG;>
+ FG;~
+ FG;~
+YF;v
+YF;v
+YYG;~
+RVW3
+YY_^
+cbP3
+<Zt/
+Borland C++ - Copyright 1991 Borland Intl.
+Null pointer assignment
+Divide error
+Abnormal program termination
+3.exe
+One moment please...
+This program is designed to be called by `corncob.bat'.
+Please do not call it directly.  Instead, type `corncob'
+at the DOS prompt.
+Warning!!!!
+Corncob 3D is not designed to run under Windows.
+Please exit Windows, and run the game from the
+DOS command line.
+If you are not running Windows, or you would like
+to try the game under Windows at your own risk, then
+type a 'g', any other key will quit : 
+Corncob 3D requires a VGA color card and monitor to run.
+A VGA card has not been found in your system.
+If you are sure that you indeed do have a VGA system, and you
+would like to try the game at your own risk, then
+type a 'g'.  Any other key will quit : 
+Sorry, but there is too little memory available to run Corncob 3D.
+Corncob 3D requires about 554,000 bytes available DOS RAM.
+You may have some TSR (pop-up) programs loaded which are taking up space.
+If you boot your computer from your original DOS floppy disk, you should
+have enough memory to run Corncob.
+Amount of memory you need to free up: %ld
+3d.cfg
+Corncob 3D  Version %s
+An MVP Software Production
+Copyright 1991,1992   Pie in the Sky Software.
+Loading images...
+cctitle.exe
+cctitle
+\Duty roster
+\Combat missions
+\Training missions
+display \High score list
+keyboard/\Joystick setup
+\Music toggle
+\View the Corncob 3D documentation
+get \Information about this menu
+e\Xit to dos
+Err: Sound Card not found. Sbe=%d Drl=%d
+Use arrow keys or type highlighted letter to choose action:
+Active pilot:  
+Theater-of-Operations:  
+Training Mission 
+Control:  
+Keyboard
+Joystick  (
+manual
+automatic
+ recentering)
+Music 
+On           
+No Sound Card
+Off         
+Information about Main Menu
+moag.inf
+First-time Information
+You may view it at any time later by choosing the
+"\View the \(Corncob 3D\) documentation" selection in the main menu.
+Type almost any key when ready...
+corncob.doc
+Configure for Joystick
+Do you have a Joystick? (Y/N) 
+Program will now default to %s control.
+You may choose %s control at any time
+joystick
+keyboard
+from the Main Menu via the \(keyboard/\Joystick\)
+selection.
+Type <CR> to continue...
+The following information will only appear this first time that you
+run Corncob 3D.
+Unexpected Error
+error unloading driver
+Can't open music system.  Err: %d
+Can't find music system
+                    MORE  
+deftower
+\Fly mission
+\Open a new theater of operations
+\Activate an open theater
+\Delete a theater
+\View status of a theater
+toggle invulnerable \Plane
+toggle aerodynamic \Model
+toggle inflight \Comments
+get \Information about this menu
+\Return to previous menu
+No Theaters
+Sorry, there are no theaters to choose from.
+The Theaters of Action should be files
+stored in the subdirectory `def'
+Trainee Pilot
+ You may fly combat missions as a trainee,
+ but your progress will be deleted when
+ you leave the program.  It is recommended
+ that you create a pilot by using the duty
+ roster selection from the main menu.
+No Current Theater
+Sorry, there is no active theater-of-operation.
+You may choose a theater with the "\Open" menu
+selection by typing `O'.
+You may activate one on your theaters with the
+"\Activate" menu selection by typing `A', or
+open a new one by typing `O'.
+Current Pilot:
+Active Theater :  
+none
+(Inv)
+(Std)
+(Advanced)
+(Beginner)
+(Off)
+(On)
+Choose with arrow keys or letter
+Theaters-of-Operation:
+Your Open Theaters:
+Too Many Theaters
+Sorry, 
+ already has
+the maximum number of available theaters open.
+You will have to delete one first.
+Cannot create theater for pilot.
+Cannot theater def file.
+Cannot allocate memory for pilot structure.
+Cannot alloc p in fdcopy, cl=%u
+Choose a Theater of Operations
+Choose desired theater of operations with
+.  Select theater of operations with
+<CR> or abort with <BS> or <ESC>.
+There is no general information available
+about this Theater of Operations.  You
+may consult the per-mission information
+before flying or obtain more information
+by pressing <F2> during flight.
+Cannot get theater #%d name -- pilot has too few.
+Cannot open pilots theater file for reading.
+Cannot read theater structure from theater file.
+Cannot read pilot structure from theater file.
+Cannot allocate memory to add theater into list.
+No Theaters to Activate
+ has no
+open theaters to activate.
+You will have to open one first.
+Activate an Open Theater
+Select theater with 
+, <CR> to activate
+No Theaters to Delete
+open theaters to delete.
+Delete a Theater
+Select theater with 
+, <CR> to Delete
+Theater is Complete
+Warning!  theater %s
+has already been completed!  Deleted theaters
+can not be counted toward Combat Master status.
+Are you sure you want to delete this theater?
+Type `y' to confirm, anything else cancels 
+No Theaters to View
+open theaters to view.
+You will have to choose one first.
+View Theater Records
+Select theater with 
+, <CR> to View
+Current pilot has no theaters.
+Seek into pilots theater file failed.
+Cannot read pilot structure from pilot theater file.
+tht\%d.tht
+def\%s.twr
+def\%s.cct
+Information about Theaters Menu
+moag.inf
+Theater of Operations Menu
+\Fly mission
+modify \Wickedness of enemies
+choose \Number of enemies
+choose \Default values
+toggle invulnerable \Plane
+get \Information about this menu
+\Return to previous menu
+Training Missions
+Use arrow keys or type highlighted
+    letter to choose action:
+random spread of strength
+strength %d
+Current choices:
+Plane:  
+Invulnerable
+Standard
+%d missile sites
+%d AAA sites
+%d ground vehicle sites
+modify enemy \Missile wickedness
+modify enemy \Ground vehicle
+modify \AAA wickedness
+Modify Wickedness of Enemies
+  currently %-3d
+Error:  Value is too large
+Sorry, %d is too large.
+The wickedness of enemies must be in the range 1-8
+    or 0 for a random spread of wickedness.
+Missile
+Ground-Vehicle
+Modify %s Wickedness
+%s wickedness is currently %d.
+Values of 1-8 mean increasing wickedness.
+A value of 0 will choose a random
+Enter new value [0-8]  
+change number of \Missile sites
+change number of \Ground-Vehicle sites
+change number of \AAA sites
+Choose Number of Enemies
+  currently %-5d
+The maximum number of %s-sites is %d.
+Choose # of %s Sites
+The number of %s sites is currently %d.
+Enter new value [0-%d]  
+%d is too big, max is %d
+Values Set to Default
+Pilot:  
+New mission parameters:
+Starting at the 
+action
+base
+Training Missions Information
+moag.inf
+#\Create Pilot
+\Activate Pilot
+\Deactivate Pilot
+de\Lete Pilot
+r\Esurrect Pilot
+re\Name Pilot
+\View Pilot Records
+get \Information about this menu
+\Return to previous menu
+Use arrow keys or type highlighted letter
+        to choose action:
+Active pilot:  
+No Pilot to deactivate
+There is no pilot in the list to be deactivated.
+You will have to activate one first.
+No Pilot to activate
+There are no pilots in the list to be activated.
+You will have to create one first.
+Choose Active Pilot
+Select pilot with 
+, <CR> to activate
+Pilot Cannot be Activated
+ has been 
+captured by the enemy.
+killed in action.
+confined to the stockade.
+Release is scheduled for %s.
+Do you want to resurrect the pilot?  (Y or N)
+Too many pilots
+A new pilot cannot be created because the pilot list
+ is full.
+You will have to delete one first.
+Create New Pilot
+Enter name for new pilot.
+Activate %s? [Yes or No]
+(Maximum of %d characters)
+Sorry, Pilot %s already exists.
+No Pilots to Delete
+There are no pilots in the list to delete.
+Choose Pilot to Delete
+Select pilot with 
+, <CR> to delete
+Confirm Deletion
+Type <ENTER> to delete 
+ Almost anything else cancels...
+No Pilots to View
+There are no pilots in the list to be viewed
+No Pilot to Resurrect
+There are no dead or captured pilots in the list.
+You will have to kill or lose one first.
+Choose Pilot to Resurrect
+Select pilot with 
+, <CR> to resurrect
+Pilot is in the Stockade
+ is confined to the stockade
+until %s.
+Pilot doesn't Need Resurrection
+ is not dead or captured.
+You can only resurrect dead or captured pilots.
+Confirm Resurrection
+Type <ENTER> to resurrect 
+ Anything else cancels...
+Activate 
+No Pilot to Rename
+There is no pilot in the list to rename.
+Choose Pilot to Rename
+Select pilot with 
+, <CR> to rename
+Rename Pilot
+Enter new name for 
+No pilots to view.
+(active)
+(K.I.A.)
+(captured)
+(stockade)
+(ready for action)
+Pilot:  %s %s
+%s%s
+ %d mission%s %s
+Mission Objectives = %-5d
+Avg = %s
+%s T.O. 
+%d misn%s.  %d objctvs killed, %d remain.
+There are no planes remaining in storage.
+There are %d plane%s remaining in storage.
+Total points = %-9ld  
+Avg = %ld
+Primary Kills = %-5d  
+Avg = %d
+Other Kills = %-5d   
+Combined best-single-mission:
+ %d primary kills 
+ %d other kills
+Best mission score = %ld:
+Duty Roster Menu Information
+moag.inf
+Duty Roster
+Pilots:
+pilot.hsc
+Error!  Cannot %s high-score list %s cl=%u
+creat
+errno=%d 
+write on
+see list of high \Scores
+see list of top \Careers
+see list of \Fastest careers
+\Delete one of the above lists
+get \Information about this menu
+\Return to previous menu
+High Score Menu
+Use arrow keys or type highlighted
+  letter to choose action:
+High Scores
+Error!  Cannot open %s for reading
+Error!  Read problem on %s at high scores
+Name                       Score  Theater-of-Operations      Kills
+  %9ld  %-20s  %3d  %3d  %3d
+Top Careers
+Error!  Read problem on %s at high careers
+Name                 Total Score  Missions Resurrections     Kills
+  %9ld  %-8d %-8d    %4d %5d %5d
+Fastest Careers
+Error!  Read problem on %s at fast careers
+Name                 Total Score  Missions Resurrections   Points/Misn
+  %9ld  %-8d %-8d   %16ld
+Information about High Score Menu
+moag.inf
+delete the list of top \Scores
+delete the list of top \Careers
+delete the list of \Fastest careers
+Delete a Score List
+high score
+top career
+fast career
+Confirm Deletion
+Type <ENTER> to delete %s list
+ Almost anything else cancels...
+Information about Deleting a List
+Training Mission
+Error!  cannot open %s to modify
+Error!  cannot read high scores from %s
+Error!  cannot read top careers from %s
+Error!  cannot read fast careers from %s
+Registration Information
+moag.inf
+choose \Keyboard control
+choose \Joystick control
+choose \Automatic joystick centering
+choose \Manual joystick centering
+\Force joystick re-centering next flight
+get \Information about this menu
+\Return to previous menu
+Keybord/joystick setup
+Use arrow keys or type highlighted
+  letter to choose action:
+Current
+ choices:
+Keyboard
+Joystick
+ control.
+Manual
+Automatic
+ joystick recentering.
+Forcing joystick recenter next flight.
+Keyboard/Joystick Menu Information
+moag.inf
+            Corncob 3D             
++Main Menu
+Warning!!!  Cannot alloc memory for screen yank
+Nbytes PANIC!
++boss.txt
+3.res
+3univ.dat
+towers.dat
+3demo.dat
+3.cmd
+-l     
+-m     
+-n     
+%-5d
+-c%ld
+Only one tower
+Sorry, there is only one tower in
+the training missions.
+Detailed Info
+Cannot exec :%s: 
+Analyzing Theater
+not enough core in copytheat, u=%d
+Cannot alloc b1 in copytheat
+Cannot alloc b2 in copytheat
+Cannot open %s to read
+Cannot setvbuf() for fpi in copytheat
+Cannot create universe file for 3!
+Cannot setvbuf() for fp2 in copytheat
+Cannot read theater from pilots theater file.
+Cannot read pilot structure form pilots theater file.
+Confusion:  %d objectives read, %d objectives remembered
+Cannot open either %s or %s
+Cannot open %s for writing.
+             
+%sYour objective is to destroy the flying saucer and to take out
+%sas many enemy fuel dumps and ground sites as possible.
+%sLatest intelligence reports enemy strengths as follows:
+Missile site
+AAA site
+Ground-Vehicle site
+Enemy Saucers
+ \(Note:\)  Training missions are much harder than the combat missions.
+%s%d %s%s
+strength %d
+random spread of strength
+cannot open %s for reading
+cannot read info from %s
+Cannot read rom checksum in 3.res
+Seek error looking for start-coordinates!
+Read error looking for start-coordinates!
+Henderson
+Field
+Dulles Inter-
+national Airport
+Bubba's
+Airstrip
+Weedsport
+RDU ^international
+Crickety Point
+Landing Strip
+Sweetly Bending Oak
+Aircraft Park
+Easter Island Municipal
+Air Travel Center
+Valmart Airstrip and
+Family Value Center
+(%d plane%s  %d MO)
+Your Starting Airfield
+There is only one airfield in this Theater-of-Operation.
+Type <CR> to fly, `i' for detailed info, or <ESC> to abort mission.
+Choose New Starting Airfield
+Choose new starting airfield with arrow keys, then use
+<CR> to select, `i' for detailed info, or <ESC> to abort mission.
+Get Detailed info about Airfield
+Type <CR> or `i' for detailed info, <ESC> to return.
+Choose desired airfield with arrow keys, then use
+MO = Mission Objectives remaining
+Theater is Complete
+There are no mission objectives remaining in
+this Theater of Operations.
+Type <ESC> to abort,
+or almost anything else to continue...
+Write error on tower!
+No Objectives at this Airfield
+Warning! There are no uncompleted mission objectives at this airstrip.
+Type <CR> to fly anyway, <ESC> to abort,
+or almost anything else to choose a different airstrip.
+No Planes at this Airfield
+Warning!  There are no planes available at this airstrip.
+        (However, you have %d plane%s in storage.)
+        Type 'P' to pull a new plane from storage.
+      Type <CR> to continue with the mission anyway.
+                    Type <ESC> to abort.
+       Type almost anything else to select a new tower.
+Cannot creat 3.cmd!
+error unloading driver
+8                                                                 
+Mission Briefing
+, prepare for your mission!
+%s %s%s
+Training Mission:
+Your Theater of Operation:  %s
+This mission will not be recorded because 
+an invulnerable plane was flown.
+of a critical error during flight.
+of an abort.
+ (Critical error occured) 
+Do you want this mission recorded?  
+You have been killed in a manner not designed by
+the programmer.
+You have been captured in a manner not designed
+by the programmer.
+Please report this occurence and code %d to
+Pie in the Sky software.
+CAREER REPORT
+POST-MISSION CAREER REPORT
+CAREER REPORT:  %s Theater of Operations
+MISSION REPORT
+MISSION REPORT:  %s Theater of Operations
+         PILOT:  
+, %d resurrection%s
+%d mission%s
+                 %s 
+                 Flying time = %ld:%02d:%02ld
+%d mission%s,  
+                 %s%ld
+ hours flying time.
+K.I.A.
+CAPTURED
+CONFINED TO STOCKADE
+ACTIVE
+WAITING FOR DUTY
+MISSION-ABORTED  
+KILLED  
+CAPTURED  
+AT-HOME  
+RESCUED  
+CRASHED-NOT-HOME  
+EJECTED  
+CRASHED-AT-HOME  
+LANDED-AT-HOME  
+COLLISION  
+        STATUS:  
+%-48s
+ until %s.
+    HIGH SCORE:  
+%-7ld 
+     TOTAL SCORE:  
+%-10ld           
+         SCORE:  
+%ld 
+BEST:  
+%-7ld    
+TOTAL:  
+%-10ld 
+          PMSF:  
+%-5d
+  MSF:  
+  MOBF:  
+%-9ld
+            
+                                   
+                        Career%s
+                          This%s
+                          %s      Career      Best       Career
+Last
+This
+ PRIMARY KILLS:
+          Total%s
+        Mission%s
+          Mission     High      Mission      Total
+Mission Objective
+TRFRU/Fuel Dumps
+AAA Batteries
+Other Sites
+SECONDARY KILLS:                                                 
+Ground Transports
+Enemy Missiles
+Number of Planes Lost
+Friendly Sites Lost
+Total Damage
+<INS> for stats, 
+<INS> for medals, 
+!!, 
+Type 
+ for next/prev, %sor ESC, BS, or CR to exit
+%21s:  
+%41s
+%5d 
+%5d      
+DECORATIONS:
+%3s:
+@awarded the
+@ @#@
+>F@R@U@
+>.A<A?A
+>1BFBJB
+C2DoD
+D)EjE
+F'GgG
+G4HqH
+H$IaI
+K2nd Lieutenant
+2nd Lt.
+1st Lieutenant
+1st Lt.
+Captain
+Capt.
+Major
+Maj.
+Lt. Colonel
+Lt. Col.
+General
+Gen.
+Purple Heart
+surviving extreme injury in combat
+Bronze Star
+inflicting heavy damage to the enemy
+Silver Star
+inflicting severe damage to the enemy
+Gold Star
+inflicting extreme damage to the enemy
+Distinguished Service Cross
+extraordinary accomplishment of objectives
+Service Award
+surviving numerous combat sorties
+Stellar Cluster
+inflicting catastrophic damage to the enemy
+designated a
+Combat Master
+Completely obliterating the Alien threat
+Distinguished Flying Cross
+extraordinary services without losing a plane
+Theater Combat Medal
+completing all mission objectives within a T-of-O
+dazzling 
+fantastic 
+really-beyond-belief 
+Former 
+Congratulations former 
+%s %s %s
+ (%d res.),
+For %s %sdisplay of combat
+your
+prowess, is posthumously promoted to the rank of
+prowess, you have been promoted to the rank of
+%c%c%c%c%c%c%c%c %s %c%c%c%c%c%c%c%c
+Congratulations 
+%s%s %s
+For %s%s
+is posthumously %s
+you have been %s
+%s  __ 
+Prepare to receive for new orders.
+  You have done an excellent job of protecting the earth from
+the terrible immediate threat of defeat.  Unfortunately, our
+story does not come to an end yet.  Our top scientists are
+reporting a massive force gathering in nearby solar systems.
+  The war research department has just finished a prototype for a
+new fighter, capable of speeds greater that 1000 mph with an un-
+limited ceiling.  This fighter also has some experimental appar-
+atus aboard which is based on stolen alien portal technology.
+We are really hoping that this new hardware will prevent another
+war from being fought here on the surface of the earth.
+  Your mission is to report to the White-Sands proving grounds in
+order to test fly this new aircraft.  Your orders are to climb
+as high as you can, and then hit the large button marked '<enter>'.
+Don't forget to use the emergency rocket booster, and note that
+the altimeter fails at 29,000 ft.  This plane can fly far beyond
+this height, and hopefully you can help us determine exactly how
+high that is.
+  The valiant success you have demonstrated in defending the
+planet is without comparison.  By all rights, clearing these
+aliens from our planet was our first priority.  However, we
+realize now that the aliens are NOT giving up this easily...
+  You are hereby invited to take part in the newly formed
+OtherWorld Alliance.  It is an elite force of top pilots who
+demostrated topnotch abilities in the battle of Earth.
+  Join with us on our quest to rid our neighboring planets of
+hostile alien bases.  These are NOT just more missions.  Think of
+the challenge of air combat in the thick atmosphere and heavy
+gravity of a red giant;  Or the challenge of an iceworld with air
+so thin and gravity so low that they are almost non-existant!
+  We are planning more than 150 day and night attacks on some
+of the most bizzare alien bases imaginable.  If you think you've
+seen it all in your defense of earth, then you are dead wrong!
+ See the Corncob Documentation for more information about this.
+!!! CONGRATULATIONS AND EXCLAMATIONS !!!
+Major %s
+(With %d resurection%s,)
+having successfully completed all the relevant
+Theaters-of-Operation,
+and thereby \(OBLITERATING\) the alien threat,
+as well as completing the new fighter test
+at great personal risk,
+is hereby declared...
+MASTER of Corncob 3D
+Now, don't you want to try to do it without
+resurections?
+There is no greater accomplishment in Corncob 3D.
+You have thus earned and the utmost respect from
+all who risked their lives in defense of Earth.
+Type almost any key to continue...
+Mission report not available.
+(%s)
+Corncob 3D was not able to run due to a
+memory allocation error.
+There is too little memory availble to
+play Corncob 3D.
+You will need approximately %d Kbytes
+more to run the program
+Please try to free up some memory by
+removing some TSR programs, or by
+reconfiguring your system.
+Corncob 3D could not run because a
+joystick was expected but not found.
+Make sure your joystick is connected to
+the correct port.  If you do not have a
+joystick, choose "keyboard" control from
+the keyboard/joystick menu.
+A critical error has occurred in 3.exe.
+Pie in the Sky software would greatly
+appreciate being notified of this.
+Please report the circumstances of this
+error and the following code:  CE #%u
+towers.inf
+()*01289:
++,34;<
+-./567=>?Force-field
+Small Force-field
+Flotsm
+Fence
+W/WVW}W
+X!X+X5XNESENWSWBad read on header in %s
+Bad write on header in 3univ.dat
+(%d,%d): (%d,%d)  Bogus tile header in %s!
+Cannot alloc myobj pointer in tile %d   cl=%u
+Bad read on object in %s
+Bad write on object in 3univ.dat
+Bad read on start coordinates in %s
+Bad write on start coordinates in 3univ.dat
+Headquarters
+Mind-bender
+Human-made plane
+Radar
+Radar Base
+Runway Piece
+Control Tower
+Ground Crewman
+Shard-2
+Shard-1
+Incendiary-blast
+KLA-Site
+Vehicle
+Vehicle Site
+Puff
+Boom
+Bomb
+Human-made Missile
+AAA Shell
+AAA Site
+Fuel Dump
+Mystery Object
+Propeller
+Bullet
+Survey Marker
+Crater
+Fuel Dump -- Destroyed
+Tower Doorway
+Runway End piece 1
+Runway End piece 2
+Barrage Balloon
+Bumble-Bee cloud
+Mortar
+Headquarters -- Destroyed
+Rescue-Van
+Pop-Up
+Saucer
+Saucer-Site
+TRFRU
+M-O Saucer
+Alien
+Portal
+Cannot open %s in threeuniv
+Cannot alloc myobj pointer in tower %d
+\(Objects near %s %s:\)
+\(Object                    Quality:  Range/Dir:    Alt:\)
+\(                                     (Mi.)       (ft.)\)
+Cannot alloc %u bytes to sort %d objs cl=%u
+destroy this orb.
+blow up the nearby TRFRU/fuel dumps.
+eliminate the nearby KLA and AAA.
+kill all nearby alien ground vehicles.
+destroy this orb with a suicide plane.
+blast the nearby saucer sites.
+destroy all nearby alien mind-benders.
+kill the nearby congregation of aliens.
+vehicle site
+mortar
+KLA site
+AAA site
+barrage balloon
+bee-swarm
+fuel dump
+unknown type
+Enemy 
+ (Indestructible)
+ (Gravity)
+Corsair
+Dumpy
+Stealth
+Unknown type
+ (%s)
+ (Wrecked)
+ (Spy)
+ (Dead)
+ (bumpers)
+%-27.27s Type \%c   
+%-36.36s 
+%4.4s %3s    %5ld
+             (%d)
+Fly through this portal.
+Blast this saucer out of the sky.
+Get secret document from spy.
+\(         Mission Objective:  %s\)
+\pilot.scr
+Initializing
+trainee
+%s pilots...
+3d.cfg
+Error reading file %s
+%s flight images...
+Sorry, I cannot initialize the image directory `img'
+*.img
+%s missions...
+Sorry, I cannot initialize the universe directory `def'
+*.cct
+*.twr
+Cannot get to the right directory!
+Cannot allocate memory for theaters
+%s%s
+%s.cct
+%s.twr
+Cannot change dirs to def
+%s current theaters...
+Sorry, I cannot initialize the theaters directory `tht'
+*.tht
+%d.tht
+Cannot allocate memory for ilist
+%s high scores...
+%s happy landing screens...
+Sorry, I cannot initialize the directory `vga'
+*.vga
+*.pal
+*.jpg
+rolfiles.txt
+Music file %s not found
+Can't alloc ROL ptrs
+%s\%s
+Cannot rename %s to %s
+Uncompressing image file %s......
+jvcc.exe
+Cannot convert Jpeg %s to %s
+Could not decompress %s
+Theater missing
+Pilot: 
+Theater number %d is missing!
+moag.cfg
+Cannot creat %s for writing  cl=%u
+Cannot open %s for reading
+Cannot allocate memory for theater table.
+Cannot allocate memory to construct theater list.
+Cannot allocate memory to construct demo list.
+_*`A`
+Type <CR> to continue, <ESC> aborts, or `n' for new tower, `i' for info
+Type 
+ etc..., <CR> to fly, <ESC> aborts, `n' for new tower, `i' for info
+Type <CR> to continue, <ESC> to abort
+Type 
+ etc..., <CR> to continue, <ESC> to abort
+Type <CR> or <ESC> to exit...
+Type 
+ <P-UP> <P-DN> etc..., <CR> or <ESC> to exit
+Choose a chapter number for more info, <CR> to continue or <ESC> to exit
+ PGDN PGUP etc,  Type a chapter number,  <CR> next chap,  <ESC> exits
+Type b for beginning,         <CR> next chapter,       <ESC> to exit
+Type 
+ PGUP PGDN,   b for beginning,   <CR> to continue,  <ESC> exits
+Type <CR> to return...
+Type 
+ <P-UP> <P-DN> etc, or <CR> to return...
+Error:  Cannot open %s for reading.
+There is no information to print here, number=%d
+Error:  Cannot alloc %d pointers.
+Error:  Cannot alloc %ld bytes.
+   Enter a Chapter number:  
+Sxyth 
+Type almost any key to continue...
+hamaraya
+fuvg
+shpx
+tbqqnz
+tbqqnza
+tbq qnza
+nffubyr
+qvpxurnq
+ohggbpx
+fpebghz
+3.40
+medal.fnc
+Error, can't open file
+error, medal.fnc size must be multiple of 17
+SOUND-DRIVER-AD-LIB
+nofmem err
+moagdata
+drvr.exe
+openfail
+fatal read err
+Impos farmalloc fail
+drvr.exe
+drvr.exe
+freeup reports memory messed up
+         !!!!!                  
+@@@@@@@@@@@@@@@
+@@@@@@@
+@@@@@@
+@@@@ 
+.$$$
+(null)
+COMPAQ
+print scanf : floating point formats not linked
+DgHgLgPgTgXg\g`gggngvg
+h"hSun
+Sunday
+Monday
+Tuesday
+Wednesday
+Thursday
+Friday
+Saturday
+January
+February
+March
+April
+June
+July
+August
+September
+October
+November
+December
+%s %s %02d %02d:%02d:%02d %4d
+.COM
+.EXE
+PATH

@@ -1,0 +1,5 @@
+sbtest.obj : sbtest.asm
+  masm sbtest;
+
+sbtest.exe:  sbtest.obj
+         link c:\sa\lib\starts+sbtest, sbtest, ,c:\sa\lib\sas.lib

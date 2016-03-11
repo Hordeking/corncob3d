@@ -1,0 +1,59 @@
+>>>>>>>>>>>>>>>     Scoring in 3, the MOTHER of All Games.    <<<<<<<<<<<<<<<<
+
+The following flags are gotton from 3:
+
+flag		Hex		What
+ABIAIR		1		Abort IN the air
+KILLED		2		Killed
+LANDED		4		Landed
+CAPTURED	8		Captured
+ATHOME		10		At home
+EJECTED		20		Ejected
+CRASHLAND	40		Crashlanded
+HITBLDG		80		Hit building
+
+if ABIAIR, then mission is not counted, and score is zero.
+
+Next we calculate a multiplier:
+
+if ATHOME flag, then:
+		if LANDED
+			multiplier = 50
+		else if CRASHLAND
+			multiplier = 30
+		else if not CRASHLAND
+			multiplier = 20
+		else if EJECTED
+			multiplier = 10
+		else if KILLED
+			multiplier = 5
+
+otherwise, if not ATHOME then:
+		if not CRASHLAND and not LANDED and not CAPTURED
+			multiplier = 4
+		else if not CRASHLAND and not LANDED and CAPTURED
+			multiplier = 3
+		else if CRASHLAND
+			multiplier = 2
+		else if LANDED
+			multiplier = 1
+
+Now we calculate a mission score as follows:
+
+Let :
+
+ndballs = number of deathballs killed,       edballs = wickedness of deathballs,
+nscarts = number of shopping-carts killed,   escarts = wickedness of carts,
+naaa    = number of aaa killed,              eaaa    = wickedness of aaa,
+nsites  = number of sites killed,
+norbs   = number of orbs killed,
+nticks  = number of ticks killed.
+
+
+mission score = 5*( (edballs + eaaa)*(naaa + nsites + nticks + 15*norbs) )
+			+ edballs*ndballs + escarts*nscarts
+
+Your score is then the mission score times the multiplier.
+
+
+

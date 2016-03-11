@@ -1,0 +1,25 @@
+
+  We apologize for the bug in the software that prevented you from becoming
+general.  A new version of MOAG.EXE is now in your corncob.zip file.  You
+can either unzip your whole directory with the command
+
+mkdir corncob
+cd corncob
+pkunzip -d a:corncob.zip
+
+  Which will recreate your corncob directory with all your
+pilots if you deleted it.  Or you can just unzip the new version of MOAG.EXE
+if your corncob directory is already in place.
+
+cd \corncob
+pkunzip a:corncob.zip moag.exe
+
+  In either case, you will become general when you fly again in any theater,
+and return.  You  do not have to accomplish a mission objective, just go to
+the combat menu, and select 'fly', and hit escape right away on the runway
+to return to the menu to get your promotion.
+
+  Good going on finishing all the objectives!  You did it with an amazingly
+low number of ressurrections!
+                                                         -Kevin
+

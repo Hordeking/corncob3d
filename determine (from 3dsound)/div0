@@ -1,0 +1,8 @@
+
+div0.obj: div0.asm
+        masm div0.asm;
+
+
+div0.exe: div0.obj
+         link /M div0+c:\sa\lib\starts,div0,,c:\sa\lib\sas.lib
+

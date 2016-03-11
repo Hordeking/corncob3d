@@ -1,0 +1,5 @@
+Corncob Source Code Replacement Log.
+Reference number; Date; Name; Filename; LineNumber; Action
+--
+moag001;2012/11/07;JD;outchip.asm;51;Replaced label "addr" with "sndaddr", since addr is a masm 6.11 keyword
+moag002;2012/11/07;JD;outchip.asm;51;Replaced label "addr" with "sndaddr", since addr is a masm

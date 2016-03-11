@@ -1,0 +1,310 @@
+Instructions on how to use Corncob's mission builder.
+
+Copyright (C) 1992 Kevin Stokes and Pie in the Sky Software
+
+
+Theater files and tower files
+-----------------------------
+  When you play Corncob, all flying action is done by the program 3.exe.
+During flight, the player can use the map feature to locate objects.  The 
+mission builder is an extension of that map feature in 3.exe.  
+  Normally you play the game by running the Corncob.bat batch file.  This
+batch file calls Moag.exe which in turn calls 3.exe when Fly is chosen from
+the menu.
+  The theater files which came with the game are all named *.def, and they
+reside in the DEF subdirectory of your Corncob directory.
+  When you want to use the mission builder, you must run the 3.exe program
+directly.  Before you do this, you must have a valid universe file by the
+name of 3univ.dat in the current directory.  3univ.dat is the only theater
+file that the mission builder can operate on.  It is up to the user to
+copy that file to another name.
+  Example:
+    Say you want to make a change to the universe file flatland.def.  First
+you must copy this file flatland.def into the same directory as 3.exe, and
+change this file's name to 3univ.dat.  ( copy def\flatland.def 3univ.dat )
+    Now you run 3.exe with the command line options -rs.  You then make your
+changes, and upon exiting back to DOS, your 3univ.dat file is now different.
+For example you may want to copy it back into the DEF directory with the
+name flatlnd1.def.  Note that the file's extension must be .def, or else
+Corncob will not include the new theater in the list of available theaters.
+
+NOTE:  You must now copy the 3univ.dat file back to a filename with a .def
+extension!  If you play the game without saving this 3univ.dat that you
+have just modified, it will be overwritten!  IE, when you play the game,
+Moag will delete any old 3univ.dat file left sitting in the \Corncob
+directory, so make sure you copy your newly modified 3univ.dat file to
+somewhere else.
+
+    For every .def file in the DEF subdirectory, there is also a corresponding
+.twr file.  The .twr file contains intelligence information that the user
+will see when he requests it via F2, or at the beginning of the mission.
+The tower files are just normal text files with 9 formfeeds. (Control L)
+The body of text between each formfeed is a block of text that the user
+will see when he starts from that particular airstrip.  The easiest way
+to create your own tower file is to modify and existing tower file,
+rewriting only the actual mission info, and leaving the airstrip names
+and formfeeds alone.
+  Some text editors may not like the formfeeds.  The tower files were
+originally created with MKS vi editor, which handled the formfeeds with
+no problem.
+
+
+How to use the mission builder
+------------------------------
+
+  To start a fresh universe copy default.def to 3univ.def.  Default.def
+is a universe with just airfields in it.
+
+  Put the universe file in a file called 3univ.dat in the current directory.
+
+  Start the game with 3 -rs
+
+  When sitting on runway in plane, type m to go into map mode.  Make sure 
+the joystick is not drifting, use trim if needed.
+
+  Zoom in on the area to be edited with Joystick/Arrow keys, and pg up and pg
+down to change height.  When close to surface, hit 'b' to enter the mission
+builder mode.  When in MB mode, the gunsight disappears.  IE, you can tell
+mission builder apart from map mode by checking for the existance of the
+gunsight on the screen.
+  Close to the surface is a height of about 30000-60000 cm.  The numbers on
+the bottom of the screen read X,Y, and Z in cm.  (Z is height)
+
+  When in MB mode, the Joystick/Arrow keys will change the viewing direction,
+just as when you are an ejected pilot.  Just like an ejected pilot, the
+numpad keys '5', and 'ins' will move you forward or backward in the direction
+which you are facing.  The constraint that you remain on the ground is however
+lifted.
+  When slewing around in this method, the non-keypad number keys will change
+your walking rate.  IE '1' makes you move slowly, '8' makes you move quickly.
+Caps lock will instantly level you out, so you are looking at the horizon.
+This is usefully when you want to move in a perfectly level direction.
+
+  Now to select an object for moving/deletion/changing, you must bring up
+the 3d cursor.  Do this by tapping the left shift key.  A rotating 
+ball of spheres should appear in front of you.  If you move about, the cursor
+remains in its position of creation.  Do not move too far away from the cursor,
+or the program will become confused because it cannot operate on a cursor
+which is in far object memory.  Be careful when using pgdn especially.  If 
+you are going to move a far distance, turn off the cursor with the left
+control key first.
+
+  If you wish to move far away, tap the control key to make the cursor 
+disappear.  Also, you may return to the map mode with the cursor either lit
+or unlit, and move around in map mode, and then back to builder mode via the
+'b' key.
+
+  The cursor can be moved with the Joystick/numpad arrow keys, if the the alt 
+key is held down while doing so.  The pgup and Pgdn will move the cursor
+up and down, however your viewpoint will also change height at the same time.
+(IE, when you move the cursor up or down by holding down the left alt, and
+pgdn or pgup, the cursor will remain at a fixed position relative to you, but
+you AND the cursor will move up or down.)
+
+  When you turned on the cursor, note that the numbers came back onto
+the bottom of the screen.  These are no longer the viewing coordinates,
+these are the coordinates of the cursor.  The number 21 is the object
+type.  When the cursor is displayed, the number is always 21.  The last
+number in the list is the object quality.  This can be the wickedness of
+an AAA, or in the case of a Headquarters orb, this defines the mission
+objective.  As with many types of objects, the quality of the cursor
+is ignored.
+
+  So anyway, when you are near the ground, and the cursor is on, tap the
+'c' key to create an object.  The default object is a headquarters orb.
+It should create an orb at the cursor position which is big and blinking.
+  Each type of object has an object number.  Object number 0 is a generator
+orb.   Object number 1 is a mind bender, object number 2 is a plane.  A list
+of objects and their type numbers is included with this doc.
+
+  Use the non-keypad += keys to cycle through the available objects.  The
+current object should be sitting there blinking slowly.  Each time you
+press the non-keypad + key, the object will metamorph to the next object
+type.  IE the HQ orb will turn into a mindbender.  As you cycle through
+all the different objects, they will appear at their default height above
+the ground.  This can be a pain sometimes, especially when creating missions
+high in the air.
+
+  As long as the object is blinking, you may move it around with the arrow
+keys just like the cursor.  To make the keypad arrow keys operate on the
+object instead of moving yourself, just hold down the left ALT key while
+you press the keypad arrow keys.  The number keys will affect the motion rate
+just like when moving about.  Be careful not to lose track of where the
+object is.  If the object doesn't appear to moving in the direction you
+are requesting, try tapping the non-keypad '1' key, so set the speed to
+slow.
+  Note that objects will always move in a horizontal plane when moving them
+with the arrow keys.  An object's height can only be changed with the
+pgup and pgdn keys.
+
+  A blinking object will be deleted if the 'd' key is pressed.  IE the 
+current object which you have just created (or selected) can be removed
+from the universe with the 'd' key.
+
+  To make your blinking object a permanent object, press the left shift
+key.  The currently selected object will stop blinking, and is now a
+permanent object just like any other object in the universe.
+
+  If you wish to make changes to existing objects, then you must first
+make that object become the current object.  (IE make the thing blink)
+  To select your object, move the cursor close to the center of the 
+object, then hit the space bar.   The space selects the object which is
+closest to the cursor.   BEWARE:  Do not use the space bar if there are
+no objects even close to the cursor, you may get kicked out of the
+program with a critical error.
+  Make sure the correct object is blinking,  if it is not, then probably 
+some other object (which perhaps you can't see from where your looking) 
+is selected, and all changes you make will be happening to the poor hapless 
+object which you have unwittingly selected.
+
+  Objects can be rotated in place by holding down the 'a' key, and then
+using the arrowkeys/Joystick to rotate the object.  To lock the object
+to the nearest 90 degree plane, press the apropriate key.  
+NOTE: All objects can be rotated, but non-circular objects such as 
+forcefields should NOT be rotated because the rectangle of collision
+of the forcefield will not be rotated with it's image.
+
+  Some of the objects have a 'special bit' which can be set with the
+mission builder.  For example, if a generator orb has its special bit
+set, then it will be a gravity orb.  If a shopping cart has its special
+bit set, then it can only be destroyed by a human weapon, and will never
+die via collision with another object.  
+  This special bit is set with the F9 key.   When an object's special
+bit is set, the object type number on the screen bottom will turn purple.
+
+  Like the special bit, the F10 key will set an object's complete bit.
+The complete bit matters in only a few objects.  This is the bit which
+keeps track of whether or not a mission objective has been accomplished.
+If you set the complete bit of an object, then the object type number at
+the bottom of the screen will flash.
+  One use of the complete bit is to make portals which would ordinarily
+count as a mission objective, not count.  IE say you wanted to make a
+mission where you had to fly by a bunch of portals on the way to your real
+mission objective.  If you just create the portals, then all of them would
+count as mission objectives.  IF you set their complete bits ahead of time,
+then they will count has having been already flown through.
+
+Zlocking
+--------
+  Often one wants to make many objects all be created at the same height.
+This can be accomplished with zlocking.  Simply put the first of these
+objects at the desired height.  Then while that object is still selected,
+press the left alt and the 'h' key.  This records the present z coordinate
+into zlock-height register.  Now create your next object.  To force it
+to be the same height as the zlock-height, simply press 'h'.  The
+z coordinate number at the bottom of the screen should turn black, and the
+object should be the same height as the last one.
+  The z coordinate number should turn black whenever the present selected
+object's z coordinate matches those of the zlock-height register.
+
+
+Notes on where to build
+-----------------------
+  Each theater is made of an 8x8 grid of tiles.  These square tiles each
+can have a maximum of 100 or so objects.  This limitation should never
+be approached, as this will create a critical error, thus propelling you
+swiftly out of the program will all your changes lost.
+  The tile boundarys are mapped out with survey markers which can be
+seen on the ground, and also show up in map mode as a grid of yellow
+or black dots.  
+  During game play, only the objects in the nearest 4 tiles will be
+displayed.  Therefore you can see that when the user is flying in the
+middle of a tile is always when one tile is swapped in, and another
+out.  In other words, the computer will have to do some extra work to
+swap out a tile, and read in a new one when you cross the middle of a
+tile.  For this reason, it is a good idea not to put missions in the
+centers of tiles.  If you do, then the game play will be continually
+interrupted for tile swapping during the acrobatics.
+  Note that this applies both the up down, and left right tile centers.
+Picture a square tile with a '+' sign on it, where the plus sign is big
+enough to cover the whole tile.  The imaginary lines of this plus sign
+show the areas where tile swapping will occur.  Therefore, your missions
+should always be closer to the corners of the tile, then the tile
+centers.
+  Notice that the frame rate will suffer dramatically if you try to put
+too much stuff close together on neighboring tiles.  For example, you
+might want to make a mega-mission at the intersection of 4 tiles.
+  You could put up to 100 objects in each tile, and still have it all
+fit together as one mission.  However, in reality, so many objects to
+be calculated and drawn would lead to an absoulutely terrible frame
+rate, and an unplayable mission.
+  You must also be aware that even if you don't have 100 objects in
+a tile, you could still end up with a critical error during game play
+  The reason is that passing KLA's, AA shells, and shopping carts
+all count as objects in that tile, even if they were created in one
+tile, and migrated to the other.
+  If you look at the default theaters that came with the game, you
+will notice that most all of the bigger missions are made to be at 
+corners of tiles, and well away from the airstrips.  This is simply
+because of the need to keep the frame rate up.  This is especially
+important for those players with machines slower than 25Mhz.
+  You will notice that the frame rate is not so great at Sweetly
+Bending in Flatland because the missions were too close to the airstrip.
+This makes landing there difficult.
+
+
+Notes on what to build
+----------------------
+  Usually start with a generator orb.  Set the quality to corresponding
+to what you want the mission object to be. 
+  Keep in mind that the many players will be bored with just a bunch
+of KLA's and deathballs.  What makes a mission fun is not just a
+challenge, but a challenge that takes strategy to lead to victory.
+Examples:  A mission where there are shells beneath an orb, so that
+if the play tries to take down the forcefields first by destroying the
+orb, then the shards that fly off the orb will trigger the shells, thus
+bring a whole slew of enemies upon the unwary player.
+  How about putting shells down on the ground where they wouldn't normally
+be in danger of triggering, but then but some high quality vehicles on the
+outskirts, where they will follow the plane in, and set off the shells
+even if the flyer doesn't shoot the shells himself.
+  The force fields open up a whole lot of possible structures that the
+pilot must navigate to successfully complete the mission.  Beware of
+overuse of the solid or solid-shimmering fields, as they soak up the
+cpu time to draw.  Use the wire frame versions where possible.
+
+
+Mission builder why is doing that?
+----------------------------------
+>  Why does it seem impossible to get the height of objects right when
+>they are pretty high up?
+   The mission builder makes the pgup and pgdn keys have an effect 
+proportional to the height of the object.  When the object is relatively
+high up, the vertical steps are huge.  This can be gotten around via
+the 's' key.  When this key is depressed, the pgup and pgdn keys will 
+always move a relatively small distance (1000 cm) irregardless of the
+object's height.
+
+>  Why are the objects always the wrong color, and sometimes the wrong
+>shape when I go into the mission builder or map?
+  The way the program is written makes the qualities of objects never
+matter when in the mission builder.  This is because the code which 
+makes the object the correct color etc is the same code which makes the
+object move, shoot etc.  Therefore if that part of the code were turned
+on during the mission builder, then the objects would begin to move
+and fire as soon as they were created.  So unfortunately, you will have
+to trust the quality number on the bottom of the screen to see the actual
+quality of the object.
+
+>  I worked for two hours on a mission, and when I tried to get out of
+>the mission builder mode when finished, I got critical error 70, and
+>lost all the changes.
+   The mission builder is not perfect, and I typically only make small
+changes, and then exit and back up the 3univ.dat file.  This process
+is relatively quick, and all the default theaters which came with the
+game were created with the same mission builder which is available to
+you.  Occassionally you will lose stuff, but if you never stay too long
+in the MB, and don't keep skipping back and forth between map and MB
+mode, you should never lose too much.
+
+
+
+
+ To exit the mission builder, you can hit escape or 'm' to return to
+map mode, then escape or space bar to return to flying mode.
+
+  Do not fly after returning from the mission builder, just exit, 
+then copy 3univ.dat to carl.dat or whatever.  Its a good idea 
+to make backups in case of unexpected critical errors.
+
+

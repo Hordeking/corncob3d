@@ -1,0 +1,7 @@
+
+3decode.obj: 3decode.asm
+        masm 3decode.asm;
+
+3decode.exe: 3decode.obj
+         link c:\sa\lib\starts+3decode,3decode,,c:\sa\lib\sas.lib
+

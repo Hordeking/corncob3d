@@ -1,0 +1,7 @@
+
+	mov	ah,84h			; call bios to check for joystick
+	mov	dx,3
+	int	15h
+	cmp	ax,04a53		; look for 'SJ' in ax meaning
+					; driver is loaded
+	jz	joystickok

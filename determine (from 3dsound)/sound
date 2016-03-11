@@ -1,0 +1,10 @@
+
+sound.obj: sound.asm
+        masm sound.asm;
+
+sin.obj: sin.asm
+	masm sin.asm;
+
+sound.exe: sound.obj sin.obj
+         link c:\sa\lib\starts+sound+sin,sound,,c:\sa\lib\sas.lib
+

@@ -1,0 +1,194 @@
+Built:
+
+clean
+veryclean
+csoundc.obj
+freeup.obj
+adldet.obj
+loadsnd.obj
+iscore.obj
+ugly.obj
+uglylist.obj
+flash.obj
+cecode.obj
+version.obj
+hiscore.obj
+readfont.obj
+regstuff.obj
+kbjs.obj
+ryo.obj
+sndedit.obj
+outchip.obj
+o_m.obj
+o_n.obj
+texto_m.obj
+texto_n.obj
+
+fixtower.exe
+mkregst.exe
+regstuff.c
+
+iscore
+
+{Registered Variant}
+init_r.obj
+3univs_r.obj
+promed_r.obj
+input_r.obj
+scrnma_r.obj
+reg_r.obj
+demo_r.obj
+misn_r.obj
+
+{Shareware Variant}
+init_s.obj
+3univs_s.obj
+reg_s.obj
+demo_s.obj
+misn_s.obj
+input_s.obj
+scrnma_s.obj
+promed_s.obj
+
+{K-Variant}
+init_k.obj
+3univs_k.obj
+promed_k.obj
+input_k.obj
+misn_k.obj
+reg_k.obj
+demo_k.obj
+
+{T-Variant (tower.exe, tu.exe)}
+scroll_t.obj
+3univs_t.obj
+
+{I-variant (iScore.exe}
+report_i.obj
+promed_i.obj
+
+
+Built with warnings:
+
+moag_r.obj
+moag_s.obj
+moag_k.obj
+	Warning moag.c 339: Function should return a value in function main
+
+report_r.obj
+report_s.obj
+report_k.obj
+	Warning report.c 88: 'tflag' is assigned a value that is never used in function newpreport
+
+go_r.obj
+go_s.obj
+go_k.obj
+	Warning go.c 206: Unreachable code in function go
+	Warning go.c 252: 'flyflag' is assigned a value that is never used in function go
+
+mkregst.obj
+	Warning mkregst.c 110: Function should return a value in function main
+
+scroll_m.obj
+	Warning scroll.c 577: 'tbufptr' is assigned a value that is never used in function out
+
+mfsa.obj
+	Warning mfsa.c 38: Function should return a value in function modfont
+
+tu.obj
+	Warning tu.c 106: Function should return a value in function main
+
+tower.obj
+	Warning tower.c 116: Function should return a value in function main
+
+fixtower.obj
+	Warning fixtower.c 46: Function should return a value in function main
+
+rolplay.obj
+	Warning rolplay.c 186: 'i' is assigned a value that is never used in function endsong
+	Warning rolplay.c 293: Function should return a value in function Turn_On_Driver
+	Warning rolplay.c 299: Function should return a value in function Turn_Off_Driver
+	Warning rolplay.c 330: Function should return a value in function Init_Card
+	Warning rolplay.c 337: Function should return a value in function Init_Vars
+	Warning rolplay.c 365: Function should return a value in function UnInit
+	Warning rolplay.c 459: Parameter 'voice' is never used in function Send_Pitch
+	Warning rolplay.c 488: Parameter 'voice' is never used in function Send_Volume
+	Warning rolplay.c 504: Parameter 'voice' is never used in function Send_Instrument
+	Warning rolplay.c 525: Parameter 'voice' is never used in function Send_Note
+
+rolread.obj
+	Warning rolread.c 187: Parameter 'voice' is never used in function Fill_Note_Buffer
+	Warning rolread.c 314: Both return and return with a value used in function Load_Volume
+	Warning rolread.c 319: Both return and return with a value used in function Load_Volume
+	Warning rolread.c 341: Both return and return with a value used in function Load_Instr
+	Warning rolread.c 346: Both return and return with a value used in function Load_Instr
+	Warning rolread.c 368: Both return and return with a value used in function Load_Pitch
+	Warning rolread.c 373: Both return and return with a value used in function Load_Pitch
+	Warning rolread.c 448: Function should return a value in function Undo_Instr_Event
+	Warning rolread.c 469: Function should return a value in function Undo_Pitch_Event
+	Warning rolread.c 490: Function should return a value in function Undo_Tempo_Event
+	Warning rolread.c 511: Function should return a value in function Undo_Vol_Event
+	Warning rolread.c 533: Function should return a value in function Undo_Note_Event
+	Warning rolread.c 681: Function should return a value in function Undo_Event
+
+insbank.obj
+	Warning insbank.c 308: Function should return a value in function Seek_Nth_Timbre
+
+roster.obj
+	Warning roster.c 435: 'vflag' is assigned a value that is never used in function viewpilot
+
+
+Failed:
+
+grapho_m.obj
+	Error moag.h 195: Declaration missing ;
+	Warning grapho.c 72: Unreachable code in function cursoroff
+	Warning grapho.c 97: Unreachable code in function cursoron
+	Warning grapho.c 162: Unreachable code in function setblink
+
+grapho_n.obj
+	Error moag.h 195: Declaration missing ;
+	Warning grapho.c 72: Unreachable code in function cursoroff
+	Warning grapho.c 97: Unreachable code in function cursoron
+	Warning grapho.c 162: Unreachable code in function setblink
+
+go_t.obj
+	Error go.c 1004: Undefined symbol 'curtheater' in function checktower
+	Error go.c 1047: Undefined symbol 'curtheater' in function oktower
+
+{B-variant}
+moag_b.obj
+	Warning moag.c 339: Function should return a value in function main
+	Error moag.c 1055: Undefined symbol 'chksum' in function saybyebye
+	Error moag.c 1065: Type mismatch in redeclaration of 'time' in function saybyebye
+	Error moag.c 1066: Undefined symbol 'instdate' in function saybyebye
+	Error moag.c 1069: Undefined symbol 'oneweek' in function saybyebye
+
+tower
+tu
+	Not sure if need to link input_k.obj input_r.obj or input_s.obj
+	Difference appears to be the screen color in the final products.
+
+Build targets remaining:
+
+reg::
+	copy texto_r.h texto.h
+
+share::
+	copy texto_s.h texto.h
+
+sofsrc:: 
+	copy texto_s.h texto.h
+
+reg:: $(OBJS_r)
+	$(LINKM_r)
+
+share:: $(OBJS_s)
+	$(LINKM_s)
+
+sofsrc:: $(OBJS_k)
+	$(LINKM_k)
+
+oldshare
+
+beta

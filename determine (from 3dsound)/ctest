@@ -1,0 +1,9 @@
+ctest.mix: ctest.c
+  pc ctest.c
+
+ct.mix: ct.asm
+  masm ct;
+  mix ct
+
+ctest: ctest.mix ct.mix
+  pcl ctest.mix ct.mix

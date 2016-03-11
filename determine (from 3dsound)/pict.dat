@@ -1,0 +1,276 @@
+2
+18
+10
+vga\pcors3a.vga
+9
+20
+10
+You have landed safely
+21
+12
+at your airstrip.
+
+3
+0
+10
+vga\rv4a.vga
+10
+1
+24
+The rescue squad
+2
+24
+plucks you from
+3
+24
+the battlefield.
+
+4
+8
+10
+vga\crsh2a.vga
+1
+17
+5
+You have crashlanded your plane
+18
+5
+so far from home that it cannot
+19
+5
+be retrieved.  Your CO will not
+20
+15
+be pleased.
+
+4
+8
+10
+vga\crsh2a.vga
+1
+17
+5
+You have crashlanded your plane
+18
+6
+close enough to base that it
+19
+6
+can be salvaged.  The ground
+20
+11
+crew is overjoyed.
+
+3
+60
+10
+vga\expl4a.vga
+5
+21
+5
+Your plane slams into the turf
+22
+3
+and explodes violently upon impact.
+23
+8
+You are killed instantly.
+
+6
+75
+10
+vga\flyby2.vga
+11
+10
+3
+You return to base, but you do not
+11
+5
+land immediately.  After many
+12
+4
+flybys, the greeting crowd loses
+13
+6
+interest and dissipates.  You 
+14
+2
+eventually bring your wobbling plane
+15
+8
+down for a poor landing.
+
+7
+0
+10
+vga\prisbar4.vga
+15
+1
+12
+Upon arrival at your HQ, MPs
+2
+12
+drag you into the brig.  The
+3
+12
+brass is outraged by your
+4
+12
+careless destruction of
+5
+12 
+friendly forces.  You cool
+6
+12
+your heels in the stockade
+7
+12
+until further notice.
+
+4
+11
+0
+vga\corps2b.vga
+11
+18
+4
+You have been killed by a fatal
+19
+5
+fall after leaving your plane.
+20
+5
+A recon team finds your body and 
+21
+5
+reports back to headquarters.
+
+5
+0
+0
+vga\toilet2a.vga
+15
+19
+5
+You have been captured by enemy
+20
+3
+forces, and then taken away to
+21
+3
+a German prison camp where you
+22
+3
+must do lots of forced labor
+23
+3
+for the rest of the war.
+
+5
+30
+0
+vga\drunk2.vga
+15
+19
+2
+You did not return to base,  and were
+20
+4
+assumed killed or captured until
+21
+1
+MP's found you in a local tavern.  You
+22
+0
+seemed to have no idea where your plane
+23
+5
+was, or what happened to you.
+
+4
+11
+0
+vga\corps2b.vga
+11
+18
+2
+You have been killed by an AA shell
+19
+3
+fragment after leaving your plane.
+20
+5
+A recon team finds your body and 
+21
+5
+reports back to headquarters.
+
+4
+11
+0
+vga\corps2b.vga
+11
+18
+4
+You have been killed by a nearby
+19
+1
+KLA explosion after leaving your plane.
+20
+5
+A recon team finds your body and 
+21
+5
+reports back to headquarters.
+
+4
+11
+0
+vga\corps2b.vga
+11
+18
+1
+You have been killed by blundering into
+19
+10
+a smouldering crater.
+20
+5
+A recon team finds your body and 
+21
+5
+reports back to headquarters.
+
+4
+11
+0
+vga\corps2b.vga
+11
+18
+2
+You have been killed by contact with
+19
+5
+a barrage balloon or bee swarm.
+20
+5
+A recon team finds your body and 
+21
+5
+reports back to headquarters.
+
+3
+40
+24
+vga\searth1.vga
+10
+1
+7
+You have gone into orbit!
+23
+4
+You run out of oxygen and die,
+24
+5
+but become a household name.
+

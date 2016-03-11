@@ -1,0 +1,5 @@
+back.c(249):          fiydist*fiysize + fiysize4*fiysize4 ));
+***********                          ^104
+      104: Undeclared identifier
+------------------------------------------------------------
+

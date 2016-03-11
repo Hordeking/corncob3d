@@ -1,0 +1,28 @@
+Defines:
+
+demorec		Record demo
+
+
+Seem to be contained in ka.inc
+
+Variables:
+
+slalom:
+	0
+	1
+
+saucey:
+	0
+	1
+
+guns:
+	0 no guns
+	1 normal mode
+
+normaltet
+	0
+	1
+
+fuelstuff
+	0
+	1

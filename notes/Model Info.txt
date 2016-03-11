@@ -1,0 +1,14 @@
+A Vought F4U Corsair is 10.16 Meters (33ft 4in).
+In Model space, it measures 2520 units from nose to tail.
+
+Doing the math, 4.03175 mm per unit. The scale should be 4.03175 millimeters for each corncob unit (CU).
+
+Similarly, we see that the default height for a HQ orb is 11200 corncob units. In towers.dat, we see that the altitude is 367ft (111.8616m). This gives us about 9.9876mm per corncob unit. This actually seems to very specifically come from moag/3univs.c where the distances and altitudes are computed for each object. In particular, void objout(pob). For the z-coord, it multiplies the corncob units by 10/305 to obtain the measure in ft. Similarly, in the same location, we see x and y being divided by 16090 (and commented as 1/10ths of miles) Ergo, we know that 528ft = 16090CU. So to find the conversion factor, we take 528/16090.
+
+Summary: For the altitude CU->ft, z*264/8052, whereas for the ground distance, one would expect to see x*264/8045
+
+Comparatively speaking, the calcs used for determining distance and altitude are not precisely the same, but they're very similar, and meant to be the same.
+
+Based on the known dimensions of a F4U, the 4.03175 mm/u is more likely to be the correct one. Using the 10.16/2520 metric, that puts the center of the orb at about 148ft, not the 367ft as reported in towers.inf
+
+Conclusion: 1016 m / 252000 CU is the most correct factor if we want to accurately model the real thing based on the plane.

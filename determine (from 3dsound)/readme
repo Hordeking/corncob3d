@@ -1,0 +1,34 @@
+
+Dear Larry,
+  Here are the two versions of 3.exe.
+  3-122b.exe is the current version which writes to the sound board.
+  3-122c.exe is an almost identical version which does everything with
+    sound, however the actual instructions which write to the Sound board
+    registers are clipped.
+
+  Run these in the corncob directory with the command line 3-122b -sk.  If
+they both work, then rename 3-122b.exe file to 3.exe and see if it
+works if called from the normal Corncob.bat.
+
+  If only 3-122c.exe works then I have a problem involving the sound board
+hardware.
+
+  If neither version works, then I'm at the bottom of deep hole without
+a parachute.
+
+  In any case I'm interested in how far along the program gets before
+choking.  Thank you very much for helping me out here.  It really stinks
+to have bugs in a program which can't be reproduced on the programmer's
+machine.  It's almost impossible to fix a program unless it fails in front
+of your own face.
+
+
+  I'll be leaving tonight for Florida at about 10PM, but if you leave your
+reply before then I'll probably read it before I go.  I'll keep my fingers
+crossed, maybe this bug will just go away!  (never happens).
+
+                                 Thanks again for helping out.  
+                                         -Kevin
+
+
+                               

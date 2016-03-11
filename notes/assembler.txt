@@ -1,0 +1,4 @@
+Assembler seems to be MASM 5.1 (Microsoft ASM)
+	11/02/2012: Able to use Masm 6.11 with a few small modifications to code.
+
+11/01/2012: SA is the Spontaneous Assembly Library (Contact: Kevin Crenshaw kcrenshaw@priacta.com)

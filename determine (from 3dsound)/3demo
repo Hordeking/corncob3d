@@ -1,0 +1,75 @@
+
+mxrv=4
+mlrv=1
+mshareflag=1
+
+ofile=3demo
+
+3.obj: 3.asm 3dvid.inc f3dequ.inc 3. usermac.inc
+        masm /Dshareflag=$(mshareflag)  /Dxrv=$(mxrv) /Dlrv=$(mlrv) 3.asm;
+
+hgcline.obj: hgcline.asm 3dvid.inc
+	masm hgcline;
+
+hgcpixad.obj: hgcpixad.asm
+	masm hgcpixad;
+
+f3dvec.obj: f3dvec.asm 3dvid.inc f3dequ.inc 3.
+        masm /Dshareflag=$(mshareflag) f3dvec;
+
+mat.obj: mat.asm
+	masm mat;
+
+cmdline.obj: cmdline.asm f3dequ.inc 3.
+	masm /Dshareflag=$(mshareflag) cmdline;
+
+dsqrt.obj: dsqrt.asm
+	masm dsqrt;
+
+inst.obj: inst.asm 3dvid.inc
+	masm inst;
+
+atn.obj: atn.asm
+	masm atn;
+
+kline.obj: kline.asm 3dvid.inc
+         masm kline;
+
+dline.obj: dline.asm
+         masm dline;
+
+hline.obj: hline.asm 3dvid.inc
+         masm hline;
+
+clip.obj: clip.asm
+         masm clip.asm;
+
+
+sin.obj: sin.asm
+         masm sin.asm;
+
+map.obj: map.asm f3dequ.inc
+         masm map.asm;
+
+csqrt.obj: csqrt.asm
+         masm csqrt.asm;
+
+egaline.obj: egaline.asm 3dvid.inc
+         masm egaline.asm;
+
+pixaddr1.obj: pixaddr1.asm 3dvid.inc
+         masm pixaddr1.asm;
+
+strtexp.obj: strtexp.asm f3dequ.inc 3.
+         masm /Dshareflag=$(mshareflag) strtexp.asm;
+
+defobjs.obj: defobjs.asm f3dequ.inc 3.
+         masm /Dshareflag=$(mshareflag) defobjs.asm;
+
+3sound.obj:	3sound.asm
+	 masm 3sound.asm;
+
+$(ofile).exe:  3.obj f3dvec.obj egaline.obj hline.obj dline.obj kline.obj\
+  mat.obj cmdline.obj clip.obj sin.obj csqrt.obj inst.obj hgcpixad.obj\
+  hgcline.obj dsqrt.obj strtexp.obj defobjs.obj map.obj 3sound.obj
+   link @$(ofile).lnk

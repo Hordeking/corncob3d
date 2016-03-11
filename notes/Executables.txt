@@ -1,0 +1,18 @@
+The following executables are generally present in the final directory.
+They are produced from different code bases.
+
+From Moag:
+
+	moag.exe
+	cctitle.exe
+	tower.exe
+	tu.exe
+	iscore.exe
+
+
+From 3dsound:
+
+	3.exe
+	rimg.exe
+	soadl.exe
+	strats.exe

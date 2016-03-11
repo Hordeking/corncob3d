@@ -1,0 +1,7 @@
+
+vm10.obj: vm10.asm
+        masm vm10.asm;
+
+vm10.exe: vm10.obj
+         link c:\sa\lib\starts+vm10,vm10,,c:\sa\lib\sas.lib
+

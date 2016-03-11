@@ -1,0 +1,7 @@
+
+score.obj: score.asm
+        masm score.asm;
+
+score.exe: score.obj
+         link c:\sa\lib\starts+score,score,,c:\sa\lib\sas.lib
+
