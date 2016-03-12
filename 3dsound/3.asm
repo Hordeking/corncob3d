@@ -11522,7 +11522,7 @@ nosoundprob:
 ENDIF
 ENDIF
 
-IF noautoend			;{ccb020: Added this code to prevent auto-ending missions. Don't do any of the checks to save time, too}
+IF autoendallowed EQ 0		;{ccb020: Added this code to prevent auto-ending missions. Don't do any of the checks to save time, too}
 	jmp skipautoend
 ENDIF
 
@@ -11586,7 +11586,7 @@ escfalsealarm:
 		cmp	capturedflag,0
 		jz	bigloop
 
-	;	cmp	haltflag,0	
+	;	cmp	haltflag,0
 	;	jz	bigloop
 	;	cmp	fadecolor,0
 	;	jnz	bigloop
@@ -11618,7 +11618,7 @@ skiprmsg21:
 	wearerescued:
 		mov	haltflag,0
 
-	done4:	
+	done4:
 		jmp	donep33
 	donep33:
 		cmp	abortflag,0
