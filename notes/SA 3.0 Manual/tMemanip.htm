@@ -1,0 +1,126 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: Memory Manipulation</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Memory Manipulation</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tMemanip.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tMemanip.htm#HEAD0001">Copying Non-Overlapping Blocks
+</A><BR>
+<A HREF="tMemanip.htm#HEAD0002">Copying Overlapping Blocks
+</A><BR>
+<A HREF="tMemanip.htm#HEAD0003">Comparing Blocks
+</A><BR>
+<A HREF="tMemanip.htm#HEAD0004">Converting Character Case in a Block
+</A><BR>
+<A HREF="tMemanip.htm#HEAD0005">Initializing a Block
+</A><BR>
+<A HREF="tMemanip.htm#HEAD0006">Counting Matching Characters in a Block
+</A><BR>
+<A HREF="tMemanip.htm#HEAD0007">Searching for Characters in a Block
+</A><BR>
+<A HREF="tMemanip.htm#HEAD0008">Searching for One Block Within Another
+</A><BR>
+<A HREF="tMemanip.htm#HEAD0009">Skipping Space Characters in a Block
+</A><BR>
+<A HREF="tMemanip.htm#HEAD000A">Reversing the Order of Characters in a Block
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit contains functions which operate on chunks of memory. For documentation purposes, these chunks are called blocks. This unit includes functions which do the following: copy, compare, and initialize blocks; convert the case of characters within a block; search for characters within a block; search for a sub-block within a block; reverse the order of characters in a block; advance a block pointer past white space characters in a block; and determine the number of characters at the beginning of a block which match (or mismatch) a given set of characters.
+
+<P>
+Functions which follow the _mem_... naming convention use near blocks in small data models and far blocks in large data models. Each of these _mem_... functions has a far counterpart with an _fmem_... naming convention. The _fmem_... functions are identical to their _mem_... counterparts except that they work on far blocks in small data models. These functions are provided to make it possible to use relative and far heaps in small data models without changing to a large data model. The _mem_... and _fmem_... versions of any given function are unique only in the small data models. Either version of a given function calls the same underlying code in the large data models. Because this is the only distinction between the two types of functions, only the _mem_... functions are described below.
+
+<P>
+All of the memory manipulation functions are character oriented. Note that the CPU direction flag must be clear before calling any of these functions. (Most C programs never modify the direction flag, but if the direction flag is set, the results are undefined.)
+
+<H2><A NAME="HEAD0001">Copying Non-Overlapping Blocks
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmemanip.htm#_mem_ccpy">_mem_ccpy</A><DD>      Copies the contents of a block to another location, up to a given character or a maximum number of characters.
+<DT><A HREF="rmemanip.htm#_mem_cpy">_mem_cpy</A><DD>       Copies the contents of a block to another location.
+<DT><A HREF="rmemanip.htm#_mem_cpye">_mem_cpye</A><DD>      Copies the contents of a block to another location and returns the address of the end of the destination block.
+<DT><A HREF="rmemanip.htm#_mem_swab">_mem_swab</A><DD>      Copies the contents of a block to another location after swapping adjacent even and odd numbered bytes.
+</DL>
+These functions copy blocks from one location to another when the locations do not overlap; some functions support limited overlap. These functions do not perform bounds checking. The destination block must be large enough to hold the copied characters or data following the destination block will be overwritten.
+
+<H2><A NAME="HEAD0002">Copying Overlapping Blocks
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmemanip.htm#_mem_mov">_mem_mov</A><DD>       Copies the contents of a block to another location.
+</DL>
+This function copies blocks from one location to another location when the source and destination blocks could overlap. Because this function checks for overlap and compensates for it, it is more involved than its <A HREF="rmemanip.htm#_mem_cpy">_mem_cpy</A>... counterpart. Overlapping is only supported if the source and destination segments are identical. These functions do not perform bounds checking. The destination block must be large enough to hold the copied characters or data following the destination block will be overwritten.
+
+<H2><A NAME="HEAD0003">Comparing Blocks
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmemanip.htm#_mem_cmp">_mem_cmp</A><DD>       Compares one block to another.
+<DT><A HREF="rmemanip.htm#_mem_cmpi">_mem_cmpi</A><DD>      Compares one block to another, ignoring case.
+</DL>
+These functions compare two blocks of memory which are identical in size. The comparison starts with the first character in each block and continues until corresponding characters differ or until all characters have been compared. The result of the comparison is the result of the final character comparison. If all characters are identical, the blocks are "equal". <A HREF="rmemanip.htm#_mem_cmp">_mem_cmp</A> compares the characters in each block directly; <A HREF="rmemanip.htm#_mem_cmpi">_mem_cmpi</A> compares the characters, ignoring the case of ASCII alphabetic characters.
+
+<H2><A NAME="HEAD0004">Converting Character Case in a Block
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmemanip.htm#_mem_lwr">_mem_lwr</A><DD>       Converts uppercase characters in a block to lowercase.
+<DT><A HREF="rmemanip.htm#_mem_upr">_mem_upr</A><DD>       Converts lowercase characters in a block to uppercase.
+</DL>
+These functions case-convert all ASCII alphabetic characters in a block. All other characters in the block remain unchanged. Note that IBM PC international characters (codes greater than 128) are not affected by these functions.
+
+<H2><A NAME="HEAD0005">Initializing a Block
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmemanip.htm#_mem_set">_mem_set</A><DD>       Sets all characters in a block to a specified character.
+</DL>
+This function initializes a block of memory by setting every character in the block to a specified value.
+
+<H2><A NAME="HEAD0006">Counting Matching Characters in a Block
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmemanip.htm#_mem_cspn">_mem_cspn</A><DD>      Determines the number of characters at the beginning of a block which do not match any character in a given character set.
+<DT><A HREF="rmemanip.htm#_mem_spn">_mem_spn</A><DD>       Determines the number of characters at the beginning of a block which match any character in a given character set.
+</DL>
+These functions determine the number of characters at the front of a block which match (or mismatch) any character in a given set of characters. Because NULL (0x00) can be a legitimate character in a block, ASCIIZ strings cannot be used to specify character sets. Instead, the character set is identified using a list of characters prefixed with a byte character count, as shown in the following example:
+<PRE><CODE>
+char *charset = "\3abc"+1;
+</CODE></PRE>
+<H2><A NAME="HEAD0007">Searching for Characters in a Block
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmemanip.htm#_mem_chr">_mem_chr</A><DD>       Searches a block for the first occurrence of a character.
+<DT><A HREF="rmemanip.htm#_mem_chri">_mem_chri</A><DD>      Searches a block for the first occurrence of a character, ignoring case.
+<DT><A HREF="rmemanip.htm#_mem_chrn">_mem_chrn</A><DD>      Searches a block for the first occurrence of a character which is not the given character.
+<DT><A HREF="rmemanip.htm#_mem_chrni">_mem_chrni</A><DD>     Searches a block for the first occurrence of a character which is not the given character, ignoring case.
+<DT><A HREF="rmemanip.htm#_mem_pbrk">_mem_pbrk</A><DD>      Searches a block for the first occurrence of any character which is in a set of characters.
+<DT><A HREF="rmemanip.htm#_mem_pbrkn">_mem_pbrkn</A><DD>     Searches a block for the first occurrence of any character which is not in a set of characters.
+</DL>
+These functions locate particular characters in a block. Some of these functions search for a specified character, some search for a character which does not match a specified character, and some look for a character matching (or mismatching) a set of characters. All of these functions return a pointer to the matching (or mismatching) character. The function names use the following naming convention: "chr" indicates that the function searches for a character; "n" indicates that the function searches for the first character that is not the specified character; and "i" indicates that the case of ASCII characters is ignored.
+
+<H2><A NAME="HEAD0008">Searching for One Block Within Another
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmemanip.htm#_mem_mem">_mem_mem</A><DD>       Searches a block for the first occurrence of the contents of another block.
+<DT><A HREF="rmemanip.htm#_mem_memi">_mem_memi</A><DD>      Searches a block for the first occurrence of another block, ignoring case.
+</DL>
+These functions search a block for a sequence of characters which exactly match a sequence of characters in another block. If a match is found, a pointer is returned to the beginning of the matching sequence of characters in the block which is being searched. These functions also indicate whether or not a partial match was found when the end of the search block was encountered; this allows the search to be continued in subsequent blocks.
+
+<H2><A NAME="HEAD0009">Skipping Space Characters in a Block
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmemanip.htm#_mem_skips">_mem_skips</A><DD>     Skips past all space characters in a block.
+<DT><A HREF="rmemanip.htm#_mem_skipw">_mem_skipw</A><DD>     Skips past all whitespace characters in a block.
+</DL>
+These functions skip white space characters at the front of a block. The <A HREF="rmemanip.htm#_mem_skips">_mem_skips</A>... functions skip space and tab characters; the <A HREF="rmemanip.htm#_mem_skipw">_mem_skipw</A>... functions skip space, tab, carriage return, and linefeed characters.
+
+<H2><A NAME="HEAD000A">Reversing the Order of Characters in a Block
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmemanip.htm#_mem_rev">_mem_rev</A><DD>       Reverses the order of the bytes in a block.
+</DL>
+This function reverses the order of the characters in a block. For example, these functions would transform "123456789" to "987654321".
+</BOBY>
+</HTML>

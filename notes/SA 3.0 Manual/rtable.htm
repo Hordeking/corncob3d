@@ -1,0 +1,2109 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Table Management Reference</TITLE>
+</HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Table Management</H1>
+<P ALIGN=CENTER>Reference Section </P>
+<UL>
+<LI><A HREF="TOC.htm">Table of Contents</A>
+<LI><A HREF="index.htm">Function Index</A>
+<LI><A HREF="gindex.htm">Group Index
+</UL>
+<A HREF="rtable.htm#_ctbl_to_iptr">_ctbl_to_iptr</A><BR>
+<A HREF="rtable.htm#_ctbl_to_lptr">_ctbl_to_lptr</A><BR>
+<A HREF="rtable.htm#_ctbl_to_ptr">_ctbl_to_ptr</A><BR>
+<A HREF="rtable.htm#_index_char">_index_char</A><BR>
+<A HREF="rtable.htm#_index_int">_index_int</A><BR>
+<A HREF="rtable.htm#_is_inctbl">_is_inctbl</A><BR>
+<A HREF="rtable.htm#_is_initbl">_is_initbl</A><BR>
+<A HREF="rtable.htm#_is_inxctbl">_is_inxctbl</A><BR>
+<A HREF="rtable.htm#_is_inxitbl">_is_inxitbl</A><BR>
+<A HREF="rtable.htm#_itbl_to_iptr">_itbl_to_iptr</A><BR>
+<A HREF="rtable.htm#_itbl_to_lptr">_itbl_to_lptr</A><BR>
+<A HREF="rtable.htm#_itbl_to_ptr">_itbl_to_ptr</A><BR>
+<A HREF="rtable.htm#_xctbl_to_iptr">_xctbl_to_iptr</A><BR>
+<A HREF="rtable.htm#_xctbl_to_lptr">_xctbl_to_lptr</A><BR>
+<A HREF="rtable.htm#_xctbl_to_ptr">_xctbl_to_ptr</A><BR>
+<A HREF="rtable.htm#_xindex_char">_xindex_char</A><BR>
+<A HREF="rtable.htm#_xindex_int">_xindex_int</A><BR>
+<A HREF="rtable.htm#_xitbl_to_iptr">_xitbl_to_iptr</A><BR>
+<A HREF="rtable.htm#_xitbl_to_lptr">_xitbl_to_lptr</A><BR>
+<A HREF="rtable.htm#_xitbl_to_ptr">_xitbl_to_ptr</A><BR>
+<A HREF="rtable.htm#_xlat_char">_xlat_char</A><BR>
+<A HREF="rtable.htm#_xlat_int">_xlat_int</A><BR>
+<A HREF="rtable.htm#_xxlat_char">_xxlat_char</A><BR>
+<A HREF="rtable.htm#_xxlat_int">_xxlat_int</A><BR>
+<H2><A NAME="_ctbl_to_iptr">_ctbl_to_iptr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets a pointer to a int array element using a char reference table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	int near *_ctbl_to_iptr(const char far *table, char chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the corresponding element in the array if chr was found in table.
+<BR>
+<BR>	NULL if chr was not found in table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches table, starting with the first entry, until a character is found which matches chr. If a matching character is found, a pointer to the corresponding element in the integer array is returned. If no matching character is found, NULL is returned.
+<BR>
+<BR>	Addresses of corresponding array elements are determined by multiplying the origin 0 index of chr in table by 2 and then adding this to the array address provided in the reference table. The return value is undefined if the resulting address exceeds 64k.
+<BR>
+<BR>	The format of a char-to-int reference table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   int near *array;	/* Address of array (near pointer) */
+<BR>	   int entries;		/* Number of entries in this table */
+<BR>	   char tbl_start[NUM_ENTRIES];/* Table starts here */
+<BR>	} table;
+<BR>
+<BR>	When using the above structure, the tbl_start field would be specified for the table parameter. See the technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int array[5] = {10,20,30,40};
+	   int near *pointer;
+	   struct {
+	      int near *array;
+	      int entries;
+	      char tbl[6];
+	   } table = {NULL, 5, "123"};
+	   table.array = (int near *)array;
+	   ...
+	   pointer = _ctbl_to_iptr (table.tbl, '3');
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   int array[5] = {10,20,30,40,50};
+	   struct {
+	    int near *array;
+	    int entries;
+	    char tbl[6];
+	      } table = {NULL, 5, "12345"};
+	   ...
+	   table.array = (int near *)array;
+	   lea bx,table.tbl/* DS:BX -&gt table */
+	   mov al,'3'	/* AL = reference char */
+	ctbl_to_iptr ();/* was char found? */
+	 jc c_to_iptr_010/*   n: go continue */
+	...    	 /*   y: handle "not found" */
+	c_to_iptr_010:
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBPTRCI.ASM		  <B>ASM equiv</B>	BTBL_TO_WPTR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtable.htm#_ctbl_to_lptr">_ctbl_to_lptr</A>, <A HREF="rtable.htm#_ctbl_to_ptr">_ctbl_to_ptr</A>, <A HREF="rtable.htm#_is_inctbl">_is_inctbl</A>, <A HREF="rtable.htm#_itbl_to_iptr">_itbl_to_iptr</A>, <A HREF="rtable.htm#_xctbl_to_iptr">_xctbl_to_iptr</A>
+<BR></DL>
+<H2><A NAME="_ctbl_to_lptr">_ctbl_to_lptr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets a pointer to a long array element using a char reference table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	long int near *_ctbl_to_lptr(const char far *table, char chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the corresponding element in the array if chr was found in table.
+<BR>
+<BR>	NULL if chr was not found in table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches table, starting with the first entry, until a character is found which matches chr. If a matching character is found, the address of the corresponding element in the long int array is returned. NULL is returned if no matching character is found.
+<BR>
+<BR>	Addresses of corresponding array elements are determined by multiplying the origin 0 index of chr in table by 4 and then adding this to the array address provided in the reference table. The return value is undefined if the resulting address exceeds 64k.
+<BR>
+<BR>	The format of a char-to-long reference table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   long int near *array;/* Address of array (near pointer) */
+<BR>	   int entries;		/* Number of entries in this table */
+<BR>	   char tbl_start[NUM_ENTRIES];/* The table starts here */
+<BR>	} table;
+<BR>
+<BR>	When using the above structure, the tbl_start field would be specified for the table parameter. See the technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   long int array[5] = {10,20,30,40};
+	   long int near *pointer;
+	   struct {
+	      long int near *array;
+	      int entries;
+	      char tbl[6];
+	   } table = {(long int near *)NULL, 5, "123"};
+	   table.array = (long int near *)array;
+	   ...
+	   pointer = _ctbl_to_lptr (table.tbl, '3');
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   long int array[5] = {10,20,30,40,50};
+	   struct {
+	 long int near *array;
+	 int entries;
+	 char table[6];
+	   } table = {NULL, 5, "12345"};
+	...
+	table.array = (long int near *)array;
+	lea bx,table.table/* DS:BX -&gt table */
+	mov al,'3'	 /* AL = reference char */
+	ctbl_to_lptr ();/* was char found? */
+	 jc c_to_lptr_010/*   n: go continue */
+	...    	 /*   y: handle "not found" */
+	c_to_lptr_010:
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBPTRCL.ASM		  <B>ASM equiv</B>	BTBL_TO_DPTR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtable.htm#_ctbl_to_iptr">_ctbl_to_iptr</A>, <A HREF="rtable.htm#_ctbl_to_ptr">_ctbl_to_ptr</A>, <A HREF="rtable.htm#_is_inctbl">_is_inctbl</A>, <A HREF="rtable.htm#_itbl_to_lptr">_itbl_to_lptr</A>, <A HREF="rtable.htm#_xctbl_to_lptr">_xctbl_to_lptr</A>
+<BR></DL>
+<H2><A NAME="_ctbl_to_ptr">_ctbl_to_ptr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets a pointer to an array element using a char reference table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	void near *_ctbl_to_ptr(const char far *table, char chr, int size);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the corresponding element in the array if chr was found in table.
+<BR>
+<BR>	NULL if chr was not found in table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches table, starting with the first entry, until a character is found which matches chr. If a matching character is found, a pointer to the corresponding element in the array is returned. If no matching character is found, NULL is returned.
+<BR>
+<BR>	Addresses of corresponding array elements are determined by multiplying the origin 0 index of chr in table by size and then adding this to the array address provided in the reference table. The return value is undefined if the resulting address exceeds 64k.
+<BR>
+<BR>	The format of a char reference table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   void near *array;	/* Address of array (near pointer) */
+<BR>	   int entries;		/* Number of entries in this table */
+<BR>	   char tbl_start[NUM_ENTRIES];/* The table starts here */
+<BR>	} table;
+<BR>
+<BR>	When using the above structure, the tbl_start field would be specified for the table parameter. See the technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   struct filestru {
+	      char filename[13];
+	      int date;
+	      long int size;
+	      int attr;
+	   };
+	   struct filestru array[5];
+	   struct filestru near *pointer;
+	   struct {
+	      struct filestru near *array;
+	      int entries;
+	      char tbl[6];
+	   } table = {NULL, 5, "123"};
+	   table.array = (struct filestru near *)array;
+	   ...
+	   pointer = (struct filestru*)_ctbl_to_ptr (table.tbl, '3',
+	      sizeof (struct filestru));
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   struct filestru {
+	   char filename[13];
+	   int date;
+	   long int size;
+	   int attr;
+	      };
+	   struct filestru array[5];
+	   int size = sizeof (struct filestru);
+	   struct {
+	    struct filestru near *array;
+	    int entries;
+	    char table[6];
+	      } table = {NULL, 5, "12345"};
+	   ...
+	   table.array = (struct filestru near *)array;
+	   lea bx,table.table/* DS:BX -&gt table */
+	   mov al,'3'	/* AL = reference char */
+	   mov cx,size	    /* CX = element size */
+	   ctbl_to_ptr ();    /* was char found? */
+	    jc c_to_ptr_010/*   n: go continue */
+	   ... 	 	/*   y: handle "not found" */
+	c_to_ptr_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBPTRC.ASM		  <B>ASM equiv</B>	BTBL_TO_PTR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtable.htm#_ctbl_to_iptr">_ctbl_to_iptr</A>, <A HREF="rtable.htm#_ctbl_to_lptr">_ctbl_to_lptr</A>, <A HREF="rtable.htm#_is_inctbl">_is_inctbl</A>, <A HREF="rtable.htm#_itbl_to_ptr">_itbl_to_ptr</A>, <A HREF="rtable.htm#_xctbl_to_ptr">_xctbl_to_ptr</A>	 
+<BR></DL>
+<H2><A NAME="_index_char">_index_char</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines the index of a char in an index table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	int _index_char(const char far *table, char chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The index of chr in table if chr was found in table.
+<BR>
+<BR>	-1 if chr was not found in table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches table, starting with the first entry, until a character is found which matches chr. If a matching character is found, its index is returned. -1 is returned if no matching character is found.
+<BR>
+<BR>	Indices for table entries are numbered sequentially in ascending order from the starting index. For example, a table with 25 entries and a starting index of 13 would have indices ranging from 13 to 37. The return value is undefined if the resulting index exceeds 64k.
+<BR>
+<BR>	The format of an index table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   unsigned int start;	/* Starting index */
+<BR>	   int num_entries;	/* Number of entries in table */
+<BR>	   char tbl_start[NUM_ENTRIES]/* start of table */
+<BR>	} table;
+<BR>
+<BR>WARNING! When using the above structure, the address of the tbl_start field must be specified for the table parameter. See the Table Management technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char index;
+	   struct {
+	      int start;
+	      int entries;
+	      char tbl[5];
+	   } table = {'a', 4, "ab"};
+	   ...
+	   index = _index_char (table.tbl, 'a');
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   struct {
+	int start;
+	int entries;
+	char table[5];
+	   } table = {'a', 4, "abcd"};
+	...
+	lea bx,table.table/* DS:BX -&gt table */
+	mov al,'a'	 /* AL = char to locate */
+	index_char ();	 /* was char found? */
+	 jc dx_char_010/*   n: go continue */
+	...    	 /*   y: "not found" condition */
+	dx_char_010:
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBINDC.ASM		  <B>ASM equiv</B>	INDEX_BYTE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtable.htm#_index_char">_index_char</A>, <A HREF="rtable.htm#_xlat_char">_xlat_char</A>
+<BR></DL>
+<H2><A NAME="_index_int">_index_int</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines the index of an int in an index table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	int _index_int(const int far *table, int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	Index of num in table if num was found in table.
+<BR>
+<BR>	-1 if num was not found in table
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches table, starting with the first entry, until an integer is found which matches num. If a matching integer is found, its index is returned. -1 is returned if no matching integer is found.
+<BR>
+<BR>	Indices for table entries are numbered sequentially in ascending order from the starting index. For example, a table with 25 entries and a starting index of 13 would have indices ranging from 13 to 37. The return value is undefined if the resulting index exceeds 64k.
+<BR>
+<BR>	The format of an index table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   unsigned int start;	/* Starting index */
+<BR>	   int num_entries;	/* Number of entries in table */
+<BR>	   int tbl_start[NUM_ENTRIES]/* start of table */
+<BR>	} table;
+<BR>
+<BR>WARNING! When using the above structure, the address of the tbl_start field must be specified for the table parameter. See the Table Management technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int index;
+	   struct {
+	      int start;
+	      int entries;
+	      int tbl[5];
+	   } table = {10, 4, 10, 20, 3};
+	   ...
+	   index = _index_int (table.tbl, 10);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   struct {
+	    int start;
+	    int entries;
+	    int table[5];
+	    } table = {10, 4, {10, 20, 30, 40}};
+	   ...
+	   lea bx,table.table/* DS:BX -&gt table */
+	   mov ax,10	/* AX = int to locate */
+	   index_int ();	/* was int found? */
+	    jncdx_int_010/*   y: go continue */
+	   ... 	 	/*   n: "not found" */
+	dx_int_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBINDI.ASM		  <B>ASM equiv</B>	INDEX_WORD
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtable.htm#_index_int">_index_int</A>, <A HREF="rtable.htm#_xlat_int">_xlat_int</A>
+<BR></DL>
+<H2><A NAME="_is_inctbl">_is_inctbl</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Checks for the presence of a char in a char table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	int _is_inctbl(const char far *table, char chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if chr was found in table.
+<BR>
+<BR>	0 if chr was not found in table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches table, starting with the first entry, until a character is found which matches chr. 1 is returned if a matching character is found. 0 is returned if no matching character is found.
+<BR>
+<BR>	The format of a character table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   int num_entries;	/* number of entries in the table */
+<BR>	   char tbl_start[NUM_ENTRIES];/* start of the table */
+<BR>	}table;
+<BR>
+<BR>WARNING! When using the above structure, the address of the tbl_start field must be specified for the table parameter. See the Table Management technical notes for more information.
+<BR>
+<BR>	The above table format is a subset of both the index and reference table formats (including the extended versions of these formats). Therefore, this function may also be used on any of these tables.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   struct {
+	      int start;
+	      int entries;
+	      char tbl[5];
+	   } table = {'a', 4, "ab"};
+	   if (_is_inctbl (table.tbl, 'a'))
+	   {
+	      ...
+	   } else
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   struct {
+	    int start;
+	    int entries;
+	    char table[5];
+	   } table = {'a', 4, "abcd"};
+	   ...
+	   lea bx,table.table/* DS:BX -&gt table */
+	   mov al,'a'	/* AL = char to locate */
+	   is_inctbl ();	/* was char found? */
+	    jc is_inc_010/*   n: continue */
+	   ... 	 	/*   y: character located */
+	is_inc_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBCHKC.ASM		  <B>ASM equiv</B>	IS_INBTBL
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtable.htm#_index_char">_index_char</A>, <A HREF="rtable.htm#_is_initbl">_is_initbl</A>, <A HREF="rtable.htm#_is_inxctbl">_is_inxctbl</A>, <A HREF="rtable.htm#_xlat_char">_xlat_char</A>
+<BR></DL>
+<H2><A NAME="_is_initbl">_is_initbl</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Checks for the presence of a int in a int table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	int _is_initbl(const int far *table, int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if num was found in table.
+<BR>
+<BR>	0 if num was not found in table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches table, starting with the first entry, until an integer is found which matches num. 1 is returned if a matching integer is found. 0 is returned if no matching integer is found.
+<BR>
+<BR>	The format of an integer table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   int num_entries;	/* number of entries in table */
+<BR>	   int tbl_start[NUM_ENTRIES];/* start of the table */
+<BR>	} table;
+<BR>
+<BR>WARNING! When using the above structure, the address of the tbl_start field must be specified for the table parameter. See the Table Management technical notes for more information.
+<BR>
+<BR>	The above table format is a subset of both the index and reference table formats (including the extended versions of these formats). Therefore, this function may also be used on any of these tables.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   struct {
+	      int start;
+	      int entries;
+	      int tbl[5];
+	   } table = {0,5,10,20,30};
+	   if (_is_initbl (table.tbl, 10))
+	   {
+	      ...
+	   } else
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   {
+	      struct {
+	    int start;
+	    int entries;
+	    int table[5];
+	   } table = {0, 5, {10,20,30,40,50}};
+	   ...
+	   lea bx,table.table/* DS:BX -&gt table */
+	   mov ax,10	/* AX = int to locate */
+	   is_initbl ();	/* was int found? */
+	    jc is_ini_010/*   n: continue */
+	   ... 	 	/*   y: character located */
+	is_ini_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBCHKI.ASM		  <B>ASM equiv</B>	IS_INWTBL
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtable.htm#_index_int">_index_int</A>, <A HREF="rtable.htm#_is_inctbl">_is_inctbl</A>, <A HREF="rtable.htm#_is_inxitbl">_is_inxitbl</A>, <A HREF="rtable.htm#_xlat_int">_xlat_int</A>
+<BR></DL>
+<H2><A NAME="_is_inxctbl">_is_inxctbl</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Checks for the presence of char in an extended char table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	int _is_inxctbl(const char far *table, char chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if chr was found in table.
+<BR>
+<BR>	0 if chr was not found in table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches table, starting with the first entry, until a character is found which matches chr. 1 is returned if a matching character is found. If no matching character is found, the next table in the chain is searched, and so on. 0 is returned if no matching character is found in any of the chained tables.
+<BR>
+<BR>	The format of extended character table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   char near *next;	/* Offset of next table in chain (-1=none) */
+<BR>	   int ignored;		/* (not used by this function) */
+<BR>	   int num_entries;	/* Number of entries in table */
+<BR>	   char tbl_start[NUM_ENTRIES]/* Start of table */
+<BR>	} table;
+<BR>
+<BR>WARNING! When using the above structure, the address of the tbl_start field must be specified for the table parameter. See the Table Management technical notes for more information.
+<BR>
+<BR>	The above table format is identical to both the extended index and extended reference table formats, so this function may be used on any of these extended tables.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   struct {
+	      char near *next;
+	      int start;
+	      int entries;
+	      char tbl[5];
+	   } table2 = {(char near *)-1, 'a', 4, "ab"},
+	   table1 = {NULL,'A', 4,"AB"};
+	   table1.next = (char near *)table2.tbl;
+	   if (_is_inxctbl (table1.tbl, 'a'))
+	   {
+	      ...
+	   } else
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   struct tbl{
+	    char near *next;
+	    int start;
+	    int entries;
+	    char table[5];
+	   };
+	   struct tbl table2 = {(char near *)-1, 'a', 4, "abcd"};
+	   struct tbl table1 = {NULL,'A', 4,"ABCD"};
+	   ...
+	   table1.next = (char near *)table2.table;
+	   lea bx,table1.table/* DS:BX -&gt table */
+	   mov al,'a'	/* AL = char to locate */
+	   is_inxctbl ();	/* was char found? */
+	    jc is_inxc_010/*   n: continue */
+	   ... 	 	/*   y: character located */
+	is_inxc_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBXCHKC.ASM		  <B>ASM equiv</B>	IS_INXBTBL
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtable.htm#_xindex_char">_xindex_char</A>, <A HREF="rtable.htm#_is_inxitbl">_is_inxitbl</A>, <A HREF="rtable.htm#_is_inctbl">_is_inctbl</A>, <A HREF="rtable.htm#_xxlat_char">_xxlat_char</A>
+<BR></DL>
+<H2><A NAME="_is_inxitbl">_is_inxitbl</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Checks for the presence of a int in an extended int table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	int _is_inxitbl(const int far *table, int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if num was found in table.
+<BR>
+<BR>	0 if num was not found in table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches table, starting with the first entry, until an integer is found which matches num. 1 is returned if a matching integer is found. If no matching integer is found, the next table in the chain is searched, and so on. 0 is returned if no matching integer is found in any of the chained tables.
+<BR>
+<BR>	The format of extended integer table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   int near *next;	 /* Offset of next table in chain (-1=none) */
+<BR>	   int ignored;	 	 /* (not used by this function) */
+<BR>	   int num_entries;	 /* Number of entries in table */
+<BR>	   int tbl_start[NUM_ENTRIES];/* Start of table */
+<BR>	} table;
+<BR>
+<BR>WARNING! When using the above structure, the address of the tbl_start field must be specified for the table parameter. See the Table Management technical notes for more information.
+<BR>
+<BR>	The above table format is identical to both the extended index and extended reference table formats, so this function may be used on any of these extended tables.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   struct table {
+	      int near *next;
+	      int start;
+	      int entries;
+	      int tbl[5];
+	   };
+	   struct table table2 = {(int near *)-1, 0, 5, 10,20,30,};
+	   struct table table1 = {NULL, 0, 5, 11,21,31,};
+	   table1.next = (int near *)table2.tbl;
+	   if (_is_inxitbl (table1.tbl, 10))
+	   {
+	      ...
+	   } else
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	      struct tbl {
+	    int near *next;
+	    int start;
+	    int entries;
+	    int table[5];
+	   };
+	   struct tbl table2 = {(int near *)-1, 0, 5, {10,20,30,40,50}};
+	   struct tbl table1 = {NULL, 0, 5, {11,21,31,41,51}};
+	   ...
+	   table1.next = (int near *)table2.table;
+	   lea bx,table1.table/* DS:BX -&gt table */
+	   mov ax,10	/* AX = int to locate */
+	   is_inxitbl ();	/* was int found? */
+	    jc is_inxi_010/*   n: continue */
+	   	  ... 	/*   y: character located */
+	is_inxi_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBXCHKI.ASM		  <B>ASM equiv</B>	IS_INXWTBL
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtable.htm#_xindex_int">_xindex_int</A>, <A HREF="rtable.htm#_is_inxctbl">_is_inxctbl</A>, <A HREF="rtable.htm#_is_initbl">_is_initbl</A>, <A HREF="rtable.htm#_xxlat_int">_xxlat_int</A>
+<BR></DL>
+<H2><A NAME="_itbl_to_iptr">_itbl_to_iptr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets a pointer to a int array element using an int reference table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	int near *_itbl_to_iptr(const int far *table, int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the corresponding element in the array if num was found in table.
+<BR>
+<BR>	NULL if num was not found in table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches table, starting with the first entry, until an integer is found which matches num. If a matching integer is found, the address of the corresponding element in the integer array is returned. NULL is returned if no matching integer is found.
+<BR>
+<BR>	Addresses of corresponding array elements are determined by multiplying the origin 0 index of num in table by 2 and then adding this to the array address provided in the reference table. The return value is undefined if the resulting address exceeds 64k.
+<BR>
+<BR>	The format of an int-to-int reference table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   int near *array;	/* Address of array (offset only) */
+<BR>	   int num_entries;	/* Number of entries in this table */
+<BR>	   int tbl_start[NUM_ENTRIES];/* Start of table */
+<BR>	} table;
+<BR>
+<BR>WARNING! When using the above structure, the address of the tbl_start field must be specified for the table parameter. See the Table Management technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int array[5] = {10,20,30,40};
+	   int near *pointer;
+	   struct {
+	      int near *array;
+	      int entries;
+	      int tbl[5];
+	   } table = {NULL, 5, {11,12,13,};
+	   table.array = (int near *)array;
+	   ...
+	   pointer = _itbl_to_iptr (table.tbl, 11);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   int array[5] = {10,20,30,40,50};
+	   struct {
+	    int near *array;
+	    int entries;
+	    int table[5];
+	   } table = {NULL, 5, {11,12,13,14,15}};
+	   ...
+	   table.array = (int near *)array;
+	   lea bx,table.table/* DS:BX -&gt table */
+	   mov ax,11	/* AX = reference int */
+	   itbl_to_iptr ();/* was int found? */
+	    jc i_to_iptr_010/*   n: continue */
+	   ... 	 	/*   y: character located */
+	i_to_iptr_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBPTRII.ASM		  <B>ASM equiv</B>	WTBL_TO_WPTR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtable.htm#_ctbl_to_iptr">_ctbl_to_iptr</A>, <A HREF="rtable.htm#_is_initbl">_is_initbl</A>, <A HREF="rtable.htm#_itbl_to_lptr">_itbl_to_lptr</A>, <A HREF="rtable.htm#_itbl_to_ptr">_itbl_to_ptr</A>, <A HREF="rtable.htm#_xitbl_to_iptr">_xitbl_to_iptr</A>
+<BR></DL>
+<H2><A NAME="_itbl_to_lptr">_itbl_to_lptr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets a pointer to a long int array element using an int reference table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	long int near *_itbl_to_lptr(const int far *table, int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the corresponding element in the array if num was not found in table.
+<BR>
+<BR>	NULL if num was not found in table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches table, starting with the first entry, until an integer is found which matches num. If a matching integer is found, the address of the corresponding element in the long integer array is returned. NULL is returned if no matching integer is found.
+<BR>
+<BR>	Addresses of corresponding array elements are determined by multiplying the origin 0 index of num in table by 4 and then adding this to the array address provided in the reference table. The return value is undefined if the resulting address exceeds 64k.
+<BR>
+<BR>	The format of an int-to-long int reference table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   long int near *array;/* Address of array (offset only) */
+<BR>	   int num_entries;	/* Number of entries in this table */
+<BR>	   int tbl_start[NUM_ENTRIES];/* Start of table */
+<BR>	} table;
+<BR>
+<BR>WARNING! When using the above structure, the address of the tbl_start field would be specified for the table parameter. See the Table Management technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   long int array[5] = {10,20,30,40};
+	   long int near *pointer;
+	   struct {
+	      long int near *array;
+	      int entries;
+	      int tbl[5];
+	   } table = {NULL, 5, {11,12,13,};
+	   table.array = (long int near *)array;
+	   ...
+	   pointer = _itbl_to_lptr (table.tbl, 11);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   long int array[5] = {10,20,30,40,50};
+	   struct {
+	    long int near *array;
+	    int entries;
+	    int table[5];
+	   } table = {NULL, 5, {11,12,13,14,15}};
+	   ...
+	   table.array = (long int near *)array;
+	   lea bx,table.table/* DS:BX -&gt table */
+	   mov ax,11	/* AX = reference int */
+	   itbl_to_lptr ();/* was int found? */
+	    jc i_to_lptr_010/*   n: continue */
+	   ... 	 	/*   y: character located */
+	i_to_lptr_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBPTRIL.ASM		  <B>ASM equiv</B>	WTBL_TO_DPTR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtable.htm#_ctbl_to_lptr">_ctbl_to_lptr</A>, <A HREF="rtable.htm#_is_initbl">_is_initbl</A>, <A HREF="rtable.htm#_itbl_to_iptr">_itbl_to_iptr</A>, <A HREF="rtable.htm#_itbl_to_ptr">_itbl_to_ptr</A>, <A HREF="rtable.htm#_xitbl_to_lptr">_xitbl_to_lptr</A>
+<BR></DL>
+<H2><A NAME="_itbl_to_ptr">_itbl_to_ptr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets a pointer to an array element using an int reference table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	void near *_itbl_to_ptr(const int far *table, int num, int size);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the corresponding element in the array if num was found in table.
+<BR>
+<BR>	NULL if num was not found in table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches table, starting with the first entry, until an integer is found which matches num. If a matching integer is found, the address of the corresponding element in the array is returned. NULL is returned if no matching integer is found.
+<BR>
+<BR>	Addresses of corresponding array elements are determined by multiplying the origin 0 index of integer in table by size and then adding this to the array address provided in the reference table. The return value is undefined if the resulting address exceeds 64k.
+<BR>
+<BR>	The format of an integer reference table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   void near *array;	 /* Address of array (offset only) */
+<BR>	   int num_entries;	 /* Number of entries in this table */
+<BR>	   int table[NUM_ENTRIES];/* Start of table */
+<BR>	}table;
+<BR>
+<BR>WARNING! When using the above structure, the address of the tbl_start field must be specified for the table parameter. See the Table Management technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   struct filestru {
+	      char filename[13];
+	      int date;
+	      long int size;
+	      int attr;
+	   };
+	   struct filestru array[5];
+	   struct filestru near *pointer;
+	   struct {
+	      struct filestru near *array;
+	      int entries;
+	      int tbl[5];
+	   } table = {NULL, 5, {11,12,13,}};
+	   table.array = (struct filestru near *) array;
+	   ...
+	   pointer = (struct filestru*)_itbl_to_ptr (table.tbl, 11,
+	      sizeof (struct filestru));
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   struct filestru {
+	    char filename[13];
+	    int date;
+	    long int size;
+	    int attr;
+	   };
+	   struct filestru array[5];
+	   int size = sizeof (struct filestru);
+	   struct {
+	   struct filestru near *array;
+	    int entries;
+	    int table[5];
+	   } table = {NULL, 5, {11,12,13,14,15}};
+	   ...
+	      table.array = (struct filestru near *)array;
+	   lea bx,table.table/* DS:BX -&gt table */
+	   mov ax,11	/* AX = reference int */
+	   mov cx,size	    /* CX = element size */
+	   itbl_to_ptr ();    /* was int found? */
+	    jc i_to_ptr_010/*   n: continue */
+	   ... 	 	/*   y: character located */
+	i_to_ptr_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBPTRI.ASM		  <B>ASM equiv</B>	WTBL_TO_PTR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtable.htm#_ctbl_to_ptr">_ctbl_to_ptr</A>, <A HREF="rtable.htm#_is_initbl">_is_initbl</A>, <A HREF="rtable.htm#_itbl_to_iptr">_itbl_to_iptr</A>, <A HREF="rtable.htm#_itbl_to_lptr">_itbl_to_lptr</A>, <A HREF="rtable.htm#_xitbl_to_ptr">_xitbl_to_ptr</A>
+<BR></DL>
+<H2><A NAME="_xctbl_to_iptr">_xctbl_to_iptr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets a pointer to an int array element using an extended char reference table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	int near *_xctbl_to_iptr(const char far *table, char chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the corresponding array element if chr was found in table.
+<BR>
+<BR>	NULL if chr was not found in table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches table, starting with the first entry, until a character is found which matches chr. If a matching character is found, the address of the corresponding element in the int array is returned. If no matching character is found, the next table in the chain is searched, and so on. NULL is returned if no matching character is found in any of the chained tables.
+<BR>
+<BR>	Addresses of corresponding array elements are determined by multiplying the origin 0 index of the matching character in table by 2 and then adding this value to the int array address provided in the reference table. The return value is undefined if the resulting address exceeds 64K.
+<BR>
+<BR>	The format of an extended char-to-int reference table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   char near *next;	/* Next table in chain (-1 if none) */
+<BR>	   int near *array;	/* Address of array (near pointer) */
+<BR>	   int entries;		/* Number of entries in this table */
+<BR>	   char tbl_start[NUM_ENTRIES];/* The table starts here */
+<BR>	} table;
+<BR>
+<BR>WARNING! When using the above structure, the address of the tbl_start field must be specified for the table parameter. See the Table Management technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int array1[5] = {10,20,30,40}, array2[5] = {10,20,40,60};
+	   int near *pointer;
+	   struct table{
+	      char near *next;
+	      int near *array;
+	      int entries;
+	      char tbl[6];
+	   };
+	   struct table table2 = {(char near *)-1, NULL, 5, "123};
+	   struct table table1 = {NULL, NULL ,5,"ABC};
+	   table1.next = (char near *)table2.tbl;
+	   table2.array = (int near *)array2;
+	   table1.array = (int near *)array1;
+	   ...
+	   pointer = _xctbl_to_iptr (table1.tbl, '3');
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   int array1[5]={10,20,30,40,50}, array2[5]={10,20,40,60,70};
+	   struct tbl{
+	      char near *next;
+	      int near *array;
+	      int entries;
+	      char table[6];
+	   };
+	   struct tbl table2 = {(char near *)-1, NULL, 5, "12345"};
+	   struct tbl table1 = {NULL , NULL, 5, "ABCDE"};
+	   table1.next = (char near *)table2.table;
+	   table2.array = (int near *)array2;
+	   table1.array = (int near *)array1;
+	   ...
+	   lea bx,table1.table/* DS:BX -&gt table */
+	   mov al,'3'	/* AL = reference char */
+	   xctbl_to_iptr ();/* was char found? */
+	    jc xc_to_iptr_010/*   n: go continue */
+	   ... 	 	/*   y: char not found */
+	xc_to_iptr_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBPTXCI.ASM		  <B>ASM equiv</B>	XBTBL_TO_WPTR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtable.htm#_ctbl_to_iptr">_ctbl_to_iptr</A>, <A HREF="rtable.htm#_is_inxctbl">_is_inxctbl</A>, <A HREF="rtable.htm#_xctbl_to_lptr">_xctbl_to_lptr</A>, <A HREF="rtable.htm#_xctbl_to_ptr">_xctbl_to_ptr</A>, <A HREF="rtable.htm#_xitbl_to_iptr">_xitbl_to_iptr</A>
+<BR></DL>
+<H2><A NAME="_xctbl_to_lptr">_xctbl_to_lptr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets a pointer to a long array element using an extended char reference table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	long near *_xctbl_to_lptr(const char far *table, char chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the corresponding array element if chr was found in table.
+<BR>
+<BR>	NULL if chr was not found in table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches table, starting with the first entry, until a character is found which matches chr. If a matching character is found, the address of the corresponding element in the long array is returned. If no matching character is found, the next table in the chain is searched, and so on. NULL is returned if no matching character is found in any of the chained tables.
+<BR>
+<BR>	Addresses of corresponding array elements are determined by multiplying the origin 0 index of character in table by 4 and then adding this value to the long array address provided in the reference table. The return value is undefined if the resulting address exceeds 64K.
+<BR>
+<BR>	The format of an extended char-to-long reference table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   char near *next;	/* Next table in chain (-1 if none) */
+<BR>	   long int near *array;/* Address of array (near pointer) */
+<BR>	   int entries;		/* Number of entries in this table */
+<BR>	   char tbl_start[NUM_ENTRIES];/* The table starts here */
+<BR>	} table;
+<BR>
+<BR>WARNING! When using the above structure, the address of the tbl_start field must be specified for the table parameter. See the Table Management technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   long int array1[5] = {10,20,30,40}, array2[5] = {10,20,40,60};
+	   long int near *pointer;
+	   struct table{
+	      char near *next;
+	      long int near *array;
+	      int entries;
+	      char tbl[6];
+	   };
+	   struct table table2 = {(char near *)-1, NULL, 5, "123};
+	   struct table table1 = {NULL, NULL,5,"ABC};
+	   table1.next = (char near *)table2.tbl;
+	   table2.array = (long int near *)array2;
+	   table1.array = (long int near *)array1;
+	   ...
+	   pointer = _xctbl_to_lptr (table1.tbl, '3');
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   long int array1[5]={10,20,30,40,50};
+	   long int array2[5]={10,20,40,60,70};
+	   struct tbl{
+	      char near *next;
+	      long int near *array;
+	      int entries;
+	      char table[6];
+	   };
+	   struct tbl table2 = {(char near *)-1, NULL, 5, "12345"};
+	   struct tbl table1 = {NULL, NULL, 5, "ABCDE"};
+	   table1.next = (char near *)table2.table;
+	   table2.array  = (long int near *)array2;
+	   table1.array  = (long int near *)array1;
+	   ...
+	   lea bx,table1.table/* DS:BX -&gt table */
+	   mov al,'3'	/* AL = reference char */
+	   xctbl_to_lptr ();/* was char found? */
+	    jc xc_to_lptr_010/*   n: go continue */
+	   ... 	 	/*   y: char not found */
+	xc_to_lptr_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBPTXCL.ASM		  <B>ASM equiv</B>	XBTBL_TO_DPTR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtable.htm#_ctbl_to_lptr">_ctbl_to_lptr</A>, <A HREF="rtable.htm#_is_inxctbl">_is_inxctbl</A>, <A HREF="rtable.htm#_xctbl_to_iptr">_xctbl_to_iptr</A>, <A HREF="rtable.htm#_xctbl_to_ptr">_xctbl_to_ptr</A>, <A HREF="rtable.htm#_xitbl_to_lptr">_xitbl_to_lptr</A>
+<BR></DL>
+<H2><A NAME="_xctbl_to_ptr">_xctbl_to_ptr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets a pointer to an array element using an extended char reference table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	void near *_xctbl_to_ptr(const char far *table, char chr, int size);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the corresponding array element if chr was found in table.
+<BR>
+<BR>	NULL if chr was not found in table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches table, starting with the first entry, until a character is found which matches chr. If a matching character is found, the address of the corresponding element in the array is returned. If no matching character is found, the next table in the chain is searched, and so on. NULL is returned if no matching character is found in any of the chained tables.
+<BR>
+<BR>	Addresses of corresponding array elements are determined by multiplying the origin 0 index of character in table by size and then adding this value to the array address provided in the reference table. The return value is undefined if the resulting address exceeds 64K.
+<BR>
+<BR>	The format of an extended char reference table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   char near *next;	/* Next table in chain (-1 if none) */
+<BR>	   void near *array;	/* Address of array (near pointer) */
+<BR>	   int entries;		/* Number of entries in this table */
+<BR>	   char tbl_start[NUM_ENTRIES];/* The table starts here */
+<BR>	} table;
+<BR>
+<BR>WARNING! When using the above structure, the address of the tbl_start field must be specified for the table parameter. See the Table Management technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   struct filestru {
+	      char filename[13];
+	      int date;
+	      long int size;
+	      int attr;
+	   };
+	   struct filestru array1[5], array2[5];
+	   struct filestru near *pointer;
+	   struct table{
+	      char near *next;
+	      struct filestru near *array;
+	      int entries;
+	      char tbl[6];
+	   };
+	   struct table table2 = {(char near *)-1, NULL, 5, "123};
+	   struct table table1 = {NULL,NULL,5,"ABC};
+	   table1.next = (char near *)table2.tbl;
+	   table2.array = (struct filestru near *)array2;
+	   table1.array = (struct filestru near *)array1;
+	   ...
+	   pointer = (struct filestru*)_xctbl_to_ptr (table1.tbl, '3',
+	   	  sizeof (struct filestru));
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   struct filestru {
+	      char filename[13];
+	      int date;
+	      long int size;
+	      int attr;
+	   };
+	   struct filestru array1[5], array2[5];
+	   int size = sizeof (struct filestru);
+	   struct tbl{
+	      char near *next;
+	      struct filestru near *array;
+	      int entries;
+	      char table[6];
+	   };
+	   struct tbl table2 = {(char near *)-1, NULL, 5, "12345"},
+	   table1 = {NULL, NULL, 5,"ABCDE"};
+	   table1.next = (char near *)table2.table;
+	   table2.array = (struct filestru near *)array2;
+	   table1.array = (struct filestru near *)array1;
+	   ...
+	   lea bx,table1.table/* DS:BX -&gt table */
+	   mov al,'3'	/* AL = reference char */
+	   mov cx,size	    /* CX = element size */
+	   xctbl_to_ptr ();/* was char found? */
+	    jc xc_to_ptr_010/*   n: go continue */
+	   ... 	 	/*   y: char not found */
+	xc_to_ptr_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBPTXC.ASM		  <B>ASM equiv</B>	XBTBL_TO_PTR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtable.htm#_ctbl_to_ptr">_ctbl_to_ptr</A>, <A HREF="rtable.htm#_is_inxctbl">_is_inxctbl</A>, <A HREF="rtable.htm#_xctbl_to_lptr">_xctbl_to_lptr</A>, <A HREF="rtable.htm#_xctbl_to_iptr">_xctbl_to_iptr</A>, <A HREF="rtable.htm#_xitbl_to_ptr">_xitbl_to_ptr</A>
+<BR></DL>
+<H2><A NAME="_xindex_char">_xindex_char</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines the index of a char in an index table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	int _xindex_char(const char far *table, char chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The index of chr in table if chr was found in table.
+<BR>
+<BR>	-1 if chr was not found in table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches table, starting with the first entry, until a character is found which matches chr. If a matching character is found, its index is returned. If no matching character is found, the next table in the chain is searched, and so on. -1 is returned if no matching character is found in any of the chained tables.
+<BR>
+<BR>	Indices for table entries are numbered sequentially in ascending order from the starting index. For example, a table with 25 entries and a starting index of 13 would have indices ranging from 13 to 37. The return value is undefined if the resulting index exceeds 64K.
+<BR>
+<BR>	The format of an extended char index table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   char near *next;	/* Next table in chain (-1=none) */
+<BR>	   unsigned int start;	/* Starting index */
+<BR>	   int num_entries;	/* Number of entries in table */
+<BR>	   char tbl_start[NUM_ENTRIES];/* Start of table */
+<BR>	} table;
+<BR>
+<BR>WARNING! When using the above structure, the address of the tbl_start field must be specified for the table parameter. See the Table Management technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char index;
+	   struct table{
+	      char near *next;
+	      int start;
+	      int entries;
+	      char tbl[5];
+	   };
+	   struct table table2 = {(char near *)-1, 'a', 4, "ab};
+	   struct table table1 = {NULL, 'A', 4, "AB};
+	   table1.next = (char near *)table2.tbl;
+	   ...
+	   index = _xindex_char (table1.tbl, 'a');
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   struct tbl{
+	      char near *next;
+	      int start;
+	      int entries;
+	      char table[5];
+	   };
+	   struct tbl table2 = {(char near *)-1, 'a', 4, "abcd"};
+	   struct tbl table1 = {NULL, 'A', 4, "ABCD"};
+	   table1.next = (char near *)table2.table;
+	   ...
+	   lea bx,table1.table/* DS:BX -&gt table */
+	   mov al,'a'	/* AL = char to locate */
+	   xindex_char ();    /* was char found? */
+	    jc xdx_char_010/*   n: go continue */
+	   ... 	 	/*   y: char not found */
+	xdx_char_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBXINDC.ASM		  <B>ASM equiv</B>	XINDEX_BYTE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD>_xindex_byte, _xxlat_byte
+
+<BR></DL>
+<H2><A NAME="_xindex_int">_xindex_int</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines the index of an int in an extended index table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	int _xindex_int(const int far *table, int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The index of num in table if num was found in table.
+<BR>
+<BR>	-1 if num was not found in table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches table, starting with the first entry, until an integer value is found which matches num. If a matching integer value is found, its index is returned. If no matching integer is found, the next table in the chain is searched, and so on. -1 is returned if no matching integer is found in any of the chained tables.
+<BR>
+<BR>	Indices for table entries are numbered sequentially in ascending order from the starting index. For example, a table with 25 entries and a starting index of 13 would have indices ranging from 13 to 37. The return value is undefined if the resulting index exceeds 64K.
+<BR>
+<BR>	The format of an extended int index table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   int near *next;	/* Next table in chain (-1=none) */
+<BR>	   unsigned int start;	/* Starting index */
+<BR>	   int num_entries;	/* Number of entries in table */
+<BR>	   int tbl_start[NUM_ENTRIES];/* Start of table */
+<BR>	} table;
+<BR>
+<BR>WARNING! When using the above structure, the address of the tbl_start field must be specified for the table parameter. See the Table Management technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int index;
+	   struct table{
+	      int near *next;
+	      int start;
+	      int entries;
+	      int tbl[5];
+	   };
+	   struct table table2 = {(int near *)-1, 10, 4, {10, 20, 3};
+	   struct table table1 = {NULL, 11, 4, {11, 12, 1};
+	   table1.next = (int near *)table2.tbl;
+	   ...
+	   index = _xindex_int (table1.tbl, 10);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   struct tbl{
+	      int near *next;
+	      int start;
+	      int entries;
+	      int table[5];
+	   };
+	   struct tbl table2 = {(int near *)-1, 10, 4, {10, 20, 30, 40}};
+	   struct tbl table1 = {NULL, 11, 4, {11, 12, 13, 14}};
+	   table1.next = (int near *)table2.table;
+	   ...
+	   lea bx,table1.table/* DS:BX -&gt table */
+	   mov ax,10	/* AX = int to locate */
+	   xindex_int ();	/* was int found? */
+	    jc xdx_int_010/*   n: go continue */
+	   ... 	 	/*   y: int not found */
+	xdx_int_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBXINDI.ASM		  <B>ASM equiv</B>	XINDEX_WORD
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtable.htm#_xindex_int">_xindex_int</A>, <A HREF="rtable.htm#_xxlat_int">_xxlat_int</A>
+<BR></DL>
+<H2><A NAME="_xitbl_to_iptr">_xitbl_to_iptr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets a pointer to a int array element using an extended int reference table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	int near *_xitbl_to_iptr(const int far *table, int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the corresponding array element if num was found in table.
+<BR>
+<BR>	NULL if num was not found in table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches table, starting with the first entry, until an integer value is found which matches num. If a matching integer value is found, the address of the corresponding element in the int array is returned. If no matching integer value is found, the next table in the chain is searched, and so on. NULL is returned if no matching integer value is found in any of the chained tables.
+<BR>
+<BR>	Addresses of corresponding array elements are determined by multiplying the origin 0 index of the matching integer value in table by 2 and then adding this value to the array address provided in the reference table. The return value is undefined if the resulting address exceeds 64K.
+<BR>
+<BR>	The format of an extended int-to-int reference table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   int near *next;	/* Next table in chain (-1 if none) */
+<BR>	   int near *array;	/* Address of array (near pointer) */
+<BR>	   int entries;		/* Number of entries in this table */
+<BR>	   int tbl_start[NUM_ENTRIES];/* The table starts here */
+<BR>	} table;
+<BR>
+<BR>WARNING! When using the above structure, the address of the tbl_start field must be specified for the table parameter. See the Table Management technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int array1[5] = {10,20,30,40}, array2[5] = {10,20,40,60};
+	   int near *pointer;
+	   struct table{
+	      int near *next;
+	      int near *array;
+	      int entries;
+	      int tbl[5];
+	   };
+	   struct table table2 = {(int near *)-1, NULL, 5, {1,2,};
+	   struct table table1 = {NULL,NULL,5,{6,7,8};
+	   table1.next = (int near *)table2.tbl;
+	   table2.array = (int near *)array2;
+	   table1.array = (int near *)array1;
+	   ...
+	   pointer = _xitbl_to_iptr (table1.tbl, 3);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   int array1[5]={10,20,30,40,50}, array2[5]={10,20,40,60,70};
+	   struct tbl {
+	      int near *next;
+	      int near *array;
+	      int entries;
+	      int table[5];
+	   } table2 = {(int near *)-1, NULL, 5, {1,2,3,4,5}},
+	    table1 = {NULL, NULL, 5, {6,7,8,9,10}};
+	      table1.next = (int near *)table2.table;
+	      table2.array = (int near *)array2;
+	      table1.array = (int near *)array1;
+	   ...
+	   lea bx,table1.table/* DS:BX -&gt table */
+	   mov ax,3	/* AX = reference int */
+	   xitbl_to_iptr ();/* was int found? */
+	    jc xi_to_iptr_010/*   n: go continue */
+	   ... 	 	/*   y: int not found */
+	xi_to_iptr_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBPTXII.ASM		  <B>ASM equiv</B>	XWTBL_TO_WPTR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtable.htm#_itbl_to_iptr">_itbl_to_iptr</A>, <A HREF="rtable.htm#_is_inxitbl">_is_inxitbl</A>, <A HREF="rtable.htm#_xitbl_to_ptr">_xitbl_to_ptr</A>, <A HREF="rtable.htm#_xitbl_to_lptr">_xitbl_to_lptr</A>, <A HREF="rtable.htm#_xctbl_to_iptr">_xctbl_to_iptr</A>
+<BR></DL>
+<H2><A NAME="_xitbl_to_lptr">_xitbl_to_lptr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets a pointer to a long array element using an extended int reference table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	long int near *_xitbl_to_lptr(const int far *table, int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the corresponding array element if num was found in table.
+<BR>
+<BR>	NULL if num was not found in table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches table, starting with the first entry, until an integer value is found which matches num. If a matching integer value is found, the address of the corresponding element in the long array is returned. If no matching integer value is found, the next table in the chain is searched, and so on. NULL is returned if no matching integer value is found in any of the chained tables.
+<BR>
+<BR>	Addresses of corresponding array elements are determined by multiplying the origin 0 index of the matching integer value in table by 4 and then adding this value to the array address provided in the reference table. The return value is undefined if the resulting address exceeds 64K.
+<BR>
+<BR>	The format of an extended int-to-long reference table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   int near *next;	/* Next table in chain (-1 if none) */
+<BR>	   long int near *array;/* Address of array (near pointer) */
+<BR>	   int entries;		/* Number of entries in this table */
+<BR>	   int tbl_start[NUM_ENTRIES];/* The table starts here */
+<BR>	} table;
+<BR>
+<BR>WARNING! When using the above structure, the address of the tbl_start field must be specified for the table parameter. See the Table Management technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   long int array1[5] = {10,20,30,40}, array2[5] = {10,20,40,60};
+	   long int near *pointer;
+	   struct table{
+	      int near *next;
+	      long int near *array;
+	      int entries;
+	      int tbl[5];
+	   };
+	   struct table table2 = {(int near *)-1, NULL, 5, {1,2,};
+	   struct table table1 = {NULL,NULL,5,{6,7,8};
+	   table1.next = (int near *)table2.tbl;
+	   table2.array = (long int near *)array2;
+	   table1.array = (long int near *)array1;
+	   ...
+	   pointer = _xitbl_to_lptr (table1.tbl, 3);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   long int array1[5] = {10,20,30,40,50};
+	   long int array2[5] = {10,20,40,60,70};
+	   struct {
+	      int near *next;
+	      int near *array;
+	      int entries;
+	      int table[5];
+	   } table2 = {(int near *)-1, NULL, 5, {1,2,3,4,5}},
+	   table1 = {NULL,NULL,5,{6,7,8,9,10}};
+	   table1.next = (int near *)table2.table;
+	   table2.array = (long int near *)array2;
+	   table1.array = (long int near *)array1;
+	   ...
+	   lea bx,table1.table/* DS:BX -&gt table */
+	   mov ax,3	/* AX = reference int */
+	   xitbl_to_lptr ();/* was int found? */
+	    jc xi_to_lptr_010/*   n: go continue */
+	   ... 	 	/*   y: int not found */
+	xi_to_lptr_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBPTXIL.ASM		  <B>ASM equiv</B>	XWTBL_TO_DPTR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtable.htm#_itbl_to_lptr">_itbl_to_lptr</A>, <A HREF="rtable.htm#_is_inxitbl">_is_inxitbl</A>, <A HREF="rtable.htm#_xitbl_to_ptr">_xitbl_to_ptr</A>, <A HREF="rtable.htm#_xitbl_to_iptr">_xitbl_to_iptr</A>, <A HREF="rtable.htm#_xctbl_to_lptr">_xctbl_to_lptr</A>
+<BR></DL>
+<H2><A NAME="_xitbl_to_ptr">_xitbl_to_ptr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets a pointer to an array element using an extended int reference table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	void near *_xitbl_to_ptr(const int far *table, int num, int size);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the corresponding array element if num was found in table.
+<BR>
+<BR>	NULL if num was not found in table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches table, starting with the first entry, until an integer value is found which matches num. If a matching integer value is found, the address of the corresponding element in the array is returned. If no matching integer value is found, the next table in the chain is searched, and so on. NULL is returned if no matching integer value is found in any of the chained tables.
+<BR>
+<BR>	Addresses of corresponding array elements are determined by multiplying the origin 0 index of the matching integer value in table by size and then adding this value to the array address provided in the reference table. The return value is undefined if the resulting address exceeds 64K.
+<BR>
+<BR>	The format of an extended int reference table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   int near *next;	/* Next table in chain (-1 if none) */
+<BR>	   void near *array;	/* Address of array (near pointer) */
+<BR>	   int entries;		/* Number of entries in this table */
+<BR>	   int tbl_start[NUM_ENTRIES];/* The table starts here */
+<BR>	} table;
+<BR>
+<BR>WARNING! When using the above structure, the address of the tbl_start field must be specified for the table parameter. See the Table Management technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   struct filestru {
+	      char filename[13];
+	      int date;
+	      long int size;
+	      int attr;
+	   };
+	   struct filestru array1[5], array2[5];
+	   struct filestru near *pointer;
+	   struct table{
+	      int near *next;
+	      struct filestru near *array;
+	      int entries;
+	      int tbl[5];
+	   };
+	   struct table table2 = {(int near *)-1, NULL, 5, {1,2,};
+	   struct table table1 = {NULL, NULL ,5,{6,7,8};
+	   table1.next = (int near *)table2.tbl;
+	   table2.array = (struct filestru near *)array2;
+	   table1.array = (struct filestru near *)array1;
+	   ...
+	   pointer = (struct filestru*)_xitbl_to_ptr (table1.tbl, 3,
+	   	  sizeof (struct filestru));
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   struct filestru {
+	      char filename[13];
+	      int date;
+	      long int size;
+	      int attr;
+	   };
+	   struct filestru array1[5], array2[5];
+	   int size = sizeof (struct filestru);
+	   struct {
+	      int near *next;
+	      struct filestru near *array;
+	      int entries;
+	      int table[5];
+	   } table2 = {(int near *)-1, NULL, 5, {1,2,3,4,5}},
+	   table1 = {NULL,NULL,5,{6,7,8,9,10}};
+	   table1.next = (int near *)table2.table;
+	   table2.array = (struct filestru near *)array2;
+	   table1.array = (struct filestru near *)array1;
+	   ...
+	   lea bx,table1.table/* DS:BX -&gt table */
+	   mov ax,3	/* AX = reference int */
+	   mov cx,size	    /* CX = element size */
+	   xitbl_to_ptr ();/* was int found? */
+	    jc xi_to_ptr_010/*   n: go continue */
+	   ... 	 	/*   y: int not found */
+	xi_to_ptr_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBPTXI.ASM		  <B>ASM equiv</B>	XWTBL_TO_PTR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtable.htm#_itbl_to_ptr">_itbl_to_ptr</A>, <A HREF="rtable.htm#_is_inxitbl">_is_inxitbl</A>, <A HREF="rtable.htm#_xitbl_to_iptr">_xitbl_to_iptr</A>, <A HREF="rtable.htm#_xitbl_to_lptr">_xitbl_to_lptr</A>, <A HREF="rtable.htm#_xctbl_to_ptr">_xctbl_to_ptr</A>
+<BR></DL>
+<H2><A NAME="_xlat_char">_xlat_char</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets a char from an index table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	int _xlat_char(const char far *table, int index);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The element in the table that corresponds to index if index is present in table.
+<BR>
+<BR>	-1 if index is not found in table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function checks index against the starting and ending indices of the table. If index falls within this range, the corresponding char value from the table is returned. If index does not fall within this range, -1 is returned. For example, if index were 17 and the table's starting index were 13, then the 5th entry in the table would be returned (as long as the table contained at least 5 entries).
+<BR>
+<BR>	The format of a char index table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   unsigned int start;	/* Starting index */
+<BR>	   int num_entries;	/* Number of entries in table */
+<BR>	   char tbl_start[NUM_ENTRIES];/* Start of table */
+<BR>	} table;
+<BR>
+<BR>WARNING! When using the above structure, the address of the tbl_start field must be specified for the table parameter. See the Table Management technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int chr;
+	   struct {
+	      int start;
+	      int entries;
+	      char tbl[5];
+	   } table = {'a', 4, "abcd"};
+	   ...
+	   chr = _xlat_char (table.tbl, 'a');
+	   if (chr == -1)
+	   {
+	   	  /* "index" was not found */
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   struct {
+	      int start;
+	      int entries;
+	      char table[5];
+	   } table = {'a', 4, "abcd"};
+	   ...
+	  lea bx,table.table/* DS:BX -&gt table */
+	    mov ax,2	 /* AX=index of char to retrieve */
+	    xlat_char ();	 /* was index present in table? */
+	     jc xlat_char_010/*   n: go continue */
+	    ... 	  	 /*   y: index not present */
+	xlat_char_010:
+	    ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBXLATC.ASM		  <B>ASM equiv</B>	XLAT_BYTE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtable.htm#_index_char">_index_char</A>, <A HREF="rtable.htm#_xlat_int">_xlat_int</A>, <A HREF="rtable.htm#_xxlat_char">_xxlat_char</A>
+<BR></DL>
+<H2><A NAME="_xlat_int">_xlat_int</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets an int from an index table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	int _xlat_int(const int far *table, int index);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The element that corresponds to index if index is present in table.
+<BR>
+<BR>	-1 if index is not found in table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function checks index against the starting and ending indices for the table. If index falls within this range, the corresponding int value from the table is returned. If index does not fall within this range, -1 is returned. For example, if index were 17 and the table's starting index were 13, then the 5th entry in the table would be returned (as long as the table contained at least 5 entries).
+<BR>
+<BR>	The format of an int index table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   unsigned int start;	/* Starting index */
+<BR>	   int num_entries;	/* Number of entries in table */
+<BR>	   int tbl_start[NUM_ENTRIES];/* Start of table */
+<BR>	} table;
+<BR>
+<BR>WARNING! When using the above structure, the address of the tbl_start field must be specified for the table parameter. See the Table Management technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int num;
+	   struct {
+	      int start;
+	      int entries;
+	      int tbl[5];
+	   } table = {1, 4, {1,2,3,4,5};
+	   ...
+	   num = _xlat_int (table.tbl, 1);
+	   {
+	   	  /* "index" was not found */
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   int num;
+	   struct {
+	      int start;
+	      int entries;
+	      int table[5];
+	   } table = {1, 4, {1,2,3,4,5}};
+	    ...
+	    lea bx,table.table/* DS:BX -&gt table */
+	    mov ax,1	 /* AX=index of int to retrieve */
+	    xlat_int ();	 /* was index present in table? */
+	     jc xlat_int_010/*   n: go continue */
+	    ... 	  	 /*   y: index not preset */
+	xlat_int_010:
+	    ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBXLATI.ASM		  <B>ASM equiv</B>	XLAT_WORD
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtable.htm#_index_int">_index_int</A>, <A HREF="rtable.htm#_xlat_char">_xlat_char</A>, <A HREF="rtable.htm#_xxlat_int">_xxlat_int</A>
+<BR></DL>
+<H2><A NAME="_xxlat_char">_xxlat_char</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets a char from an extended index table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	int _xxlat_char(const char far *table, int index);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The element that corresponds to index if index is present in table.
+<BR>
+<BR>	-1 if index is not found in table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function checks index against the starting and ending indices of the table. If index falls within this range, the corresponding char value is returned. If index does not fall within this range, the next table in the chain is examined, and so on. If none of the chained tables contain index, -1 is returned. For example, if index were 17 and the table's starting index were 13, then the 5th entry in the table would be returned (as long as the table contained at least 5 entries).
+<BR>
+<BR>	The format of an extended char index table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   int near *next;	/* Next table in chain (near pointer) */
+<BR>	   unsigned int start;	/* Starting index */
+<BR>	   int num_entries;	/* Number of entries in table */
+<BR>	   char tbl_start[NUM_ENTRIES];/* Start of table */
+<BR>	} table;
+<BR>
+<BR>WARNING! When using the above structure, the address of the tbl_start field must be specified for the table parameter. See the Table Management technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int chr;
+	   struct table{
+	      char near *next;
+	      int start;
+	      int entries;
+	      char tbl[5];
+	   };
+	   struct table table2 = {(char near *)-1, 'a', 4, "abcd"};
+	   struct table table1 = {NULL, 'A', 4, "AB};
+	   table1.next = (char near *)table2.tbl;
+	   ...
+	   chr = _xxlat_char (table1.tbl, 'a');
+	   if (chr == -1)
+	   {
+	   	  /* "index" was not found */
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char chr;
+	   struct {
+	      char near *next;
+	      int start;
+	      int entries;
+	      char table[5];
+	   } table2 = {(char near *)-1, 'a', 4, "abcd"},
+	   table1 = {NULL, 'A', 4, "ABCD"};
+	   table1.next = (char near *)table2.table;
+	   ...
+	   lea bx,table1.table/* DS:BX -&gt table */
+	   mov ax,2	/* AX = index not present */
+	   xxlat_char ();	/* was index present in table? */
+	    jc xxlat_char_010/*   n: go continue */
+	   ... 	 	/*   y: index not found */
+	xxlat_char_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBXXLTC.ASM		  <B>ASM equiv</B>	XXLAT_BYTE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtable.htm#_xindex_char">_xindex_char</A>, <A HREF="rtable.htm#_xlat_char">_xlat_char</A>, <A HREF="rtable.htm#_xxlat_int">_xxlat_int</A>
+<BR></DL>
+<H2><A NAME="_xxlat_int">_xxlat_int</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets an int from an extended index table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;table.h&gt
+<BR>	int _xxlat_int(const int far *table, int index);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The element that corresponds to index if index is present in table.
+<BR>
+<BR>	-1 if index is not found in table.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function checks index against the starting and ending indices for the table. If index falls within this range, the corresponding int value from the table is returned. If index does not fall within this range, the next table in the chain is examined, and so on. If none of the chained tables contain index, -1 is returned. For example, if index were 17 and the table's starting index were 13, then the 5th entry in the table would be returned (as long as the table contained at least 5 entries).
+<BR>
+<BR>	The format of an extended int index table is as follows:
+<BR>
+<BR>	struct {
+<BR>	   int near *next;	/* Next table in chain (near pointer) */
+<BR>	   unsigned int start;	/* Starting index */
+<BR>	   int num_entries;	/* Number of entries in table */
+<BR>	   int table[NUM_ENTRIES];/* Start of table */
+<BR>	} table;
+<BR>
+<BR>WARNING! When using the above structure, the address of the tbl_start field must be specified for the table parameter. See the Table Management technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int num;
+	   struct table{
+	      int near *next;
+	      int start;
+	      int entries;
+	      int tbl[5];
+	   };
+	   struct table table2 = {(int near *)-1, 1, 4, {1,2,3,4,5};
+	   struct table table1 = {NULL, 10, 4, {10,20,30,};
+	   table1.next = (int near *)table2.tbl;
+	   ...
+	   num = _xxlat_int (table1.tbl, 1);
+	   {
+	    	   /* "index" was not found */
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   int num;
+	   struct {
+	      int near *next;
+	      int start;
+	      int entries;
+	      int table[5];
+	   } table2 = {(int near *)-1, 1, 4, {1,2,3,4,5}},
+	   table1 = {NULL, 10, 4, {10,20,30,40,50}};
+	   table1.next = (int near *)table2.table;
+	   ...
+	   lea bx,table1.table/* DS:BX -&gt table */
+	   mov ax,1	/* AX=index of int to retrieve */
+	   xxlat_int ();	/* was index present in table? */
+	    jc xxlat_int_010/*   n: go continue */
+	   ... 	 	/*   y: index not found */
+	xxlat_int_010:
+	   ...
+	   _xxlat_int (table1.table, 1, &ampnum);
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TBXXLTI.ASM		  <B>ASM equiv</B>	XXLAT_WORD
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtable.htm#_xindex_int">_xindex_int</A>, <A HREF="rtable.htm#_xlat_int">_xlat_int</A>, <A HREF="rtable.htm#_xxlat_char">_xxlat_char</A>
+<BR>
+<BR></BODY>
+<BR></HTML><BR>

@@ -1,0 +1,396 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: Multitasking</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Multitasking</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tMulti.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tMulti.htm#HEAD0001">What Is Cooperative Multitasking?
+</A><BR>
+<A HREF="tMulti.htm#HEAD0002">What Are Tasks?
+</A><BR>
+<A HREF="tMulti.htm#HEAD0003">The Active Task
+</A><BR>
+<A HREF="tMulti.htm#HEAD0004">Task Handles
+</A><BR>
+<A HREF="tMulti.htm#HEAD0005">The Default Task
+</A><BR>
+<A HREF="tMulti.htm#HEAD0006">The Task Scheduler
+</A><BR>
+<A HREF="tMulti.htm#HEAD0007">Terminology of Task Stacks
+</A><BR>
+<A HREF="tMulti.htm#HEAD0008">Stack Heap Characteristics
+</A><BR>
+<A HREF="tMulti.htm#HEAD0009">Managing the Stack Heap
+</A><BR>
+<A HREF="tMulti.htm#HEAD000A">Initializing the Multitasking System
+</A><BR>
+<A HREF="tMulti.htm#HEAD000B">Adding Tasks
+</A><BR>
+<A HREF="tMulti.htm#HEAD000C">Manipulating Tasks
+</A><BR>
+<A HREF="tMulti.htm#HEAD000D">Yielding
+</A><BR>
+<A HREF="tMulti.htm#HEAD000E">Determining and Setting Task Information
+</A><BR>
+<A HREF="tMulti.htm#HEAD000F">Suspending Multitasking
+</A><BR>
+<A HREF="tMulti.htm#HEAD0010">Stack Overflow Checking
+</A><BR>
+<A HREF="tMulti.htm#HEAD0011">Sharing Resources and Avoiding Deadlock
+</A><BR>
+<A HREF="tMulti.htm#HEAD0012">Sample Program
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit provides a complete system of functions for cooperative (non-preemptive) multitasking. It consists of functions which perform the following: add, remove, suspend, and resume tasks; yield to the next or specified task; set and determine the priority of a task; set and determine the skip count of a task; make a task sleep until a specified time of day or for a specified period of time; get a task's descriptor; determine the number of tasks; suspend or resume multitasking; dynamically allocate task stacks; determine the available stack space for a specified task; and detect and handle task stack overflow.
+
+<H2><A NAME="HEAD0001">What Is Cooperative Multitasking?
+</A></H2>
+
+For the purposes of this unit, multitasking is a method of switching between processes or tasks so that each gets an equitable share of CPU time. Multitasking is not parallel processing, but merely a method of simulating parallel processing in software. In cooperative multitasking it is the responsibility of the individual task to release the CPU resource at logical intervals. This is in contrast to preemptive multitasking where the task switching occurs at either the system or hardware level and the task is generally unaware of the switch. Cooperative multitasking is generally more efficient than preemptive multitasking because a task can wait until it reaches a logical breaking point before it switches. In cooperative multitasking, a task is never unexpectedly interrupted.
+
+<P>
+The key to cooperative multitasking is that the tasks must be cooperative, that is, each task has the responsibility of explicitly releasing the CPU resource periodically so that other tasks can have a turn. This is done by either yielding to the task scheduler or directly yielding to a specified task. Based on the specified priority scheme, the task scheduler preserves the state of the system (registers and flags) and switches contexts to the next task. When a task releases the CPU, it usually expects to get it back in a reasonable amount of time.
+
+<P>
+It is the programmer's responsibility to optimize the number and location of yields in tasks. The number and placement of yields within tasks determines if a task will appear to operate smoothly or coarsely. A balance needs to be found between how smoothly a task operates and how much CPU time is spent in switching between tasks. Normally yields are inserted just prior to loops or lengthy sections of code that are time critical, or they are inserted inside loops that are waiting for an event to occur. Yields are already inserted in Spontaneous Assembly console I/O functions which perform keyboard I/O (i.e. <A HREF="rconsole.htm#_cget_chr">_cget_chr</A>, <A HREF="rconsole.htm#_cget_chre">_cget_chre</A>, and <A HREF="rconsole.htm#_cget_str">_cget_str</A>).
+
+<H2><A NAME="HEAD0002">What Are Tasks?
+</A></H2>
+
+For the Spontaneous Assembly multitasking system, tasks are independent programs or routines that follow a few simple rules to allow them to multitask in this system. Each task must yield periodically so that other tasks may have a turn. Each task has its own stack. Task stacks can easily be set up and managed using functions provided in this unit. Each task is defined by a task descriptor which defines and maintains the task's priority and status.
+
+<P>
+Tasks may execute indefinitely, or they may return when they finish their work. When a task returns, it is either removed from the task list or it is automatically restarted at the beginning of the task. The final disposition of a returning task is specified in the task descriptor at the time the task is added.
+
+<H2><A NAME="HEAD0003">The Active Task
+</A></H2>
+
+The active task is the task which is currently executing. Only one task is executing at a time. The active task may perform operations on itself (e.g., sleep, suspend, and change priority). The active task may always be accessed by specifying -1 as the handle.
+
+<H2><A NAME="HEAD0004">Task Handles
+</A></H2>
+
+Task handles are assigned when a task is added to the task list. When a task is added, its handle may be specified directly. If a handle value of -1 is specified, the next available handle is allocated by the multitasking system. These handles are used to select and manipulate tasks when using the multitasking functions.
+
+<P>
+Tasks in the task scheduler list are ordered in increasing order based on the value of each task handle. The handle order, NOT the order in which tasks are added, determines the order in which tasks are considered for control by the scheduler. This makes it possible to optimize the order in which tasks are executed by the task scheduler. Handle values are allocated sequentially when task handles are allowed to default to the next available handle.
+
+<P>
+A handle value of 0 always denotes the default task and cannot be changed. Multitasking operations are performed on the active task when -1 is specified as the handle value (except <A HREF="rmulti.htm#_task_add">_task_add</A>, as explained above).
+
+<H2><A NAME="HEAD0005">The Default Task
+</A></H2>
+
+The multitasking system always contains a default task. Multitasking starts with the first call to <A HREF="rmulti.htm#_task_yield">_task_yield</A> or <A HREF="rmulti.htm#_task_yieldto">_task_yieldto</A> from the default task. The default task may be main or it can be specified in the default task descriptor at the time <A HREF="rmulti.htm#_tasking_init">_tasking_init</A> is called.
+
+<P>
+Control is passed to the default task by <A HREF="rmulti.htm#_tasking_init">_tasking_init</A>. The default task is called if its address is explicitly specified in the default task descriptor; otherwise, <A HREF="rmulti.htm#_tasking_init">_tasking_init</A> simply returns and the code following the original call to <A HREF="rmulti.htm#_tasking_init">_tasking_init</A> is treated as the default task. When the default task returns, control is returned to the code following the original call to <A HREF="rmulti.htm#_tasking_init">_tasking_init</A> if the default task was explicitly specified; otherwise, the return is treated as a normal return from the function which contains the default task.
+
+<P>
+All of the multitasking functions can be used on the default task except <A HREF="rmulti.htm#_task_add">_task_add</A>, <A HREF="rmulti.htm#_task_remove">_task_remove</A>, and the task stack management functions.
+
+<H2><A NAME="HEAD0006">The Task Scheduler
+</A></H2>
+
+The task scheduler saves the current state of the task which is yielding, selects the next task, and restores the state of the next task to be given control. Every time a yield is encountered, the task scheduler examines the next task in the task list. If the next task is suspended, it is skipped. If it is sleeping, the wake-up time is compared against the current time; if it is time to wake up, the task is no longer treated as a suspended task; otherwise, the task is skipped. If the task is not suspended or sleeping, its skip count is checked. If the skip count is non-zero, its skip count is decremented and the task is skipped. If the skip count is zero, the task is given control. Tasks in the scheduler task list are examined in sequential order based on the value of their task handles.
+<P>
+Task Priority and Skip Count
+
+<P>
+Each task has a priority and skip count. The task scheduler uses these two values to determine how often each task gains control of the CPU. The skip count is a "count down to zero" variable; the priority is a reload value for the skip count. A non-suspended task's skip count is decremented each cycle through the task scheduler. The scheduler only passes control to a task if its skip count is zero when it is polled and if it is not suspended or sleeping. Each time a task receives control, its skip count is reloaded with its priority.
+
+<P>
+A task's priority and skip count do not need to be set to identical values. In fact, the priority and/or skip count of a task may be modified dynamically by any task in the system, including the task itself. The initial and continuing priority of the task depends on how these values are set. For example:
+
+<P>
+ Skip CountPriorityThe task gains control on...
+<PRE>
+    0      0    ...the first cycle and every cycle thereafter
+    0      9    ...the first cycle and every tenth cycle thereafter
+    9      0    ...the tenth cycle and every first cycle thereafter
+    9      9    ...the tenth cycle and every tenth cycle thereafter
+</PRE>
+Valid values for the priority and skip count are 0 to 255.
+
+<H2><A NAME="HEAD0007">Terminology of Task Stacks
+</A></H2>
+
+Each task must have its own stack, which may be allocated statically or dynamically. Dynamic stack allocation may be performed using conventional methods (near or far heaps, DOS memory allocation, etc.), or it may be performed using the multitasking stack heap management functions provided in this unit.
+
+<P>
+The task stack heap itself may be allocated dynamically or statically. Once it has been allocated, the stack heap must be initialized using the custom stack heap initialization function. (Due to differences between compilers, the default stack heap initialization function is not available in Spontaneous Assembly For C/C++.)
+
+<P>
+Task stacks are described as being on a heap after they are allocated from the stack heap. Most of the operations permitted on near, far, and relative heaps are also provided for the stack heap. The stack heap memory management functions use the relative heap memory management functions internally.
+
+<P>
+Basic Rules of Stack Heap Operation
+<UL>
+<LI>    The task stack heap must be initialized with the custom stack heap initialization function before it may be used.
+<LI>    Once the stack heap has been initialized, heap space may be allocated by calling the heap memory allocation function.
+<LI>    Stack memory is allocated in blocks. Block sizes are arbitrary and are specified in the task descriptor of the task for which the stack memory is being allocated.
+<LI>    Stack blocks are allocated on the stack heap using a first fit algorithm.
+<LI>    Allocated stacks remain fixed in size and position until they are released.
+<LI>    Allocated stacks cannot be moved within the stack heap.
+</UL>
+<H2><A NAME="HEAD0008">Stack Heap Characteristics
+</A></H2>
+
+Initialization  Due to compiler limitations, only custom initialization is provided. The size is user-specified.
+
+<P>
+Number of heaps supported:      One.
+
+<P>
+Heap location:   Must be in DGROUP (global or static non-far data) for small data models, anywhere in conventional memory for large data models.
+<P>
+Assumptions:     Custom initialization assumes memory has already been allocated for use by the stack heap. Memory may be pre-allocated either statically or dynamically from heap memory or DOS.
+<PRE>
+Maximum heap size       Up to 64K, including heap control variables.
+
+Maximum stack size      32,764 bytes.
+
+Minimum stack size      0 bytes
+
+Overhead per stack      2 bytes.
+
+Granularity             2 bytes.
+
+Stack alignment          Word.
+</PRE>
+Heap control variables  Stored in the first paragraph of the heap segment, documented in MEMALLOC.H.
+
+<H2><A NAME="HEAD0009">Managing the Stack Heap
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmulti.htm#_tstack_avail">_tstack_avail</A><DD>  Returns the number of available bytes on the stack of the active task.
+<DT><A HREF="rmulti.htm#_tstack_free">_tstack_free</A><DD>   Frees a block on the stack heap.
+<DT><A HREF="rmulti.htm#_tstack_initc">_tstack_initc</A><DD>  Initializes the stack heap to a custom size and location.
+<DT><A HREF="rmulti.htm#_tstack_malloc">_tstack_malloc</A><DD> Allocates space for a task stack on the stack heap.
+<DT><A HREF="rmulti.htm#_tstack_max">_tstack_max</A><DD>    Returns the size of the largest available block on the stack heap.
+</DL>
+These function manage and return information about the task stack heap. <A HREF="rmulti.htm#_tstack_initc">_tstack_initc</A>, <A HREF="rmulti.htm#_tstack_malloc">_tstack_malloc</A>, and <A HREF="rmulti.htm#_tstack_free">_tstack_free</A> may be called prior to initializing the multitasking system.
+
+<P>
+<A HREF="rmulti.htm#_tstack_avail">_tstack_avail</A> returns the number of bytes of unused stack space for the current task. This function also detects and reports task stack overflow.
+
+<P>
+<A HREF="rmulti.htm#_tstack_free">_tstack_free</A> may be used to deallocate a block on the stack heap. The address of the stack block to be freed is returned by the <A HREF="rmulti.htm#_task_remove">_task_remove</A> function. Since the stack is used by the task, it is critical to remove the task before de-allocating its stack.
+
+<P>
+<A HREF="rmulti.htm#_tstack_initc">_tstack_initc</A> initializes already-allocated memory as the task stack heap and must be called before the stack heap may be used. Memory may be statically or dynamically. This function may be called either before or after calling <A HREF="rmulti.htm#_tasking_init">_tasking_init</A>.
+
+<P>
+<A HREF="rmulti.htm#_tstack_malloc">_tstack_malloc</A> allocates stack heap memory for use as a task stack. This function accepts a size from the task descriptor and returns the stack address in the descriptor. In small data models the stack address is a near pointer (an offset relative to the default data segment, DGROUP). In large data models the stack address is a far pointer (segment:offset).
+
+<P>
+<A HREF="rmulti.htm#_tstack_max">_tstack_max</A> returns the size of the largest available stack heap block.
+
+<P>
+WARNING!        In small data models,   the stack heap must reside within the 64K region beginning at the <A HREF="rexit.htm#start">start</A> of DGROUP (global or static non-far data). This condition is satisfied if the stack heap is allocated on the near heap. In large data models the stack heap may reside anywhere in conventional memory.
+
+<H2><A NAME="HEAD000A">Initializing the Multitasking System
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmulti.htm#_tasking_init">_tasking_init</A><DD>  Initializes the multitasking system.
+<DT><A HREF="rmulti.htm#_tasking_init">_tasking_init</A><DD>initializes the multitasking system. The multitasking system must be initialized before any of the multitasking functions may be used (except the task stack heap management functions mentioned above). This function adds the default task to the task list and turns multitasking on. This function has no effect if the multitasking system is already active.
+</DL>
+<H2><A NAME="HEAD000B">Adding Tasks
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmulti.htm#_task_add">_task_add</A><DD>      Adds a task to the scheduler task list.
+<DT><A HREF="rmulti.htm#_task_add">_task_add</A><DD>adds a task to the task list. This function expects a task descriptor which specifies the task handle, the task starting address, and the characteristics of the task. Each task must also be assigned a stack before it may be added to the task list.
+</DL>
+Adding a task does not automatically make that task active. A task becomes active only when it is yielded to via <A HREF="rmulti.htm#_task_yield">_task_yield</A> or <A HREF="rmulti.htm#_task_yieldto">_task_yieldto</A>.
+
+<P>
+Task descriptors may be created using the satask structure defined in MTASK.H. This structure is defined as follows:
+<PRE><CODE>
+typedef struct {
+   unsigned int t_handle;       /* task handle (-1 to use next avail handle) */
+   void *t_addr;                /* task starting address */
+   unsigned int t_stksize;      /* task stack size (default=256 bytes) */
+   char *t_stkaddr;             /* task stack address (default=inherit) */
+   unsigned char t_priority;    /* priority of task (0-255, default=0) */
+   unsigned char t_numskips;    /* skip count (initial priority) (0-255, def=0) */
+   unsigned long t_waketime;    /* time of day to wake up task */
+   void *t_nextlink;            /* address of next descriptor in task list */
+   char *t_stksave;             /* task stack address when task yields */
+   unsigned int t_dstack;       /* offset of task stack relative to heap segment
+                                    (small data models only) */
+   unsigned char t_statbyte;    /* current status of task */
+   char reserved;               /* (RESERVED) */
+} satask;
+</CODE></PRE>
+Each field in the satask definition structure specifies or maintains information about the task. The satask structure fields are defined as follows:
+<DL COMPACT>
+<DT>t_handle<DD>       Task handle. The task handle may be specified explicitly, or -1 may be specified to default to the next available handle number. The task scheduler cycles through the task list based on handle number order. Valid values are 0 to 65534.
+<DT>t_addr<DD> Task starting address. This is a near pointer (offset only) in small code models, and it is a far pointer (segment:offset) in large code models. This must be set by the programmer before adding the task.
+<DT>t_stksize<DD>      Size of the task stack. If the stack was manually allocated, this field must indicate the size of the stack. If the stack block is to be allocated with <A HREF="rmulti.htm#_tstack_malloc">_tstack_malloc</A>, this field must indicate the required stack block size. The default size is 256 bytes.
+<DT>t_stkaddr<DD>      Stack address. This is a near pointer (offset only) relative to DGROUP in small data models; it is a far pointer (segment:offset) in large data models. This field is automatically filled in if <A HREF="rmulti.htm#_tstack_malloc">_tstack_malloc</A> is used. If the stack was manually allocated, this field must be set by the programmer.
+<DT>t_priority<DD>     Priority of the task. This is the reload value for t_numskips each time the task gains control of the CPU.
+<DT>t_numskips<DD>     Skip count. The number of times the task will be skipped before it receives control from the task scheduler. This value is decremented by the task scheduler on each scheduler cycle. The task is considered for control when the skip count equals 0.
+<DT>t_waketime<DD>     Time of day the task is scheduled to wake up. This field is set by a call to <A HREF="rmulti.htm#_task_sleep">_task_sleep</A> or <A HREF="rmulti.htm#_task_sleeptime">_task_sleeptime</A>. The task scheduler only checks this field if the T_SLEEP bit in the t_statbyte field is set. The time is stored in Spontaneous Assembly unsigned long time format.
+<DT>t_nextlink<DD>     Descriptor address of the next task in the task list. This field is set when a task is added with <A HREF="rmulti.htm#_task_add">_task_add</A>.
+<DT>t_stksave<DD>      Task stack pointer. The stack pointer is preserved here while the task is inactive. The stack pointer is restored from this field when the task receives control again.
+<DT>t_dstack<DD>       Offset of the stack block relative to the stack heap segment. This field is used only in small data models. This offset and the segment of the stack heap are returned by <A HREF="rmulti.htm#_task_remove">_task_remove</A> and used by <A HREF="rmulti.htm#_tstack_free">_tstack_free</A> to facilitate disposing of unused stack heap blocks.
+<DT>t_statbyte<DD>     Status of the task. A specific bit in this field is used for each status condition maintained by the multitasking system. This field may be modified to specify if the task should be automatically removed or restarted when the task returns. By default, the task remains in the task list and is restarted at the address specified in t_addr the next time the task is given control. If the T_AUTOREMOVE flag is set when the task is added, the task will be removed from the task list when it returns. The following symbolic constant is defined in MTASK.H to set and check the t_statbyte field for the auto remove feature:
+</DL>
+<DL COMPACT>
+<DT>        T_AUTOREMOVE<DD>       (0x01) Automatically remove task on return
+</DL>
+        The following symbolic constants are defined in MTASK.H to check the remaining bits in the t_statbyte field:
+<DL COMPACT>
+<DT>        T_SUSPEND<DD>          (0x02) Task is suspended
+<DT>        T_SLEEP<DD>            (0x04) Task is sleeping
+<DT>        T_STACKHEAP<DD>        (0x10) Task stack is allocated on the stack heap
+</DL>
+<H2><A NAME="HEAD000C">Manipulating Tasks
+</A></H2>
+<DL COMPACT>
+<DT>_task_remove<DD>    Removes a task from the scheduler task list.
+<DT>_task_resume<DD>    Resumes a suspended task.
+<DT>_task_sleep<DD>     Suspends a task for a specified period of time.
+<DT>_task_sleeptime<DD> Suspends a task until a specified time of day.
+<DT>_task_suspend<DD>  Suspends a task.
+</DL>
+These functions resume, suspend, and remove tasks.
+
+<P>
+<A HREF="rmulti.htm#_task_remove">_task_remove</A> is the inverse of the <A HREF="rmulti.htm#_task_add">_task_add</A> function. This function deletes a task from the task scheduler list and returns the address of the task's stack. It is the programmer's responsibility to properly dispose of the removed task's stack memory block. If the stack was allocated from the stack heap, the stack memory is usually freed by calling <A HREF="rmulti.htm#_tstack_free">_tstack_free</A> immediately after the task is removed.
+
+<P>
+<A HREF="rmulti.htm#_task_suspend">_task_suspend</A> suspends a task, preventing it from receiving control via the task scheduler. Whenever the task scheduler encounters a suspended task, it immediately skips to the next task without adjusting the skip count of the suspended task. A suspended task remains in the task list while it is suspended. This function has no effect if the task is already suspended.
+
+<P>
+<A HREF="rmulti.htm#_task_resume">_task_resume</A> cancels the effect of a previous call to <A HREF="rmulti.htm#_task_suspend">_task_suspend</A>. The resumed task does not receive control until it is either yielded to directly or until the task scheduler selects it for control using the normal selection criteria. This function has no effect if the task is not suspended.
+
+<P>
+<A HREF="rmulti.htm#_task_sleep">_task_sleep</A> suspends a task for a specified period of time. <A HREF="rmulti.htm#_task_sleeptime">_task_sleeptime</A> suspends a task until a specified time of day. Both functions accept time values in a std_time structure, but <A HREF="rmulti.htm#_task_sleeptime">_task_sleeptime</A> only allows the wake up time to be specified to the nearest hour and minute. (See the Date and Time Manipulation technical notes for more information on the std_time structure.)
+
+<H2><A NAME="HEAD000D">Yielding
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmulti.htm#_task_yield">_task_yield</A><DD>    Saves the state of the active task and yields to the task scheduler.
+<DT><A HREF="rmulti.htm#_task_yieldto">_task_yieldto</A><DD>  Saves the state of the active task and yields to a specific task.
+</DL>
+These functions allow other tasks to gain control of the CPU. When a task calls <A HREF="rmulti.htm#_task_yield">_task_yield</A> or <A HREF="rmulti.htm#_task_yieldto">_task_yieldto</A>, the task scheduler considers all other applicable tasks according to their priority and status, passes control to the appropriate tasks, and then returns control to the next instruction afterthe <A HREF="rmulti.htm#_task_yield">_task_yield</A>... function call. The strategic placement of yields in tasks allows the programmer to control when a task is interrupted and how much processing time elapses before control is passed to the other tasks in the system. If stack overflow is detected by a yield function, control is immediately passed to the stack overflow handler (see Stack Overflow Checking, later in this chapter).
+
+<P>
+<A HREF="rmulti.htm#_task_yield">_task_yield</A> saves the state of the current task and passes control to the task scheduler. The scheduler then examines the priority and status of each task in the system and passes control to the next available task.
+
+<P>
+<A HREF="rmulti.htm#_task_yieldto">_task_yieldto</A> saves the state of the current task and passes control to a specified task. Control is passed to the specified task even if it is suspended, sleeping, or if its skip count is not zero. If the new task calls <A HREF="rmulti.htm#_task_yield">_task_yield</A>, the scheduler will determine the next available task as described for <A HREF="rmulti.htm#_task_yield">_task_yield</A>, above; return of control to the parent is not automatic.
+
+<P>
+Yields are already supported in Spontaneous Assembly console I/O functions which perform keyboard I/O (e.g., <A HREF="rconsole.htm#_cget_chr">_cget_chr</A>, <A HREF="rconsole.htm#_cget_chre">_cget_chre</A>, and <A HREF="rconsole.htm#_cget_str">_cget_str</A>). The Spontaneous Assembly DOS console I/O functions do not yield to the multitasking system because they allow DOS to wait for the keystroke. If a yield needs to be performed while waiting for DOS keyboard input, it may be performed as follows:
+<PRE><CODE>
+   ...
+   while (!_check_key())/* is a keystroke waiting? */
+      <A HREF="rmulti.htm#_task_yield">_task_yield</A>(); /*   n: allow other tasks to execute while waiting for a key
+   <A HREF="rdosio.htm#_get_chre">_get_chre</A>();  /*   y: handle keystroke
+   ...
+</CODE></PRE>
+If a yield function is called while multitasking is suspended, control is immediately returned to the task that yielded. Multitasking is automatically resumed when the current task returns.
+
+<P>
+WARNING! It is possible to create a combination of <A HREF="rmulti.htm#_task_yield">_task_yield</A> and <A HREF="rmulti.htm#_task_yieldto">_task_yieldto</A> functions that would always skip a task or group of tasks.
+
+<H2><A NAME="HEAD000E">Determining and Setting Task Information
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmulti.htm#_get_numtasks">_get_numtasks</A><DD>  Returns the number of tasks currently in the task scheduler list.
+<DT><A HREF="rmulti.htm#_get_tpriority">_get_tpriority</A><DD> Returns the current priority and skip count of a task.
+<DT><A HREF="rmulti.htm#_get_tspec">_get_tspec</A><DD>     Returns a copy of a specified task descriptor.
+<DT><A HREF="rmulti.htm#_get_tstatus">_get_tstatus</A><DD>   Determines if any of the specified task status flags are set.
+<DT><A HREF="rmulti.htm#_set_tpriority">_set_tpriority</A><DD> Sets the priority and skip count of a task.
+</DL>
+These functions return miscellaneous information about tasks and allow the priority and skip count of a task to be specified.
+
+<P>
+<A HREF="rmulti.htm#_get_numtasks">_get_numtasks</A> returns the current number of tasks in the task list. The return value includes tasks that are suspended and sleeping.
+
+<P>
+<A HREF="rmulti.htm#_get_tpriority">_get_tpriority</A> returns the current priority and skip count for a specified task. (See Task Priority and Skip Count, above.)
+
+<P>
+<A HREF="rmulti.htm#_get_tspec">_get_tspec</A> returns a copy of the task descriptor for a given task. (See Adding Tasks, above, for a detailed explanation of task descriptors). The returned descriptor contains all current information about the task, including its stack size, stack location, priority, skip count, and status. This function is frequently used to preserve the state of a task before it is removed.
+
+<P>
+<A HREF="rmulti.htm#_get_tstatus">_get_tstatus</A> determines the status of selected bits in the t_statbyte field of the task descriptor assigned to a specified task. The following symbolic constants, defined in MTASK.H, indicate the status bits which may be tested:
+<DL COMPACT>
+<DT>T_AUTOREMOVE<DD>            (0x01) Automatically remove task on return
+<DT>T_SUSPEND<DD>                       (0x02) Task is suspended
+<DT>T_SLEEP<DD>                 (0x04) Task is sleeping
+<DT>T_STACKHEAP<DD>             (0x10) Task stack is allocated on the stack heap
+</DL>
+Testing these conditions can be especially valuable before yielding to a task, as in the following code sample:
+<PRE><CODE>
+   ...
+   if (!_get_tstatus(handle_01, T_SUSPEND+T_SLEEP))      /* is task suspended or sleeping? */
+      <A HREF="rmulti.htm#_task_yieldto">_task_yieldto</A>(handle_01);                                          /*   n: ok to yield to it */
+   ...
+</CODE></PRE>
+<A HREF="rmulti.htm#_set_tpriority">_set_tpriority</A> sets the priority and skip count of a specified task. (See Task Priority and Skip Count, above.) If -1 is specified for either value, that value remains unchanged.
+
+<H2><A NAME="HEAD000F">Suspending Multitasking
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmulti.htm#_yield_suspend">_yield_suspend</A><DD> Temporarily suspends multitasking.
+<DT><A HREF="rmulti.htm#_yield_resume">_yield_resume</A><DD>  Resumes multitasking.
+</DL>
+<A HREF="rmulti.htm#_yield_suspend">_yield_suspend</A> suspends the action of the <A HREF="rmulti.htm#_task_yield">_task_yield</A> and <A HREF="rmulti.htm#_task_yieldto">_task_yieldto</A> functions. This function allows a task with embedded calls to the yield functions to continue execution without yielding control. While yielding is suspended, calls to <A HREF="rmulti.htm#_task_yield">_task_yield</A> and <A HREF="rmulti.htm#_task_yieldto">_task_yieldto</A> immediately return control to the active task. The state of the task list at the time <A HREF="rmulti.htm#_yield_suspend">_yield_suspend</A> is called is preserved. When multitasking is suspended, it remains suspended until <A HREF="rmulti.htm#_yield_resume">_yield_resume</A> is called or until the active task returns. When the default task returns, the multitasking system is assumed to be off; multitasking is not automatically resumed. When any other task returns, the task scheduler receives control and multitasking is automatically resumed.
+
+<A HREF="rmulti.htm#_yield_resume">_yield_resume</A> resumes multitasking by re-enabling the action of the <A HREF="rmulti.htm#_task_yield">_task_yield</A> and <A HREF="rmulti.htm#_task_yieldto">_task_yieldto</A> functions.
+
+<H2><A NAME="HEAD0010">Stack Overflow Checking
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmulti.htm#_exit_overflow">_exit_overflow</A><DD> Displays a stack overflow message and exits to DOS with an ERRORLEVEL of 1.
+<DT><A HREF="rmulti.htm#overflow_addr">overflow_addr</A><DD>  (Variable) Contains the address of the current stack overflow handler.
+</DL>
+<A HREF="rmulti.htm#_exit_overflow">_exit_overflow</A> displays a DOS-like error message ("Stack overflow"), sets the ERRORLEVEL to 1, and terminates the program. This function is the default stack overflow handler for the multitasking system.
+
+<A HREF="rmulti.htm#overflow_addr">overflow_addr</A> contains the address of the current stack overflow handler. This function pointer is initialized with the address of <A HREF="rmulti.htm#_exit_overflow">_exit_overflow</A>. If stack overflow is detected by the multitasking system, control is unconditionally passed to the stack overflow handler address in <A HREF="rmulti.htm#overflow_addr">overflow_addr</A>. To specify an alternate stack overflow handler, load the address of the new handler into <A HREF="rmulti.htm#overflow_addr">overflow_addr</A>.
+
+Stack overflow checking takes place in the <A HREF="rmulti.htm#_task_yield">_task_yield</A> and <A HREF="rmulti.htm#_task_yieldto">_task_yieldto</A> functions. When a task is added to the multitasking system, the last word (int) on each task stack is initialized to a known marker value. This location is checked each time the task yields. If the stack overflow marker changes, the current stack overflow handler is called. Because of the sequence in which stack overflow checking is performed, the active task is usually the task which caused the overflow.
+
+<P>
+The stack overflow marker value is defined by the T_STKMARKER symbolic constant (defined in MTASK.H). The default value is 0xABC7. If this value is changed, the new value takes effect only after the multitasking functions are reassembled with the modified header file.
+<DL COMPACT>
+<DT>T_STKMARKER<DD>    (0xABC7) Marker used for stack overflow checking
+</DL>
+<H2><A NAME="HEAD0011">Sharing Resources and Avoiding Deadlock
+</A></H2>
+
+In most programs, different tasks need to use the same, non-sharable resources. For example, two different tasks may need to use DOS file I/O services to read data from different files, and both tasks may need to use the same global buffer for the read. When cooperative multitasking is used, non-sharable functions (the DOS file I/O services) are never a problem as long as such functions never yield to the multitasking system. Global data, however (the buffer) can be a serious problem if it is not carefully managed. Management of global data is usually accomplished by usingsemaphores to indicate that specific resources are in use. Before any task uses a resource, it must check the appropriate semaphore (flag) to see if the resource is already in use. If the resource is available, the task then "locks" the resource for its own use by setting the flag. This prevents a later task from corrupting data which is in use by a previous task.
+
+<P>
+While semaphores are simple to implement, a condition known as deadlock must be carefully avoided in multitasked systems which allow "locking" of non-sharable resources as described above. Deadlock can be seen in the following scenario: assume Task 1 owns Resource A and Task 2 owns resource B. If Task 1 needs Resource B, it must wait for it to become available. Then, if Task 2 has a need for Resource A before Resource B becomes available to Task 1, Task 2 must wait for it to become available. This leaves both tasks waiting for the other to free a needed resource before they can continue executing. Because these situations are timing-dependent, deadlock can cause hard-to-reproduce errors where tasks (and even the entire system) appears to be "hung."
+
+<P>
+Fortunately, deadlock is easily avoided in a cooperative multitasking system. The rules are as follows: 1) Each task must wait until all needed resources are available before locking any of them; and 2) All needed resources must be locked at the same time. This means that if a task already owns some resources and needs more, it must first release the resources it owns before it waits for all of the resources to become available at the same time.
+
+<H2><A NAME="HEAD0012">Sample Program
+</A></H2>
+
+The sample program shown above (MTASK.C) is provided on the distribution diskettes and may be compiled and linked using the following Microsoft C and Borland C command lines:
+
+<P>
+Microsoft C:
+<PRE><CODE>
+cl /c /I\msc\include /I\sa\include mtask.c
+link mtask,mtask,,\sa\lib\_sas \msc\lib\slibce
+</CODE></PRE>
+Borland C:
+<PRE><CODE>
+bcc /c /ms /I\bc\include /I\sa\include mtask.c
+tlink \bc\lib\c0s mtask,mtask,,\sa\lib\_sas \bc\lib\cs
+</CODE></PRE>
+</BOBY>
+</HTML>

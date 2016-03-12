@@ -1,0 +1,3816 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - String Manipulation Reference</TITLE>
+</HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>String Manipulation</H1>
+<P ALIGN=CENTER>Reference Section </P>
+<UL>
+<LI><A HREF="TOC.htm">Table of Contents</A>
+<LI><A HREF="index.htm">Function Index</A>
+<LI><A HREF="gindex.htm">Group Index
+</UL>
+<A HREF="rstring.htm#_fstr_cat">_fstr_cat</A><BR>
+<A HREF="rstring.htm#_fstr_cate">_fstr_cate</A><BR>
+<A HREF="rstring.htm#_fstr_center">_fstr_center</A><BR>
+<A HREF="rstring.htm#_fstr_chr">_fstr_chr</A><BR>
+<A HREF="rstring.htm#_fstr_chri">_fstr_chri</A><BR>
+<A HREF="rstring.htm#_fstr_chrn">_fstr_chrn</A><BR>
+<A HREF="rstring.htm#_fstr_chrni">_fstr_chrni</A><BR>
+<A HREF="rstring.htm#_fstr_cmp">_fstr_cmp</A><BR>
+<A HREF="rstring.htm#_fstr_cmpi">_fstr_cmpi</A><BR>
+<A HREF="rstring.htm#_fstr_cpy">_fstr_cpy</A><BR>
+<A HREF="rstring.htm#_fstr_cpye">_fstr_cpye</A><BR>
+<A HREF="rstring.htm#_fstr_cspn">_fstr_cspn</A><BR>
+<A HREF="rstring.htm#_fstr_drive">_fstr_drive</A><BR>
+<A HREF="rstring.htm#_fstr_drvpath">_fstr_drvpath</A><BR>
+<A HREF="rstring.htm#_fstr_end">_fstr_end</A><BR>
+<A HREF="rstring.htm#_fstr_ext">_fstr_ext</A><BR>
+<A HREF="rstring.htm#_fstr_fname">_fstr_fname</A><BR>
+<A HREF="rstring.htm#_fstr_fnamext">_fstr_fnamext</A><BR>
+<A HREF="rstring.htm#_fstr_left">_fstr_left</A><BR>
+<A HREF="rstring.htm#_fstr_len">_fstr_len</A><BR>
+<A HREF="rstring.htm#_fstr_lwr">_fstr_lwr</A><BR>
+<A HREF="rstring.htm#_fstr_ncat">_fstr_ncat</A><BR>
+<A HREF="rstring.htm#_fstr_ncate">_fstr_ncate</A><BR>
+<A HREF="rstring.htm#_fstr_ncmp">_fstr_ncmp</A><BR>
+<A HREF="rstring.htm#_fstr_ncmpi">_fstr_ncmpi</A><BR>
+<A HREF="rstring.htm#_fstr_ncpy">_fstr_ncpy</A><BR>
+<A HREF="rstring.htm#_fstr_nset">_fstr_nset</A><BR>
+<A HREF="rstring.htm#_fstr_path">_fstr_path</A><BR>
+<A HREF="rstring.htm#_fstr_pbrk">_fstr_pbrk</A><BR>
+<A HREF="rstring.htm#_fstr_pbrkn">_fstr_pbrkn</A><BR>
+<A HREF="rstring.htm#_fstr_rchr">_fstr_rchr</A><BR>
+<A HREF="rstring.htm#_fstr_rchri">_fstr_rchri</A><BR>
+<A HREF="rstring.htm#_fstr_rchrn">_fstr_rchrn</A><BR>
+<A HREF="rstring.htm#_fstr_rchrni">_fstr_rchrni</A><BR>
+<A HREF="rstring.htm#_fstr_rev">_fstr_rev</A><BR>
+<A HREF="rstring.htm#_fstr_right">_fstr_right</A><BR>
+<A HREF="rstring.htm#_fstr_set">_fstr_set</A><BR>
+<A HREF="rstring.htm#_fstr_skips">_fstr_skips</A><BR>
+<A HREF="rstring.htm#_fstr_skipw">_fstr_skipw</A><BR>
+<A HREF="rstring.htm#_fstr_spn">_fstr_spn</A><BR>
+<A HREF="rstring.htm#_fstr_str">_fstr_str</A><BR>
+<A HREF="rstring.htm#_fstr_stri">_fstr_stri</A><BR>
+<A HREF="rstring.htm#_fstr_tok">_fstr_tok</A><BR>
+<A HREF="rstring.htm#_fstr_toks">_fstr_toks</A><BR>
+<A HREF="rstring.htm#_fstr_trims">_fstr_trims</A><BR>
+<A HREF="rstring.htm#_fstr_trimw">_fstr_trimw</A><BR>
+<A HREF="rstring.htm#_fstr_upr">_fstr_upr</A><BR>
+<A HREF="rstring.htm#_str_cat">_str_cat</A><BR>
+<A HREF="rstring.htm#_str_cate">_str_cate</A><BR>
+<A HREF="rstring.htm#_str_center">_str_center</A><BR>
+<A HREF="rstring.htm#_str_chr">_str_chr</A><BR>
+<A HREF="rstring.htm#_str_chri">_str_chri</A><BR>
+<A HREF="rstring.htm#_str_chrn">_str_chrn</A><BR>
+<A HREF="rstring.htm#_str_chrni">_str_chrni</A><BR>
+<A HREF="rstring.htm#_str_cmp">_str_cmp</A><BR>
+<A HREF="rstring.htm#_str_cmpi">_str_cmpi</A><BR>
+<A HREF="rstring.htm#_str_cpy">_str_cpy</A><BR>
+<A HREF="rstring.htm#_str_cpye">_str_cpye</A><BR>
+<A HREF="rstring.htm#_str_cspn">_str_cspn</A><BR>
+<A HREF="rstring.htm#_str_drive">_str_drive</A><BR>
+<A HREF="rstring.htm#_str_drvpath">_str_drvpath</A><BR>
+<A HREF="rstring.htm#_str_end">_str_end</A><BR>
+<A HREF="rstring.htm#_str_ext">_str_ext</A><BR>
+<A HREF="rstring.htm#_str_fname">_str_fname</A><BR>
+<A HREF="rstring.htm#_str_fnamext">_str_fnamext</A><BR>
+<A HREF="rstring.htm#_str_left">_str_left</A><BR>
+<A HREF="rstring.htm#_str_len">_str_len</A><BR>
+<A HREF="rstring.htm#_str_lwr">_str_lwr</A><BR>
+<A HREF="rstring.htm#_str_ncat">_str_ncat</A><BR>
+<A HREF="rstring.htm#_str_ncate">_str_ncate</A><BR>
+<A HREF="rstring.htm#_str_ncmp">_str_ncmp</A><BR>
+<A HREF="rstring.htm#_str_ncmpi">_str_ncmpi</A><BR>
+<A HREF="rstring.htm#_str_ncpy">_str_ncpy</A><BR>
+<A HREF="rstring.htm#_str_nset">_str_nset</A><BR>
+<A HREF="rstring.htm#_str_path">_str_path</A><BR>
+<A HREF="rstring.htm#_str_pbrk">_str_pbrk</A><BR>
+<A HREF="rstring.htm#_str_pbrkn">_str_pbrkn</A><BR>
+<A HREF="rstring.htm#_str_rchr">_str_rchr</A><BR>
+<A HREF="rstring.htm#_str_rchri">_str_rchri</A><BR>
+<A HREF="rstring.htm#_str_rchrn">_str_rchrn</A><BR>
+<A HREF="rstring.htm#_str_rchrni">_str_rchrni</A><BR>
+<A HREF="rstring.htm#_str_rev">_str_rev</A><BR>
+<A HREF="rstring.htm#_str_right">_str_right</A><BR>
+<A HREF="rstring.htm#_str_set">_str_set</A><BR>
+<A HREF="rstring.htm#_str_skips">_str_skips</A><BR>
+<A HREF="rstring.htm#_str_skipw">_str_skipw</A><BR>
+<A HREF="rstring.htm#_str_spn">_str_spn</A><BR>
+<A HREF="rstring.htm#_str_str">_str_str</A><BR>
+<A HREF="rstring.htm#_str_stri">_str_stri</A><BR>
+<A HREF="rstring.htm#_str_tok">_str_tok</A><BR>
+<A HREF="rstring.htm#_str_toks">_str_toks</A><BR>
+<A HREF="rstring.htm#_str_trims">_str_trims</A><BR>
+<A HREF="rstring.htm#_str_trimw">_str_trimw</A><BR>
+<A HREF="rstring.htm#_str_upr">_str_upr</A><BR>
+<H2><A NAME="_fstr_cat">_fstr_cat</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Appends one string to the end of another.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_cat(char far *deststr, const char far *srcstr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_cat.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFCAT.ASM		  <B>ASM equiv</B>	STR_CAT
+
+<BR><H2><A NAME="_fstr_cate">_fstr_cate</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Appends one string to the end of another, returning a pointer to the end of the modified string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_cate(char far *deststr, const char far *srcstr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_cate.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFCATE.ASM		  <B>ASM equiv</B>	STR_CATE
+
+<BR><H2><A NAME="_fstr_center">_fstr_center</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Centers a string within a buffer.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_center(char chr, unsigned char width, char far *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_center.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFCNTR.ASM		  <B>ASM equiv</B>	STR_CENTER
+
+<BR><H2><A NAME="_fstr_chr">_fstr_chr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the first occurrence of a character.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_chr(const char far *string, int chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_chr.
+<BR></DL>
+<B>Source file</B>	_STFCHR.ASM		    <B>ASM equiv</B>	STR_CHR
+
+<BR><H2><A NAME="_fstr_chri">_fstr_chri</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the first occurrence of a character, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_chri(const char far *string, int chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_chri.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFCHRI.ASM		  <B>ASM equiv</B>	STR_CHRI
+
+<BR><H2><A NAME="_fstr_chrn">_fstr_chrn</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the first occurrence of a character which is NOT the given character.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_chrn(const char far *string, int chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_chrn.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFCHRN.ASM		  <B>ASM equiv</B>	STR_CHRN
+
+<BR><H2><A NAME="_fstr_chrni">_fstr_chrni</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the first occurrence of a character which is NOT the given character, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_chrni(const char far *string, int chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_chrni.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFCHNI.ASM		  <B>ASM equiv</B>	STR_CHRNI
+
+<BR><H2><A NAME="_fstr_cmp">_fstr_cmp</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compares one string with another.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	int _fstr_cmp(const char far *string1, const char far *string2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_cmp.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFCMP.ASM		  <B>ASM equiv</B>	STR_CMP
+
+<BR><H2><A NAME="_fstr_cmpi">_fstr_cmpi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compares one string with another, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	int _fstr_cmpi(const char far *string1, const char far *string2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_cmpi.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFCMPI.ASM		  <B>ASM equiv</B>	STR_CMPI
+
+<BR><H2><A NAME="_fstr_cpy">_fstr_cpy</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Copies a string to another location.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_cpy(char far *deststr, const char far *srcstr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_cpy.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFCPY.ASM		  <B>ASM equiv</B>	STR_CPY
+
+<BR><H2><A NAME="_fstr_cpye">_fstr_cpye</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Copies a string to another location and returns a pointer to the end of the copy.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_cpye(char far *deststr, const char far *srcstr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_cpye.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFCPYE.ASM		  <B>ASM equiv</B>	STR_CPYE
+
+<BR><H2><A NAME="_fstr_cspn">_fstr_cspn</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines the number of characters at the beginning of a string which do not match any character in a given character set.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	int _fstr_cspn(const char far *string, const char far *charset);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_cspn.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFCSPN.ASM		  <B>ASM equiv</B>	STR_CSPN
+
+<BR><H2><A NAME="_fstr_drive">_fstr_drive</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Locates a drive specifier substring in a pathname string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_drive(const char far *pathname, int *drivelen);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_drive.
+<BR>
+<BR></DL>
+<B>Source file</B>	STFDRIV.ASM		  <B>ASM equiv</B>	STR_DRIVE
+
+<BR><H2><A NAME="_fstr_drvpath">_fstr_drvpath</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Locates a drive specifier and path substring in a pathname string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_drvpath(const char far *pathname, int *pathlen);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_drvpath.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFDPTH.ASM		  <B>ASM equiv</B>	STR_DRVPATH
+
+<BR><H2><A NAME="_fstr_end">_fstr_end</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns a pointer to the end of a string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_end (const char far *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_end.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFEND.ASM		  <B>ASM equiv</B>	STR_ENDDI
+
+<BR><H2><A NAME="_fstr_ext">_fstr_ext</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Locates a filename extension substring in a string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_ext(const char far *string, int *extlen);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_ext.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFEXT.ASM		  <B>ASM equiv</B>	STR_EXT
+
+<BR><H2><A NAME="_fstr_fname">_fstr_fname</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Locates a filename substring in a string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_fname(const char far *pathname, int *fnamelen);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_name.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFFNAM.ASM		  <B>ASM equiv</B>	STR_FNAME
+
+<BR><H2><A NAME="_fstr_fnamext">_fstr_fnamext</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Locates a filename/extension substring in a string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_fnamext(const char far *pathname, int *extlen);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_namext.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFFNEX.ASM		  <B>ASM equiv</B>	STR_FNAMEXT
+
+<BR><H2><A NAME="_fstr_left">_fstr_left</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Left justifies a string within a buffer.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_left(char chr, unsigned char width, char far *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_left.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFLEFT.ASM		  <B>ASM equiv</B>	STR_LEFT
+
+<BR><H2><A NAME="_fstr_len">_fstr_len</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the length of a string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	int _fstr_len (const char far *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_len.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFLEN.ASM		  <B>ASM equiv</B>	STR_LENDI
+
+<BR><H2><A NAME="_fstr_lwr">_fstr_lwr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts uppercase characters in a string to lowercase.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_lwr(char far *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_lwr.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFLWR.ASM		  <B>ASM equiv</B>	STR_LWR
+
+<BR><H2><A NAME="_fstr_ncat">_fstr_ncat</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Appends a portion of one string to the end of another.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>		char far *_fstr_ncat(char far *deststr, const char far *srcstr, unsigned int maxnum);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_ncat.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STRNCAT.ASM		  <B>ASM equiv</B>	STR_NCAT
+
+<BR><H2><A NAME="_fstr_ncate">_fstr_ncate</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Appends a portion of one string to the end of another, returning a pointer to the end of the modified string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>		char far *_fstr_ncate(char far *deststr, const char far *srcstr, unsigned int maxnum);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_ncate.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFNCTE.ASM		  <B>ASM equiv</B>	STR_NCATE
+
+<BR><H2><A NAME="_fstr_ncmp">_fstr_ncmp</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compares a portion of one string to a portion of another.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	int _fstr_ncmp(const char far *string1, const char far *string2, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_ncmp.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFNCMP.ASM		  <B>ASM equiv</B>	STR_NCMP
+
+<BR><H2><A NAME="_fstr_ncmpi">_fstr_ncmpi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compares a portion of one string with a portion of another, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	int _fstr_ncmpi(const char far *string1, const char far *string2, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_ncmpi.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFNCPI.ASM		  <B>ASM equiv</B>	STR_NCMPI
+
+<BR><H2><A NAME="_fstr_ncpy">_fstr_ncpy</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Copies a portion of a string to another location.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>		char far *_fstr_ncpy(char far *deststr, const char far *srcstr, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_ncpy.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFNCPY.ASM		  <B>ASM equiv</B>	STR_NCPY
+
+<BR><H2><A NAME="_fstr_nset">_fstr_nset</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets the first n characters of a string to a specified character.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_nset(char far *string, int chr, unsigned int *num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_nset.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFNSET.ASM		  <B>ASM equiv</B>	STR_NSET
+
+<BR><H2><A NAME="_fstr_path">_fstr_path</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Locates a path substring in a string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_path(const char far *string, int *pathlen);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_path.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFPATH.ASM		  <B>ASM equiv</B>	STR_PATH
+
+<BR><H2><A NAME="_fstr_pbrk">_fstr_pbrk</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the first occurrence of any character which is in a set of characters.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_pbrk(const char far *string, const char *charset);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_pbrk.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFPBRK.ASM		  <B>ASM equiv</B>	STR_PBRK
+
+<BR><H2><A NAME="_fstr_pbrkn">_fstr_pbrkn</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the first occurrence of any character which is not in a set of characters.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_pbrkn(const char far *string, const char far *charset);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_pbrkn.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFPBKN.ASM		  <B>ASM equiv</B>	STR_PBRKN
+
+<BR><H2><A NAME="_fstr_rchr">_fstr_rchr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the last occurrence of a character.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_rchr(const char far *string, int chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_rchr.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFRCH.ASM		  <B>ASM equiv</B>	STR_RCHR
+
+<BR><H2><A NAME="_fstr_rchri">_fstr_rchri</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the last occurrence of a character, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_rchri(const char far *string, int chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_rchri.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFRCHI.ASM		  <B>ASM equiv</B>	STR_RCHRI
+
+<BR><H2><A NAME="_fstr_rchrn">_fstr_rchrn</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the last occurrence of a character which is not the given character.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_rchrn(const char far *string, int chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_rchrn.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFRCHN.ASM		  <B>ASM equiv</B>	STR_RCHRN
+
+<BR><H2><A NAME="_fstr_rchrni">_fstr_rchrni</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the last occurrence of a character which is not the given character, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_rchrni(const char far *string, int chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_rchrni.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFRCNI.ASM		  <B>ASM equiv</B>	STR_RCHRNI
+
+<BR><H2><A NAME="_fstr_rev">_fstr_rev</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Reverses the order of the characters in a string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_rev(char far *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_rev.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFREV.ASM		  <B>ASM equiv</B>	STR_REV
+
+<BR><H2><A NAME="_fstr_right">_fstr_right</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Right justifies a string within a buffer.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_right(char chr, unsigned char width, char far *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_right.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFRGHT.ASM		  <B>ASM equiv</B>	STR_RIGHT
+
+<BR><H2><A NAME="_fstr_set">_fstr_set</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets all characters in a string to a specified character.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_set(char far *string, int chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_set.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFSET.ASM		  <B>ASM equiv</B>	STR_SET
+
+<BR><H2><A NAME="_fstr_skips">_fstr_skips</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Skips past space characters in a string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_skips(const char far *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_skips.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFSKPS.ASM		  <B>ASM equiv</B>	STR_SKIPS
+
+<BR><H2><A NAME="_fstr_skipw">_fstr_skipw</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Skips past whitespace characters in a string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_skipw(const char far *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_skipw.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFSKPW.ASM		  <B>ASM equiv</B>	STR_SKIPW
+
+<BR><H2><A NAME="_fstr_spn">_fstr_spn</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines the number of characters at the beginning of a string which match any character in a given character set.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	int _fstr_spn(const char far *string, const char far *charset);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_spn.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFSPN.ASM		  <B>ASM equiv</B>	STR_SPN
+
+<BR><H2><A NAME="_fstr_str">_fstr_str</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the first occurrence of a substring.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_str(const char far *string, const char far *substr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_str.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFSTR.ASM		  <B>ASM equiv</B>	STR_STR
+
+<BR><H2><A NAME="_fstr_stri">_fstr_stri</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the first occurrence of a substring, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_stri(const char far *string, const char far *substr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_stri.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFSTRI.ASM		  <B>ASM equiv</B>	STR_STRI
+
+<BR><H2><A NAME="_fstr_tok">_fstr_tok</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Initializes a string for subsequent tokenization by _str_tok.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_tok(const char far *charset);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_tok.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFTOK.ASM		  <B>ASM equiv</B>	STR_TOK
+
+<BR><H2><A NAME="_fstr_toks">_fstr_toks</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Initializes a string for subsequent tokenization by _str_tok.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	void _fstr_toks(const char far *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_toks.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFTOK.ASM		  <B>ASM equiv</B>	STR_TOKS
+
+<BR><H2><A NAME="_fstr_trims">_fstr_trims</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Removes space characters from the end of a string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_trims(char far *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_trims.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFTRMS.ASM		  <B>ASM equiv</B>	STR_TRIMS
+
+<BR><H2><A NAME="_fstr_trimw">_fstr_trimw</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Removes whitespace characters from the end of a string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_trimw(char far *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_trimw.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFTRMW.ASM		  <B>ASM equiv</B>	STR_TRIMW
+
+<BR><H2><A NAME="_fstr_upr">_fstr_upr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts lowercase letters in a string to uppercase.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char far *_fstr_upr(char far *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _str_upr.
+<BR>
+<BR></DL>
+<B>Source file</B>	_STFUPR.ASM		  <B>ASM equiv</B>	STR_UPR
+
+<BR><H2><A NAME="_str_cat">_str_cat</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Appends one string to the end of another.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_cat(char far *deststr, const char *srcstr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to deststr.
+<BR>	deststr		copy of deststr with srcstr appended to the end
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function copies srcstr to the end of deststr. The modified deststr is NULL terminated. The original NULL of deststr is overwritten with the first character of srcstr. The space allocated for deststr must be sufficient to hold the modified deststr, or data following deststr will be overwritten.
+<BR>
+<BR>	srcstr and deststr may be the same string.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string1[10], string2[10];
+	   ...
+	   _str_cat (string1, string2);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string1[10], string2[10];
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea di,string1
+	   lea si,string2
+	   str_cat ();
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRCAT.ASM		  <B>ASM equiv</B>	STR_CAT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_cat">_fstr_cat</A>, <A HREF="rstring.htm#_str_cat">_str_cat</A>, <A HREF="rstring.htm#_str_ncat">_str_ncat</A>
+<BR></DL>
+<H2><A NAME="_str_cate">_str_cate</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Appends one string to the end of another, returning the address of the end of the modified string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_cate(char far *deststr, const char *srcstr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the end of deststr.
+<BR>	deststr		copy of deststr with srcstr appended to the end
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function copies srcstr to the end of deststr. The modified deststr is NULL terminated. A pointer is returned to the terminating NULL of deststr. The original NULL of deststr is overwritten with the first character of srcstr. The space allocated for deststr must be sufficient to hold the modified deststr or data following deststr will be overwritten. A subsequent call to _str_cpy or _str_cpye will append data to the result more rapidly than is possible with _str_cat.
+<BR>
+<BR>	srcstr and deststr may be the same string.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string1[10], string2[10];
+	   ...
+	   _str_cate (string1, string2);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string1[10], string2[10];
+	   ...
+	   pushss
+	   pop es	 /* ES = SS */
+	   lea di,string1
+	   lea si,string2
+	   str_cate ();/* DI -&gt end of string1 */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRCATE.ASM		  <B>ASM equiv</B>	STR_CATE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_cat">_fstr_cat</A>, <A HREF="rstring.htm#_str_cat">_str_cat</A>, <A HREF="rstring.htm#_str_ncat">_str_ncat</A>
+<BR></DL>
+<H2><A NAME="_str_center">_str_center</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Centers a string within a buffer.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_center(char *string, char pad, unsigned char width);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to string.
+<BR>	string	a center-aligned copy of string
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function pads string on the left and right with an equal number of pad characters. Characters are padded only until the total number of characters equals width. If an odd number of pad characters is required, the additional character is padded on the right. The resulting string is NULL terminated.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	#include &lt;sastring.h&gt
+	{
+	   char string[11];
+	   ...
+	   _put_str(_str_center("Hello!", ' ', 10)); /* "  Hello!  "*/
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[11] = "hello!";
+	...
+	lea si,string/* SI = offset of string */
+	mov cl,10	 /* CL = width */
+	mov al," "	 /* AL = pad character */
+	str_center();	 /* center align string */
+	put_str();	 /* "  Hello!  " */
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRCNTR.ASM		  <B>ASM equiv</B>	STR_CENTER
+
+<BR><DL>
+<DT><B>See also</B>
+<DD>cput_strci, <A HREF="rstring.htm#_fstr_center">_fstr_center</A>, <A HREF="rscript.htm#_sput_script">_sput_script</A>, <A HREF="rstring.htm#_str_left">_str_left</A>, <A HREF="rstring.htm#_str_right">_str_right</A>
+<BR></DL>
+<H2><A NAME="_str_chr">_str_chr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the first occurrence of a character.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_chr(const char *string, int chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the first occurrence of chr in string.
+<BR>
+<BR>	NULL if string contains no occurrences of chr.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function scans string in the forward direction, searching for chr. The search stops at the first occurrence of chr or at the terminating NULL, whichever comes first. A pointer to the first occurrence of chr in string is returned. NULL is returned if string contains no occurrences of chr.
+<BR>
+<BR>	This function may be used to search for the terminating NULL.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[10], look;
+	   char *pointer;
+	   ...
+	   pointer = _str_chr (string, look);
+	   if (pointer == NULL)
+	   {
+	      ...
+	   } else
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[10], look;
+	   ...
+	   lea si,string
+	   mov al,look
+	str_chr ();	 /* SI = offset of first 
+		   	    occurrence of look */
+	 jncstr_chr_010/* if look was found */
+	...    	 /* if look wasn't found */
+	jmp short str_chr_020
+
+	str_chr_010:
+	...    	 /* if look was found */
+	str_chr_020:
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRCHR.ASM		  <B>ASM equiv</B>	STR_CHR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_chr">_fstr_chr</A>, <A HREF="rmemanip.htm#_mem_chr">_mem_chr</A>, <A HREF="rstring.htm#_str_chr">_str_chr</A>, <A HREF="rstring.htm#_str_chr">_str_chr</A>, <A HREF="rstring.htm#_str_chr">_str_chr</A>, <A HREF="rstring.htm#_str_rchr">_str_rchr</A>
+<BR></DL>
+<H2><A NAME="_str_chri">_str_chri</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the first occurrence of a character, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_chri(const char *string, int chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the first occurrence of chr in string.
+<BR>
+<BR>	NULL if string contains no occurrences of chr.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function scans string in the forward direction, searching for chr. The search stops at the first occurrence of chr or at the terminating NULL, whichever comes first. The case of ASCII characters is ignored. A pointer to the first occurrence of chr in string is returned. NULL is returned if string contains no occurrences of chr.
+<BR>
+<BR>	This function may be used to search for the terminating NULL.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[10], look;
+	   char *pointer;
+	   ...
+	   pointer = _str_chri (string, look);
+	   if (pointer == NULL)
+	   {
+	      ...
+	   } else
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[10], look;
+	   ...
+	   lea si,string
+	   mov al,look
+	   str_chri ();/* DS:SI -&gt 1st occurrence of look */
+	    jncstr_chri_010    /* if look was found */
+	   ... 	 	    /* if look wasn't found */
+	   jmp short str_chri_020
+
+	str_chri_010:
+	...    	 /* if look was found */
+	str_chri_020:
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRCHRI.ASM		  <B>ASM equiv</B>	STR_CHRI
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_chr">_fstr_chr</A>, <A HREF="rstring.htm#_str_chr">_str_chr</A>, <A HREF="rstring.htm#_str_rchr">_str_rchr</A>
+<BR></DL>
+<H2><A NAME="_str_chrn">_str_chrn</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the first occurrence of a character which is NOT the given character.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_chrn(const char *string, int chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the first character in string not matching chr.
+<BR>
+<BR>	NULL if all characters in string match chr.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function scans string for the first occurrence of a character which is different from chr. A pointer to that character is returned. NULL is returned if all characters in string match the specified character.
+<BR>
+<BR>	A NULL string always results in a NULL return, even if chr is not NULL.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[10], look;
+	   char *pointer;
+	   ...
+	   pointer = _str_chrn (string, look);
+	   if (pointer == NULL)
+	   {
+	      ...
+	   } else
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[10], look;
+	   ...
+	   lea si,string
+	   mov al,look
+	   str_chrn ();	/* SI = offset of first 
+	   	  	 	   non-occurrence of look */
+	    jncstr_chrn_010/* if no chars matched look */
+	   ... 	 	/* if all chars matched look */
+	   jmp short str_chrn_020
+
+	str_chrn_010:
+	   ... 	 	/* if no chars matched look */
+	str_chrn_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRCHRN.ASM		  <B>ASM equiv</B>	STR_CHRN
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_chr">_fstr_chr</A>, <A HREF="rstring.htm#_str_chr">_str_chr</A>, <A HREF="rstring.htm#_str_chr">_str_chr</A>, <A HREF="rstring.htm#_str_chr">_str_chr</A>, <A HREF="rstring.htm#_str_rchr">_str_rchr</A>
+<BR></DL>
+<H2><A NAME="_str_chrni">_str_chrni</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the first occurrence of a character which is NOT the given character, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_chrni(const char *string, int chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the first character in string not matching chr.
+<BR>
+<BR>	NULL if string contains only occurrences of chr.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns a pointer to the first occurrence of a character which is different from chr, ignoring the case of ASCII characters. A pointer to that character is returned. NULL is returned if every character in string matches the specified character (ignoring case).
+<BR>
+<BR>	A NULL string always results in a NULL return, even if chr is not NULL.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[10], look;
+	   char *pointer;
+	   ...
+	   pointer = _str_chrni (string, look);
+	   if (pointer == NULL)
+	   {
+	      ...
+	   } else
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[10], look;
+	   ...
+	   lea si,string
+	   mov al,look
+	   str_chrni ();	/* SI = offset of first 
+	   	  	 	   non-occurrence of look */
+	    jncstr_chrni_010/* if no chars matched look */
+	   ... 	 	/* if all chars matched look */
+	   jmp short str_chrni_020
+
+	str_chrni_010: 
+	   ... 	 	/* no matching chars found */
+	str_chrni_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRCHNI.ASM		  <B>ASM equiv</B>	STR_CHRNI
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_chr">_fstr_chr</A>, <A HREF="rstring.htm#_str_chr">_str_chr</A>, <A HREF="rstring.htm#_str_rchr">_str_rchr</A>
+<BR></DL>
+<H2><A NAME="_str_cmp">_str_cmp</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compares two strings.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	int _str_cmp(const char *string1, const char far *string2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if string1 is greater than string2.
+<BR>
+<BR>	0 if string1 is equal to string2.
+<BR>
+<BR>	-1 if string1 is less than string2.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function compares each character of string1 to the corresponding character of string2. The comparison starts with the first character of each string and continues until corresponding characters differ or until the end of one of the strings is encountered. The return values (1, 0 ,-1) indicate whether string1 is greater than, equal to, or less than string2. If one string is longer than the other, but the strings are otherwise identical, the longer string is considered to be greater than the shorter string.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string1[10], string2[10];
+	   ...
+	   switch (_str_cmp (string1, string2))
+	   {
+	      case 1:	 	/* string1 &gt string2 */
+	         break;
+	      case 0:	 	/* string1 = string2 */
+	         break;
+	      case -1:	 	/* string1 &lt; string2 */
+	         break;
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	&lt;char string1[10], string2[10];
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea si,string1
+	   lea di,string2
+	   str_cmp ();
+	    je str_cmp_010/* if string1 = string2 */
+	    jb str_cmp_020/* if string1 &lt; string2 */
+	   ... 	 	/* if string1 &gt string2 */
+	   jmp short str_cmp_030
+
+	str_cmp_010:
+	   ... 	 	/* string1 = string2 */
+	   jmp short str_cmp_030
+	str_cmp_020:
+	   ... 	 	/* string1 &lt; string2 */
+	str_cmp_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRCMP.ASM		  <B>ASM equiv</B>	STR_CMP
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rbuffer.htm#_buf_cmp">_buf_cmp</A>, <A HREF="rstring.htm#_fstr_cmp">_fstr_cmp</A>, <A HREF="rmemanip.htm#_mem_cmp">_mem_cmp</A>, <A HREF="rstring.htm#_str_cmp">_str_cmp</A>, <A HREF="rstring.htm#_str_ncmp">_str_ncmp</A>
+<BR></DL>
+<H2><A NAME="_str_cmpi">_str_cmpi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compares two strings, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	int _str_cmpi(const char *string1, const char far *string2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if string1 is greater than string2.
+<BR>
+<BR>	0 if string1 is equal to string2.
+<BR>
+<BR>	-1 if string1 is less than string2.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function compares each character of string1 to the corresponding character of string2, ignoring the case of ASCII characters. The comparison starts with the first character of each string and continues until corresponding characters differ or until the end of one of the strings is encountered. The return value (1, 0, or -1) indicates whether string1 is greater than, equal to, or less than string2. If one string is longer than the other, but the strings are otherwise identical, the longer string is considered to be greater than the shorter string.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string1[10], string2[10];
+	   ...
+	   switch (_str_cmpi (string1, string2))
+	   {
+	      case 1:/* string1 &gt string2, case insensitive */
+	         break;
+	      case 0:/* string1 = string2, case insensitive */
+	         break;
+	      case -1:/* string1 &lt; string2, case insensitive */
+	         break;
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string1[10], string2[10];
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS */
+	lea si,string1
+	lea di,string2
+	str_cmpi ();
+	 je str_cmpi_010/* if string1 = string2 */
+	 jb str_cmpi_020/* if string1 &lt; string2 */
+	...    	 /* if string1 &gt string2 */
+	jmp short str_cmpi_030
+
+	str_cmpi_010:
+	...    	 /* string1 = string2 */
+	jmp short str_cmpi_030
+
+	str_cmpi_020:
+	...    	 /* string1 &lt; string2 */
+	str_cmpi_030:
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRCMPI.ASM		  <B>ASM equiv</B>	STR_CMPI
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rbuffer.htm#_buf_cmp">_buf_cmp</A>, <A HREF="rstring.htm#_fstr_cmp">_fstr_cmp</A>, <A HREF="rmemanip.htm#_mem_cmp">_mem_cmp</A>, <A HREF="rstring.htm#_str_cmp">_str_cmp</A>, <A HREF="rstring.htm#_str_ncmp">_str_ncmp</A>
+<BR></DL>
+<H2><A NAME="_str_cpy">_str_cpy</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Copies a string to another location.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_cpy(char far *deststr, const char *srcstr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to deststr.
+<BR>	deststr		copy of srcstr
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function copies srcstr into deststr. The copy is NULL terminated.
+<BR>
+<BR>	srcstr and deststr must not overlap if deststr is higher in memory than srcstr.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string1[10], string2[10];
+	   ...
+	   _str_cpy (string1, string2);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string1[10], string2[10];
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea di,string1/* ES:DI -&gt string1 */
+	   lea si,string2/* DS:SI -&gt string2 */
+	   str_cpy ();	/* copy string2 into string1 */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRCPY.ASM		  <B>ASM equiv</B>	STR_CPY
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rbuffer.htm#_buf_cpy">_buf_cpy</A>, <A HREF="rstring.htm#_fstr_cpy">_fstr_cpy</A>, <A HREF="rmemanip.htm#_mem_cmp">_mem_cmp</A>, <A HREF="rmemanip.htm#_mem_mov">_mem_mov</A>, <A HREF="rstring.htm#_str_cpy">_str_cpy</A>, <A HREF="rstring.htm#_str_ncpy">_str_ncpy</A></DL>
+<H2><A NAME="_str_cpye">_str_cpye</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Copies a string to another location and returns the address of the end of the copy.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_cpye(char far *deststr, const char *srcstr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the end of deststr.
+<BR>	deststr		a copy of srcstr
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function copies srcstr into deststr and returns a pointer to the terminating NULL of deststr. A subsequent call to _str_cpy or _str_cpye will append data to the result more rapidly than would be possible if _str_cpy were used instead of this function.
+<BR>
+<BR>	srcstr and deststr must not overlap if deststr is higher in memory than srcstr.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string1[10], string2[10], *pointer;
+	   ...
+	   pointer = _str_cpye (string1, string2);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string1[10], string2[10];
+	   ...
+	   pushss
+	   pop es	 /* ES = SS */
+	   lea di,string1
+	   lea si,string2
+	   str_cpye ();/* ES:DI -&gt end of string1 */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRCPYE.ASM		  <B>ASM equiv</B>	STR_CPYE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_cpy">_fstr_cpy</A>, <A HREF="rmemanip.htm#_mem_cpy">_mem_cpy</A>, <A HREF="rstring.htm#_str_cpy">_str_cpy</A>
+<BR></DL>
+<H2><A NAME="_str_cspn">_str_cspn</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines the number of characters at the beginning of a string which do not match any character in a given character set.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	int _str_cspn(const char *string, const char far *charset);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The number of consecutive characters at the beginning of string that are not in charset.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function compares each character in string to all of the characters in charset. The comparison starts with the first character of string and continues until one of the characters in string matches one of the characters in charset.The number of consecutive unmatched characters at the beginning of string is returned.
+<BR>
+<BR>	charset must be a NULL-terminated string containing all characters in the character set.
+<BR>
+<BR>	The terminating NULL of string is never included in the count; therefore, a NULL string results in a count of zero.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string1[10], string2[10];
+	   int num;
+	   ...
+	   num = _str_cspn (string1, string2);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string1[10], string2[10];
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea di,string2
+	   lea si,string1
+	   str_cspn ();	/* CX=number of matching chars */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRCSPN.ASM		  <B>ASM equiv</B>	STR_CSPN
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_cspn">_fstr_cspn</A>, <A HREF="rmemanip.htm#_mem_cspn">_mem_cspn</A>, <A HREF="rstring.htm#_str_spn">_str_spn</A>
+<BR></DL>
+<H2><A NAME="_str_drive">_str_drive</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Locates a drive specifier substring in a pathname string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_drive(const char *pathname, int *drivelen);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the drive substring in pathname.
+<BR>	drivelen		the length of the drive substring
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns a pointer to the start of the drive specifier substring in pathname. drivelen indicates the length of the substring. If there is no drive specifier substring, the returned pointer indicates where the substring would be if it were present and drivelen is set to 0.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[10];
+	   int length;
+	   ...
+	   _str_drive (string, &amplength);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[10];
+	...
+	lea si,string
+	str_drive ();/* DS:SI -&gt drive specifier,
+		      CX=length */
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRDRIV.ASM		  <B>ASM equiv</B>	STR_DRIVE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_drive">_fstr_drive</A>, <A HREF="rstring.htm#_str_drvpath">_str_drvpath</A>, <A HREF="rstring.htm#_str_ext">_str_ext</A>, <A HREF="rstring.htm#_str_fname">_str_fname</A>, <A HREF="rstring.htm#_str_path">_str_path</A>
+<BR></DL>
+<H2><A NAME="_str_drvpath">_str_drvpath</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Locates a drive specifier and path substring in a pathname string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_drvpath(const char *pathname, int *pathlen);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the drive/path substring.
+<BR>	pathlen		the length of the drive/path substring
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns a pointer to the substring consisting of the drive specifier and path in pathname. pathlen indicates the length of the substring. If there is no drive specifier and/or path substring, the returned pointer indicates where the substring would be if it were present and pathlen is set to 0.
+<BR>
+<BR>	This function requires that the path portion of pathname be terminated with a backslash character ("\"). This makes it possible to differentiate between path-only and path-filename strings. The _term_path function is provided to force path-only strings to conform to this internal Spontaneous Assembly format. _fix_path is provided to convert strings from this format into DOS-compatible format. 
+<BR>
+<BR>	See the technical notes for more information about internal and DOS path string formats.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[10];
+	   int length;
+	   ...
+	   _str_drvpath (string, &amplength);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[10];
+	   ...
+	   lea si,string
+	   str_drvpath ();/* DS:SI -&gt drive/path specifier,
+	   	  	   CX=length */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRDPTH.ASM		  <B>ASM equiv</B>	STR_DRVPATH
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_drvpath">_fstr_drvpath</A>, <A HREF="rstring.htm#_str_drive">_str_drive</A>, <A HREF="rstring.htm#_str_ext">_str_ext</A>, <A HREF="rstring.htm#_str_fname">_str_fname</A>, <A HREF="rstring.htm#_str_path">_str_path</A>
+<BR></DL>
+<H2><A NAME="_str_end">_str_end</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns a pointer to the end of a string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_end(const char *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the end of string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns a pointer to the terminating NULL in string.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[10], *pointer;
+	   ...
+	   pointer = _str_end (string);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[10];
+	   ...
+	   pushss
+	   pop es	 /* ES = SS */
+	   lea di,string
+	   str_enddi ();/* ES:DI -&gt end of string */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STREND.ASM		  <B>ASM equiv</B>	STR_ENDDI
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_end">_fstr_end</A>
+<BR></DL>
+<H2><A NAME="_str_ext">_str_ext</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Locates a file name extension substring in a string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_ext(const char *string, int *extlen);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the extension substring.
+<BR>	extlen		the length of the extension substring
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns a pointer to the start of the file extension substring in string. extlen indicates the length of the substring. The first extension character is always ".". If there is no file extension substring, the returned pointer indicates where the substring would be if it were present and extlen is set to 0.
+<BR>
+<BR>	This function requires that the path portion of string be terminated with a backslash character ("\"). This makes it possible to differentiate between path-only and path-filename strings. The _term_path function is provided to force path-only strings to conform to this internal format. _fix_path is provided to convert strings from this format into DOS-compatible format. 
+<BR>
+<BR>	See the technical notes for more information about internal and DOS path string formats.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[10];
+	   int length;
+	   ...
+	   _str_ext (string, &amplength);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[10];
+	   ...
+	   lea si,string
+	   str_ext ();/* SI = offset of extension in string,
+	   	  	    CX=length */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STREXT.ASM		  <B>ASM equiv</B>	STR_EXT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_ext">_fstr_ext</A>, <A HREF="rstring.htm#_str_drive">_str_drive</A>, <A HREF="rstring.htm#_str_fname">_str_fname</A>, <A HREF="rstring.htm#_str_fname">_str_fname</A>, <A HREF="rstring.htm#_str_path">_str_path</A>
+<BR></DL>
+<H2><A NAME="_str_fname">_str_fname</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Locates a filename substring in a string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_fname(const char *pathname, int *fnamelen);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the filename substring.
+<BR>	fnamelen		the length of the filename substring
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns a pointer to the start of the filename substring in pathname. fnamelen indicates the length of the substring. The filename extension is NOT included in the substring. If there is no filename substring, the returned pointer indicates where the substring would be if it were present and fnamelen is set to 0.
+<BR>
+<BR>	This function requires that the path portion of pathname be terminated with a backslash character ("\"). This makes it possible to differentiate between path-only and path-filename strings. The _term_path function is provided to force path-only strings to conform to this internal format. _fix_path is provided to convert strings from this format into DOS-compatible format. 
+<BR>
+<BR>	See the technical notes for more information about internal and DOS path string formats.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[10];
+	   int length;
+	   ...
+	   _str_fname (string, &amplength);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[10];
+	      ...
+	lea si,string
+	str_fname ();/* SI = offset of filename portion of
+		      string, CX=length */
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRFNAM.ASM		  <B>ASM equiv</B>	STR_FNAME
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_fname">_fstr_fname</A>, <A HREF="rstring.htm#_str_drive">_str_drive</A>, <A HREF="rstring.htm#_str_ext">_str_ext</A>, <A HREF="rstring.htm#_str_fname">_str_fname</A>, <A HREF="rstring.htm#_str_path">_str_path</A>
+<BR></DL>
+<H2><A NAME="_str_fnamext">_str_fnamext</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Locates a filename/extension substring in a string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_fnamext(const char *pathname, int *extlen);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the file extension substring.
+<BR>	extlen		the length of the filename/extension substring
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns a pointer to the start of the file extension substring in pathname. extlen indicates the length of the substring. If there is no file extension substring, the returned pointer indicates where the substring would be if it were present and extlen is set to 0.
+<BR>
+<BR>	This function requires that the path portion of pathname be terminated with a backslash character ("\"). This makes it possible to differentiate between path-only and path-filename strings. The _term_path function is provided to force path-only strings to conform to this internal format. _fix_path is provided to convert strings from this format into DOS-compatible format. 
+<BR>
+<BR>	See the technical notes for more information about internal and DOS path string formats.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[10];
+	   int length;
+	   ...
+	   _str_fnamext (string, &amplength);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[10];
+	   ...
+	   lea si,string
+	   str_fnamext ();/* SI = offset of filename.ext portion 
+	   	  	    of string, CX=length */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRFNEX.ASM		  <B>ASM equiv</B>	STR_FNAMEXT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_fname">_fstr_fname</A>, <A HREF="rstring.htm#_str_drive">_str_drive</A>, <A HREF="rstring.htm#_str_ext">_str_ext</A>, <A HREF="rstring.htm#_str_fname">_str_fname</A>, <A HREF="rstring.htm#_str_path">_str_path</A></DL>
+<H2><A NAME="_str_left">_str_left</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Left justifies a string within a buffer.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_left(char *string, char pad, unsigned char width);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to string.
+<BR>	string	a left-aligned copy of string
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	The function pads string on the right with the specified pad character until string is left justified within width. Characters are padded only until the total number of characters equals width. The resulting string is NULL terminated.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	#include &lt;sastring.h&gt
+	{
+	   char string[11];
+	   ...
+	   _put_str(_str_left("Hello!", ' ', 10)); /* "Hello!    " */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[11] = "hello!";
+	   ...
+	   lea si,string/* SI = offset of string */
+	   mov cl,10	/* CL = width */
+	   mov al," "	/* AL = pad character */
+	   str_left();	/* left align string */
+	   put_str();	/* "Hello!    " */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRLEFT.ASM		  <B>ASM equiv</B>	STR_LEFT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_left">_fstr_left</A>, <A HREF="rscript.htm#_sput_script">_sput_script</A>, <A HREF="rstring.htm#_str_center">_str_center</A>, <A HREF="rstring.htm#_str_right">_str_right</A>
+<BR></DL>
+<H2><A NAME="_str_len">_str_len</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the length of a string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	int _str_len(const char *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The length of string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the number of characters in string (not including the terminating NULL character).
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[10];
+	   int length;
+	   ...
+	   length = _str_len (string);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[] = "Length of this string";
+	...
+	pushss
+	pop es /* ES = SS */
+	lea di,string
+	str_lendi ();/* CX=string length */
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRLEN.ASM		  <B>ASM equiv</B>	STR_LENDI
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_len">_fstr_len</A>
+<BR></DL>
+<H2><A NAME="_str_lwr">_str_lwr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts uppercase characters in a string to lowercase.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_lwr(char *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to string.
+<BR>	string		copy of string with ASCII characters converted to lowercase
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function converts all ASCII uppercase letters (A-Z) in string to lowercase letters (a-z). No other characters are modified. A pointer to string is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[10];
+	   ...
+	   _str_lwr (string);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[10];
+	   ...
+	   lea si,string
+	   str_lwr ();
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRLWR.ASM		  <B>ASM equiv</B>	STR_LWR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_lwr">_fstr_lwr</A>, <A HREF="rmemanip.htm#_mem_lwr">_mem_lwr</A>, <A HREF="rstring.htm#_str_upr">_str_upr</A>
+<BR></DL>
+<H2><A NAME="_str_ncat">_str_ncat</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Appends a portion of one string to the end of another.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>		char *_str_ncat(char far *deststr, const char *srcstr, unsigned int maxnum);
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to deststr.
+<BR>	deststr	a copy of deststr with up to maxnum characters from srcstr appended
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function copies up to maxnum characters from srcstr to the end of deststr. The modified deststr is NULL terminated. A pointer to deststr is returned.
+<BR>
+<BR>	The original NULL at the end of deststr is overwritten with the first character of srcstr. The space allocated for deststr must be sufficient to hold the modified deststr or data following deststr will be overwritten.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string1[10], string2[10];
+	   ...
+	   _str_ncat (string1, string2, 5);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string1[10], string2[10];
+	   ...
+	   pushss
+	   pop es	 /* ES = SS */
+	   lea di,string1
+	   lea si,string2
+	   mov cx,5
+	   str_ncat ();/* CX=number of characters copied */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRNCAT.ASM		  <B>ASM equiv</B>	STR_NCAT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_ncat">_fstr_ncat</A>, <A HREF="rstring.htm#_str_cat">_str_cat</A>, <A HREF="rstring.htm#_str_ncat">_str_ncat</A>
+<BR></DL>
+<H2><A NAME="_str_ncate">_str_ncate</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Appends a portion of one string to the end of another, returning a pointer to the end of the modified string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>		char *_str_ncate(char far *deststr, const char *srcstr, unsigned int maxnum);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the end of deststr.
+<BR>	deststr	a copy of deststr with up to maxnum characters from srcstr appended
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function copies up to maxnum characters from srcstr to the end of deststr. The modified deststr is NULL terminated. A pointer to this NULL character is returned. A subsequent call to _str_cpy or _str_cpye will append data to the result more rapidly than would have been possible if _str_ncat had been called instead of this function.
+<BR>
+<BR>	The original NULL at the end of deststr is overwritten with the first character of srcstr. The space allocated for deststr must be sufficient to hold the modified deststr, or data following deststr will be overwritten.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string1[10], string2[10], *pointer;
+	   ...
+	   pointer = _str_ncate (string1, string2, 5);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string1[10], string2[10];
+	   ...
+	   pushss
+	   pop es	 /* ES = SS */
+	   lea di,string1
+	   lea si,string2
+	   mov cx,5
+	   str_ncate ();/* CX=# of chars copied, 
+	   	  	    DI -&gt end of string1 */
+	   	  ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRNCTE.ASM		  <B>ASM equiv</B>	STR_NCATE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_cat">_fstr_cat</A>, <A HREF="rstring.htm#_str_cat">_str_cat</A>, <A HREF="rstring.htm#_str_ncat">_str_ncat</A>
+<BR></DL>
+<H2><A NAME="_str_ncmp">_str_ncmp</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compares a portion of one string to a portion of another.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	int _str_ncmp(const char *string1, const char far *string2, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if string1 is greater than string2.
+<BR>
+<BR>	0 if string1 is equal to string2.
+<BR>
+<BR>	-1 if string1 is less than string2.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function compares each character of string1 to the corresponding character of string2. The comparison starts with the first character of each string and continues until corresponding characters differ, until the end of one of the strings is encountered, or until num characters have been compared, whichever comes first. The return value (1, 0, or -1) indicates whether string1 is greater than, equal to, or less than string2.
+<BR>
+<BR>WARNING! If num is zero, the return condition is undefined.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string1[10], string2[10];
+	   int num;
+	   ...
+	   switch (_str_ncmp (string1, string2, num))
+	   {
+	      case 1:/* first num chars of string1 &gt string2 */
+	         break;
+	      case 0:/* first num chars of string1 = string2 */
+	         break;
+	      case -1:/* first num chars of string1 &lt; string2 */
+	         break;
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string1[10], string2[10];
+	...
+	pushss
+	pop es 	 /* ES = SS */
+	lea si,string1
+	lea di,string2
+	mov cx,5
+	str_ncmp ();
+	 je str_ncmp_010/* if first num chars of 
+		   	    string1 = string2 */
+	 jb str_ncmp_020/* if first num chars of 
+		   	    string1 &lt; string2 */
+	...    	 /* if first num chars of 
+		   	    string1 &gt string2 */
+	jmp short str_ncmp_030
+
+	str_ncmp_010:
+
+	jmp short str_ncmp_030
+	str_ncmp_020:
+	...    	 /* first num chars of 
+		   	    string1 &lt; string2 */
+	str_ncmp_030:
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRNCMP.ASM		  <B>ASM equiv</B>	STR_NCMP
+		
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_ncmp">_fstr_ncmp</A>, <A HREF="rstring.htm#_str_cmp">_str_cmp</A>, <A HREF="rstring.htm#_str_ncmp">_str_ncmp</A>
+<BR></DL>
+<H2><A NAME="_str_ncmpi">_str_ncmpi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compares a portion of one string to a portion of another, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	int _str_ncmpi(const char *string1, const char far *string2, unsigned int num);
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if string1 is greater than string2.
+<BR>
+<BR>	0 if string1 is equal to string2.
+<BR>
+<BR>	-1 if string1 is less than string2.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function compares each character of string1 to the corresponding character of string2, ignoring the case of ASCII characters. The comparison starts with the first character of each string and continues until corresponding characters differ, until the end of one of the strings is encountered, or until num characters have been compared, whichever comes first. The return value (1, 0, or -1) indicates whether string1 is greater than, equal to, or less than string2.
+<BR>
+<BR>WARNING! If num is zero, the return condition is undefined.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string1[10], string2[10];
+	   int num;
+	   ...
+	   switch (_str_ncmpi (string1, string2, num))
+	   {
+	      case 1:/* first num chars of string1 &gt string2 */
+	         break;
+	      case 0:/* first num chars of string1 = string2 */
+	         break;
+	      case -1:/* first num chars of string1 &lt; string2 */
+	         break;
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string1[10], string2[10];
+	   int num;
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea si,string1
+	   lea di,string2
+	   str_ncmpi ();
+	    je str_ncmpi_010/* string1 = string2 */
+	    jb str_ncmpi_020/* string1 &lt; string2 */
+	   ... 	 	/* string1 &gt string2 */
+	   jmp short str_ncmpi_030
+
+	str_ncmpi_010:
+	   ... /* string1 = string2, case insensitive */
+	   jmp short str_ncmpi_030
+
+	str_ncmpi_020: 
+	   ... /* string1 = string2, case insensitive */
+	str_ncmpi_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRNCPI.ASM		  <B>ASM equiv</B>	STR_NCMPI
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_ncmp">_fstr_ncmp</A>, <A HREF="rstring.htm#_str_cmp">_str_cmp</A>, <A HREF="rstring.htm#_str_ncmp">_str_ncmp</A>
+<BR></DL>
+<H2><A NAME="_str_ncpy">_str_ncpy</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Copies a portion of a string to another location.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>		char *_str_ncpy(char far *deststr, const char *srcstr, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to deststr.
+<BR>		deststr		contains up to num characters copied from srcstr
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function copies characters from srcstr into deststr. Copying starts with the first character of srcstr and continues until all characters in srcstr have been copied or until num characters have been copied, whichever comes first. The copy is always NULL terminated. A pointer to deststr is returned.
+<BR>
+<BR>	srcstr and deststr must not overlap. If num is zero, a NULL string is copied into deststr.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string1[10], string2[10];
+	   ...
+	   _str_ncpy (string1, string2, 5);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string1[10], string2[10];
+	   ...
+	   pushss
+	   pop es	 /* ES = SS */
+	   lea di,string1
+	   lea si,string2
+	   mov cx,5
+	   str_ncpy ();/* CX=number of characters copied */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRNCPY.ASM		  <B>ASM equiv</B>	STR_NCPY
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_ncpy">_fstr_ncpy</A>, <A HREF="rstring.htm#_str_cpy">_str_cpy</A>, <A HREF="rstring.htm#_str_cpy">_str_cpy</A>
+<BR></DL>
+<H2><A NAME="_str_nset">_str_nset</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets the first n characters of a string to a specified character.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_nset(char *string, int chr, unsigned int num);
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to string.
+<BR>	string		a copy of string with up to num characters replaced with chr
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function replaces consecutive characters in string with chr. The function starts with the first character of string and continues until the terminating NULL is encountered or until num characters have been replaced, whichever comes first. The terminating NULL is never replaced.
+<BR>
+<BR>	If num is zero, no change is made to string.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string1[10];
+	   ...
+	   _str_nset (string1, ' ', 9);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string1[10], init;
+	   ...
+	   lea si,string1
+	   mov al,' '
+	   mov cx,5
+	   str_nset ();/* CX=number of characters set to AL */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRNSET.ASM		  <B>ASM equiv</B>	STR_NSET
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_nset">_fstr_nset</A>, <A HREF="rstring.htm#_str_set">_str_set</A>
+<BR></DL>
+<H2><A NAME="_str_path">_str_path</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Locates the path substring in a string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_path(const char *string, int *pathlen);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the path substring in string.
+<BR>	pathlen		the length of the path substring
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns a pointer to the start of the path substring in string. pathlen contains the length of the substring. If there is no path substring, the returned pointer indicates where the substring would be if it were present and pathlen is set to 0.
+<BR>
+<BR>	This function requires that the path portion of string be terminated with a backslash character ("\"). This makes it possible to differentiate between path-only and path-filename strings. The _term_path function is provided to force path-only strings to conform to this internal format. _fix_path is provided to convert strings from this format into DOS-compatible format. 
+<BR>
+<BR>	See the technical notes for more information about internal and DOS path string formats.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[10];
+	   int length;
+	   ...
+	   _str_path (string, &amplength);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[10];
+	...
+	lea si,string
+	str_path ();/* SI = offset of path specifier 
+		      in string, CX=length */
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRPATH.ASM		  <B>ASM equiv</B>	STR_PATH
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_path">_fstr_path</A>, <A HREF="rstring.htm#_str_drive">_str_drive</A>, <A HREF="rstring.htm#_str_drvpath">_str_drvpath</A>, <A HREF="rstring.htm#_str_ext">_str_ext</A>, <A HREF="rstring.htm#_str_fname">_str_fname</A>
+<BR></DL>
+<H2><A NAME="_str_pbrk">_str_pbrk</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the first occurrence of any character which is in a set of characters.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_pbrk(const char *string, const char far *charset);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the first character in string that is also in charset.
+<BR>
+<BR>	NULL if string does not contain a character from charset.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches a string for the first occurrence of any character from charset. The search begins with the first character of string and continues until there is a match, or until the terminating NULL of string is encountered. A pointer is returned to the first character in string that matches one of the characters in charset. NULL is returned if no matching character is found.
+<BR>
+<BR>	charset must be a NULL-terminated string containing all characters in the character set.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string1[10], string2[10], *pointer;
+	   ...
+	   pointer = _str_pbrk (string1, string2);
+	   if (pointer == NULL)
+	   {
+	      ...
+	   } else
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string1[10], string2[10];
+	...
+	pushss
+	pop es 	 /* ES = SS */
+	lea si,string1
+	lea di,string2
+	str_pbrk ();	 /* SI = offset of first char in 
+		   	    string1 that matches a char 
+		   	    from string2 */
+	 jc str_pbrk_010/* if no match found */
+	...
+	str_pbrk_010:
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRPBRK.ASM		  <B>ASM equiv</B>	STR_PBRK
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_pbrk">_fstr_pbrk</A>, <A HREF="rmemanip.htm#_mem_pbrk">_mem_pbrk</A>, <A HREF="rstring.htm#_str_pbrk">_str_pbrk</A>
+<BR></DL>
+<H2><A NAME="_str_pbrkn">_str_pbrkn</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the first occurrence of any character which is not in a set of characters.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_pbrkn(const char *string, const char far *charset);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the first occurrence of a character in string that does not exist in charset.
+<BR>
+<BR>	NULL if string only contains characters from charset.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches string for the first occurrence of any character which is not in charset. The search starts with the first character in string and continues until a character is found in string which is not found in charset, or until the terminating NULL of string is encountered. A pointer is returned to the first character in string that is not found in charset. NULL is returned if all characters in string exist in charset.
+<BR>
+<BR>	charset must be a NULL-terminated string containing all characters in the character set.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string1[10], string2[10], *pointer;
+	   ...
+	   pointer = _str_pbrkn (string1, string2);
+	   if (pointer == NULL)
+	   {
+	      ...
+	   } else
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string1[10], string2[10];
+	...
+	pushss
+	pop es 	 /* ES = SS */
+	lea si,string1
+	lea di,string2
+	str_pbrkn ();	 /* SI = offset of first char in
+		   	    string1 that doesn't matches
+		   	    a char from string2 */
+	 jc str_pbrkn_010/* string1 == string2 */
+	...
+	str_pbrkn_010:
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRPBKN.ASM		  <B>ASM equiv</B>	STR_PBRKN
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_pbrk">_fstr_pbrk</A>, <A HREF="rmemanip.htm#_mem_pbrk">_mem_pbrk</A>, <A HREF="rstring.htm#_str_pbrk">_str_pbrk</A>
+<BR></DL>
+<H2><A NAME="_str_rchr">_str_rchr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the last occurrence of a character.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_rchr(const char *string, int chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the last occurrence of chr in string.
+<BR>
+<BR>	NULL if there are no occurrences of chr in string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches string for the last occurrence of chr. The search starts with the last character in string. The search stops when chr is found or when all characters of string have been checked, whichever comes first. A pointer to the last occurrence of chr is returned. NULL is returned if no matching characters are found.
+<BR>
+<BR>	This function cannot be used to search for the terminating NULL.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[10], look;
+	   char *pointer;
+	   ...
+	   pointer = _str_rchr (string, look);
+	   if (pointer == NULL)
+	   {
+	      ...
+	   } else
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[10], look;
+	   ...
+	   lea si,string
+	   mov al,look
+	   str_rchr ();	/* SI = offset of last occurrence
+		   	    of look */
+	 jc str_rchr_010/* if no match found */
+	...
+	str_rchr_010:
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRRCH.ASM		  <B>ASM equiv</B>	STR_RCHR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_rchr">_fstr_rchr</A>, <A HREF="rstring.htm#_str_chr">_str_chr</A>, <A HREF="rstring.htm#_str_rchr">_str_rchr</A>, <A HREF="rstring.htm#_str_rchr">_str_rchr</A>
+<BR></DL>
+<H2><A NAME="_str_rchri">_str_rchri</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the last occurrence of a character, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_rchri(const char *string, int chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the last character in string which matches chr (ignoring case).
+<BR>
+<BR>	NULL if no matches were found.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches string for the last occurrence of chr. The case of ASCII characters is ignored. The search starts with the last character in string and continues until a match is found or until all characters in string have been checked, whichever comes first. A pointer to the last occurrence of chr (ignoring case) is returned. NULL is returned if no matches are found.
+<BR>
+<BR>	This function cannot be used to search for the terminating NULL.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[10], look;
+	   char *pointer;
+	   ...
+	   pointer = _str_rchri(string, look);
+	   if (pointer == NULL)
+	   {
+	      ...
+	   } else
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[10], look;
+	   ...
+	   lea si,string
+	   mov al,look
+	   str_rchri();	/* SI = offset of last occurrence
+	   	  	 	   of look */
+	    jc str_rchr_010/* if no match found */
+	   ...
+	str_rchr_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRRCHI.ASM		  <B>ASM equiv</B>	STR_RCHRI
+<DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_rchr">_fstr_rchr</A>, <A HREF="rstring.htm#_str_chr">_str_chr</A>, <A HREF="rstring.htm#_str_rchr">_str_rchr</A>
+<BR></DL>
+<H2><A NAME="_str_rchrn">_str_rchrn</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the last occurrence of a character which is not the given character.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_rchrn(const char *string, int chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the last non-occurrence of chr in string.
+<BR>
+<BR>	NULL if all characters in string match chr.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches string for the last occurrence of a character which does not match chr. The search starts with the last character and continues until a character is found in string which does not match chr or until all characters of string have been checked, whichever comes first. A pointer to the last non-
+<BR>	matching character is returned. NULL is returned if all characters in string match the given character.
+<BR>
+<BR>	NULL is returned if string is a NULL string. This function cannot be used to search for the terminating NULL.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[10], look;
+	   char *pointer;
+	   ...
+	   pointer = _str_rchrn (string, look);
+	   if (pointer == NULL)
+	   {
+	      ...
+	   } else
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[10], look;
+	   ...
+	   lea si,string
+	   mov al,look
+	   str_rchrn ();	/* SI = offset of last 
+	   	  	 	   non-occurrence of look */
+	    jc str_rchrn_010/* all chars match look */
+	   ...
+	str_rchrn_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRRCHN.ASM		  <B>ASM equiv</B>	STR_RCHRN
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_rchr">_fstr_rchr</A>, <A HREF="rstring.htm#_str_chr">_str_chr</A>, <A HREF="rstring.htm#_str_rchr">_str_rchr</A>, <A HREF="rstring.htm#_str_rchr">_str_rchr</A>
+<BR></DL>
+<H2><A NAME="_str_rchrni">_str_rchrni</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the last occurrence of a character which is not the given character, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_rchrni(const char *string, int chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the last character in string which does not match chr, ignoring case.
+<BR>
+<BR>	NULL if all characters in string match chr, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches string for the last occurrence of a character which is not chr. The case of ASCII characters is ignored. The search starts with the last character in string and continues until a character is found which does not match chr or until all characters in string have been checked, whichever comes first. A pointer to the last non-occurrence of chr (ignoring case) is returned. NULL is returned if every character in string matches the given character.
+<BR>
+<BR>	NULL is returned if string is a NULL string. This function cannot be used to search for the terminating NULL.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[10], look;
+	   char *pointer;
+	   ...
+	   pointer = _str_rchrni (string, look);
+	   if (pointer == NULL)
+	   {
+	      ...
+	   } else
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[10], look;
+	   ...
+	   lea si,string
+	   mov al,look
+	   str_rchrni ();	/* SI = offset of last 
+	   	  	 	   non-occurrence of look */
+	    jc str_rchrni_010/* all chars match look */
+	   ...
+	str_rchrni_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRRCNI.ASM		  <B>ASM equiv</B>	STR_RCHRNI
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_rchr">_fstr_rchr</A>, <A HREF="rstring.htm#_str_chr">_str_chr</A>, <A HREF="rstring.htm#_str_rchr">_str_rchr</A>
+<BR></DL>
+<H2><A NAME="_str_rev">_str_rev</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Reverses the order of the characters in a string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_rev(char *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to string.
+<BR>	string		a copy of string with characters in reverse order
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function reverses the order of all characters in string. The terminating NULL is left at the end of the string. A pointer to string is returned.
+<BR>
+<BR>	For example, this function would change "hello world",0 to "dlrow olleh",0.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[10];
+	   ...
+	   _str_rev (string);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[10];
+	   ...
+	   lea si,string
+	   str_rev ();
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRREV.ASM		  <B>ASM equiv</B>	STR_REV
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_rev">_fstr_rev</A>, <A HREF="rmemanip.htm#_mem_rev">_mem_rev</A>
+<BR></DL>
+<H2><A NAME="_str_right">_str_right</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Right justifies a string within a buffer.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_right(char *string, char pad, unsigned char width);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to string.
+<BR>	string	a right-aligned copy of string
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function pads string on the left with the specified pad character until string is right justified within width. Characters are padded only until the total number of characters equals width. The resulting string is NULL terminated.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	#include &lt;sastring.h&gt
+	{
+	   char string[11];
+	   ...
+	   _put_str(_str_right("Hello!", ' ', 10)); /* "    Hello!" */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[11] = "hello!";
+	...
+	lea si,string/* SI = offset of string */
+	mov cl,10	 /* CL = width */
+	mov al," "	 /* AL = pad character */
+	str_right();	 /* right align string */
+	put_str();	 /* "    Hello!" */
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRRGHT.ASM		  <B>ASM equiv</B>	STR_RIGHT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rconsole.htm#_cput_str">_cput_str</A>, <A HREF="rstring.htm#_fstr_right">_fstr_right</A>, <A HREF="rscript.htm#_sput_script">_sput_script</A>, <A HREF="rstring.htm#_str_center">_str_center</A>, <A HREF="rstring.htm#_str_left">_str_left</A>
+<BR></DL>
+<H2><A NAME="_str_set">_str_set</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets all characters in a string to a specified character.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_set(char *string, int chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to string.
+<BR>	string		all characters are replaced with chr
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sets all characters in string (except the terminating NULL) to chr. A pointer to string is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string1[10];
+	   ...
+	   _str_set (string1, ' ');
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string1[10];
+	   ...
+	   lea si,string1
+	   mov al,' '
+	   str_set ();
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRSET.ASM		  <B>ASM equiv</B>	STR_SET
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_set">_fstr_set</A>, <A HREF="rmemanip.htm#_mem_set">_mem_set</A>, <A HREF="rstring.htm#_str_nset">_str_nset</A>
+<BR></DL>
+<H2><A NAME="_str_skips">_str_skips</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Skips past space characters in a string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_skips(const char *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the first non-space character in string.
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns a pointer to the first non-space character in string. For this function, space characters are defined as the space and tab characters (0x20, 0x09).
+<BR>
+<BR>	If string is a NULL string or all characters in string are space characters, a pointer to the terminating NULL of string is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[10];
+	   ...
+	   _str_skips (string);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[10];
+	   ...
+	   lea si,string
+	   str_skips ();/* DS:SI -&gt first non-space character */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRSKPS.ASM		  <B>ASM equiv</B>	STR_SKIPS
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_skips">_fstr_skips</A>, <A HREF="rmemanip.htm#_mem_skips">_mem_skips</A>, <A HREF="rstring.htm#_str_skipw">_str_skipw</A>, <A HREF="rstring.htm#_str_trims">_str_trims</A>
+<BR></DL>
+<H2><A NAME="_str_skipw">_str_skipw</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Skips past whitespace characters in a string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_skipw(const char *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the first non-whitespace character in string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns a pointer to the first non-whitespace character in string. For this function, white space is defined as the space, tab, carriage, return, and linefeed characters (0x20, 0x09, 0x0D, 0x0A).
+<BR>
+<BR>	If string is a NULL string or all characters in string are whitespace characters, a pointer to the terminating NULL of string is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[10];
+	   ...
+	   _str_skipw (string);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[10];
+	   ...
+	   lea si,string
+	   str_skipw ();/* SI = offset of first non-whitespace
+		      character */
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRSKPW.ASM		  <B>ASM equiv</B>	STR_SKIPW
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_skipw">_fstr_skipw</A>, <A HREF="rmemanip.htm#_mem_skipw">_mem_skipw</A>, <A HREF="rstring.htm#_str_skips">_str_skips</A>, <A HREF="rstring.htm#_str_trimw">_str_trimw</A>
+<BR></DL>
+<H2><A NAME="_str_spn">_str_spn</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines the number of characters at the beginning of a string which match any character in a given character set.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	int _str_spn(const char *string, const char far *charset);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The number of characters at the beginning of the string that match any character in charset.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function compares each character in string to all characters in charset. The comparison starts with the first character of string and continues until one of the characters in string does not match a character in charset. The number of consecutive characters found in charset is returned.
+<BR>
+<BR>	charset must be a NULL-terminated string containing all characters in the character set.
+<BR>
+<BR>	The terminating NULL is never included in the count, so a NULL string always results in a count of 0.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string1[10], string2[10];
+	   int num;
+	   ...
+	   num = _str_spn (string1, string2);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string1[10], string2[10];
+	   ...
+	   pushss
+	   pop es	 /* ES = SS */
+	   lea si,string1
+	   lea di,string2
+	   str_spn ();/* CX=number of matching characters */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRSPN.ASM		  <B>ASM equiv</B>	STR_SPN
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_spn">_fstr_spn</A>, <A HREF="rmemanip.htm#_mem_spn">_mem_spn</A>, <A HREF="rstring.htm#_str_cspn">_str_cspn</A>
+<BR></DL>
+<H2><A NAME="_str_str">_str_str</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the first occurrence of a substring.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_str(const char *string, const char far *substr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the beginning of the first occurrence substr in string.
+<BR>
+<BR>	NULL if substr was not found in string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches string for the first occurrence of substr. The search continues until substr is found or until the end of string is encountered, whichever comes first. A pointer to the first occurrence of substr is returned, if one was found. NULL is returned if substr was not found in string.
+<BR>
+<BR>	NULL is returned if the length of either string or substr is 0.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[100], substring[10], *pointer;
+	   ...
+	   pointer = _str_str (string, substring);
+	   if (pointer == NULL)
+	   {
+	      ...
+	   } else
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[100], substring[10];
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea si,string
+	   lea di,substring
+	   str_str ();	/* SI = offset of first occurrence
+	   	  	 	   of substr in string */
+	    jc str_str_010/* if substr not found in str */
+	   ...
+	str_str_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRSTR.ASM		  <B>ASM equiv</B>	STR_STR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_str">_fstr_str</A>, <A HREF="rmemanip.htm#_mem_mem">_mem_mem</A>, <A HREF="rstring.htm#_str_str">_str_str</A>
+<BR></DL>
+<H2><A NAME="_str_stri">_str_stri</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a string for the first occurrence of a substring, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_stri(const char *string, const char far *substr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the beginning of the first occurrence substr in string.
+<BR>
+<BR>	NULL if substr was not found in string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches string for the first occurrence of substr. The case if ASCII characters is ignored. The search continues until substr is found oruntil the end of string is encountered, whichever comes first. A pointer to the first occurrence of substr is returned, if one was found. NULL is returned if substr was not found in string.
+<BR>
+<BR>	NULL is returned if the length of either string or substr is 0.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[100], substring[10], *pointer;
+	   ...
+	   pointer = _str_stri (string, substring);
+	   if (pointer == NULL)
+	   {
+	      ...
+	   } else
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[100], substring[10];
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea si,string
+	   lea di,substring
+	   str_stri ();	/* SI = offset of first occurrence
+	   	  	 	   of substr in string */
+	    jc str_stri_010/* if substr not found in str */
+	   ...
+	str_stri_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRSTRI.ASM		  <B>ASM equiv</B>	STR_STRI
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_str">_fstr_str</A>, <A HREF="rmemanip.htm#_mem_mem">_mem_mem</A>, <A HREF="rstring.htm#_str_str">_str_str</A>
+<BR></DL>
+<H2><A NAME="_str_tok">_str_tok</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Breaks a string into tokens by matching characters in the string with a set of delimiting characters.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_tok(const char *charset);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to a NULL-terminated token in the string initialized by _str_toks.
+<BR>
+<BR>	NULL if no more tokens were found.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function parses string, which must have been initialized by _str_toks. This original string is considered to consist of zero or more tokens, each separated by one or more delimiting characters. string is scanned until a non-delimiter character is found. The offset of this character is noted and search continues until a delimiter character or the terminating NULL of string is found. If a delimiter from charset is found, it is replaced with a NULL character. This NULL character marks the end of a token. A pointer to this token is returned. Subsequent calls to _str_tok continue parsing stringfrom where the last call left off. Each call to _str_tok may be made with a different set of delimiting characters. 
+<BR>
+<BR>	_str_tok continues parsing the same string for tokens each time it is called (even if none remain) until _str_toks is called again.
+<BR>
+<BR>	When a delimiting character is found following a previous delimiting character (which was changed to NULL by the previous call to _str_tok), it is changed to a NULL. Once the terminating NULL of string is encountered, all subsequent calls to _str_tok return NULL.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[100], delimiters[10], *pointer;
+	   ...
+	   _str_toks(buffer);
+	   while ((pointer = _str_tok (delimiters)) != NULL)
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[100], delimiters[10];
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea si,buffer
+	   str_toks ();
+	   lea di,delimiters
+	str_tok_010:
+	   str_tok ();	/* DS:SI -&gt next token */
+	    jb str_tok_020/* if no more tokens */
+	    je str_tok_010/* if a NULL token was found */
+	   ... 	 	/* process tokens here */
+	   jmp str_tok_010
+
+	str_tok_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRTOK.ASM		  <B>ASM equiv</B>	STR_TOK
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_tok">_fstr_tok</A>, <A HREF="rstring.htm#_str_tok">_str_tok</A>
+<BR></DL>
+<H2><A NAME="_str_toks">_str_toks</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Initializes a string for subsequent tokenization by _str_tok.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	void _str_toks(const char *string);
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function starts a tokenizing process on string in preparation for subsequent calls to _str_tok. This function has no effect on string.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[100], delimiters[10], *pointer;
+	   ...
+	   _str_toks(buffer);
+	   while ((pointer = _str_tok (delimiters)) != NULL)
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[100], delimiters[10];
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea si,buffer
+	   str_toks ();
+	   lea di,delimiters
+	str_tok_010:
+	   str_tok ();	/* DS:SI -&gt next token */
+	    jb str_tok_020/* if no more tokens */
+	    je str_tok_010/* if a NULL token was found */
+	   ... 	 	/* process tokens here */
+	   jmp str_tok_010
+
+	str_tok_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRTOK.ASM		  <B>ASM equiv</B>	STR_TOKS
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_tok">_fstr_tok</A>, <A HREF="rstring.htm#_str_tok">_str_tok</A>
+<BR></DL>
+<H2><A NAME="_str_trims">_str_trims</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Removes space characters from the end of a string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_trims(char *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to string.
+<BR>	string		a copy of string with trailing space characters removed
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function removes all space characters from the end of string, if any are found. If all characters in string are space characters, string is returned as aNULL string. A pointer to string is returned. For this function, space characters are defined as the space and tab characters (0x20 and 0x09).
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[10];
+	   ...
+	   _str_trims(string);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[10];
+	   ...
+	   lea si,string
+	   str_trims ();
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRTRMS.ASM		  <B>ASM equiv</B>	STR_TRIMS
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_trims">_fstr_trims</A>, <A HREF="rstring.htm#_str_skips">_str_skips</A>, <A HREF="rstring.htm#_str_trimw">_str_trimw</A>
+<BR></DL>
+<H2><A NAME="_str_trimw">_str_trimw</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Removes whitespace characters from the end of a string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_trimw(char *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to string.
+<BR>	string		a copy of string with trailing space characters removed
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function removes all whitespace characters from the end of string, if any are found. If all characters in string are whitespace characters, string is returned as a NULL string. For this function, whitespace characters are defined as the space, tab, carriage return, and linefeed characters (0x20, 0x09, 0x0D, and 0x0A).
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[10];
+	   ...
+	   _str_trimw(string);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[10];
+	   ...
+	   lea si,string
+	   str_trimw ();
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRTRMW.ASM		  <B>ASM equiv</B>	STR_TRIMW
+<DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_trimw">_fstr_trimw</A>, <A HREF="rstring.htm#_str_skipw">_str_skipw</A>, <A HREF="rstring.htm#_str_trims">_str_trims</A>
+<BR></DL>
+<H2><A NAME="_str_upr">_str_upr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts lowercase letters in a string to uppercase.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sastring.h&gt
+<BR>	char *_str_upr(char *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to string.
+<BR>	string		a copy of string with ASCII characters converted to uppercase
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function converts ASCII lowercase letters (a-z) in string to uppercase letters (A-Z). No other characters are modified. A pointer to string is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char string[10];
+	   ...
+	   _str_upr(string);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	char string[10];
+	   ...
+	   lea si,string
+	   str_upr();
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_STRUPR.ASM		  <B>ASM equiv</B>	STR_UPR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rstring.htm#_fstr_upr">_fstr_upr</A>, <A HREF="rmemanip.htm#_mem_upr">_mem_upr</A>, <A HREF="rstring.htm#_str_lwr">_str_lwr</A>
+<BR>
+<BR></BODY>
+<BR></HTML><BR>

@@ -1,0 +1,3378 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - TSRs and Device Drivers Reference</TITLE>
+</HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>TSRs and Device Drivers</H1>
+<P ALIGN=CENTER>Reference Section </P>
+<UL>
+<LI><A HREF="TOC.htm">Table of Contents</A>
+<LI><A HREF="index.htm">Function Index</A>
+<LI><A HREF="gindex.htm">Group Index
+</UL>
+<A HREF="rtsr.htm#_bioskey_add">_bioskey_add</A><BR>
+<A HREF="rtsr.htm#BIOSKEY_DEF">BIOSKEY_DEF</A><BR>
+<A HREF="rtsr.htm#_bioskey_off">_bioskey_off</A><BR>
+<A HREF="rtsr.htm#_bioskey_on">_bioskey_on</A><BR>
+<A HREF="rtsr.htm#_bioskey_rmv">_bioskey_rmv</A><BR>
+<A HREF="rtsr.htm#_device_resident">_device_resident</A><BR>
+<A HREF="rtsr.htm#_directkey_add">_directkey_add</A><BR>
+<A HREF="rtsr.htm#DIRECTKEY_DEF">DIRECTKEY_DEF</A><BR>
+<A HREF="rtsr.htm#_directkey_off">_directkey_off</A><BR>
+<A HREF="rtsr.htm#_directkey_on">_directkey_on</A><BR>
+<A HREF="rtsr.htm#_directkey_rmv">_directkey_rmv</A><BR>
+<A HREF="rtsr.htm#_erq_8off">_erq_8off</A><BR>
+<A HREF="rtsr.htm#_erq_8on">_erq_8on</A><BR>
+<A HREF="rtsr.htm#_erq_16off">_erq_16off</A><BR>
+<A HREF="rtsr.htm#_erq_16on">_erq_16on</A><BR>
+<A HREF="rtsr.htm#_erq_21off">_erq_21off</A><BR>
+<A HREF="rtsr.htm#_erq_21on">_erq_21on</A><BR>
+<A HREF="rtsr.htm#_erq_28off">_erq_28off</A><BR>
+<A HREF="rtsr.htm#_erq_28on">_erq_28on</A><BR>
+<A HREF="rtsr.htm#_erq_add">_erq_add</A><BR>
+<A HREF="rtsr.htm#_erq_addrel">_erq_addrel</A><BR>
+<A HREF="rtsr.htm#_erq_off">_erq_off</A><BR>
+<A HREF="rtsr.htm#_erq_on">_erq_on</A><BR>
+<A HREF="rtsr.htm#_erq_rmv">_erq_rmv</A><BR>
+<A HREF="rtsr.htm#_idle_add">_idle_add</A><BR>
+<A HREF="rtsr.htm#IDLE_DEF">IDLE_DEF</A><BR>
+<A HREF="rtsr.htm#_idle_off">_idle_off</A><BR>
+<A HREF="rtsr.htm#_idle_on">_idle_on</A><BR>
+<A HREF="rtsr.htm#_idle_rmv">_idle_rmv</A><BR>
+<A HREF="rtsr.htm#_isr_getstat">_isr_getstat</A><BR>
+<A HREF="rtsr.htm#_isr_hremove">_isr_hremove</A><BR>
+<A HREF="rtsr.htm#_isr_install">_isr_install</A><BR>
+<A HREF="rtsr.htm#_isr_remove">_isr_remove</A><BR>
+<A HREF="rtsr.htm#_isr_removeall">_isr_removeall</A><BR>
+<A HREF="rtsr.htm#_keyfeed_append">_keyfeed_append</A><BR>
+<A HREF="rtsr.htm#_keyfeed_convert">_keyfeed_convert</A><BR>
+<A HREF="rtsr.htm#_keyfeed_insert">_keyfeed_insert</A><BR>
+<A HREF="rtsr.htm#_keyfeed_off">_keyfeed_off</A><BR>
+<A HREF="rtsr.htm#_keyfeed_on">_keyfeed_on</A><BR>
+<A HREF="rtsr.htm#_keyfeed_rmv">_keyfeed_rmv</A><BR>
+<A HREF="rtsr.htm#_progid_check">_progid_check</A><BR>
+<A HREF="rtsr.htm#_progid_hremtsr">_progid_hremtsr</A><BR>
+<A HREF="rtsr.htm#_progid_install">_progid_install</A><BR>
+<A HREF="rtsr.htm#_progid_remtsr">_progid_remtsr</A><BR>
+<A HREF="rtsr.htm#_stimer_add">_stimer_add</A><BR>
+<A HREF="rtsr.htm#STIMER_DEF">STIMER_DEF</A><BR>
+<A HREF="rtsr.htm#_stimer_off">_stimer_off</A><BR>
+<A HREF="rtsr.htm#_stimer_on">_stimer_on</A><BR>
+<A HREF="rtsr.htm#_stimer_rmv">_stimer_rmv</A><BR>
+<A HREF="rtsr.htm#_tsr_emsinit">_tsr_emsinit</A><BR>
+<A HREF="rtsr.htm#_tsr_enable">_tsr_enable</A><BR>
+<A HREF="rtsr.htm#_tsr_hremove">_tsr_hremove</A><BR>
+<A HREF="rtsr.htm#_tsr_init">_tsr_init</A><BR>
+<A HREF="rtsr.htm#_tsr_initc">_tsr_initc</A><BR>
+<A HREF="rtsr.htm#tsr_lockmask">tsr_lockmask</A><BR>
+<A HREF="rtsr.htm#_tsr_memusage">_tsr_memusage</A><BR>
+<A HREF="rtsr.htm#_tsr_remove">_tsr_remove</A><BR>
+<A HREF="rtsr.htm#_tsr_resident">_tsr_resident</A><BR>
+<H2><A NAME="_bioskey_add">_bioskey_add</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Adds a BIOS hotkey to the list of active TSR hotkeys.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _bioskey_add(bkspec near *struc);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function adds a BIOS hotkey to the list of active hotkeys by adding struc to the bioskey entry definition structure linked list. BIOSKEY_DEF may be used to create and initialize struc, which must be a structure of type bkspec and must be defined in DGROUP (global or static non-far data). The bkspec entry definition structure is defined in detail in the TSRs and Device Drivers technical notes and is summarized under BIOSKEY_DEF.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	void far help_func (bkspec * const struc)
+	{
+	}
+	BIOSKEY_DEF (bioskey_popup,help_func,A_F1,_Con,100,-1,1);
+	...
+	{
+	   _bioskey_add (&ampbioskey_popup);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	void far help_func (bkspec * const struc)
+	{
+	}
+	BIOSKEY_DEF (bioskey_popup,help_func,A_F1,_Con,100,-1,1);
+	...
+	   {
+	   	  mov si,offset bioskey_popup
+	      bioskey_add ();
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_TDBKA.ASM		  <B>ASM equiv</B>	BIOSKEY_ADD
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_rmv">_bioskey_rmv</A>, <A HREF="rtsr.htm#_directkey_add">_directkey_add</A>, <A HREF="rtsr.htm#_erq_add">_erq_add</A>, <A HREF="rtsr.htm#_erq_add">_erq_add</A>, <A HREF="rtsr.htm#_idle_add">_idle_add</A>, <A HREF="rtsr.htm#_keyfeed_append">_keyfeed_append</A>, <A HREF="rtsr.htm#_keyfeed_insert">_keyfeed_insert</A>, <A HREF="rtsr.htm#_stimer_add">_stimer_add</A></DL>
+<H2><A NAME="BIOSKEY_DEF">BIOSKEY_DEF</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Creates a BIOS hotkey TSR entry definition structure.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	BIOSKEY_DEF(label, entry_func, hotkey, resources, stack_len, fail_func, entry_mask);
+<BR>
+<BR>	label is a valid identifier (e.g., hotkey_popup).
+<BR>	entry_func is the hotkey TSR entry function to call.
+<BR>	hotkey is the BIOS key code of the hotkey (see Appendix E).
+<BR>	resources is a resource or a combination of resources (i.e., _Con_Dos).
+<BR>	stack_len is the stack space, in bytes, needed by entry_func.
+<BR>	fail_func is the function to call if entry_func cannot be called.
+<BR>	entry_mask is the reentrancy lock mask (see Appendix F).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This macro creates and initializes a BIOS hotkey entry definition structure (bkspec) with the name label. label must begin with a non-numeric character. The bkspec structure is defined in TSR.H as follows:
+<BR>
+<BR>	typedef struct {	/* bioskey entry definition */
+<BR>	   void near * next_spec;/* address of next structure */
+<BR>	   void far (near/far * entry_func)(struct bkspec * const);
+<BR>					/* function to call if checks succeed */
+<BR>	   void far (near/far * fail_func)(struct bkspec * const, char causefail,
+<BR>		char entryfail);/* function to call if checks succeed */
+<BR>	   void near (* near * check_list)(void); /* offset of the list of functions that
+<BR>					   check resources */
+<BR>	   void near (* near * save_list)(void); /* offset of the list of functions that
+<BR>					   save and init resources */
+<BR>	   void near (* near * restore_list)(void); /* offset of the list of functions that
+<BR>					   cleanup when finished */
+<BR>	   int stack_len;	/* number of bytes of stack space needed by
+<BR>					   entry_func */
+<BR>	   int entry_mask;	/* checks and preserves system resources */
+<BR>	   int bios_code;	/* BIOS key code to activate on */
+<BR>	} bkspec;
+<BR>
+<BR>	"near/far" directives indicate near pointers in the TINY model and far pointers in all other memory models (including SMALL and COMPACT).
+<BR>
+<BR>	hotkey is the BIOS key code that will cause entry_func to be called. See Appendix E for a listing of BIOS key codes and their equates.
+<BR>
+<BR>	entry_func is the entry point into the program. This entry function is called by the ISR when all requirements specified in the entry definition structure are met. This function must be a far function.
+<BR>
+<BR>	resources identifies the resources that are used by entry_func. Resources are combined in alphabetical order (e.g., _Con_Kbd) and are defined as follows:
+<BR>
+<BR>	_Con	    if console services will be used
+<BR>	_Dos	    if DOS services are used (including disk services)
+<BR>	_Dosndif DOS services are used (excluding disk services)
+<BR>	_Direct  	   if entry_func accesses the disk directly
+<BR>	_Kbd	    if entry_func uses the keyboard
+<BR>	_None	    if entry_func does not depend on any of the above resources
+<BR>
+<BR>	stack_len is the amount of stack space that is used by entry_func. This number must include the resources saved to the stack (as indicated in the technical notes).
+<BR>
+<BR>	fail_func is the function that is called if the specified resources cannot be safely used or if there is not enough stack space. This function must be a far function.
+<BR>
+<BR>	entry_mask is the value that is used to lock non-reentrant program resources. This field should be set to 1 if the program is not reentrant. See Appendix F for information about using entry_mask to control reentrancy.
+<BR>
+<BR>	Entry definition structures must always be declared within DGROUP (global or static non-far data).
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	...
+	void far display_window (bkspec * const);
+	void far popup_fail (bkspec * const, char causefail,
+	   char entryfail);
+	BIOSKEY_DEF (bk_popup1,display_window,A_F11,_Con_Dos,100,
+	   popup_fail,1);
+	BIOSKEY_DEF (bk_popup2,display_window,A_TAB,_Con_Dos,100,-1,1);
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	(Not Applicable)
+
+</CODE></PRE>
+<B>Source file</B>	TSR.H
+<B>ASM equiv</B>â
+<BR><DL>
+<DT><B>See also</B>
+<DD>_directkey_def, _idle_def, _stimer_def
+
+<BR></DL>
+<H2><A NAME="_bioskey_off">_bioskey_off</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Disables all active BIOS hotkeys.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _bioskey_off(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function disables all active BIOS hotkeys by disabling the bioskey ISR. The ISR remains installed, but control is unconditionally passed on to the next interrupt handler in the chain.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	_bioskey_off ();
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	bioskey_off ();
+
+</CODE></PRE>
+<B>Source file</B>	TDBKF.ASM			  <B>ASM equiv</B>	BIOSKEY_OFF
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_on">_bioskey_on</A>, <A HREF="rtsr.htm#_directkey_off">_directkey_off</A>, <A HREF="rtsr.htm#_erq_8off">_erq_8off</A>, <A HREF="rtsr.htm#_erq_16off">_erq_16off</A>, <A HREF="rtsr.htm#_erq_21off">_erq_21off</A>, <A HREF="rtsr.htm#_erq_28off">_erq_28off</A>, <A HREF="rtsr.htm#_erq_off">_erq_off</A>, <A HREF="rtsr.htm#_idle_off">_idle_off</A>, <A HREF="rtsr.htm#_keyfeed_off">_keyfeed_off</A>, <A HREF="rtsr.htm#_stimer_off">_stimer_off</A>
+<BR></DL>
+<H2><A NAME="_bioskey_on">_bioskey_on</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Enables all active BIOS hotkeys.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _bioskey_on(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function enables all active BIOS hotkeys by re-enabling the bioskey ISR. _bioskey_on only needs to be called if _bioskey_off has been called.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	_bioskey_on ();
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	bioskey_on ();
+
+</CODE></PRE>
+<B>Source file</B>	TDBKN.ASM			  <B>ASM equiv</B>	BIOSKEY_ON
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_off">_bioskey_off</A>, <A HREF="rtsr.htm#_directkey_on">_directkey_on</A>, <A HREF="rtsr.htm#_erq_8on">_erq_8on</A>, <A HREF="rtsr.htm#_erq_16on">_erq_16on</A>, <A HREF="rtsr.htm#_erq_21on">_erq_21on</A>, <A HREF="rtsr.htm#_erq_28on">_erq_28on</A>, <A HREF="rtsr.htm#_erq_on">_erq_on</A>, <A HREF="rtsr.htm#_idle_on">_idle_on</A>, <A HREF="rtsr.htm#_keyfeed_on">_keyfeed_on</A>, <A HREF="rtsr.htm#_stimer_on">_stimer_on</A>
+<BR></DL>
+<H2><A NAME="_bioskey_rmv">_bioskey_rmv</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Removes a specified BIOS hotkey from the list of active TSR hotkeys.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _bioskey_rmv(bkspec near *struc);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function removes a specified BIOS hotkey from the list of active TSR hotkeys by removing struc from the bioskey entry definition structure linked list. struc must be a structure of type bkspec (defined in TSR.H). This function has no effect if struc is not currently installed.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	void far help_func (bkspec * const struc)
+	{
+	}
+	BIOSKEY_DEF (bioskey_popup,help_func,A_F1,_Con,100,-1,1);
+	...
+	{
+	   _bioskey_rmv (&ampbioskey_popup);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	void far help_func (bkspec * const struc)
+	{
+	}
+	BIOSKEY_DEF (bioskey_popup,help_func,A_F1,_Con,100,-1,1);
+	...
+	   {
+	   mov si,offset bioskey_popup
+	   bioskey_rmv ();
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_TDBKR.ASM		  <B>ASM equiv</B>	BIOSKEY_RMV
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_add">_bioskey_add</A>, <A HREF="rtsr.htm#_directkey_rmv">_directkey_rmv</A>, <A HREF="rtsr.htm#_erq_rmv">_erq_rmv</A>, <A HREF="rtsr.htm#_idle_rmv">_idle_rmv</A>, <A HREF="rtsr.htm#_keyfeed_rmv">_keyfeed_rmv</A>, <A HREF="rtsr.htm#_stimer_rmv">_stimer_rmv</A>
+<BR></DL>
+<H2><A NAME="_device_resident">_device_resident</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns to DOS, leaving the resident portion of the device driver in memory and freeing the transient portion to DOS.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _device_resident(unsigned near_heap, unsigned far_heap, unsigned res_stack);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	DOES NOT RETURN to the caller (exits to DOS).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function terminates a device driver TSR, leaving it resident. This function installs the necessary ISRs, resizes and initializes the stack to its specified resident size, performs the resident near and far heap initializations, releases unused memory to DOS, and terminates. This function always returns control directly to DOS (without returning to the caller).
+<BR>
+<BR>	If insufficient memory is available for the stack or for either of the heaps, this function resizes the stack and heaps to their maximum allowable sizes before going resident. Available memory is allocated first to the stack, then to the near heap, then to the far heap. The actual allocation of available memory may be determined before going resident by calling _tsr_memusage.
+<BR>
+<BR>	This function may only be used to install a device driver. When creating a device driver the TSRMAIN.CCC template must be used, the TINY memory model must be selected, and the result must be linked with _DSTARTT.OBJ (TINY model device driver startup code) as well as the _SAT.LIB and _TSAT.LIB libraries.
+<BR>
+<BR>	When this function is called, all necessary ISRs for active hotkeys and entry points are automatically enabled unless the corresponding ..._off functions have been called.
+<BR>
+<BR>	This function is only available in transient form, and can be accessed as _device_resident or _t_device_resident.
+<BR>
+<BR>	_tsr_init or _tsr_initc must be called before this function may be used.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	/* initialize a 2000 byte near heap, a 2k far heap,
+	   and leave a 500 byte resident stack */
+	   _device_resident (2000, 0x80, 500);/* does not return */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	/* initialize a 2000 byte near heap, a 2k far heap,
+	   and leave a 500 byte resident stack */
+	   	  mov ax,2000 /* 2000 byte near heap */
+	   	  mov bx,80/* 2k far heap */
+	   	  mov cx,500/* 500 byte resident stack */
+	      device_resident ();/* does not return */
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_TDDRES.ASM		  <B>ASM equiv</B>	DEVICE_RESIDENT
+<DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_tsr_enable">_tsr_enable</A>, <A HREF="rtsr.htm#_tsr_memusage">_tsr_memusage</A>, <A HREF="rtsr.htm#_tsr_resident">_tsr_resident</A>
+<BR></DL>
+<H2><A NAME="_directkey_add">_directkey_add</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Adds a hardware hotkey to the list of active TSR hotkeys.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _directkey_add(dkspec near *struc);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function adds a hardware hotkey to the list of active hardware hotkeys by adding struc to the directkey entry definition structure linked list. DIRECTKEY_DEF must be used to create and initialize struc, which must be an entry definition structure of type dkspec and which must be defined in DGROUP (global or static non-far data). The dkspec entry definition structure is defined in detail in the TSRs and Device Drivers technical notes and is summarized under DIRECTKEY_DEF.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	void far help_func (dkspec * const struc)
+	{
+	}
+	DIRECTKEY_DEF (directkey_popup,help_func,M_NUMLOCK,DK_RALT,_Con,
+		100,-1,1);
+	...
+	{
+	   _directkey_add (&ampdirectkey_popup);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	void far help_func (dkspec * const struc)
+	{
+	}
+	...
+	DIRECTKEY_DEF (directkey_popup,dkhelp_func,M_LSHIFT,
+	   	  DK_RALT,_Con,100,-1,1);
+	   {
+	   	  mov si,offset directkey_popup
+	   	  directkey_add ();
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_TDDKA.ASM		  <B>ASM equiv</B>	DIRECTKEY_ADD
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_add">_bioskey_add</A>, <A HREF="rtsr.htm#_directkey_rmv">_directkey_rmv</A>, <A HREF="rtsr.htm#_erq_add">_erq_add</A>, <A HREF="rtsr.htm#_erq_add">_erq_add</A>, <A HREF="rtsr.htm#_idle_add">_idle_add</A>, <A HREF="rtsr.htm#_keyfeed_append">_keyfeed_append</A>, <A HREF="rtsr.htm#_keyfeed_insert">_keyfeed_insert</A>, <A HREF="rtsr.htm#_stimer_add">_stimer_add</A>
+<BR></DL>
+<H2><A NAME="DIRECTKEY_DEF">DIRECTKEY_DEF</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Macro) Creates a hardware hotkey TSR entry definition structure.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>		DIRECTKEY_DEF(label, entry_func, scan_code, key_flags, resources, stack_len, fail_func, entry_mask);
+<BR>
+<BR>	label is a valid identifier (e.g., hotkey_popup).
+<BR>	entry_func is the entry point function to call.
+<BR>	scan_code is the keyboard scan code of the hotkey (see Appendix E).
+<BR>	key_flags is any combination of keyboard flags.
+<BR>	resources is a resource or a combination of resources (i.e., _Con_Dos).
+<BR>	stack_len is the number of bytes of stack space needed by entry_func.
+<BR>	entry_mask is the reentrancy lock mask (see Appendix F).
+<BR>	fail_func is the function to call if entry_func cannot be called.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This macro creates and initializes a directkey entry definition structure (dkspec) with the name label. label cannot start with a numeric character. The dkspec structure is defined in TSR.H as follows:
+<BR>
+<BR>	typedef struct {	/* directkey entry definition */
+<BR>	   void near * next_spec;/* address of next structure */
+<BR>	   void far (near/far * entry_func)(struct dkspec * const);
+<BR>					/* function to call if checks succeed */
+<BR>	   void far (near/far * fail_func)(struct dkspec * const, char causefail,
+<BR>	     char entryfail);	/* function to call if checks succeed */
+<BR>	   void near (* near * check_list)(void); /* offset of the list of functions that
+<BR>					   check resources */
+<BR>	   void near (* near * save_list)(void); /* offset of the list of functions that
+<BR>					   save and init resources */
+<BR>	   void near (* near * restore_list)(void); /* offset of the list of functions that
+<BR>					   cleanup when finished */
+<BR>	   int stack_len;	  /* number of bytes of stack space needed by
+<BR>	     	 	     entry_func */
+<BR>	   int entry_mask;	  /* checks and preserves system resources */
+<BR>	   char scan_code;	  /* make/break code */
+<BR>	   int keyflags;	 /* keyboard flags (CTRL-SHIFT-ALT...) */
+<BR>	} dkspec;
+<BR>
+<BR>	near/far directives indicate near pointers in the TINY model and far pointers in all other memory models, including SMALL and COMPACT.
+<BR>
+<BR>	entry_func is the entry point into the program. This entry function is called by the ISR when all requirements specified in the entry definition structure are met. This function must be a far function.
+<BR>
+<BR>	resources indicates the resources that are used by entry_func. Resources are combined in alphabetical order and are defined as follows:
+<BR>
+<BR>	_Con    if console services are used
+<BR>	_Dos    if DOS services that access the disk are used
+<BR>	_Dosndif DOS services other than those that access the disk are used
+<BR>	_Direct    if entry_func accesses the disk directly
+<BR>	_Kbd    if entry_func uses the keyboard
+<BR>	_None    if entry_func does not depend on any of the above resources
+<BR>
+<BR>	stack_len is the amount of stack space that is used by entry_func. This value must include the space used when resources are saved to the stack (see the TSRs and Device Drivers technical notes).
+<BR>
+<BR>	fail_func is the function that is called if the specified resources cannot be safely used or there is not enough stack space. This function must be a far function.
+<BR>
+<BR>	entry_mask is the integer value that is used to lock non-reentrant program resources. This field should be set to 1 if the program is not reentrant. See Appendix F for information about using entry_mask to control reentrancy.
+<BR>
+<BR>	scan_code is the hotkey scan code that causes entry_func to be called. See Appendix E for a listing of keyboard scan codes and their symbolic constants.
+<BR>
+<BR>	key_flags is an integer bit field which specifies the status of the CTRL, SHIFT, and ALT keys which must be in effect before entry_func is called. This field also indicates whether scan_code is specific to enhanced keyboards. The following symbolic constants (defined in KEYS.H) may be bitwise ORed together to produce the desired value for key_flags:
+<BR>
+<BR>	DK_NONE    (0x0000) No keyboard flag conditions are required
+<BR>	DK_SHIFT    (0x0001) Either shift key must be depressed
+<BR>	DK_RSHIFT    (0x0002) Right shift key must be depressed
+<BR>	DK_LSHIFT    (0x0004) Left shift key must be depressed
+<BR>	DK_CTRL    (0x0008) Either CTRL key must be depressed
+<BR>	DK_RCTRL    (0x0010) Right CTRL key must be depressed
+<BR>	DK_LCTRL    (0x0020) Left CTRL key must be depressed
+<BR>	DK_ALT    (0x0040) Either ALT key must be depressed
+<BR>	DK_RALT    (0x0080) Right ALT key must be depressed
+<BR>	DK_LALT    (0x0100) Left ALT key must be depressed
+<BR>	DK_EXACT    (0x0200) The key flag states must exactly match
+<BR>	DK_GRAY    (0x0400) The scan code must be a gray duplicate
+<BR>	DK_STANDARD(0x0800) The scan code must be a standard code
+<BR>
+<BR>	Note that these key flag equates are different from those defined in the Console I/O unit.
+<BR>
+<BR>	If DK_EXACT is specified, the actual status of the SHIFT, CTRL, and ALT key flags must exactly match those flags specified in key_flags. This means that if DK_EXACT is specified, the specific right or left key flag must be specified as well as the non-specific version of that key flag or the hotkey will not be recognized. For example, if the entry definition structure specified the left CTRL key and the right ALT key and required an exact match, DK_CTRL + DK_LCTRL + DK_ALT + DK_RALT + DK_EXACT would need to be specified for key_flags.
+<BR>
+<BR>	If DK_EXACT is not specified, the key flags indicate the minimum requirements. The state of all other key flags is ignored. For example, if DK_CTRL is specified, CTRL + key or CTRL + SHIFT + key or ALT + CTRL + key would all activate the TSR.
+<BR>
+<BR>	Some keys that are present on standard keyboards have gray duplicates on extended keyboards: i.e., CTRL, ALT, INS, PGUP, DEL, HOME, END, the arrow keys, forward slash, and ENTER. For these keys, the DK_GRAY flag may be used to indicate that the key must be the gray (or extended) version of the key to be recognized. DK_STANDARD specifies thatthe key must NOT be one of the extended-specific gray keys listed above. Appendix E lists the make and break codes for all keys that have unique make and break codes. The DK_GRAY flag applies to all scan codes that are preceded by an "0xE0" code.
+<BR>
+<BR>	Entry definition structures must be always be declared within DGROUP (global or static non-far data).
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	#include &lt;tsr.h&gt
+	#include &lt;keys.h&gt
+	...
+	void far display_window (dkspec * const);
+	void far popup_fail (dkspec * const, char causefail,
+	   char entryfail);
+	DIRECTKEY_DEF (dk_popup1,display_window,M_F11,DK_LSHIFT,_Con_Dos,
+	   100,popup_fail,1);
+	DIRECTKEY_DEF (dk_popup2,display_window,M_TAB,DK_RALT,_Con_Dos,
+	   100,-1,1);
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	(Not Applicable)
+
+</CODE></PRE>
+<B>Source file</B>	TSR.H
+<B>ASM equiv</B>â
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#BIOSKEY_DEF">BIOSKEY_DEF</A>, <A HREF="rtsr.htm#IDLE_DEF">IDLE_DEF</A>, <A HREF="rtsr.htm#STIMER_DEF">STIMER_DEF</A>
+<BR></DL>
+<H2><A NAME="_directkey_off">_directkey_off</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Disables all active hardware hotkeys.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _directkey_off(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function disables all hardware hotkeys by disabling the directkey ISR. The ISR remains installed, but control is unconditionally passed on to the next interrupt handler in the chain.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	_directkey_off ();
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	directkey_off ();
+
+</CODE></PRE>
+<B>Source file</B>	TDDKF.ASM			  <B>ASM equiv</B>	DIRECTKEY_OFF
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_off">_bioskey_off</A>, <A HREF="rtsr.htm#_directkey_on">_directkey_on</A>, <A HREF="rtsr.htm#_erq_8off">_erq_8off</A>, <A HREF="rtsr.htm#_erq_16off">_erq_16off</A>, <A HREF="rtsr.htm#_erq_21off">_erq_21off</A>, <A HREF="rtsr.htm#_erq_28off">_erq_28off</A>, <A HREF="rtsr.htm#_erq_off">_erq_off</A>, <A HREF="rtsr.htm#_idle_off">_idle_off</A>, <A HREF="rtsr.htm#_keyfeed_off">_keyfeed_off</A>, <A HREF="rtsr.htm#_stimer_off">_stimer_off</A>
+<BR></DL>
+<H2><A NAME="_directkey_on">_directkey_on</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Enables all active hardware hotkeys.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _directkey_on(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function re-enables all active hardware hotkeys by re-enabling the directkey ISR. _directkey_on only needs to be called if _directkey_off has been called.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	_directkey_on ();
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	directkey_on ();
+
+</CODE></PRE>
+<B>Source file</B>	TDDKN.ASM			  <B>ASM equiv</B>	DIRECTKEY_ON
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_on">_bioskey_on</A>, <A HREF="rtsr.htm#_directkey_off">_directkey_off</A>, <A HREF="rtsr.htm#_erq_8on">_erq_8on</A>, <A HREF="rtsr.htm#_erq_16on">_erq_16on</A>, <A HREF="rtsr.htm#_erq_21on">_erq_21on</A>, <A HREF="rtsr.htm#_erq_28on">_erq_28on</A>, <A HREF="rtsr.htm#_erq_on">_erq_on</A>, <A HREF="rtsr.htm#_idle_on">_idle_on</A>, <A HREF="rtsr.htm#_keyfeed_on">_keyfeed_on</A>, <A HREF="rtsr.htm#_stimer_on">_stimer_on</A>
+<BR></DL>
+<H2><A NAME="_directkey_rmv">_directkey_rmv</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Removes a hardware hotkey from the list of active TSR hotkeys.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _directkey_rmv(dkspec near *struc);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function removes a hardware hotkey from the list of active hotkeys by removing struc from the directkey entry definition structure linked list. struc must be a structure of type dkspec (defined in TSR.H). This function has no effect if struc is not currently installed.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	void far help_func (dkspec * const struc)
+	{
+	}
+	DIRECTKEY_DEF (directkey_popup,help_func,M_NUMLOCK,DK_RALT,_Con,
+	   	  100,-1,1);
+	...
+	{
+	   _directkey_rmv (&ampdirectkey_popup);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	void far help_func (dkspec * const struc)
+	{
+	}
+	DIRECTKEY_DEF (directkey_popup,dkhelp_func,M_LSHIFT,
+	         DK_RALT,_Con,100,-1,1);
+	...
+	   {
+	   	  mov si,offset directkey_popup
+	   	  directkey_rmv ();
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_TDDKR.ASM		  <B>ASM equiv</B>	DIRECTKEY_RMV
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_rmv">_bioskey_rmv</A>, <A HREF="rtsr.htm#_directkey_add">_directkey_add</A>, <A HREF="rtsr.htm#_erq_rmv">_erq_rmv</A>, <A HREF="rtsr.htm#_idle_rmv">_idle_rmv</A>, <A HREF="rtsr.htm#_keyfeed_rmv">_keyfeed_rmv</A>, <A HREF="rtsr.htm#_stimer_rmv">_stimer_rmv</A></DL>
+<H2><A NAME="_erq_8off">_erq_8off</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Disallows servicing of the entry request queue via the system timer interrupt.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _erq_8off(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function disables the ISR that allows the entry request queue to be serviced from the system timer interrupt (INT 8). The ISR remains installed, but it is inactive.
+<BR>
+<BR>	See _erq_16on for an example of the use of this function.
+<BR>
+<BR></DL>
+<B>Source file</B>	TDEQ8F.ASM		  <B>ASM equiv</B>	ERQ_8OFF
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_off">_bioskey_off</A>, <A HREF="rtsr.htm#_directkey_off">_directkey_off</A>, <A HREF="rtsr.htm#_erq_8on">_erq_8on</A>, <A HREF="rtsr.htm#_erq_16off">_erq_16off</A>, <A HREF="rtsr.htm#_erq_21off">_erq_21off</A>, <A HREF="rtsr.htm#_erq_28off">_erq_28off</A>, <A HREF="rtsr.htm#_erq_off">_erq_off</A>, <A HREF="rtsr.htm#_idle_off">_idle_off</A>, <A HREF="rtsr.htm#_keyfeed_off">_keyfeed_off</A>, <A HREF="rtsr.htm#_stimer_off">_stimer_off</A>
+<BR></DL>
+<H2><A NAME="_erq_8on">_erq_8on</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Allows the entry request queue to be serviced from the system timer interrupt.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _erq_8on(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function enables the ISR that allows the entry request queue (erq) to be serviced from the system timer interrupt (INT 8).
+<BR>
+<BR>	The entry request queue ISRs default to OFF, so this function must be called before the entry request queue can be serviced from the system timer interrupt.
+<BR>
+<BR>	The erq allows entry requests to be serviced at specified times rather than by specific interrupts. When an entry request in the erq is ready to be serviced, it is serviced by the next active ISR which is currently servicing the queue.
+<BR>
+<BR>	See _erq_16on for an example of the use of this function.
+<BR>
+<BR></DL>
+<B>Source file</B>	TDEQ8N.ASM		  <B>ASM equiv</B>	ERQ_8ON
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_on">_bioskey_on</A>, <A HREF="rtsr.htm#_directkey_on">_directkey_on</A>, <A HREF="rtsr.htm#_erq_8off">_erq_8off</A>, <A HREF="rtsr.htm#_erq_16on">_erq_16on</A>, <A HREF="rtsr.htm#_erq_21on">_erq_21on</A>, <A HREF="rtsr.htm#_erq_28on">_erq_28on</A>, <A HREF="rtsr.htm#_erq_on">_erq_on</A>, <A HREF="rtsr.htm#_idle_on">_idle_on</A>, <A HREF="rtsr.htm#_keyfeed_on">_keyfeed_on</A>, <A HREF="rtsr.htm#_stimer_on">_stimer_on</A>
+<BR></DL>
+<H2><A NAME="_erq_16off">_erq_16off</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Disallows servicing of the entry request queue via the system keyboard interrupt.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _erq_16off(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function disables the ISR that allows the entry request queue to be serviced from the BIOS keyboard interrupt (INT 0x16). The ISR remains installed, but it is inactive.
+<BR>
+<BR>	See _erq_16on for an example of the use of this function.
+<BR>
+<BR></DL>
+<B>Source file</B>	TDEQ16F.ASM		  <B>ASM equiv</B>	ERQ_16OFF
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_off">_bioskey_off</A>, <A HREF="rtsr.htm#_directkey_off">_directkey_off</A>, <A HREF="rtsr.htm#_erq_8off">_erq_8off</A>, <A HREF="rtsr.htm#_erq_16on">_erq_16on</A>, <A HREF="rtsr.htm#_erq_21off">_erq_21off</A>, <A HREF="rtsr.htm#_erq_28off">_erq_28off</A>, <A HREF="rtsr.htm#_erq_off">_erq_off</A>, <A HREF="rtsr.htm#_idle_off">_idle_off</A>, <A HREF="rtsr.htm#_keyfeed_off">_keyfeed_off</A>, <A HREF="rtsr.htm#_stimer_off">_stimer_off</A>
+<BR></DL>
+<H2><A NAME="_erq_16on">_erq_16on</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Allows the entry request queue to be serviced from the system keyboard interrupt.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _erq_16on(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function enables the ISR that allows the entry request queue (erq) to be serviced from the BIOS keyboard interrupt (INT 0x16).
+<BR>
+<BR>	The entry request queue ISRs default to OFF, so this function must be called before the entry request queue can be serviced from the BIOS keyboard interrupt.
+<BR>
+<BR>	The erq allows entry requests to be serviced at specified times rather than by specific interrupts. When an entry request in the erq is ready to be serviced, it is serviced by the next active ISR which is currently servicing the queue.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	void far print_file(idlespec * const struc)
+	{
+	}
+	IDLE_DEF (idle_popup,print_file,_Con,100,-1,1);
+	erqspec entry = {(erqspec near*)-2,{0,0,},{0,0,},\
+	   ERQ_8+ERQ_16,10,10,&ampidle_po};
+	{
+	   _erq_8on ();
+	   _erq_16on ();
+	   _erq_21on ();
+	   _erq_28on ();
+	   _erq_add (&ampentry);
+	   ...
+	   _erq_addrel (&ampentry);
+	   ...
+	   _erq_off ();
+	   ...
+	   _erq_on ();
+	   ...
+	   _erq_rmv (&ampentry);
+	   _erq_8off ();
+	   _erq_16off ();
+	   _erq_21off ();
+	   _erq_28off ();
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	void far print_file(idlespec * const struc)
+	{
+	}
+	   IDLE_DEF (idle_popup,print_file,_Con,100,-1,1);
+	   erqspec entry = {(erqspec near*)-2,{0,0,1,0},\
+	      {0,0,2,0},ERQ_8+ERQ_16,10,10,&ampidle_popup};
+	   {
+	      erq_8on ();
+	      erq_16on ();
+	      erq_21on ();
+	      erq_28on ();
+	   	  mov si,offset entry
+	      erq_add ();
+	      ...
+	   	  mov si,offset entry
+	      erq_addrel ();
+	      ...
+	      erq_off ();
+	      ...
+	      erq_on ();
+	      ...
+	   	  mov si,offset entry
+	      erq_rmv ();
+	      erq_8off ();
+	      erq_16off ();
+	      erq_21off ();
+	      erq_28off ();
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	TDEQ16N.ASM		  <B>ASM equiv</B>	ERQ_16ON
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_on">_bioskey_on</A>, <A HREF="rtsr.htm#_directkey_on">_directkey_on</A>, <A HREF="rtsr.htm#_erq_8on">_erq_8on</A>, <A HREF="rtsr.htm#_erq_16off">_erq_16off</A>, <A HREF="rtsr.htm#_erq_21on">_erq_21on</A>, <A HREF="rtsr.htm#_erq_28on">_erq_28on</A>, <A HREF="rtsr.htm#_erq_on">_erq_on</A>, <A HREF="rtsr.htm#_idle_on">_idle_on</A>, <A HREF="rtsr.htm#_keyfeed_on">_keyfeed_on</A>, <A HREF="rtsr.htm#_stimer_on">_stimer_on</A>
+<BR></DL>
+<H2><A NAME="_erq_21off">_erq_21off</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Disallows servicing of the entry request queue via the DOS interrupt.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _erq_21off(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function disables the ISR that allows the entry request queue to be serviced from the DOS services interrupt (INT 0x21). The ISR remains installed, but it is inactive.
+<BR>
+<BR>	See _erq_16on for an example of the use of this function.
+<BR>
+<BR></DL>
+<B>Source file</B>	TDEQ21F.ASM		  <B>ASM equiv</B>	ERQ_21OFF
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_off">_bioskey_off</A>, <A HREF="rtsr.htm#_directkey_off">_directkey_off</A>, <A HREF="rtsr.htm#_erq_8off">_erq_8off</A>, <A HREF="rtsr.htm#_erq_16off">_erq_16off</A>, <A HREF="rtsr.htm#_erq_21on">_erq_21on</A>, <A HREF="rtsr.htm#_erq_28off">_erq_28off</A>, <A HREF="rtsr.htm#_erq_off">_erq_off</A>, <A HREF="rtsr.htm#_idle_off">_idle_off</A>, <A HREF="rtsr.htm#_keyfeed_off">_keyfeed_off</A>, <A HREF="rtsr.htm#_stimer_off">_stimer_off</A>
+<BR></DL>
+<H2><A NAME="_erq_21on">_erq_21on</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Allows the entry request queue to be serviced from the DOS interrupt.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _erq_21on(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function enables the ISR that allows the entry request queue (erq) to be serviced from the DOS services interrupt (INT 0x21). This ISR allows the entry request queue to be serviced between disk operations.
+<BR>
+<BR>	The erq ISRs default to OFF, so this function must be called before the entry request queue can be serviced from the DOS services interrupt.
+<BR>
+<BR>	The erq allows entry requests to be serviced at specified times rather than by specific interrupts. When an entry request in the erq is ready to be serviced, it is serviced by the next active ISR which is currently servicing the queue.
+<BR>
+<BR>	See _erq_16on for an example of the use of this function.
+<BR>
+<BR></DL>
+<B>Source file</B>	TDEQ21N.ASM		  <B>ASM equiv</B>	ERQ_21ON
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_on">_bioskey_on</A>, <A HREF="rtsr.htm#_directkey_on">_directkey_on</A>, <A HREF="rtsr.htm#_erq_8on">_erq_8on</A>, <A HREF="rtsr.htm#_erq_16on">_erq_16on</A>, <A HREF="rtsr.htm#_erq_21off">_erq_21off</A>, <A HREF="rtsr.htm#_erq_28on">_erq_28on</A>, <A HREF="rtsr.htm#_erq_on">_erq_on</A>, <A HREF="rtsr.htm#_idle_on">_idle_on</A>, <A HREF="rtsr.htm#_keyfeed_on">_keyfeed_on</A>, <A HREF="rtsr.htm#_stimer_on">_stimer_on</A>
+<BR></DL>
+<H2><A NAME="_erq_28off">_erq_28off</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Disallows servicing of the entry request queue via the DOS idle interrupt.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _erq_28off(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function disables the ISR that allows the entry request queue to be serviced from the DOS idle interrupt (INT 0x28). The ISR remains installed, but it is inactive.
+<BR>	See _erq_16on for an example of the use of this function.
+<BR>
+<BR></DL>
+<B>Source file</B>	TDEQ28F.ASM		   <B>ASM equiv</B>	ERQ_28OFF
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_off">_bioskey_off</A>, <A HREF="rtsr.htm#_directkey_off">_directkey_off</A>, <A HREF="rtsr.htm#_erq_8off">_erq_8off</A>, <A HREF="rtsr.htm#_erq_16off">_erq_16off</A>, <A HREF="rtsr.htm#_erq_21off">_erq_21off</A>, <A HREF="rtsr.htm#_erq_28on">_erq_28on</A>, <A HREF="rtsr.htm#_erq_off">_erq_off</A>, <A HREF="rtsr.htm#_idle_off">_idle_off</A>, <A HREF="rtsr.htm#_keyfeed_off">_keyfeed_off</A>, <A HREF="rtsr.htm#_stimer_off">_stimer_off</A>
+<BR></DL>
+<H2><A NAME="_erq_28on">_erq_28on</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Allows the entry request queue to be serviced from the DOS idle interrupt.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _erq_28on(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function enables the ISR that allows the entry request queue (erq) to be serviced from the DOS idle interrupt (INT 0x28). This ISR allows the entry request queue to be serviced when DOS or another program signals that it is idle (waiting for an event).
+<BR>
+<BR>	All entry request queue ISRs default to OFF, so this function must be called before the entry request queue can be serviced from the DOS idle interrupt.
+<BR>
+<BR>	The erq allows entry requests to be serviced at specified times rather than by specific interrupts. When an entry request in the erq is ready to be serviced, it is serviced by the next active ISR which is currently servicing the queue.
+<BR>
+<BR>	See _erq_16on for an example of the use of this function.
+<BR>
+<BR></DL>
+<B>Source file</B>	TDEQ28N.ASM		  <B>ASM equiv</B>	ERQ_28ON
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_on">_bioskey_on</A>, <A HREF="rtsr.htm#_directkey_on">_directkey_on</A>, <A HREF="rtsr.htm#_erq_8on">_erq_8on</A>, <A HREF="rtsr.htm#_erq_16on">_erq_16on</A>, <A HREF="rtsr.htm#_erq_21on">_erq_21on</A>, <A HREF="rtsr.htm#_erq_28off">_erq_28off</A>, <A HREF="rtsr.htm#_erq_on">_erq_on</A>, <A HREF="rtsr.htm#_idle_on">_idle_on</A>, <A HREF="rtsr.htm#_keyfeed_on">_keyfeed_on</A>, <A HREF="rtsr.htm#_stimer_on">_stimer_on</A>
+<BR></DL>
+<H2><A NAME="_erq_add">_erq_add</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Schedules a TSR entry request at a specified time.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _erq_add(erqspec far *struc);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function schedules a TSR entry request at a specified absolute time by adding struc to the entry request queue (erq) linked list. Entry request structures are always added to the end of the list. The entry request queue structure (erqspec) must be defined in DGROUP (global or static non-far data). The structure is defined in TSR.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   erqspec near * next;	/* offset of next structure in list */
+<BR>	   std_time start;	/* time to start trying the entry */
+<BR>	   std_time stop;	/* time to stop trying the entry */
+<BR>	   unsigned char intspec;/* defines which interrupts to try the
+<BR>					   entry from */
+<BR>	   unsigned int waitticks;/* number of clock ticks to wait before
+<BR>					   next try from INT 08h (timer) */
+<BR>	   unsigned int retryticks;/* value to load into e_waitticks if a
+<BR>					   retry is needed */
+<BR>	   void near * eds;	/* offset of associated entry def struc */
+<BR>	} erqspec;
+<BR>
+<BR>	The times indicated in e_start and e_stop are interpreted as absolute times referenced from 00:00:00 on the current day. Valid times are in the range 00:00:00.00 to 255:59:59.99. Times always refer to the future. A time that is less than the current time of day is assumed to refer to the next day, so 24:00:00 is added to the time. At the beginning of each new day, these fields are decremented by 24:00:00. This allows scheduling of events more than a week in advance.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	void far print_file(idlespec * const struc)
+	{
+	}
+	IDLE_DEF (idle_popup,print_file,_Con,100,-1,1);
+	erqspec entry = {(erqspec near*)-2,{0,0,},\
+	   {0,0,},ERQ_8+ERQ_16,10,10,&ampidle_po};
+	{
+	   _erq_add (&ampentry);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	void far print_file(idlespec * const struc)
+	{
+	}
+	   IDLE_DEF (idle_popup,print_file,_Con,100,-1,1);
+	   erqspec entry = {(erqspec near*)-2,{0,0,1,0},\
+	      {0,0,2,0},ERQ_8+ERQ_16,10,10,&ampidle_popup};
+	   {
+	   	  mov si,offset entry
+	      erq_add ();
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_TDEQA.ASM		  <B>ASM equiv</B>	ERQ_ADD
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_add">_bioskey_add</A>, <A HREF="rtsr.htm#_directkey_add">_directkey_add</A>, <A HREF="rtsr.htm#_erq_rmv">_erq_rmv</A>, <A HREF="rtsr.htm#_erq_add">_erq_add</A>, <A HREF="rtsr.htm#_idle_add">_idle_add</A>, <A HREF="rtsr.htm#_keyfeed_append">_keyfeed_append</A>, <A HREF="rtsr.htm#_keyfeed_insert">_keyfeed_insert</A>, <A HREF="rtsr.htm#_stimer_add">_stimer_add</A>
+<BR></DL>
+<H2><A NAME="_erq_addrel">_erq_addrel</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Schedules a TSR entry request after a specified elapsed time.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _erq_addrel(erqspec far *struc);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function schedules a TSR entry request after a specified elapsed time by adding struc to the entry request queue (erq) linked list. Entry request structures are always added to the end of the list. The entry request queue structure (erqspec) must be defined in 	DGROUP (global or static non-far data). The structure is defined in TSR.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   erqspec near * next;	/* offset of next structure in list */
+<BR>	   std_time start;	/* time to start trying the entry */
+<BR>	   std_time stop;	/* time to stop trying the entry */
+<BR>	   unsigned char intspec;/* defines which interrupts to try the
+<BR>	   				   entry from */
+<BR>	   unsigned int waitticks;/* number of clock ticks to wait before
+<BR>					   next try from INT 08h (timer) */
+<BR>	   unsigned int retryticks;/* value to load into e_waitticks if a
+<BR>					   retry is needed */
+<BR>	   void near * eds;	/* offset of associated entry def struc */
+<BR>	} erqspec;
+<BR>
+<BR>	The times indicated in e_start and e_stop are interpreted as elapsed times relative to the current time of day. Valid times are in the range 00:00:00.00 to 255:59:59.99. Elapsed times always refer to the future. When the erqspec structure is installed, the times are converted to absolute times referenced from 00:00:00.00 on the current day. Atthe beginning of each new day, these fields are decremented by 24:00:00. This allows events to be scheduled more than a week in advance.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	void far print_file (idlespec * const struc)
+	{
+	}
+	IDLE_DEF (idle_popup,print_file,_Con,100,-1,1);
+	erqspec entry = {(erqspec near*)-2,{0,0,},\
+	   {0,0,},ERQ_8+ERQ_16,10,10,&ampidle_po};
+	{
+	   _erq_addrel (&ampentry);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	void far print_file (idlespec * const struc)
+	{
+	}
+	   IDLE_DEF (idle_popup,print_file,_Con,100,-1,1);
+	   erqspec entry = {(erqspec near*)-2,{0,0,1,0},\
+	      {0,0,2,0},ERQ_8+ERQ_16,10,10,&ampidle_popup};
+	   {
+	   	  mov si,offset entry
+	      erq_addrel ();
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_TDEQAR.ASM		  <B>ASM equiv</B>	ERQ_ADDREL
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_add">_bioskey_add</A>, <A HREF="rtsr.htm#_directkey_add">_directkey_add</A>, <A HREF="rtsr.htm#_erq_add">_erq_add</A>, <A HREF="rtsr.htm#_erq_rmv">_erq_rmv</A>, <A HREF="rtsr.htm#_idle_add">_idle_add</A>, <A HREF="rtsr.htm#_keyfeed_append">_keyfeed_append</A>, <A HREF="rtsr.htm#_keyfeed_insert">_keyfeed_insert</A>, <A HREF="rtsr.htm#_stimer_add">_stimer_add</A>
+<BR></DL>
+<H2><A NAME="_erq_off">_erq_off</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Disables program activation via the entry request queue.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _erq_off(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function disables program activation via the entry request queue (erq) by suspending all processing of entries in the erq. This function has no effect on the on/off state of the INT 8, INT 0x16, INT 0x21, and INT 0x28 ISRs used to pass control to the erq.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   _erq_off ();
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	      ...
+	      erq_off ();
+
+</CODE></PRE>
+<B>Source file</B>	TDEQF.ASM			  <B>ASM equiv</B>	ERQ_OFF
+<DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_off">_bioskey_off</A>, <A HREF="rtsr.htm#_directkey_off">_directkey_off</A>, <A HREF="rtsr.htm#_erq_8off">_erq_8off</A>, <A HREF="rtsr.htm#_erq_16off">_erq_16off</A>, <A HREF="rtsr.htm#_erq_21off">_erq_21off</A>, <A HREF="rtsr.htm#_erq_28off">_erq_28off</A>, <A HREF="rtsr.htm#_erq_on">_erq_on</A>, <A HREF="rtsr.htm#_idle_off">_idle_off</A>, <A HREF="rtsr.htm#_keyfeed_off">_keyfeed_off</A>, <A HREF="rtsr.htm#_stimer_off">_stimer_off</A>
+<BR></DL>
+<H2><A NAME="_erq_on">_erq_on</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Enables program activation via the entry request queue.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _erq_on (void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function re-enables the entry request queue (erq) by re-enabling processing of entries in the erq. This function has no effect on the on/off state of the INT 8, INT 0x16, INT 0x21, and INT 0x28 ISRs used to pass control to the erq.
+<BR>
+<BR>	_erq_on only needs to be called if _erq_off has been called.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   _erq_on ();
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	      ...
+	      erq_on ();
+
+</CODE></PRE>
+<B>Source file</B>	TDEQN.ASM			  <B>ASM equiv</B>	ERQ_ON
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_on">_bioskey_on</A>, <A HREF="rtsr.htm#_directkey_on">_directkey_on</A>, <A HREF="rtsr.htm#_erq_8on">_erq_8on</A>, <A HREF="rtsr.htm#_erq_16on">_erq_16on</A>, <A HREF="rtsr.htm#_erq_21on">_erq_21on</A>, <A HREF="rtsr.htm#_erq_28on">_erq_28on</A>, <A HREF="rtsr.htm#_erq_off">_erq_off</A>, <A HREF="rtsr.htm#_idle_on">_idle_on</A>, <A HREF="rtsr.htm#_keyfeed_on">_keyfeed_on</A>, <A HREF="rtsr.htm#_stimer_on">_stimer_on</A>
+<BR></DL>
+<H2><A NAME="_erq_rmv">_erq_rmv</A></H2>
+Removes a specified TSR entry request from the entry request queue.
+<BR>
+<BR><DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _erq_rmv(erqspec far *struc);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function removes struc from the entry request queue (erq) linked list. This prevents the specified entry request from being serviced by the queue. This function has no effect if the erq entry definition structure is not installed.
+<BR>
+<BR>	The erq automatically removes entry request structures from the queue as they are serviced or when they expire, so this function is only required when entries must be removed prematurely.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	void far print_file (idlespec * const struc)
+	{
+	}
+	IDLE_DEF (idle_popup,print_file,_Con,100,-1,1);
+	erqspec entry = {(erqspec near*)-2,{0,0,},\
+	   {0,0,},ERQ_8+ERQ_16,10,10,&ampidle_po};
+	{
+	   ...
+	   _erq_rmv (&ampentry);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	void far print_file(idlespec * const struc)
+	{
+	}
+	IDLE_DEF (idle_popup,print_file,_Con,100,-1,1);
+	erqspec entry = {(erqspec near*)-2,{0,0,1,0},\
+	      {0,0,2,0},ERQ_8+ERQ_16,10,10,&ampidle_popup};
+	      ...
+		movsi,offset entry
+	      erq_rmv ();
+
+</CODE></PRE>
+<B>Source file</B>	_TDEQR.ASM		  <B>ASM equiv</B>	ERQ_RMV
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_rmv">_bioskey_rmv</A>, <A HREF="rtsr.htm#_directkey_rmv">_directkey_rmv</A>, <A HREF="rtsr.htm#_erq_add">_erq_add</A>, <A HREF="rtsr.htm#_erq_add">_erq_add</A>, <A HREF="rtsr.htm#_idle_rmv">_idle_rmv</A>, <A HREF="rtsr.htm#_keyfeed_rmv">_keyfeed_rmv</A>, <A HREF="rtsr.htm#_stimer_rmv">_stimer_rmv</A>
+<BR></DL>
+<H2><A NAME="_idle_add">_idle_add</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Adds a DOS idle entry point to the list of active TSR entry points.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _idle_add(idlespec near *struc);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function adds a DOS idle entry point to the list of active TSR entry points by adding struc to the idle entry definition structure linked list. IDLE_DEF may be used to create and initialize struc, which must be a structure of type idlespec and must be defined in DGROUP (global or static non-far data). The idlespec entry definition structure is defined in detail in the TSRs and Device Drivers technical notes and is summarized under IDLE_DEF.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	void far print_file(idlespec * const struc)
+	{
+	}
+	IDLE_DEF (idle_popup,print_file,_Con,100,-1,1);
+	...
+	{
+	   _idle_add (&ampidle_popup);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	 void far print_file(idlespec * const struc)
+	 {
+	 }
+	 IDLE_DEF (idle_popup,print_file,_Con,100,-1,1);
+	...
+	    {
+	    	  mov si,offset idle_popup
+	   	  idle_add ();
+	    }
+
+</CODE></PRE>
+<B>Source file</B>	_TDIDLEA.ASM		  <B>ASM equiv</B>	IDLE_ADD
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_add">_bioskey_add</A>, <A HREF="rtsr.htm#_directkey_add">_directkey_add</A>, <A HREF="rtsr.htm#_erq_add">_erq_add</A>, <A HREF="rtsr.htm#_erq_add">_erq_add</A>, <A HREF="rtsr.htm#_idle_rmv">_idle_rmv</A>, <A HREF="rtsr.htm#_keyfeed_append">_keyfeed_append</A>, <A HREF="rtsr.htm#_keyfeed_insert">_keyfeed_insert</A>, <A HREF="rtsr.htm#_stimer_add">_stimer_add</A>
+<BR></DL>
+<H2><A NAME="IDLE_DEF">IDLE_DEF</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Macro) Creates a DOS idle TSR entry definition structure.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	IDLE_DEF (label, entry_func, resources, stack_len, fail_func, entry_mask);
+<BR>
+<BR>	label is a valid identifier (e.g., idle_popup).
+<BR>	entry_func is the entry point function to call.
+<BR>	resources is a resource or a combination of resources (e.g., _con_dos).
+<BR>	stack_len is the number of bytes of stack space needed by entry_func.
+<BR>	entry_mask is the reentrancy lock mask (see Appendix F).
+<BR>	fail_func is the function to call if entry_func cannot be called.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This macro creates and initializes a DOS idle TSR entry definition structure (idlespec) with the name label. label must begin with a non-numeric character. The idlespec structure is defined in TSR.H as follows:
+<BR>	typedef struct {	 /* bioskey entry definition */
+<BR>	   void near * next_spec;/* address of next structure */
+<BR>	   void far (near/far * entry_func)(idlespec * const);
+<BR>	    	 	 /* function to call if checks succeed */
+<BR>	   void far (near/far * fail_func)(idlespec * const, char causefail,
+<BR>	    char entryfail);
+<BR>	    	 	 /* function to call if checks succeed */
+<BR>	   void near (* near * check_list)(void);/* offset of the list of functions that
+<BR>	    	 	    check resources */
+<BR>	   void near (* near * save_list)(void);/* offset of the list of functions that
+<BR>	    	 	    save and init resources */
+<BR>	   void near (* near * restore_list)(void);/* offset of the list of functions that
+<BR>	    	 	    cleanup when finished */
+<BR>	   int stack_len;	 /* number of bytes of stack space needed by
+<BR>	    	 	    entry_func */
+<BR>	   int entry_mask;	 /* checks and preserves system resources */
+<BR>	} idlespec;
+<BR>
+<BR>	near/far directives indicate near pointers in the TINY model and far pointers in all other memory models, including SMALL and COMPACT.
+<BR>
+<BR>	entry_func is the entry point into the program. This entry function is called by the ISR when all requirements in the entry definition structure are met. This function must be a far function.
+<BR>
+<BR>	resources indicates the resources that are used by entry_func. Resources that are used are combined in alphabetical order and are defined as follows:
+<BR>
+<BR>	_Con    if console services will be used
+<BR>	_Dos    if DOS services that access the disk will be used
+<BR>	_Dosndif DOS services other than those that access the disk will be used
+<BR>	_Direct    if entry_func will access the disk directly
+<BR>	_Kbd    if entry_func will use the keyboard
+<BR>	_None    if entry_func does not depend on any of the above resources
+<BR>
+<BR>	stack_len is the stack space, in bytes, used by entry_func. This value must include the resources saved to the stack (as indicated in the TSRs and Device Drivers technical notes).
+<BR>
+<BR>	fail_func is the function that is called if the specified resources cannot be safely used or if there is not enough stack space. This function must be a far function.
+<BR>
+<BR>	entry_mask is the program resource lock mask that is used to control reentrancy. This field should be set to 1 if the program is not reentrant. See Appendix F for information on using entry_mask to control reentrancy.
+<BR>
+<BR>	Entry definition structures must always be declared within DGROUP (global or static non-far data).
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	#include &lt;tsr.h&gt
+	...
+	void far print_continue(idlespec * const);
+	void far print_fail(idlespec const *, char causefail,
+	   char entryfail);
+	IDLE_DEF (idle_popup1,print_continue,_Con_Dos,100,print_fail,1);
+	IDLE_DEF (idle_popup2,print_continue,_Con_Dos,100,-1,1);
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	(Not Applicable)
+
+</CODE></PRE>
+<B>Source file</B>	TSR.H
+<B>ASM equiv</B>â
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#BIOSKEY_DEF">BIOSKEY_DEF</A>, <A HREF="rtsr.htm#DIRECTKEY_DEF">DIRECTKEY_DEF</A>, <A HREF="rtsr.htm#STIMER_DEF">STIMER_DEF</A>
+<BR></DL>
+<H2><A NAME="_idle_off">_idle_off</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Disables TSR activation when DOS is idle.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _idle_off(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function disables TSR activation when DOS is idle by disabling the DOS idle ISR. The ISR remains installed, but control is unconditionally passed on to the next interrupt handler in the chain.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	_idle_off ();
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	idle_off ();
+
+</CODE></PRE>
+<B>Source file</B>	TDIDLEF.ASM		  <B>ASM equiv</B>	IDLE_OFF
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_off">_bioskey_off</A>, <A HREF="rtsr.htm#_directkey_off">_directkey_off</A>, <A HREF="rtsr.htm#_erq_8off">_erq_8off</A>, <A HREF="rtsr.htm#_erq_16off">_erq_16off</A>, <A HREF="rtsr.htm#_erq_21off">_erq_21off</A>, <A HREF="rtsr.htm#_erq_28off">_erq_28off</A>, <A HREF="rtsr.htm#_erq_off">_erq_off</A>, <A HREF="rtsr.htm#_idle_on">_idle_on</A>, <A HREF="rtsr.htm#_keyfeed_off">_keyfeed_off</A>, <A HREF="rtsr.htm#_stimer_off">_stimer_off</A>
+<BR></DL>
+<H2><A NAME="_idle_on">_idle_on</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Enables TSR activation when DOS is idle.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _idle_on(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function re-enables TSR activation when DOS is idle by re-enabling the DOS idle ISR. _idle_on only needs to be called if _idle_off has been called.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	_idle_on ();
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	idle_on ();
+
+</CODE></PRE>
+<B>Source file</B>	TDIDLEN.ASM		  <B>ASM equiv</B>	IDLE_ON
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_on">_bioskey_on</A>, <A HREF="rtsr.htm#_directkey_on">_directkey_on</A>, <A HREF="rtsr.htm#_erq_8on">_erq_8on</A>, <A HREF="rtsr.htm#_erq_16on">_erq_16on</A>, <A HREF="rtsr.htm#_erq_21on">_erq_21on</A>, <A HREF="rtsr.htm#_erq_28on">_erq_28on</A>, <A HREF="rtsr.htm#_erq_on">_erq_on</A>, <A HREF="rtsr.htm#_idle_off">_idle_off</A>, <A HREF="rtsr.htm#_keyfeed_on">_keyfeed_on</A>, <A HREF="rtsr.htm#_stimer_on">_stimer_on</A>
+<BR></DL>
+<H2><A NAME="_idle_rmv">_idle_rmv</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Removes a DOS idle entry point from the list of active TSR entry points.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _idle_rmv(idlespec near *struc);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function removes a DOS idle entry point from the list of active TSR entry points by removing struc from the idle entry definition structure linked list. struc must be a structure of type idlespec (defined in TSR.H). This function has no effect if struc is not currently installed.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	void far print_file(idlespec * const struc)
+	{
+	}
+	IDLE_DEF (idle_popup,print_file,_Con,100,-1,1);
+	...
+	{
+	   _idle_rmv (&ampidle_popup);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	void far print_file(idlespec * const struc)
+	{
+	}
+	IDLE_DEF (idle_popup,print_file,_Con,100,-1,1);
+	...
+	{
+	   mov si,offset idle_popup
+	        idle_rmv ();
+	} 
+
+</CODE></PRE>
+<B>Source file</B>	_TDIDLER.ASM		  <B>ASM equiv</B>	IDLE_RMV
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_rmv">_bioskey_rmv</A>, <A HREF="rtsr.htm#_directkey_rmv">_directkey_rmv</A>, <A HREF="rtsr.htm#_erq_rmv">_erq_rmv</A>, <A HREF="rtsr.htm#_idle_add">_idle_add</A>, <A HREF="rtsr.htm#_keyfeed_rmv">_keyfeed_rmv</A>, <A HREF="rtsr.htm#_stimer_rmv">_stimer_rmv</A>
+<BR></DL>
+<H2><A NAME="_isr_getstat">_isr_getstat</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines if a specified isrctrl structure is installed.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	int _isr_getstat(isrctrl far *isr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the specified structure is installed.
+<BR>
+<BR>	1 if the specified structure is installed but cannot be safely removed.
+<BR>
+<BR>	-1 if the specified structure is not installed.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function determines if isr is currently installed. isr must be a structure of type isrctrl. 0 is returned if it is installed and can be safely removed. 1 is returned if the structure is installed but cannot be safely removed. -1 is returned if isr is not installed.
+<BR>
+<BR>	The isrctrl structure is defined in TSR.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   void far * next;		/* maintains linked list */
+<BR>	   void (interrupt far * oldaddr)();/* original interrupt address */
+<BR>	   intaddr newaddr;		/* new interrupt address */
+<BR>	   unsigned char intnum;	/* interrupt number to install ISR on */
+<BR>	} isrctrl;
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	extern intaddr print_screen;
+	isrctrl int5_handler = {(isrctrl *)-2,NULL,
+	   	  	 (intaddr)print_screen,5);
+	   {
+	      _isr_install (&ampint5_handler);
+	      ...
+	      if (!_isr_getstat (&ampint5_handler))
+	         _isr_remove (&ampint5_handler);
+	      else
+	      {
+	         /* handle the error */
+	         _isr_hremove (&ampint5_handler);
+	      }
+	   }
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   extern intaddr print_screen;
+	   isrctrl int5_handler = {(isrctrl *)-2,NULL,
+		   (intaddr)print_screen,5);
+	   {
+	#if __TINY__
+		pushcs
+		popes
+	#else
+		movax,seg int5_handler
+	                moves,ax
+	#endif
+		movdi,offset int5_handler
+	      isr_install ();
+	      ...
+	#if __TINY__
+		pushcs
+		popes
+	#else
+		movax,seg int5_handler
+	                moves,ax
+	#endif
+		movdi,offset int5_handler
+	      isr_getstat ();	 /* is ISRCTRL installed? */
+		 jbisr_100	/*   n: don't uninstall */
+		 jaisr_050	/*   y: do a hard remove */
+	      isr_remove ();
+		jmpshort isr_100
+	isr_050:
+	      isr_hremove ();
+	isr_100:
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_TDIGSTT.ASM		  <B>ASM equiv</B>	ISR_GETSTAT
+
+<BR><H2><A NAME="_isr_hremove">_isr_hremove</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Unconditionally removes an interrupt vector which is managed by an isrctrl structure.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	int _isr_hremove(isrctrl far *isr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the interrupt vector was successfully removed.
+<BR>
+<BR>	-1 if the structure was not installed.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function unconditionally uninstalls the interrupt vector associated with isr and removes isr from the list of installed isrctrl structures. If other isrctrl structures have been installed on the same interrupt since isr, this function automatically uninstalls and then reinstalls them before and after uninstalling isr. 0 is returned if the operation was successful. -1 is returned if the specified isrctrl structure is not currently installed.
+<BR>
+<BR>	isrctrl structures must be installed using _isr_install.
+<BR>
+<BR>WARNING! No checking is performed to verify that isr can be safely uninstalled. If another interrupt handler has been installed since isr using non-_isr_... functions, a system crash may result.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	extern intaddr print_screen;
+	isrctrl int5_handler = {(isrctrl far *)-2,NULL,
+	   	  	 (intaddr)print_screen,5);
+	   {
+	      _isr_install (&ampint5_handler);
+	      ...
+	      if (!_isr_getstat (&ampint5_handler))
+	         _isr_remove (&ampint5_handler);
+	      else
+	      {
+	      /* handle the error */
+	         _isr_hremove (&ampint5_handler);
+	      }
+	   }
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   extern intaddr print_screen;
+	   isrctrl int5_handler = {(isrctrl far *)-2,NULL,
+	   	  	 (intaddr)print_screen,5);
+	   {
+	#if __TINY__
+	   pushcs
+	   pop es
+	#else
+	   mov ax,seg int5_handler
+	        mov      es,ax
+	#endif
+	   	  mov di,offset int5_handler
+	      isr_install ();
+	      ...
+	#if __TINY__
+	   	  pushcs
+	   	  pop es
+	#else
+	   	  mov ax,seg int5_handler
+	                moves,ax
+	#endif
+	   	  mov di,offset int5_handler
+	      isr_getstat ();	/* is ISRCTRL installed? */
+	   	   jb isr_100 /*   n: don't uninstall */
+	   	   ja isr_050 /*   y: do a hard remove */
+	      isr_remove ();
+	   	  jmp short isr_100
+	isr_050:
+	      isr_hremove ();
+	isr_100:
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_TDIHRMV.ASM		  <B>ASM equiv</B>	ISR_HREMOVE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_isr_install">_isr_install</A>, <A HREF="rtsr.htm#_isr_remove">_isr_remove</A>, <A HREF="rtsr.htm#_isr_remove">_isr_remove</A>
+<BR></DL>
+<H2><A NAME="_isr_install">_isr_install</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Installs and manages an interrupt vector using an isrctrl structure.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	int _isr_install(isrctrl far *isr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the ISR was successfully installed.
+<BR>
+<BR>	-1 if the ISR was already installed.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function installs the interrupt vector described by isr and adds isr to an internal list of installed isrctrl structures. The isrctrl structure is defined in TSR.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   void far * next;		/* maintains linked list */
+<BR>	   void (interrupt far * oldaddr)();/* original interrupt address */
+<BR>	   intaddr newaddr;		/* new interrupt address */
+<BR>	   unsigned char intnum;	/* interrupt number to install ISR on */
+<BR>	} isrctrl;
+<BR>
+<BR>	The next field must be set to (void far *)-2 when the structure is installed for the first time. This field is used internally to maintain the linked list.
+<BR>
+<BR>	All interrupt handlers that have been installed with _isr_install can be uninstalled with a single call to the _isr_removeall, _tsr_remove, _tsr_hremove or _tsr_disable function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	extern intaddr print_screen;
+	isrctrl int5_handler = {(isrctrl *)-2,NULL,
+	   (intaddr)print_screen,5);
+	{
+	   _isr_install (&ampint5_handler);
+	   ...
+	   if (!_isr_getstat (&ampint5_handler))
+	      _isr_remove (&ampint5_handler);
+	   else
+	   {
+	      /* handle the error */
+	      _isr_hremove (&ampint5_handler);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   extern intaddr print_screen;
+	   isrctrl int5_handler = {(isrctrl *)-2,NULL,
+	      (intaddr)print_screen,5);
+	   {
+	#if __TINY__
+	   pushcs
+	   pop es
+	#else
+	   mov ax,seg int5_handler
+	        moves,ax
+	#endif
+	   	  mov di,offset int5_handler
+	      isr_install ();
+	      ...
+	#if __TINY__
+	   	  pushcs
+	   	  pop es
+	#else
+	   	  mov ax,seg int5_handler
+	                moves,ax
+	#endif
+	   	  mov di,offset int5_handler
+	      isr_getstat ();	/* is ISRCTRL installed? */
+	   	   jb isr_100 /*  n: don't uninstall */
+	   	   ja isr_050 /*  y: do a hard remove */
+	      isr_remove ();
+	   	  jmp short isr_100
+	isr_050:
+	      isr_hremove ();
+	isr_100:
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_TDIINST.ASM		  <B>ASM equiv</B>	ISR_INSTALL
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_isr_remove">_isr_remove</A>, <A HREF="rtsr.htm#_isr_hremove">_isr_hremove</A>, <A HREF="rtsr.htm#_isr_remove">_isr_remove</A>
+<BR></DL>
+<H2><A NAME="_isr_remove">_isr_remove</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Removes an interrupt vector which is managed by an isrctrl structure.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	int _isr_remove(isrctrl far *isr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if isr was successfully removed.
+<BR>
+<BR>	-1 if isr was not installed or the interrupt has changed.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function uninstalls the interrupt vector associated with isr and removes isr from the list of installed isrctrl structures. If other isrctrl structures have been installed on the same interrupt since isr, this function automatically uninstalls and then reinstalls them before and after uninstalling isr. 0 is returned if the operation was successful. -1 is returned if the specified isrctrl structure is not currently installed or if another interrupt vector has been installed on the same interrupt without using the _isr_... functions.
+<BR>
+<BR>	isrctrl structures must be installed using _isr_install.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	extern intaddr print_screen;
+	isrctrl int5_handler = {(isrctrl *)-2,NULL,
+	   (intaddr)print_screen,5);
+	{
+	   _isr_install (&ampint5_handler);
+	   ...
+	   if (!_isr_getstat (&ampint5_handler))
+	      _isr_remove (&ampint5_handler);
+	   else
+	   {
+	      /* handle the error */
+	      _isr_hremove (&ampint5_handler);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   extern intaddr print_screen;
+	   isrctrl int5_handler = {(isrctrl *)-2,NULL,
+	      (intaddr)print_screen,5);
+	   {
+	#if __TINY__
+	   	  pushcs
+	   	  pop es
+	#else
+	   	  mov ax,seg int5_handler
+	                moves,ax
+	#endif
+	   	  mov di,offset int5_handler
+	      isr_install ();
+	      ...
+	#if __TINY__
+	   	  pushcs
+	   	  pop es
+	#else
+	   	  mov ax,seg int5_handler
+	                moves,ax
+	#endif
+	   	  mov di,offset int5_handler
+	      isr_getstat ();	/* is ISRCTRL installed? */
+	   	   jb isr_100 /*   n: don't uninstall */
+	   	   ja isr_050 /*   y: do a hard remove */
+	      isr_remove ();
+	   	  jmp short isr_100
+	isr_050:
+	      isr_hremove ();
+	isr_100:
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_TDIRMV.ASM		  <B>ASM equiv</B>	ISR_REMOVE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_isr_install">_isr_install</A>, <A HREF="rtsr.htm#_isr_hremove">_isr_hremove</A>, <A HREF="rtsr.htm#_isr_remove">_isr_remove</A>
+<BR></DL>
+<H2><A NAME="_isr_removeall">_isr_removeall</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Removes all interrupt vectors which are managed by isrctrl structures.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	isrctrl far *_isr_removeall(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	NULL if all installed isrctrl structures were successfully removed.
+<BR>
+<BR>	A pointer to the isrctrl structure that could not be removed if the function was unsuccessful.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function uninstalls all installed isrctrl structures and restores the interrupt vectors to their original values. NULL is returned if all installed structures were successfully removed. Otherwise, the address of the first isrctrl structure that could not be uninstalled is returned, and none of the interrupt vectors are removed. This only occurs if another interrupt handler has been installed (by some means other than the TSR/device driver system functions) on one of the interrupts used by one of the isrctrl structures.
+<BR>
+<BR>	If an isrctrl structure could not be removed because the interrupt vector table has been changed, _isr_hremove may used to uninstall the otherwise uninstallable isrctrl structure.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   isrctrl far * isr_addr;
+	   isr_addr = _isr_removeall ();
+	   while (isr_addr != NULL)
+	   {
+	      /* interrupts have changed */
+	      _isr_hremove (isr_addr); /* unconditionally remove ISR */
+	      isr_addr = _isr_removeall ();
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   {
+	      isr_removeall ();    /* was function successful? */
+	   	   jnc     hremove_100 /*   y: continue */
+	                               /*   m: interrupts have changed */
+	hremove_050:
+	      isr_hremove ();	/* unconditionally remove ISR */
+	      isr_removeall ();    /* was function successful? */
+	    jc      hremove_050 /*  n: unconditionally remove ISR */
+	hremove_100:
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_TDIRMVA.ASM		  <B>ASM equiv</B>	ISR_REMOVEALL
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_isr_install">_isr_install</A>, <A HREF="rtsr.htm#_isr_hremove">_isr_hremove</A>, <A HREF="rtsr.htm#_isr_remove">_isr_remove</A>
+<BR></DL>
+<H2><A NAME="_keyfeed_append">_keyfeed_append</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Schedules a keyfeed operation to occur after all other scheduled keyfeed operations.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _keyfeed_append(keyf near *keys);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function installs a structure which defines a keyfeed operation to be performed by the keystroke feeder. The keys structure is appended to the keyfeed queue, so it is processed AFTER all other scheduled keyfeed operations have been performed. keys must be a structure of type keyf and must be defined in DGROUP (global or static non-far data).
+<BR>
+<BR>	The keyf structure is defined in TSR.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   void near * next;	/* next structure to feed */
+<BR>	   int near/far * buffer;/* address of BIOS codes to emulate */
+<BR>	   int near * nextcode;	/* offset within KF_BUFFER of next BIOS code */
+<BR>	   char flags;		/* status of standard keyboard flags to emulate  */
+<BR>	   char enhflags;	/* status of enhanced keyboard flags to emulate  */
+<BR>	   char repeat;		/* number of times to feed the buffer */
+<BR>	   char flush;		/* number of times to report "no keys"
+<BR>					   to prevent flushing of the buffer */
+<BR>	   char flushcnt;	/* number of times left to report "no keys"
+<BR>					   before indicating a keystroke is available */
+<BR>	   int (near/far * getfunc)(keyf * const kf_struct, int kf_code, char bios_cmd);
+<BR>					/* address of user function to call on
+<BR>					   BIOS "get keystroke" interrupts */
+<BR>	   int (near/far * chkfunc)(keyf * const kf_struct, int kf_code, char bios_cmd);
+<BR>					/* address of user function to call on 
+<BR>					   BIOS "check keystroke" interrupts */
+<BR>	} keyf;
+<BR>
+<BR>	The near/far directive indicates a near pointer in TINY and a far pointer in all other memory models, including SMALL and COMPACT.
+<BR>	The next field must be set to (void near *)-2 when the structure is installed for the first time. This field is used internally to maintain the linked list.
+<BR>
+<BR>	The TSRs and Device Drivers technical notes explain the keyf structure in detail. Note that the functions pointed to by kf_chkfunc and kf_getfunc must be far functions.
+<BR>
+<BR>	See Appendix E for a complete listing of scan codes and BIOS key codes.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	int far keyf_get(keyf * const kf_struct, int key_code)
+	{
+	}
+	int feed_buffer[15];
+	keyf hello = {(void near *)-2,feed_buffer,
+	   (void near *)-1,0,1,3,3,keyf_get,
+	   #if __TINY__
+	   (int (near *)(keyf * const, int)};
+	#else
+	(int (far *)(keyf * const, int)};
+	#endif
+	{
+	char * string = "hello, world"___ENTER;
+	_keyfeed_convert (string, feed_buffer);
+	_keyfeed_insert (&amphello);
+	...
+	_keyfeed_rmv (&amphello);
+	...
+	_keyfeed_append (&amphello);
+	...
+	_keyfeed_on ();
+	...
+	_keyfeed_off ();
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	int far keyf_get (keyf * const kf_struct, int key_code)
+	{
+	}
+	int feed_buffer[15];
+	keyf hello = {(void near *)-2,feed_buffer,
+	   (void near *)-1,0,1,3,3,keyf_get,
+	#if __TINY__
+	   (int (near *)(keyf *const, int))-1};
+	#else
+	   (int (far *)(keyf * const, int))-1};
+	#endif
+	{
+	   char * string = "hello, world"___ENTER;
+	   pushss
+	   pop es
+	   mov si,string/* DS:SI -&gt string (source) */
+	   lea di,feed_buffer/* ES:DI -&gt feed_buffer (dest)*/
+	      keyfeed_convert ();
+	   mov si,offset hello/* DS:SI -&gt KEYF struct */
+	      keyfeed_insert ();
+	      ...
+	   mov si,offset hello/* DS:SI -&gt KEYF struct */
+	      keyfeed_rmv ();
+	      ...
+	   mov si,offset hello/* DS:SI -&gt KEYF struct */
+	      keyfeed_append ();
+	      ...
+	      keyfeed_on ();
+	      ...
+	      keyfeed_off ();
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_TDKFA.ASM		  <B>ASM equiv</B>	KEYFEED_APPEND
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_keyfeed_insert">_keyfeed_insert</A>, <A HREF="rtsr.htm#_keyfeed_rmv">_keyfeed_rmv</A>
+<BR></DL>
+<H2><A NAME="_keyfeed_convert">_keyfeed_convert</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts an ASCIIZ string to its corresponding BIOS keystroke codes.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _keyfeed_convert(const char *source, int *dest);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	No return value.
+<BR>	dest	 the converted codes
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function converts an ASCIIZ string to its equivalent BIOS codes. Each byte in source is converted to a 2-byte BIOS code in dest. dest must be large enough to hold two bytes for each byte in source, plus a terminating -1 int value to mark the end of the buffer.
+<BR>
+<BR>	If a value of 0xFF is encountered in source, the next 2 bytes are treated as literal BIOS codes and are transferred to dest without translation. This allows BIOS codes for non-character keystrokes to be embedded in source. Equates for BIOS codes that can be embedded in source are described in Appendix E and are defined in KEYS.H. The following example demonstrates the use of these defines:
+<BR>
+<BR>	#include	"KEYS.H"
+<BR>	...
+<BR>	char * source_str = "City: "_C_F11"State: "___PGUP;
+<BR>
+<BR>	_C_F11 and ___PGUP are equates for Ctrl-F11 and PgUp, respectively. If _keyfeed_convert were called to convert the source string shown above, the result would be as follows:
+<BR>
+<BR>	int dest_buf[] ={0x2E43, 0x1769, 0x1474, 0x1579, 0x273A, 0x8900
+<BR>				0x1F53, 0x1474, 0x1E61, 0x1474, 0x1265, 0x273A,
+<BR>				0x4900, 0xFFFF};
+<BR>
+<BR>	See _keyfeed_insert for an example of the use of this function.
+<BR>
+<BR></DL>
+<B>Source file</B>	_TDKFC.ASM		  <B>ASM equiv</B>	KEYFEED_CONVERT
+
+<BR><H2><A NAME="_keyfeed_insert">_keyfeed_insert</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Schedules a keyfeed operation to occur immediately.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _keyfeed_insert(keyf near * keys);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function installs a structure which defines a keyfeed operation to be performed by the keystroke feeder. The structure is inserted at the front of the keyfeed queue, so it is processed BEFORE any other scheduled keyfeed operations. If another keyfeed operation is in progress, that operation is suspended until the new operation has been completed. The keyfeed structure (keyf) must be defined in DGROUP (global or static non-far data). The keyf structure is defined in TSR.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   void near * next;	 /* next structure to feed */
+<BR>	   int near/far * buffer;/* address of BIOS codes to emulate */
+<BR>	   int near * nextcode;	 /* offset within KF_BUFFER of next BIOS code */
+<BR>	   char flags;	 	 /* status of standard keyboard flags to emulate  */
+<BR>	   char enhflags;	 /* status of enhanced keyboard flags to emulate  */
+<BR>	   char repeat;	 	 /* number of times to feed the buffer */
+<BR>	   char flush;	 	 /* number of times to report "no keys"
+<BR>	    	 	    to prevent flushing of the buffer */
+<BR>	   char flushcnt;	 /* number of times left to report "no keys"
+<BR>	    	 	    before indicating a keystroke is available */
+<BR>	   int (near/far * getfunc)(keyf * const kf_struct, int kf_code, char bios_cmd);
+<BR>	    	 	 /* address of user function to call on
+<BR>	    	 	    BIOS "get keystroke" interrupts */
+<BR>	   int (near/far * chkfunc)(keyf * const kf_struct, int kf_code, char bios_cmd);
+<BR>	    	 	 /* address of user function to call for
+<BR>	    	 	    BIOS "check keystroke" interrupts */
+<BR>	} keyf;
+<BR>
+<BR>	The near/far directive indicates a near pointer in TINY and a far pointer in all other memory models, including SMALL and COMPACT.
+<BR>
+<BR>	The next field must be set to (void near *)-2 when the structure is installed for the first time. This field is used internally to maintain the linked list.
+<BR>
+<BR>	The TSRs and Device Drivers technical notes explain the keyf structure in detail. Note that the functions pointed to by kf_chkfunc and kf_getfunc must be far functions.
+<BR>
+<BR>	See Appendix E for a complete listing of scan codes and BIOS key codes.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	int far keyf_get(keyf * const kf_struct, int key_code)
+	{
+	}
+	int feed_buffer[15];
+	keyf hello = {(void near *)-2,feed_buffer,
+	   (void near *)-1,0,1,3,3,keyf_get,
+	   #if __TINY__
+	   (int (near *)(keyf * const, int)};
+	#else
+	(int (far *)(keyf * const, int)};
+	#endif
+	{
+	char * string = "hello, world"___ENTER;
+	_keyfeed_convert (string, feed_buffer);
+	_keyfeed_insert (&amphello);
+	...
+	_keyfeed_rmv (&amphello);
+	...
+	_keyfeed_append (&amphello);
+	...
+	_keyfeed_on ();
+	...
+	_keyfeed_off ();
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	int far keyf_get(keyf * const kf_struct, int key_code)
+	{
+	}
+	int feed_buffer[15];
+	keyf hello = {(void near *)-2,feed_buffer,
+	   (void near *)-1,0,1,3,3,keyf_get,
+	#if __TINY__
+	   (int (near *)(keyf * const, int))-1};
+	#else
+	   (int (far *)(keyf * const, int))-1};
+	#endif
+	{
+	   char * string = "hello, world"___ENTER;
+	   pushss
+	   pop es
+	   mov si,string/* DS:SI -&gt string (source) */
+	   lea di,feed_buffer/* ES:DI -&gt feed_buffer (dest) */
+	      keyfeed_convert ();
+	   mov si,offset hello/* DS:SI -&gt KEYF struct */
+	      keyfeed_insert ();
+	      ...
+	   mov si,offset hello/* DS:SI -&gt KEYF struct */
+	      keyfeed_rmv ();
+	      ...
+	   mov si,offset hello/* DS:SI -&gt KEYF struct */
+	      keyfeed_append ();
+	      ...
+	      keyfeed_on ();
+	      ...
+	      keyfeed_off ();
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_TDKFI.ASM		  <B>ASM equiv</B>	KEYFEED_INSERT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_keyfeed_append">_keyfeed_append</A>, <A HREF="rtsr.htm#_keyfeed_rmv">_keyfeed_rmv</A>
+<BR></DL>
+<H2><A NAME="_keyfeed_off">_keyfeed_off</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Disables keystroke feeding.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _keyfeed_off(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function disables keystroke feeding by disabling the keyfeed ISR. The ISR remains installed, but control is unconditionally passed on to the next interrupt handler in the chain.
+<BR>
+<BR>	See _keyfeed_insert for an example of the use of this function.
+<BR>
+<BR></DL>
+<B>Source file</B>	TDKFF.ASM			  <B>ASM equiv</B>	KEYFEED_OFF
+
+<BR><H2><A NAME="_keyfeed_on">_keyfeed_on</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Enables keystroke feeding.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _keyfeed_on(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function re-enables keystroke feeding by re-enabling the keyfeed ISR. _keyfeed_on only needs to be called if _keyfeed_off has been called.
+<BR>	See _keyfeed_insert for an example of the use of this function.
+<BR>
+<BR></DL>
+<B>Source file</B>	TDKFN.ASM		   <B>ASM equiv</B>	KEYFEED_ON
+
+<BR><H2><A NAME="_keyfeed_rmv">_keyfeed_rmv</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Removes a scheduled keyfeed operation from the keyfeed queue.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _keyfeed_rmv(keyf near *keys);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function removes the keyfeed operation which is associated with keys from the keyfeed queue. keys must be a structure of type keyf and must have been installed previously by calling _keyfeed_insert or _keyfeed_append. If keys identifies an active keyfeed operation, that operation is immediately suspended. This function has no effect if keys is not currently installed.
+<BR>
+<BR>	Keyfeed structures are automatically removed from the keyfeed queue when their keyfeed operation has been completed. For this reason, this function only needs to be called if a keyfeed operation must be removed prematurely.
+<BR>
+<BR>	See _keyfeed_insert for an example of the use of this function.
+<BR>
+<BR></DL>
+<B>Source file</B>	_TDKFR.ASM		  <B>ASM equiv</B>	KEYFEED_RMV
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_keyfeed_append">_keyfeed_append</A>, <A HREF="rtsr.htm#_keyfeed_insert">_keyfeed_insert</A>
+<BR></DL>
+<H2><A NAME="_progid_check">_progid_check</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines if a specified program ID is installed in the system.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void far *_progid_check(char *idstring);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The address of the installed program's public data area if a matching program ID is found.
+<BR>
+<BR>	NULL if no matching program ID is installed.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function determines if the specified program ID (idstring) is installed in the system. The address of the installed program's public data area is returned if idstring is present. NULL is returned if no matching ID was found. Program IDs must be installed using _progid_install.
+<BR>
+<BR>	The public data area allows a program to make its internal data and functions available to other programs or other instances of the same program. For example, the returned public data address may be used by a TSR to change installed options from the command line if the program is already resident. The data area must be defined and interpreted by the TSR and any programs which will communicate with it.
+<BR>
+<BR>	The inline assembly version of this function may be used to determine if the installed application is resident or non-resident. See the Spontaneous Assembly 3.0 manual for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char *idstring = "TSR program, Copyright (c) Your company, INC";
+	   void far * pub_data;
+	   /* point PUB_DATA to the public data area */
+	   if (!_progid_check (idstring))
+	   _progid_install (idstring, pub_data);
+	   else
+	   _put_str ("TSR is already installed");
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char *idstring = "TSR program, Copyright (c)\
+	      Your company, INC";
+	   void far * pub_data;
+	   /* point PUB_DATA to the public data area */
+	   pushds
+	   pop es
+	   mov di,idstring/* ES:DI -&gt ID string */
+	      progid_check ();    /* is ID string installed? */
+	    jneinstall_050/*   n: install ID string */
+	      _put_str ("TSR is already installed");
+	   	  	 	/*   y: print message */
+	   jmp short install_100
+
+	install_050:
+	   mov ax,word ptr pub_data
+	   mov dx,word ptr pub_data+2
+	   	  	 	/* DX:AX -&gt public data area */
+	      progid_install ();
+	install_100:
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TDIDCHK.ASM		  <B>ASM equiv</B>	PROGID_CHECK
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_progid_install">_progid_install</A>
+<BR></DL>
+<H2><A NAME="_progid_hremtsr">_progid_hremtsr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Unconditionally uninstalls the TSR which corresponds to a specified program ID.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	char _progid_hremtsr(char *idstring);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the TSR was successfully removed.
+<BR>
+<BR>	An error code (defined below) if the specified program ID string was not found.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function unconditionally uninstalls the TSR which is identified by idstring. The TSR must have installed an identical ID string by calling _progid_install and the TSR must be resident or the function returns an error code and no change takes place. If idstring is found and the TSR is resident, the TSR to which the ID is assigned is uninstalled, its memory is returned to DOS, and 0 is returned. This occurs whether or not the TSR is active and whether or not interrupt vectors have changed since the TSR was originally installed.
+<BR>
+<BR>	The following equates (defined in TSR.H) indicate the possible error codes for this function:
+<BR>
+<BR>	TSR_NOTRESIDENT(-1) The program ID is installed but the TSR is not resident
+<BR>	TSR_NOTFOUND	(-2) The program ID is not installed
+<BR>
+<BR>	This function issues DOS calls to remove the specified TSR. The _Dos or _Dosnd resource must be specified for any entry point which uses this function.
+<BR>
+<BR>WARNING! _progid_remtsr is recommended as a safer variant of this function. Use of _progid_hremtsr can cause a system crash if important changes to the interrupt vector table are overwritten or if the freed TSR memory is reallocated to another application while the uninstalled TSR is still active.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char * idstring = "TSR program, Copyright (c)\
+	      Your company, INC";
+	   char err_code;
+	   err_code = _progid_remtsr (idstring);
+	   if (err_code &amp&amp err_code != -1)
+	   {
+	      /* handle the error */
+	      _progid_hremtsr (idstring);
+	   }
+	   _put_str ("TSR uninstalled");
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char * idstring = "TSR program, Copyright (c)\
+	      Your company, INC";
+	   pushds
+	   pop es
+	   mov di,idstring/* ES:DI -&gt ID string */
+	      progid_remtsr ();    /* was the TSR removed? */
+	    jncremtsr_100/*   y: continue */
+	   cmp al,-1	/* is TSR installed? */
+	    je remtsr_100/*   n: skip hard remove */
+	      progid_hremtsr ();    /*   y: do a hard remove */
+	remtsr_100:
+	      _put_str ("TSR uninstalled");
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_TDIDHRT.ASM		  <B>ASM equiv</B>	PROGID_HREMTSR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_progid_remtsr">_progid_remtsr</A>, <A HREF="rtsr.htm#_tsr_hremove">_tsr_hremove</A>, <A HREF="rtsr.htm#_tsr_remove">_tsr_remove</A></DL>
+<H2><A NAME="_progid_install">_progid_install</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Installs a specified program ID for detection by other programs.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _progid_install(char *idstring, void far *data_area);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function installs a program ID (idstring) that allows other programs to determine if the program is present in memory. This is most often used to determine if a TSR is already resident. The installed program ID also provides global access to the specified public data area, making it possible for other programs (or other instances of the same program) to access functions and variables within the current program.
+<BR>
+<BR>	The specified ID string becomes active as soon as it is installed, whether or not the TSR is resident. This allows TSRs to communicate with nonresident applications. Other applications may detect the presence of idstring by calling _progid_check, _progid_remtsr, or _progid_hremtsr. The program ID detection method is described in the TSRs and Device Drivers technical notes.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char * idstring = "TSR program, Copyright (c)\
+	      Your company, INC";
+	   void far * pub_data;
+	   /* point PUB_DATA to the public data area */
+	   if (!_progid_check (idstring))
+	   _progid_install (idstring, pub_data);
+	   else
+	   _put_str ("TSR is already installed");
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char * idstring = "TSR program, Copyright (c)\
+	      Your company, INC";
+	   void far * pub_data;
+	   /* point PUB_DATA to the public data area */
+	   pushds
+	   pop es
+	   mov di,idstring/* ES:DI -&gt ID string */
+	      progid_check ();    /* is ID string installed? */
+	    jneinstall_050/*   n: install ID string */
+	      _put_str ("TSR is already installed");
+	   	  	 	/*   y: print message */
+	   jmp short install_100
+
+	install_050:
+	   	  mov ax,word ptr pub_data
+	   	  mov dx,word ptr pub_data+2
+	   	  	 	/* DX:AX -&gt public data area */
+	      progid_install ();
+	install_100:
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_TDIDINS.ASM		  <B>ASM equiv</B>	PROGID_INSTALL
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_progid_check">_progid_check</A>
+<BR></DL>
+<H2><A NAME="_progid_remtsr">_progid_remtsr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Uninstalls the TSR which corresponds to a specified program ID.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	char _progid_remtsr(char *idstring);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the function was successful.
+<BR>
+<BR>	An error code if the TSR could not be uninstalled.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function uninstalls the TSR which is identified by idstring if it is safe to do so. The TSR must have installed an identical ID string by calling _progid_install and the TSR must be resident or the function returns an error code and no change takes place. An error code is also returned if the specified TSR is currently active or if interrupt vectors have changed since the TSR was originally installed. If idstring is found and the TSR can be safely uninstalled, the TSR to which the ID is assigned is uninstalled, its memory is returned to DOS, and 0 is returned.
+<BR>
+<BR>	The following equates (defined in TSR.H) indicate the possible error codes for this function:
+<BR>
+<BR>	TSR_NOTRESIDENT(-1) The program ID is installed but the TSR is not resident
+<BR>	TSR_NOTFOUND	(-2) The program ID is not installed
+<BR>	TSR_ACTIVE		   (-3) The specified TSR is active
+<BR>	TSR_ISRCHANGED	(-4) The interrupt vector table has changed
+<BR>
+<BR>	This function issues DOS calls to remove the specified TSR. The _Dos or _Dosnd resource must be specified for any TSR entry point which uses this function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char * idstring = "TSR program, Copyright (c)\
+	      Your company, INC";
+	   char err_code;
+	   err_code = _progid_remtsr (idstring);
+	   if (err_code &amp&amp err_code != -4)
+	   {
+	      /* handle the error */
+	      _progid_hremtsr (idstring);
+	   }
+	   _put_str ("TSR uninstalled");
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char * idstring = "TSR program, Copyright (c)\
+	      Your company, INC";
+	   pushds
+	   pop es
+	   mov di,idstring/* ES:DI -&gt ID string */
+	      progid_remtsr ();    /* was the TSR removed? */
+	    jncremtsr_100/*   y: continue */
+	   cmp al,-4	/* is TSR installed? */
+	    je remtsr_100/*   n: skip hard remove */
+	      progid_hremtsr ();    /*   y: do a hard remove */
+	remtsr_100:
+	      _put_str ("TSR uninstalled");
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_TDIDRT.ASM		  <B>ASM equiv</B>	PROGID_REMTSR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_progid_remtsr">_progid_remtsr</A>, <A HREF="rtsr.htm#_tsr_hremove">_tsr_hremove</A>, <A HREF="rtsr.htm#_tsr_remove">_tsr_remove</A>
+<BR></DL>
+<H2><A NAME="_stimer_add">_stimer_add</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Adds a system timer entry point to the list of active TSR entry points.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _stimer_add(stmrspec near *struc);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function adds a system timer entry point to the list of active TSR entry points by adding struc to the stimer entry definition structure linked list. STIMER_DEF may be used to create and initialize struc, which must be a structure of type stmrspec and must be defined in DGROUP (global or static non-far data). The stmrspec entry definition structure is defined in detail in the TSRs and Device Drivers technical notes and is summarized under STIMER_DEF.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	void far display_win(stmrspec * const struc)
+	{
+	}
+	STIMER_DEF(stimer_popup,display_win,200,200,20,_Con,100,-1,1);
+	...
+	{
+	   _stimer_add (&ampstimer_popup);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	void far display_win(stmrspec * const struc)
+	{
+	}
+	STIMER_DEF(stimer_popup,display_win,200,200,20,
+	         _Con,100,-1,1);
+	...
+	   {
+	   	  mov si,offset stimer_popup
+	      stimer_add ();
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_TDTMRA.ASM		  <B>ASM equiv</B>	STIMER_ADD
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_add">_bioskey_add</A>, <A HREF="rtsr.htm#_directkey_add">_directkey_add</A>, <A HREF="rtsr.htm#_erq_add">_erq_add</A>, <A HREF="rtsr.htm#_erq_add">_erq_add</A>, <A HREF="rtsr.htm#_idle_add">_idle_add</A>, <A HREF="rtsr.htm#_keyfeed_append">_keyfeed_append</A>, <A HREF="rtsr.htm#_keyfeed_insert">_keyfeed_insert</A>, <A HREF="rtsr.htm#STIMER_DEF">STIMER_DEF</A>, <A HREF="rtsr.htm#_stimer_rmv">_stimer_rmv</A>
+<BR></DL>
+<H2><A NAME="STIMER_DEF">STIMER_DEF</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Macro) Creates a system timer TSR entry definition structure.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>		STIMER_DEF(label, entry_func, wait_ticks, rld_ticks, retry_ticks, resources, stack_len, fail_func, entry_mask);
+<BR>
+<BR>	label is a valid identifier (e.g., timer_popup)
+<BR>	entry_func is the entry point function to call.
+<BR>	wait_ticks is the initial wait time in timer ticks.
+<BR>	rld_ticks is the reload value for wait_ticks when entry_func is called.
+<BR>	retry_ticks is the reload value for wait_ticks when fail_func is called.
+<BR>	resources is a resource or a combination of resources (e.g., _Con_Dos).
+<BR>	stack_len is the number of bytes of stack space needed by entry_func.
+<BR>	entry_mask is the reentrancy lock mask (see Appendix F).
+<BR>	fail_func is the function to call if entry_func cannot be called.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This macro creates and initializes a system timer entry definition structure (stmrspec) with the name label. label must begin with a non-numeric character. The stmrspec structure is defined in TSR.H as follows:
+<BR>
+<BR>	typedef struct {	/* stimer entry definition */
+<BR>	   void near * next_spec;/* address of next structure */
+<BR>	   void far (near/far * entry_func)(stmrspec * const);
+<BR>					/* function to call if checks succeed */
+<BR>	   void far (near/far * fail_func)(stmrspec * const, char causefail,
+<BR>			char entryfail); /* function to call if checks succeed */
+<BR>	   void near (* near * check_list)(void); /* offset of the list of functions that
+<BR>					   check resources */
+<BR>	   void near (* near * save_list)(void); /* offset of the list of functions that
+<BR>					   save and init resources */
+<BR>	   void near (* near * restore_list)(void); /* offset of the list of functions that
+<BR>					   cleanup when finished */
+<BR>	   int stack_len;	/* number of bytes of stack space needed by
+<BR>					   entry_func */
+<BR>	   int entry_mask;	/* checks and preserves system resources */
+<BR>	   int wait_ticks;	/* number of ticks to skip before entry_func
+<BR>					   is called */
+<BR>	   int retry_ticks;	/* reload value for wait_ticks after fail_func
+<BR>					   is called */
+<BR>	   int rld_ticks;	/* reload value for wait_ticks after entry_func
+<BR>					   is called */
+<BR>	} stmrspec;
+<BR>
+<BR>	near/far directives indicate near pointers in the TINY model and far pointers in all other memory models, including SMALL and COMPACT.
+<BR>
+<BR>	entry_func is the entry point into the program. This entry function is called by the system timer ISR when all requirements in the entry definition structure are met. This function must be a far function.
+<BR>
+<BR>	resources indicates the resources that are used by entry_func. Resources are combined in alphabetical order, and are defined as follows:
+<BR>
+<BR>	_Con	 	  if console services will be used
+<BR>	_Dos	 	  if DOS services that access the disk will be used
+<BR>	_Dosnd	  if DOS services other than those that access the disk will be used
+<BR>	_Direct	  if entry_func will access the disk directly
+<BR>	_Kbd	 	  if entry_func will use the keyboard
+<BR>	_None 	  if entry_func does not depend on any of the above resources
+<BR>
+<BR>	stack_len is the amount of stack space required by entry_func. This value must include the resources saved to the stack (as indicated in the TSRs and Device Drivers technical notes).
+<BR>
+<BR>	fail_func is the function that will be called if the specified resources cannot be safely used or if there is not enough stack space.
+<BR>
+<BR>	entry_mask is the integer value that is used to lock non-reentrant program resources. This field should be set to 1 if the program is not reentrant. See Appendix F for information on using entry_mask to control reentrancy.
+<BR>	wait_ticks is the initial number of clock ticks to wait before calling entry_func. Every time a clock tick occurs, wait_ticks is checked to see if it is zero. If wait_ticks is zero, entry_func is called; otherwise, wait_ticks is decremented. Timer ticks normally occur 18.2 times per second.
+<BR>
+<BR>	rld_ticks is the reload value for wait_ticks after entry_func has been called. This specifies how frequently entry_func is called by the system timer ISR.
+<BR>
+<BR>	retry_ticks is the reload value for wait_ticks after fail_func has been called. This specifies how frequently entry_func is retried by the system timer ISR if resource checking fails or if insufficient stack space is available.
+<BR>
+<BR>	Entry definition structures must always be declared within DGROUP (global or static non-far data).
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	#include &lt;tsr.h&gt
+	...
+	void far display_window(stmrspec * const);
+	void far popup_fail(stmrspec * const, char causefail,
+	   char entryfail);
+	STIMER_DEF (stmr_popup1,display_window,10,10,0,_Con_Dos,100,
+	   popup_fail,1);
+	STIMER_DEF (stmr_popup2,display_window,18,18,0,_Con_Dos,100,-1,1);
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	(Not Applicable)
+
+</CODE></PRE>
+<B>Source file</B>	TSR.H
+<B>ASM equiv</B>â
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#BIOSKEY_DEF">BIOSKEY_DEF</A>, <A HREF="rtsr.htm#DIRECTKEY_DEF">DIRECTKEY_DEF</A>, <A HREF="rtsr.htm#IDLE_DEF">IDLE_DEF</A>, <A HREF="rtsr.htm#_stimer_add">_stimer_add</A>
+<BR></DL>
+<H2><A NAME="_stimer_off">_stimer_off</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Disables all active system timer TSR entry points.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _stimer_off(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function disables all active system timer TSR entry points by disabling the system timer ISR. The ISR remains installed, but control is unconditionally passed on to the next interrupt handler in the chain.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	_stimer_off ();
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	stimer_off ();
+
+</CODE></PRE>
+<B>Source file</B>	TDTMRF.ASM		  <B>ASM equiv</B>	STIMER_OFF
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_off">_bioskey_off</A>, <A HREF="rtsr.htm#_directkey_off">_directkey_off</A>, <A HREF="rtsr.htm#_erq_8off">_erq_8off</A>, <A HREF="rtsr.htm#_erq_16off">_erq_16off</A>, <A HREF="rtsr.htm#_erq_21off">_erq_21off</A>, <A HREF="rtsr.htm#_erq_28off">_erq_28off</A>, <A HREF="rtsr.htm#_erq_off">_erq_off</A>, <A HREF="rtsr.htm#_idle_off">_idle_off</A>, <A HREF="rtsr.htm#_keyfeed_off">_keyfeed_off</A>, <A HREF="rtsr.htm#_stimer_on">_stimer_on</A></DL>
+<H2><A NAME="_stimer_on">_stimer_on</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Enables all active system timer TSR entry points.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _stimer_on(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function re-enables all active system timer TSR entry points by re-
+<BR>	enabling the system timer ISR. _stimer_on only needs to be called if _stimer_off has been called.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	_stimer_on ();
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	stimer_on ();
+
+</CODE></PRE>
+<B>Source file</B>	TDTMRN.ASM		  <B>ASM equiv</B>	STIMER_ON
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_on">_bioskey_on</A>, <A HREF="rtsr.htm#_directkey_on">_directkey_on</A>, <A HREF="rtsr.htm#_erq_8on">_erq_8on</A>, <A HREF="rtsr.htm#_erq_16on">_erq_16on</A>, <A HREF="rtsr.htm#_erq_21on">_erq_21on</A>, <A HREF="rtsr.htm#_erq_28on">_erq_28on</A>, <A HREF="rtsr.htm#_erq_on">_erq_on</A>, <A HREF="rtsr.htm#_idle_on">_idle_on</A>, <A HREF="rtsr.htm#_keyfeed_on">_keyfeed_on</A>, <A HREF="rtsr.htm#_stimer_off">_stimer_off</A>
+<BR></DL>
+<H2><A NAME="_stimer_rmv">_stimer_rmv</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Removes a system timer entry point from the list of active TSR entry points.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _stimer_rmv(stmrspec near *struc);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function removes a system timer entry point from the list of active TSR entry points by removing struc from the stimer entry definition structure linked list. struc must be a structure of type stmrspec (defined in TSR.H). This function has no effect if struc is not currently installed.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	void far display_win(stmrspec * const struc)
+	{
+	}
+	STIMER_DEF(stimer_popup,display_win,200,200,20,_Con,100,-1,1);
+	...
+	{
+	   _stimer_rmv (&ampstimer_popup);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	void far display_win(stmrspec * const struc)
+	{
+	}
+	STIMER_DEF(stimer_popup,display_win,200,200,20,_Con,
+	         100,-1,1);
+	   {
+	   	  mov si,offset stimer_popup
+	      stimer_rmv ();
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_TDTMRR.ASM		  <B>ASM equiv</B>	STIMER_RMV
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_bioskey_rmv">_bioskey_rmv</A>, <A HREF="rtsr.htm#_directkey_rmv">_directkey_rmv</A>, <A HREF="rtsr.htm#_erq_rmv">_erq_rmv</A>, <A HREF="rtsr.htm#_idle_rmv">_idle_rmv</A>, <A HREF="rtsr.htm#_keyfeed_rmv">_keyfeed_rmv</A>, <A HREF="rtsr.htm#_stimer_add">_stimer_add</A>
+<BR></DL>
+<H2><A NAME="_tsr_emsinit">_tsr_emsinit</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Enables automatic relocation of EMS-relocatable segments.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _tsr_emsinit(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function initializes the TSR to recognize EMS-relocatable segments when the TSR goes resident. If this function is not called before the TSR goes resident, any EMS-relocatable segments will be discarded and the support functions necessary for EMS relocation will not be linked in.
+<BR>
+<BR>	This function is only available in transient form.
+<BR>
+<BR>	EMS relocation is not supported in the TINY memory model. EMS-relocatable segments in the TINY memory model are treated as resident segments.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   _tsr_emsinit ();
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   {
+	      tsr_emsinit ();
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	TDEINIT.ASM		  <B>ASM equiv</B>	TSR_EMSINIT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_tsr_init">_tsr_init</A>, <A HREF="rtsr.htm#_tsr_init">_tsr_init</A>
+<BR></DL>
+<H2><A NAME="_tsr_enable">_tsr_enable</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Enables hotkeys and TSR entry points before going resident.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _tsr_enable(unsigned progstack);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function enables all active hotkeys and TSR entry points without causing the current program to terminate and remain resident. All necessary ISRs are automatically installed and activated. The stack is also initialized to allow activation of the program via ISRs. progstack is used to calculate the first position in the stack that can be safely used whenever stack switching is necessary. This value represents the maximum stack usage of the non- interrupt-
+<BR>	driven portion of the application in addition to the stack space already in use when _tsr_enable is called. For example, if 50 bytes of stack space is already in use and a progstack value of 150 is specified, 200 bytes of stack space will be excluded from use by the ISRs when stack switching is necessary.
+<BR>
+<BR>	_tsr_resident may still be called to leave the program resident after _tsr_enable has been called, but this is optional. _tsr_enable does NOT need to be called before _tsr_resident or _device_resident is called.
+<BR>
+<BR>	Although this function normally enables all necessary ISRs (e.g., BIOS hotkeys or DOS idle entry points), this may be prevented by calling the corresponding ..._off function before this function is called.
+<BR>
+<BR>WARNING! Calling this function allows the program to be re-entered through any installed entry definition structures.
+<BR>
+<BR>	_tsr_init or _tsr_initc must be called before this function may be used.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   /* initialize leaving 500 bytes for regular program
+	       execution, the rest
+	   for entry through intercept types */
+	   _tsr_enable (500);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   {
+	      /* initialize leaving 500 bytes for regular program
+	       execution, the rest
+	    for entry through intercept types */
+	   	  mov cx,500    /* leave 500 bytes */
+	      tsr_enable ();
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_TDENABL.ASM		  <B>ASM equiv</B>	TSR_ENABLE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_device_resident">_device_resident</A>, _tsr_disable, <A HREF="rtsr.htm#_tsr_memusage">_tsr_memusage</A>, <A HREF="rtsr.htm#_tsr_resident">_tsr_resident</A>
+<BR></DL>
+<H2><A NAME="_tsr_hremove">_tsr_hremove</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Unconditionally uninstalls a TSR and releases its memory to DOS.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _tsr_hremove(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	DOES NOT RETURN to the caller (returns to foreground application) if successful.
+<BR>
+<BR>	RETURNS to the caller if the program is not currently resident.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function unconditionally uninstalls the current TSR by uninstalling all predefined and custom ISRs, releasing TSR memory to DOS, and calling the functions installed with _on_exit. Control is then returned to the foreground application (the function does not return to the caller). If the current program is not resident, this function has no effect and simply returns to the caller.
+<BR>
+<BR>	This function is only available in resident form.
+<BR>
+<BR>WARNING! _tsr_remove is recommended as a safer alternative to this function. Use of _tsr_hremove can cause a system crash if important changes to the interrupt vector table are overwritten or if the freed TSR memory is reallocated to another application while the uninstalled TSR is still active.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   _tsr_hremove ();	/* error if returns */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   {
+	      tsr_hremove ();	/* error if returns */
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_TDHREM.ASM		  <B>ASM equiv</B>	TSR_HREMOVE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_progid_hremtsr">_progid_hremtsr</A>, <A HREF="rtsr.htm#_progid_remtsr">_progid_remtsr</A>, <A HREF="rtsr.htm#_tsr_remove">_tsr_remove</A>
+<BR></DL>
+<H2><A NAME="_tsr_init">_tsr_init</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Initializes the TSR system.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _tsr_init(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function initializes the TSR system by locating DOS variables, initializing TSR system variables, and determining the type of keyboard installed. This function also initializes the TSR to use the standard critical error and divide-by-zero handlers.
+<BR>
+<BR>	The standard critical error handler installed by this function returns the FAIL condition for any critical error which occurs within the TSR if the DOS version is 3.1 or later and returns IGNORE when using versions of DOS prior to 3.1.
+<BR>
+<BR>	The divide-by-zero handler is installed whenever the TSR is activated via an entry point. When a divide overflow error occurs, the divide-by-zero handler immediately restores the stack and program execution to the state which was active when the TSR was last entered. This continues foreground program execution as if the entry point had returned normally.
+<BR>
+<BR>	_tsr_initc may be called instead of _tsr_init. _tsr_initc installs a more flexible and reliable critical error manager and allows a custom divide-by-zero cleanup routine to be specified.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   _tsr_init ();
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	      tsr_init ();
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TDINIT.ASM		  <B>ASM equiv</B>	TSR_INIT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_tsr_emsinit">_tsr_emsinit</A>, <A HREF="rtsr.htm#_tsr_init">_tsr_init</A>
+<BR></DL>
+<H2><A NAME="_tsr_initc">_tsr_initc</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Initializes the TSR system, allowing custom critical error and divide-by-zero cleanup routines to be specified.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>		void _tsr_initc(char (near/far *cefunc)(char error, char func_num, char err_inf, char drive, void far * far *device), void (near/far *zfunc)(void));
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function initializes the TSR system by locating DOS variables, initializing TSR system variables, and determining the type of keyboard installed. This function also initializes the TSR to use the critical error manager and the standard divide-by-zero handler with cefunc specified as the critical error recovery routine and zfunc specified as the custom divide-by-zero cleanup routine. 
+<BR>
+<BR>	The critical error manager installed by this function is the same one installed by _cem_install. The user-specified critical error recovery routine (cefunc) is called by the critical error manager to determine the action to be taken each time a critical error occurs within the TSR. (See _cem_install for information on writing a user-supplied critical error recovery routine.) cefunc must be a far function. If cefunc is -1, the FAIL condition is always returned, even when not supported by DOS. The critical error manager is more than 150 bytes larger than the default critical error handler installed by _tsr_init, but it handles critical errors in a safer, more consistent manner, regardless of the DOS version. Under DOS versions 3.1 and later (when support for the FAIL condition wasadded), the default critical error handler installed by _tsr_init is as safe as the critical error manager. The critical error manager cannot be relocated to EMS memory in a TSR. 
+<BR>
+<BR>	The divide-by-zero handler is installed whenever the TSR is activated via an entry point. This is the same handler which is installed by _tsr_init. However, the divide-by-zero handler calls the specified custom cleanup function (zfunc) before restoring the stack and program execution to the state which was active when the TSR was last entered. This allows custom cleanup to be performed (e.g., setting flags or disabling the current entry point) before continuing foreground program execution. zfunc must be a far function. No custom cleanup function is called if zfunc is -1. The divide-by-zero handler cannot be relocated to EMS memory in a TSR. 
+<BR>
+<BR>	_tsr_init may be called instead of _tsr_initc. This function should not be used for TSRs that will run in an OS/2 session.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	extern char ce_manager(char error, char func_num, char err_inf,
+	   char drive,
+	void far * far * device);
+	extern void divide_handler (void);
+	{
+	   _tsr_initc (ce_manager, divide_handler);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	extern char ce_manager (char error, char func_num, char err_inf,
+	   char drive,
+	   void far * far * device);
+	extern void divide_handler (void);
+	   {
+	#if !__SMALL_CODE__
+	   mov dx,seg ce_manager
+	   mov ax,seg divide_handler
+	   mov es,ax
+	#endif
+	   mov ax,offset ce_manager
+	   	  	 	/* DX:AX -&gt critical err mngr */
+	   mov di,offset divide_handler
+	   	  	 	/* ES:DI -&gt div by 0 manager */
+	      tsr_initc ();
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_TDINITC.ASM		  <B>ASM equiv</B>	TSR_INITC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_tsr_emsinit">_tsr_emsinit</A>, <A HREF="rtsr.htm#_tsr_init">_tsr_init</A>
+<BR></DL>
+<H2><A NAME="tsr_lockmask">tsr_lockmask</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Variable) Contains the program resource bit mask used to control reentrancy.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	extern unsigned int tsr_lockmask;
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This unsigned int variable contains the bit mask for non-reentrant program resources. Before the entry function for a hotkey or TSR entry point is called, this variable is ANDed with the value in the entry_mask field of theassociated entry definition structure. The entry function is only called if the result is zero; the fail function is called otherwise. The entry mask is then ORed into tsr_lockmask to lock the program resources that will be used by the entry point. After the function returns, the appropriate bits are cleared to unlock the program resources.
+<BR>
+<BR>	Each bit in this variable is typically assigned to a non-reentrant, user-defined program resource (a global program buffer would be considered a program resource; the data compression system would also be considered a program resource since it is not reentrant). By default, bit 0 is assigned to the entire TSR (a single program resource) to prevent all reentrancy. Bits 0 to 14 may be reassigned by the programmer. Bit 15 is always assigned to the keystroke feeder.
+<BR>
+<BR>	This variable is provided to aid in making programs safely reentrant. See Appendix F for more information on controlling reentrancy with tsr_lockmask.
+<BR>
+<BR></DL>
+<B>Source file</B>	TDLOKMSK.ASM
+<B>ASM equiv</B>â
+<BR><H2><A NAME="_tsr_memusage">_tsr_memusage</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Calculates the memory requirements of a TSR.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>		int _tsr_memusage(unsigned *res_total, unsigned *near_heap, unsigned *far_heap, unsigned *res_stack, unsigned *ems_relocate);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the requested stack and heap memory is available.
+<BR>	res_total	   total resident size of the program
+<BR>	ems_relocate		number of bytes to be relocated to expanded memory, in bytes (if not TINY)
+<BR>
+<BR>	-1 if the requested stack and/or heap sizes were adjusted to meet memory constraints.
+<BR>	res_total	   total resident size of the program
+<BR>	near_heap		actual size of the near heap, in bytes
+<BR>	far_heap		actual size of the far heap, in paragraphs
+<BR>	res_stack		actual size of resident stack, in bytes
+<BR>	ems_relocate		number of bytes to be relocated to expanded memory, in bytes (if not TINY)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function calculates the memory usage for the current TSR (before it goes resident) based on the requested sizes of the near heap (near_heap), far heap (far_heap), stack (res_stack), and the availability of expanded memory. This function allows a TSR to ensure that adequate memory is available before calling _tsr_resident or _device_resident. The specified stack and heap sizes are used for calculation purposes only--no initializations are performed. 0 is returned if the requested stack and heap sizes are available. -1 is returned if the requested stack and/or heap sizes had to be adjusted to accommodate memory constraints. In both cases, the total resident size of the program is returned in res_total and the number of resident bytes relocated to EMS is returned in ems_relocate.
+<BR>
+<BR>	If -1 is returned, the combined values of near_heap and res_stack represent the maximum or requested near data space (whichever is less) available to both the resident stack and the resident near heap. The value in far_heap indicates the remaining or requested far data space (whichever is less) available to the far heap after the indicated stack and near heap space has been allocated. Available memory is assigned first to the stack, then to the near heap, then to the far heap. If a stack size (res_stack) of -1 is requested, no memory will be available to the near heap.
+<BR>
+<BR>	Note that the value returned in ems_relocate indicates the actual number of bytes which will be physically relocated to EMS when _tsr_resident is called. Since EMS is allocated in 16K blocks, actual EMS usage will be the smallest multiple of 16K greater than or equal to ems_relocate.
+<BR>
+<BR>	Subsequent allocation and deallocation of DOS memory or EMS memory by the current program will alter available memory when _tsr_resident is called. This function is useful for determining if adequate heap or stack space will be available when _tsr_resident is called.
+<BR>
+<BR>	If EMS-relocatable segments are defined in the TSR, _tsr_emsinit must be called before this function may be used.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   unsigned int nheap = 2000, fheap = 0x80, stack = 500,
+	   	  ems, progsize;
+	   unsigned int prog_size;
+	   if (prog_size = _tsr_memusage (&ampprogsize, &ampnheap,
+	   	  &ampfheap, &ampstack, &ampems))
+	   {
+		   	 /* requested not available */
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   mov ax,2000	    /* 2000 byte near heap */
+	   mov bx,80	/* 2k far heap */
+	   mov cx,500	/* 500 byte resident stack */
+	   tsr_memusage ();	/* determine memory usage */
+	   	  	 	/* AX = actual near heap size */
+	   	  	 	/* BX = actual far heap size */
+	   	  	 	/* CX = actual stack size */
+	   	  	 	/* DX = total memory usage */
+	   	  	 	/* SI = bytes relocated to EMS */
+	    jncmem_100	    /* if requested was available */
+	   	  	 	/* if requested was NOT available
+	mem_100:
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_TDMEM.ASM		  <B>ASM equiv</B>	TSR_MEMUSAGE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_device_resident">_device_resident</A>, <A HREF="rtsr.htm#_tsr_enable">_tsr_enable</A>, <A HREF="rtsr.htm#_tsr_resident">_tsr_resident</A>
+<BR></DL>
+<H2><A NAME="_tsr_remove">_tsr_remove</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Uninstalls a TSR and releases its memory to DOS.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	char _tsr_remove(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	DOES NOT RETURN to caller (exits to foreground application) if successful.
+<BR>
+<BR>	An error code if the TSR could not be uninstalled.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function uninstalls the current TSR by uninstalling all predefined and custom ISRs, releasing the TSR's memory to DOS, and calling the functions installed with ON_EXIT. Control is then returned to the foreground application (the function does not return to the caller). If the current program cannot be safely uninstalled, this function has no effect and returns an error code to the caller to indicate the reason for the failure. The following equates (defined in TSR.H) indicate the possible error codes:
+<BR>
+<BR>	TSR_NOTRESIDENT	(-1) The TSR is not resident
+<BR>	(RESERVED)	   	   (-2) (Not used)
+<BR>	TSR_ACTIVE		   	   (-3) The TSR is active (via an entry point)
+<BR>	TSR_ISRCHANGED		   (-4) The interrupt vector table has changed
+<BR>
+<BR>	This function is only available in resident form.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int error_code = _tsr_remove ();
+	   /* handle error if function returned */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   {
+	      int error_code = tsr_remove ();
+	      /* handle error if function returned */
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_TDREM.ASM		  <B>ASM equiv</B>	TSR_REMOVE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_progid_hremtsr">_progid_hremtsr</A>, <A HREF="rtsr.htm#_progid_remtsr">_progid_remtsr</A>, <A HREF="rtsr.htm#_tsr_hremove">_tsr_hremove</A>
+<BR></DL>
+<H2><A NAME="_tsr_resident">_tsr_resident</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns to DOS, leaving the resident portion of the TSR in memory and freeing the transient portion to DOS.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;tsr.h&gt
+<BR>	void _tsr_resident(unsigned near_heap, unsigned far_heap, unsigned res_stack);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	DOES NOT RETURN to caller (exits to DOS).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function terminates a program, leaving it resident. This function installs the ISRs that are being used, resizes and initializes the stack to its specified resident size, performs the resident near and far heap initializations, releases all non-resident memory to DOS, and terminates. If _tsr_emsinit has been called and enough EMS memory is available, the EMS-relocatable portion of the TSR is moved to EMS memory. This function always exits directly to DOS (without returning to the caller).
+<BR>
+<BR>	If insufficient memory is available for the stack or for either of the heaps, this function resizes the stack and heaps to their maximum allowable sizes before going resident. Available memory is allocated first to the stack, then to the near heap, then to the far heap. The actual allocation of available memory may be determined before going resident by calling _tsr_memusage.
+<BR>
+<BR>	When this function is called, all necessary ISRs for active hotkeys and entry points are automatically enabled unless the corresponding ..._off functions have been called.
+<BR>
+<BR>	This function is only available in transient form, and can be accessed as _tsr_resident or _t_tsr_resident.
+<BR>
+<BR>	_tsr_init or _tsr_initc must be called before this function may be used.
+<BR>
+<BR>WARNING! _tsr_emsinit must be called before this function is used if EMS-relocatable code and/or data is present in the TSR. Failure to call _tsr_emsinit will cause EMS-relocatable segments to be treated as transient segments.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   /* initialize a 2000 byte near heap, a 2k far heap, 
+	      and leave a 500 byte resident stack */
+	   _tsr_resident (2000, 0x80, 500); /* does not return */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	  /* initialize a 2000 byte near heap, a 2k far heap,
+	     and leave a 500 byte resident stack */
+	   mov ax,2000	    /* 2000 byte near heap */
+	   mov bx,80	/* 2k far heap */
+	   mov cx,500	/* 500 byte resident stack */
+	   tsr_resident ();	/* does not return */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_TDRES.ASM		  <B>ASM equiv</B>	TSR_RESIDENT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rtsr.htm#_device_resident">_device_resident</A>, <A HREF="rtsr.htm#_tsr_enable">_tsr_enable</A>, <A HREF="rtsr.htm#_tsr_memusage">_tsr_memusage</A>, <A HREF="rtsr.htm#_tsr_remove">_tsr_remove</A>
+<BR>
+<BR></BODY>
+<BR></HTML><BR>

@@ -1,0 +1,280 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: Table Management</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Table Management</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tTable.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tTable.htm#HEAD0001">Tables Defined
+</A><BR>
+<A HREF="tTable.htm#HEAD0002">Checking for Table Entries
+</A><BR>
+<A HREF="tTable.htm#HEAD0003">Determining the Index of a Table Entry
+</A><BR>
+<A HREF="tTable.htm#HEAD0004">Obtaining a Table Entry Using an Index
+</A><BR>
+<A HREF="tTable.htm#HEAD0005">Referencing Array Elements with Tables
+</A><BR>
+<A HREF="tTable.htm#HEAD0006">Boosting Execution Speed
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit consists of functions which operate on tables. For the purposes of this unit, tables are defined as one-dimensional static char or int arrays which are preceded by descriptive headers. Each char or int in a table is referred to as an entry. Functions are provided to check for the presence of an entry in a table, to determine the index of an entry, to retrieve an entry given its index, and to associate entries with elements of separate arrays.
+
+<P>
+The table functions are fast, low-level routines. They are most commonly used to associate key codes with function addresses or to identify labels to be jumped to when an input stream contains specific characters. However, these table functions may be used to automate almost any high-level task where one set of values must be mapped into another set of values on a one-to-one or a many-to-one basis. Tables can be thought of as definitions of rules, constraints, or associations, and the table functions may be thought of as the interpreters of those rules.
+
+<H2><A NAME="HEAD0001">Tables Defined
+</A></H2>
+
+Two types of tables are interpreted by the functions in this unit: index tables and reference tables. Index tables contain entries which are associated with indices. Reference tables contain entries which are associated with array elements. Both types of tables may be extended. Extended tables are chained together with other tables of the same type, forming one huge table which can refer to any number of arrays or index ranges.
+
+<P>
+Index tables are structured as follows:
+<PRE><CODE>
+struct {
+   int/char near *next;                   /* Offset of next table in chain (optional) */
+   int startidx;                          /* Starting index */
+   int num;                               /* Number of entries in table */
+   int/char tbl_start[NUM];       /* Start of the table */
+} table;
+</CODE></PRE>
+Reference tables are structured as follows:
+<PRE><CODE>
+struct {
+   int/char near *next;                   /* Offset of next table in chain (optional) */
+   int/long/void near *array;     /* Starting index */
+   int num;                               /* Number of entries in table */
+   int/char tbl_start[NUM];       /* Start of the table */
+} table;
+</CODE></PRE>
+<DL COMPACT>
+<DT>next<DD>is an optional field (present only in extended tables) which points to another table of the same type, in the same segment, which is to be treated as an extension of the current table. If no such table exists, -1 must be placed in this position (syntax is: (int/char near*) 0xffff). This field is only required if the table is to be manipulated using one of the extended table functions.
+<DT>startidx<DD>(index tables only) indicates the index of the first entry in the table. This number is similar to the starting index of a Pascal array.
+<DT>array<DD>(reference tables only) is a near pointer to the array associated with the reference table.  This array may reside in any segment.  However, functions that return pointers into this array return only near pointers, so if the array resides in a different segment it is up to the programmer to create a far pointer from the near pointer returned and the appropriate segment. The MK_FP macro is provided by most compilers to do this.
+<DT>num<DD>indicates the number of character or integer entries in the table, excluding the header (i.e., the number of entries in the array at tbl_start).
+<DT>tbl_start<DD>is the starting point of the table, where all table entries reside.
+</DL>
+WARNING!        All functions that operate on tables expect the address of the tbl_start field, NOT the beginning of the structure.
+
+<P>
+WARNING!        Tables should always be created using structures. This ensures that table data is always in the proper format for the table functions. Some compilers reserve the right to rearrange data that is not encapsulated in structures.
+
+<H2><A NAME="HEAD0002">Checking for Table Entries
+</A></H2>
+<DL COMPACT>
+<DT>_is_inctbl<DD>     Checks for the presence of a char in a char table.
+<DT>_is_initbl<DD>     Checks for the presence of a int in a int table.
+<DT>_is_inxctbl<DD>    Checks for the presence of char in an extended char table.
+<DT>_is_inxitbl<DD>    Checks for the presence of a int in an extended int table.
+</DL>
+These functions check any type of table for the presence of a specific entry. The _is_in... functions check non-extended tables, and the _is_inx... functions check extended tables. These functions examine each entry in the table, starting with the first entry, until the specified entry is found or all table entries have been examined. 1 is returned if the entry is found; 0 is returned otherwise.
+
+<P>
+As an example, these functions may be used to validate input data. The following code sample accepts a character from the keyboard and verifies that the character is acceptable before processing it.
+<PRE><CODE>
+/* ---- table of valid keyboard input characters */
+   struct {
+      int entries;                                      /* number of entries in the table */
+      char tbl_start[9];                                /* list of allowed input characters */
+   } char_table = {8, "ABC123+-"};              /* NULL at end is not necessary */
+
+      ...
+
+/* ---- accept and process only valid keystrokes */
+
+   char chr = <A HREF="rdosio.htm#_get_chr">_get_chr</A> ();
+   while (chr == 0)                                     /* if an extended keystroke */
+   {
+      chr = <A HREF="rdosio.htm#_get_chr">_get_chr</A> ();                                /* flush extended code */
+       chr = <A HREF="rdosio.htm#_get_chr">_get_chr</A> ();
+   }
+   if (!_is_inctbl (char_table.tbl_start, chr))
+      <A HREF="rdosio.htm#_put_str">_put_str</A> ("Invalid key pressed");
+</CODE></PRE>
+<H2><A NAME="HEAD0003">Determining the Index of a Table Entry
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rtable.htm#_index_char">_index_char</A><DD>    Determines the index of a char in an index table.
+<DT><A HREF="rtable.htm#_index_int">_index_int</A><DD>     Determines the index of a int in an index table.
+<DT><A HREF="rtable.htm#_xindex_char">_xindex_char</A><DD>   Determines the index of a char in an extended index table.
+<DT><A HREF="rtable.htm#_xindex_int">_xindex_int</A><DD>    Determines the index of a int in an extended index table.
+</DL>
+These functions determine the index of a given table entry. The _index_... functions operate on non-extended index tables, and the _xindex_... functions operate on extended index tables. These functions examine each entry in the table, starting with the first entry, until the specified entry isfound or all table entries have been examined. If the entry is found, the index of that entry is returned. The returned index is relative to the starting index of the table. For example, if the table starting index were 17, then the index of first entry would be 17 and the 100th entry would be 116. -1 is returned if the entry is not present in the table.
+
+<P>
+These functions may be used any time non-contiguous char or int values must be mapped into a set of values which lie within a fixed range. The following example uses this functionality to convert a string of lowercase characters, including IBM PC international characters, to a string of chars which indicate the lexical (sorting) order of each character in the original string. The resulting string is suitable for sorting in the specified lexical order. In the code sample below, the lexical order of the characters is defined in SORT_TABLE.
+<PRE><CODE>
+/* ---- table which defines lexical order to be used */
+
+   struct {
+      int <A HREF="rexit.htm#start">start</A>;                                        /* lexical number sequence starts at 0 */
+      int entries;                                      /* number of chars in lexical sequence */
+      char tbl_start[45];                       /* 44 chars + unneeded NULL (from string) */
+   } table = {0,44,"aÑÉÖ†bcádeâàäÇfghiãåjklmnoîìï¢pqrstuÅñóvwxyz"};
+
+      ...
+
+/* ---- convert an IBM ASCII string to a lexical string */
+
+   int num = 0;
+   int len;
+   char string[50];
+   ...
+   len = <A HREF="rstring.htm#_str_len">_str_len</A> (string);
+   while (num < len)
+   {
+      string[num] = (char) <A HREF="rtable.htm#_index_char">_index_char</A> (table.tbl_start, string[num]);
+      num++;
+   }                                              /* repeat for each char in string */
+
+/* ---- string is ready for sorting */
+
+The _index_... and _xlat_... functions are exact inverses of each other as are the _xindex_... and _xxlat_... functions.
+</CODE></PRE>
+<H2><A NAME="HEAD0004">Obtaining a Table Entry Using an Index
+</A></H2>
+<DL COMPACT>
+<DT>_xlat_char<DD>     Gets a char from an index table.
+<DT>_xlat_int<DD>      Gets a int from an index table.
+<DT>_xxlat_char<DD>    Gets a char from an extended index table.
+<DT>_xxlat_int<DD>     Gets a int from an extended index table.
+</DL>
+These functions return the table entry associated with a given table index (much like the XLAT instruction in the 80x86 assembly language instruction set). The _xlat_... functions operate on non-extended index tables, and the _xxlat_... functions operate on extended index tables. These functions check the specified index against the range of indices supported by the table, and if the index is within this range, the corresponding table entry is returned. For example, if the table starting index were 17 and the input index were 116, then the 100th table entry would be returned as long as the table contained at least 100 entries. -1 is returned if the specified index is not represented in the table.
+
+<P>
+These functions may be used any time a set of values within a fixed range must be mapped to non-contiguous values or addresses.
+
+<P>
+The _xlat_... and _index_... functions are exact inverses of each other as are the _xxlat_... and _xindex_... functions.
+
+<H2><A NAME="HEAD0005">Referencing Array Elements with Tables
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rtable.htm#_ctbl_to_ptr">_ctbl_to_ptr</A><DD>   Gets a pointer to an array element using a char reference table.
+<DT><A HREF="rtable.htm#_ctbl_to_iptr">_ctbl_to_iptr</A><DD>  Gets a pointer to a int array element using a char reference table.
+<DT><A HREF="rtable.htm#_ctbl_to_lptr">_ctbl_to_lptr</A><DD>  Gets a pointer to a long array element using a char reference table.
+<DT><A HREF="rtable.htm#_itbl_to_ptr">_itbl_to_ptr</A><DD>   Gets a pointer to an array element using a int reference table.
+<DT><A HREF="rtable.htm#_itbl_to_iptr">_itbl_to_iptr</A><DD>  Gets a pointer to a int array element using a int reference table.
+<DT><A HREF="rtable.htm#_itbl_to_lptr">_itbl_to_lptr</A><DD>  Gets a pointer to a long array element using a int reference table.
+<DT><A HREF="rtable.htm#_xctbl_to_ptr">_xctbl_to_ptr</A><DD>  Gets a pointer to an array element using an extended char reference table.
+<DT><A HREF="rtable.htm#_xctbl_to_iptr">_xctbl_to_iptr</A><DD> Gets a pointer to a int array element using an extended char reference table.
+<DT><A HREF="rtable.htm#_xctbl_to_lptr">_xctbl_to_lptr</A><DD> Gets a pointer to a long array element using an extended char reference table.
+<DT><A HREF="rtable.htm#_xitbl_to_ptr">_xitbl_to_ptr</A><DD>  Gets a pointer to an array element using an extended int reference table.
+<DT><A HREF="rtable.htm#_xitbl_to_iptr">_xitbl_to_iptr</A><DD> Gets a pointer to a int array element using an extended int reference table.
+<DT><A HREF="rtable.htm#_xitbl_to_lptr">_xitbl_to_lptr</A><DD> Gets a pointer to a long array element using an extended int reference table.
+</DL>
+These functions return a pointer to an element in a separate array which corresponds to a specified entry in a reference table. The ...tbl_to_... functions operate on non-extended reference tables, and the _x?tbl_to_... functions operate on extended tables. These functions examine each entry in the reference table, starting with the first entry, until the specified entry is found or all entries have been examined. If the entry is found, the address of the corresponding element in the associated array is returned. For example, if the requested entry were the 5th entry in the reference table, the address of the 5th array element would be returned. If the specified entry is not present in the reference table, NULL is returned.
+
+<P>
+These functions may be used any time one non-contiguous set of values must be mapped into another non-contiguous set of values. The following code takes advantage of this functionality to execute keystroke handlers when keystrokes are pressed. Keystrokes are automatically validated at the same time.
+<PRE><CODE>
+/* ---- external functions for processing keystrokes */
+
+void (*functions1[10])(void) =                  /* array of function pointers */
+         { do_new, do_save, do_retrieve, do_list, do_examine,
+         do_copy, do_delete, do_copy, do_delete, do_quit };
+
+/* ---- table for mapping keystrokes to keystroke handlers */
+
+struct {
+   void (near * *funcs)(void);                  /* address of the associated array */
+   int num;                                             /* number of entries in table */
+   char tbl_start[10];                                  /* list of valid keys */
+} table1 = {functions1, 10, {'N','S','R','L','X','C','D','+','-','Q'}};
+
+{
+   void (near * *func)(void);
+   int size;
+   char chr;
+#if __LARGE_CODE__
+   size = 4;
+#else
+   size = 2;
+#endif
+   chr = <A HREF="rdosio.htm#_get_chr">_get_chr</A> ();
+
+/* ---- keystroke function dispatcher */
+
+   while (chr != 0)
+   {
+      func = (void (near * *)()) <A HREF="rtable.htm#_ctbl_to_ptr">_ctbl_to_ptr</A> (table1.tbl_start, chr, size);
+      if (func != NULL)
+         (**func)();                                    /* call the keystroke handler */
+      chr = <A HREF="rdosio.htm#_get_chr">_get_chr</A> ();
+   }
+}
+</CODE></PRE>
+<H2><A NAME="HEAD0006">Boosting Execution Speed
+</A></H2>
+
+The _xlat_... functions are extremely fast. Furthermore, their speed does not depend on the number or type of entries in the table. These functions should be the first choice any time a fixed range of char or int values needs to be mapped to a non-contiguous group of char or int values. If several ranges of values need to be mapped, extended tables and functions (_xxlat_...) can be used with almost no reduction in speed.
+
+<P>
+The _is_in..., _index_... and ...tbl_to_... functions are not as fast as the _xlat_... functions. The _is_in... functions represent the fastest possible way to check a value against a non-contiguous list of values (with the exception of using the code from these functions in-line instead of calling them). _is_inbtbl is two to three times faster than the <A HREF="rkaractr.htm#_is_instr">_is_instr</A> function.
+
+<P>
+The speed of the _is_in..., _index_... and ...tbl_to_... functions depends on the number of entries that must be examined before a specified entry is found. Input values which do not match any table entry take the greatest amount of processing time. As a result, these functions can be sped up dramatically by eliminating input values which are obviously not in the table and defining the table entries in most-frequently used order.
+
+<P>
+Reducing Table Size with Extended Tables
+
+<P>
+The extended table functions (_is_inx..., _xindex_..., _xxlat_..., and _x?tbl_to_...) allow multiple tables to be chained together as a single extended table. This allows memory space for tables to be minimized by separating tables and chaining them so redundancies or unneeded ranges are eliminated.
+
+<P>
+For example, it is common to use two tables which are only slightly different from each other. One table might be used to process keyboard input for a standard menu, and a second table might be used to process keyboard input for the same menu when additional options are available. Rather than create two distinct tables to handle these two cases (which would result in duplicated entries), two extended tables may be constructed. The first table would contain only the entries for the standard menu, and it would specify -1 in the chaining offset (next field) to signify end of chain. The second table would contain only the additional entries required to handle the special menu case, and it would chain to the first table. The two menu cases could then be handled by using an extended table function and pointing to the appropriate table. This slows down execution speed only slightly and conserves space in the default data segment.
+<PRE><CODE>
+/* ---- external functions for processing keystrokes */
+
+void (*functions[8])(void) =                    /* array of function pointers */
+         { do_new, do_save, do_retrieve, do_list,
+         do_examine, do_copy, do_delete, do_quit };
+
+void (*functions_a[2])(void) =                  /* array of function pointers */
+         { do_plus, do_minus };
+
+/* ---- tables for mapping keystrokes to keystroke handlers */
+
+struct {
+   char near *next;                                     /* offset of next table in chain */
+   void (near * *funcs)(void);                  /* address of the associated array */
+   int num;                                             /* number of entries in table */
+   char tbl_start[9];                                   /* list of valid keys (NULL not required) */
+} table = {(char near *)0xffff,functions, 8, "NSRLXCDQ"};
+
+struct {
+   char near *next;                                     /* offset of next table in chain */
+   void (near * *funcs)(void);                  /* address of the associated array */
+   int num;                                             /* number of entries in table */
+   char tbl_start[2];                                   /* list of valid keys */
+} table_a = {(char near *)table.tbl_start, functions_a, 2, {'+','-'}};
+
+{
+   void (near * *func)(void);
+   int size, standard;
+   char chr;
+#if __LARGE_CODE__
+   size = 4;
+#else
+   size = 2;
+#endif
+   chr = <A HREF="rdosio.htm#_get_chr">_get_chr</A> ();
+   while (chr != 0)
+   {
+      if (standard)         /* ---- process standard menu input */
+         func = (void (near * *)()) <A HREF="rtable.htm#_xctbl_to_ptr">_xctbl_to_ptr</A> (table.tbl_start, chr, size);
+      else                  /* ---- process menu input when additional options are available */
+         func = (void (near * *)()) <A HREF="rtable.htm#_xctbl_to_ptr">_xctbl_to_ptr</A> (table_a.tbl_start, chr, size);
+      if (func != NULL)
+         (**func)();
+      chr = <A HREF="rdosio.htm#_get_chr">_get_chr</A> ();
+   }
+}
+</CODE></PRE>
+Note that extended tables can always be used as if they were normal tables just by calling the appropriate function (e.g., by calling _btbl_to_ptr instead of _xbtbl_to_ptr). The table pointer passed to the function is the same in either case; the only difference is whether or not the function takes advantage of any chaining information present in the table header. Note that all extended functions require the chaining offset to be present. The results are undefined if the address of a non-extended table is passed to an extended function.
+</BOBY>
+</HTML>

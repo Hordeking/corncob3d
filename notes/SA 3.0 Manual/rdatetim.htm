@@ -1,0 +1,2398 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Date and Time Manipulation Reference</TITLE>
+</HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Date and Time Manipulation</H1>
+<P ALIGN=CENTER>Reference Section </P>
+<UL>
+<LI><A HREF="TOC.htm">Table of Contents</A>
+<LI><A HREF="index.htm">Function Index</A>
+<LI><A HREF="gindex.htm">Group Index
+</UL>
+<A HREF="rdatetim.htm#_add_time">_add_time</A><BR>
+<A HREF="rdatetim.htm#_asc_date">_asc_date</A><BR>
+<A HREF="rdatetim.htm#_asc_time">_asc_time</A><BR>
+<A HREF="rdatetim.htm#_asc_to_date">_asc_to_date</A><BR>
+<A HREF="rdatetim.htm#_asc_to_time">_asc_to_time</A><BR>
+<A HREF="rdatetim.htm#_date_to_asc">_date_to_asc</A><BR>
+<A HREF="rdatetim.htm#_date_to_asce">_date_to_asce</A><BR>
+<A HREF="rdatetim.htm#_date_to_days">_date_to_days</A><BR>
+<A HREF="rdatetim.htm#_days_to_date">_days_to_date</A><BR>
+<A HREF="rdatetim.htm#_diff_time">_diff_time</A><BR>
+<A HREF="rdatetim.htm#dtc_addr">dtc_addr</A><BR>
+<A HREF="rdatetim.htm#_dtc_init">_dtc_init</A><BR>
+<A HREF="rdatetim.htm#_get_clock">_get_clock</A><BR>
+<A HREF="rdatetim.htm#_get_date">_get_date</A><BR>
+<A HREF="rdatetim.htm#_get_day">_get_day</A><BR>
+<A HREF="rdatetim.htm#_get_time">_get_time</A><BR>
+<A HREF="rdatetim.htm#_hund_to_time">_hund_to_time</A><BR>
+<A HREF="rdatetim.htm#_init_msec">_init_msec</A><BR>
+<A HREF="rdatetim.htm#_merge_date">_merge_date</A><BR>
+<A HREF="rdatetim.htm#_merge_time">_merge_time</A><BR>
+<A HREF="rdatetim.htm#_set_clock">_set_clock</A><BR>
+<A HREF="rdatetim.htm#_set_date">_set_date</A><BR>
+<A HREF="rdatetim.htm#_set_time">_set_time</A><BR>
+<A HREF="rdatetim.htm#_sleep_msec">_sleep_msec</A><BR>
+<A HREF="rdatetim.htm#_sleep_sec">_sleep_sec</A><BR>
+<A HREF="rdatetim.htm#_split_date">_split_date</A><BR>
+<A HREF="rdatetim.htm#_split_time">_split_time</A><BR>
+<A HREF="rdatetim.htm#_ticks_to_time">_ticks_to_time</A><BR>
+<A HREF="rdatetim.htm#_time_to_asc">_time_to_asc</A><BR>
+<A HREF="rdatetim.htm#_time_to_asce">_time_to_asce</A><BR>
+<A HREF="rdatetim.htm#_time_to_hund">_time_to_hund</A><BR>
+<A HREF="rdatetim.htm#_time_to_ticks">_time_to_ticks</A><BR>
+<A HREF="rdatetim.htm#_tmr_read">_tmr_read</A><BR>
+<A HREF="rdatetim.htm#_tmr_reset">_tmr_reset</A><BR>
+<H2><A NAME="_add_time">_add_time</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Adds two times.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	std_time *_add_time(std_time *time1, const std_time *time2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to time1.
+<BR>	time1 sum of time1 and time2
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns a pointer to time1, which contains the result of adding time1 to time2. The time value in time1 will never be greater than 255:59:59.99. If the sum of time1 and time2 is greater than 255:59:59.99, the result is not accurate.
+<BR>
+<BR>	The std_time structure is defined as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char hseconds;
+<BR>	   unsigned char seconds;
+<BR>	   unsigned char minutes;
+<BR>	   unsigned char hours;
+<BR>	} std_time;
+<BR>
+<BR>	By using add_time with inline assembly, an unsigned long value may be obtained which allows time values to be compared directly.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   std_time time1, time2;
+	   time1.hours = 10;/* time1 = 10:30:00.00 */
+	   time1.minutes = 30;
+	   time1.seconds = 0;
+	   time1.hseconds = 0;
+	   time2.hours = 10;/* time2 = 10:10:00.00 */
+	   time2.minutes = 10;
+	   time2.seconds = 0;
+	   time2.hseconds = 0;
+	   _add_time(&amptime1, &amptime2);
+	   	  	 /* time1 = 20:40:00.00 */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   unsigned long sumtime;
+	   ...
+	   mov ch,10	/* CL = hours */
+	   mov cl,30	/* CH = minutes */
+	   mov bh,0	/* BH = seconds */
+	   mov bl,0	/* BL = hseconds */
+	   	  	 	/* (time1 = 10:30:00.00) */
+	   mov dh,10	/* DH = hours */
+	   mov dl,10	/* DL = minutes */
+	   mov ah,0	/* AH = seconds */
+	   mov al,0	/* AL = hseconds */
+	   	  	 	/* (time2 = 10:10:00.00) */
+	   sumtime = add_time();/* sumtime = 20:40:00.00 */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DTADTME.ASM		  <B>ASM equiv</B>	ADD_TIME
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_diff_time">_diff_time</A>, <A HREF="rdatetim.htm#_get_time">_get_time</A>, <A HREF="rdatetim.htm#_merge_time">_merge_time</A>
+<BR></DL>
+<H2><A NAME="_asc_date">_asc_date</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Creates an ASCIIZ date string in MM/DD/YY format.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	char *_asc_date(char *string, const std_date *adate)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to string.
+<BR>	string	the ASCIIZ date string generated from adate ("MM/DD/YY")
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function uses the contents of the date structure adate to construct an ASCIIZ date string in string. The date string has the form MM/DD/YY, where MM represents the month number, DD represents the day number, and YY represents the last two digits of the year. Month, day, and year numbers are always zero padded.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char datestr[20];
+	   std_date adate;
+	   ...
+	   adate.year= 1992;
+	   adate.day= 4;
+	   adate.month= 7;
+	   _put_str(_asc_date(datestr, &ampadate)); /* "07/04/92" */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char datestr[20];
+	   ...
+	   mov dx,1992	    /* DX = year */
+	   mov ah,7	/* AH = month */
+	   mov al,4	/* AL = day */
+	   pushds
+	   pop es	 	/* ES=SS(segment of datestr) */
+	   lea si,datestr/* SI = offset of datestr */
+	   asc_date();
+	   put_str();	/* "07/04/92" */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DTASCDT.ASM		  <B>ASM equiv</B>	ASC_DATE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_asc_to_date">_asc_to_date</A>, <A HREF="rdatetim.htm#_date_to_asc">_date_to_asc</A>, <A HREF="rdatetim.htm#_get_date">_get_date</A>
+<BR></DL>
+<H2><A NAME="_asc_time">_asc_time</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Creates an ASCIIZ time string in HH:MM Xm format.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	char *_asc_time(char *string, const std_time *atime);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to string.
+<BR>	string	the ASCIIZ time string generated from atime ("HH:MM am/pm")
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function uses the contents of the time structure atime to construct an ASCIIZ time string in string. The time string has the form HH:MM Xm, where HH represents hours, MM represents minutes, and Xm represents "am" or "pm". Hours and minutes are always padded with zeros.
+<BR>
+<BR>	The std_time structure is defined as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char hseconds;
+<BR>	   unsigned char seconds;
+<BR>	   unsigned char minutes;
+<BR>	   unsigned char hours;
+<BR>	} std_time;
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char timestr[20];
+	   std_time atime;
+	   atime.hours = 13;
+	   atime.minutes = 30;
+	   _put_str(_asc_time(timestr, &ampatime)); /* "01:30 pm" */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char timestr[20];
+	   mov dh,13	/* DH = hours */
+	   mov dl,30	/* DL = minutes */
+	   xor ax,ax	/* AX = seconds, 100ths */
+	   lea si,timestr /* SI = offset timestr */
+	   pushds
+	   pop es	 	/* ES=DS (small data models) */
+	   asc_time();	/* DX;AX = time (long format) */
+	   put_str();	/*  "01:30 pm" */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DTASCTM.ASM		  <B>ASM equiv</B>	ASC_TIME
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_asc_to_time">_asc_to_time</A>, <A HREF="rdatetim.htm#_get_time">_get_time</A>, <A HREF="rdatetim.htm#_time_to_asc">_time_to_asc</A>
+<BR></DL>
+<H2><A NAME="_asc_to_date">_asc_to_date</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts a formatted ASCII date string to date structure format.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>		int _asc_to_date(char *instr, unsigned char flags, unsigned char width, const std_date *adate);
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if numeric overflow occurred.
+<BR>	adate undefined
+<BR>
+<BR>	0 if the conversion was successful.
+<BR>	adate date in std_date structure format converted from instr
+<BR>
+<BR>	-1 if underflow occurred or an invalid format was encountered.
+<BR>	adate undefined
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function reads a formatted ASCII date from instr and converts it to a date in std_date structure format. The expected format of instr is specified in flags as well as the current date/time conversion options structure. If the format is not the same as specified, the date fields may be interpreted incorrectly. If the conversion is successful, 0 is returned and the adate structure contains the date. 1 is returned if numeric overflow occurs while reading any required field (DAY, MONTH, YEAR). -1 is returned if underflow occurs (instr is a NULL string) or an invalid format is detected (a required field is missing, zero, empty, or contains invalid characters). For example, if three fields were expected, then "//92", "2/A/92", and "11/12" would all generate an invalid format errors.
+<BR>
+<BR>	Conversion options specified in flags consist of date field order flags and date field suppress flags. The following symbolic constants (defined in DATETIME.H) may be bitwise ORed together to specify the expected date format:
+<BR>
+<BR>	Date field order flags:
+<BR>
+<BR>	DATE_CDATE(0x00) Use format from dtcopts structure
+<BR>	DATE_DMY 	   (0x01) Use DAY/MONTH/YEAR format
+<BR>	DATE_YMD 	   (0x02) Use YEAR/MONTH/DAY format
+<BR>	DATE_MDY 	   (0x03) Use MONTH/DAY/YEAR format
+<BR>
+<BR>	Date field suppress flags:
+<BR>
+<BR>	DATE_NOYR	   (0x04) Suppress year field
+<BR>	DATE_NOMON(0x08) Suppress month field
+<BR>	DATE_NODAY(0x10) Suppress day field
+<BR>
+<BR>	Only those subfields specified in flags are actually read and stored; the remaining fields are neither read nor stored. If instr contains more fields than are required for the read, leading fields must match the specified format and trailing fields are ignored. The year field is read correctly whether the year is specified in 2-digit or 4-digit format; the years "80" to "99" represent 1980 to 1999 and the years "00" to "79" represent 2000 to 2079.
+<BR>
+<BR>	The current date/time conversion options structure specifies global formatting options such as the country-default date format and the date delimiter character. These options may be accessed or modified through the dtc_addr variable. (See dtc_addr for further information.)
+<BR>
+<BR>	Leading white space characters are not automatically skipped. To skip leading white space characters, call _str_skipw or _str_skips before calling this function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   dtcopts dtc = {0,'-',0,':','.'," am", " pm"};
+	   std_date adate;
+	   unsigned long date;
+	   dtc_addr = &ampdtc; /* use dtc structure (conversion info) */
+	   _asc_to_date("12-25-1992", DATE_MDY+DATE_4DIGYR, 80, &ampadate);
+	   	  	 /* adate contains date */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   dtcopts dtc = {0,'-',0,':','.'," am", " pm"};
+	   char instr[] = "10-16-1992";
+	   ... 
+	   dtc_addr = &ampdtc;/* use dtc struct (conv. info) */
+	   lea si,instr/* SI -&gt instr */
+	   mov ch,DATE_MDY+DATE_4DIGYR /* set conv. flags */
+	   mov cl,80	/* CL = width */
+	   asc_to_date();	/* DX;AX = dword date */
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DTATODT.ASM		  <B>ASM equiv</B>	ASC_TO_DATE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_asc_date">_asc_date</A>, <A HREF="rdatetim.htm#_date_to_asc">_date_to_asc</A>, <A HREF="rdatetim.htm#_get_date">_get_date</A>
+<BR></DL>
+<H2><A NAME="_asc_to_time">_asc_to_time</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts a formatted ASCII time string to time structure format. 
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>		int _asc_to_time(char *instr, unsigned char flags, unsigned char width, const std_time *atime);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	-1 if underflow occurred or an invalid format was detected.
+<BR>	atime undefined
+<BR>
+<BR>	0 if the conversion was successful.
+<BR>	atime the resulting time in std_time structure format
+<BR>
+<BR>	1 if numeric overflow occurred.
+<BR>	atime undefined
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function reads a formatted ASCII time from instr and converts it to a time in std_time structure format. The expected format of instr is specified in flags as well as the current date/time conversion options structure. If the format is not the same as specified, the time fields may be interpreted incorrectly. If the conversion is successful, 0 is returned and the atime structure contains the time. -1 is returned if no useable characters are found in instr. 1 is returned if numeric overflow occurs while reading any required field (HR, MIN, SEC, HSEC).
+<BR>
+<BR>	Conversion flags specified in flags consist of format flags, field flags, and leading zero flags. The following symbolic constants (defined in DATETIME.H) may be used by bitwise Oring them together to specify the expected time format:
+<BR>
+<BR>	Time format flags:
+<BR>
+<BR>	TIME_CTIME	    (0x03) Use time format from dtcopts structure (country)
+<BR>	TIME_12HR	   (0x01) Use 12-hour format
+<BR>	TIME_24HR	   (0x02) Use 24-hour format
+<BR>	TIME_FLEXHR	(0x00) Writes TIME_CTIME, reads both 12-hour and 24-hour formats
+<BR>
+<BR>	If instr is read in 12-hour format, space characters in the dtc_amstr and dtc_pmstr fields are considered optional; the AM/PM match is also case insensitive. For example, dtc_amstr = "AM" will match the AM string portion of the input string "12:24:56 am". Trailing AM/PM strings are ignored if instr is read in 24-hour format.
+<BR>
+<BR>	Time field flags:
+<BR>
+<BR>	TIME_HR  	   (0x00) Use hour field
+<BR>	TIME_NOHR	   (0x04) Suppress hour field
+<BR>	TIME_MIN 	   (0x00) Use minute field
+<BR>	TIME_NOMIN(0x08) Suppress minute field
+<BR>	TIME_SEC 	   (0x00) Use second field
+<BR>	TIME_NOSEC(0x10) Suppress second field
+<BR>	TIME_100THS(0x00) Use 100ths field
+<BR>	TIME_NO100THS(0x20) Suppress 100ths field
+<BR>
+<BR>	The time field flags specify which fields are to be read from instr. Most significant fields are read first (from left to right). Suppressed fields are not read and are not modified in atime (e.g., if TIME_NOSEC+TIME_NO100THS is the specified flag combination, the expected input format is "HH:MM" and only hours and minutes are modified in atime). If any expected trailing fields are missing, the corresponding portions of atime are set to zero (e.g., atime.hseconds = 0 if the 100ths field is expected but missing).
+<BR>
+<BR>	The current date/time conversion options structure specifies global formatting options such as the country-default time format, the time delimiter character, and the 100ths separator character. These options may be accessed or modified through the dtc_addr variable. (See dtc_addr for further information.)
+<BR>
+<BR>	The std_time structure is defined in DATETIME.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char hseconds;
+<BR>	   unsigned char seconds;
+<BR>	   unsigned char minutes;
+<BR>	   unsigned char hours;
+<BR>	} std_time;
+<BR>
+<BR>	Leading white space characters are not automatically skipped. If white space characters must be skipped, call _str_skipw or _str_skips before calling this function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   dtcopts dtc = {0,'-',0,':','.'," morning", " evening"};
+	   std_time atime;
+	   dtc_addr = &ampdtc; /* use DTC structure (conversion info) */
+	   _asc_to_time("12:59:59:00 morning", TIME_12HR, 80, &ampatime);
+	   	  	 /* atime contains converted time */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   dtcopts dtc = {0,'-',0,':','.'," morning", " evening"};
+	   char instr[] = "11:59:59:00 morning";
+	   long time;
+	   ... 
+	   dtc_addr = &ampdtc;/* use DTC struct (conv. info) */
+	   lea si,instr/* SI -&gt instr */
+	   mov ch,TIME_12HR/* CH = conversion flags */
+	   mov cl,80	/* CL = width */
+	   time = asc_to_time();/* DX;AX = dword time */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DTATOTM.ASM		  <B>ASM equiv</B>	ASC_TO_TIME
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_asc_time">_asc_time</A>, <A HREF="rdatetim.htm#_get_time">_get_time</A>, <A HREF="rdatetim.htm#_time_to_asc">_time_to_asc</A>
+<BR></DL>
+<H2><A NAME="_date_to_asc">_date_to_asc</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts a date in structure format to a formatted ASCIIZ string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>		char *_date_to_asc(const std_date *adate, unsigned char flags, unsigned char width, char *outstr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to outstr.
+<BR>	outstr	resulting ASCIIZ representation of adate in the specified format
+<BR>
+<BR>	NULL if the length of the resulting string would have exceeded width.
+<BR>	outstr	undefined
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function converts adate to a formatted ASCIIZ date string in outstr. The date string has the format specified in flags and in the current date/time conversion options structure. If the conversion is successful, a pointer is returned to the resulting date string. NULL is returned and outstr is left in an undefined state if the result would have exceeded width characters in length.
+<BR>
+<BR>	adate must be a structure of type std_date (defined in DATETIME.H) as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char day;
+<BR>	   unsigned char month;
+<BR>	   unsigned int year;
+<BR>	   unsigned char day-of-week;	/* not used by this function */
+<BR>	} std_date;
+<BR>
+<BR>	Conversion options specified in flags consist of field order flags, field suppress flags, leading zero flags, and year digits flags. The following symbolic constants (defined in DATETIME.H) may be bitwise ORed together to specify the date string format:
+<BR>
+<BR>	Date field order flags:
+<BR>
+<BR>	DATE_CDATE   (0x00) Use format from dtcopts structure
+<BR>	DATE_DMY	   	   (0x01) Use DAY/MONTH/YEAR format
+<BR>	DATE_YMD	   	   (0x02) Use YEAR/MONTH/DAY format
+<BR>	DATE_MDY	   	   (0x03) Use MONTH/DAY/YEAR format
+<BR>
+<BR>	Date field suppress flags:
+<BR>
+<BR>	DATE_NOYR	   	   (0x04) Suppress year field
+<BR>	DATE_NOMON   (0x08) Suppress month field
+<BR>	DATE_NODAY   (0x10) Suppress day field
+<BR>
+<BR>	Date leading zero flags:
+<BR>
+<BR>	DATE_PADMON  (0x00) Leading zero in month field
+<BR>	DATE_NOPADMON	   (0x20) No leading zero in month field
+<BR>	DATE_PADDAY  (0x00) Leading zero in day field
+<BR>	DATE_NOPADDAY	   (0x40) No leading zero in day field
+<BR>
+<BR>	Year digits flags:
+<BR>
+<BR>	DATE_2DIGYR  (0x00) Use 2 digits in year field ("93")
+<BR>	DATE_4DIGYR  (0x80) Use 4 digits in year field ("1993")
+<BR>
+<BR>	Two-digit format assumes the years "80" to "99" represent 1980 to 1999 and the years "00" to "79" represent 2000 to 2079.
+<BR>
+<BR>	The current date/time conversion options structure specifies global formatting options such as the country-default date format and the date delimiter character. These options may be accessed or modified through the dtc_addr variable. (See dtc_addr for further information.)
+<BR>
+<BR>WARNING! outstr must be large enough to hold the converted string plus a terminating NULL (width+1 bytes in size) or data following the buffer will be overwritten.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   dtcopts dtc = {0,'-',0,':','.'," am", " pm"};
+	   char outstr[80];
+	   std_date adate;
+	   ...
+	   dtc_addr = &ampdtc;/* use dtc structure (conversion info) */
+	   adate.year = 1992;
+	   adate.day = 25;
+	   adate.month = 12;/* adate contains date to convert */
+	   _put_str(_date_to_asc(&ampadate, DATE_MDY, 80, outstr));
+	   	  	 /* "12-26-1992" */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   dtcopts dtc = {0,'-',0,':','.'," am", " pm"};
+	   char outstr[80];
+	   ... 
+	   dtc_addr = &ampdtc;/* use dtc struct (conv. info) */
+	   mov ch,DATE_MDY+DATE_4DIGYR /*CH = conv. flags */
+	   mov cl,80	/* CL = width of buffer */
+	   lea si,outstr/* SI -&gt outstr */
+	   mov  dx,1992	/* DX = year */
+	   mov ah,12	/* AH = month */
+	   mov al,25	/* AL = day */
+	   date_to_asc();	/* date -&gt "string" */
+	   put_str();	/* "16-10-1992" */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DTDTASC.ASM		  <B>ASM equiv</B>	DATE_TO_ASC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_asc_date">_asc_date</A>, <A HREF="rdatetim.htm#_asc_to_date">_asc_to_date</A>, <A HREF="rdatetim.htm#_date_to_asc">_date_to_asc</A>, <A HREF="rdatetim.htm#dtc_addr">dtc_addr</A>
+<BR></DL>
+<H2><A NAME="_date_to_asce">_date_to_asce</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts a date in structure format to a formatted ASCII string, returning a pointer to the end of the resulting string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>		char *_date_to_asce(const std_date *adate, unsigned char flags, unsigned char width, char *outstr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the character after the last converted character in outstr.
+<BR>	outstr	resulting ASCII representation of adate in the specified format
+<BR>
+<BR>	NULL if the length of the resulting string would have exceeded width.
+<BR>	outstr	undefined
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function converts adate to a formatted ASCII date string in outstr. The date string is not NULL terminated and has the format specified in flags and in the current date/time conversion options structure. The returned pointer identifies the next available position in outstr (past the result). A subsequent call to _str_cpy or _str_cpye will append data to the result more rapidly than is possible with _date_to_asc. NULL is returned if the result would have exceeded width characters in length.
+<BR>
+<BR>	adate must be a structure of type std_date (defined in DATETIME.H) as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char day;
+<BR>	   unsigned char month;
+<BR>	   unsigned int year;
+<BR>	   unsigned char day-of-week;	 /* not used by this function */
+<BR>	} std_date;
+<BR>
+<BR>	Conversion options specified in flags consist of field order flags, field suppress flags, leading zero flags, and year digits flags. The following symbolic constants (defined in DATETIME.H) may be bitwise ORed together to specify the date string format:
+<BR>
+<BR>	Date field order flags:
+<BR>
+<BR>	DATE_CDATE(0x00) Use format from dtcopts structure
+<BR>	DATE_DMY	    (0x01) Use DAY/MONTH/YEAR format
+<BR>	DATE_YMD	    (0x02) Use YEAR/MONTH/DAY format
+<BR>	DATE_MDY	    (0x03) Use MONTH/DAY/YEAR format
+<BR>
+<BR>	Date field suppress flags:
+<BR>
+<BR>	DATE_NOYR	    (0x04) Suppress year field
+<BR>	DATE_NOMON(0x08) Suppress month field
+<BR>	DATE_NODAY(0x10) Suppress day field
+<BR>
+<BR>	Date leading zero flags:
+<BR>
+<BR>	DATE_PADMON(0x00) Leading zero in month field
+<BR>	DATE_NOPADMON(0x20) No leading zero in month field
+<BR>	DATE_PADDAY(0x00) Leading zero in day field
+<BR>	DATE_NOPADDAY(0x40) No leading zero in day field
+<BR>
+<BR>	Year digits flags:
+<BR>
+<BR>	DATE_2DIGYR(0x00) Use 2 digits in year field ("93")
+<BR>	DATE_4DIGYR(0x80) Use 4 digits in year field ("1993")
+<BR>
+<BR>	Two-digit year format assumes the years "80" to "99" represent 1980 to 1999 and the years "00" to "79" represent 2000 to 2079.
+<BR>
+<BR>	The current date/time conversion options structure specifies global formatting options such as the country-default date format and the date delimiter character. These options may be accessed or modified through the dtc_addr variable. (See dtc_addr for further information.)
+<BR>
+<BR>	Current date/time conversion options may be accessed and modified through the dtc_addr variable.
+<BR>
+<BR>WARNING! outstr must be at least width bytes in size or data following the buffer will be overwritten.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   dtcopts dtc = {0,'-',0,':','.'," am", " pm"};
+	   char *outstr;
+	   std_date adate;
+	   ...
+	   dtc_addr = &ampdtc;/* use dtc struct (conv. info) */
+	   adate.year = 1992;
+	   adate.month = 12;
+	   adate.day = 25;/* adate contains date to convert */
+	   outstr = "         is today's date.";
+	   _date_to_asce(&ampadate, DATE_MDY, 80, outstr);
+	   _put_str(outstr);/* "10-16-92 is today's date." */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   dtcopts dtc = {0,'-',0,':','.'," am", " pm"};
+	   char outstr[] = "         is today's date.";
+	   ... 
+	   dtc_addr = &ampdtc;/* use dtc struct (conv. info) */
+	   mov ch,DATE_MDY/* CH = conversion flags */
+	   mov cl,80	/* CL = width of buffer */
+	   lea si,outstr/* SI -&gt outstr */
+	   mov  dx,1992	/* DX = year */
+	   mov ah,12	/* AH = month */
+	   mov al,25	/* AL = day */
+	   date_to_asce();    /* date -&gt "string..." */
+	   lea si,outstr/* reset SI -&gt outstr */
+	   put_str();	/* "12-25-92 is today's date" */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DTDTACE.ASM		  <B>ASM equiv</B>	DATE_TO_ASCE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_asc_date">_asc_date</A>, <A HREF="rdatetim.htm#_asc_to_date">_asc_to_date</A>, <A HREF="rdatetim.htm#_date_to_asc">_date_to_asc</A>, <A HREF="rdatetim.htm#dtc_addr">dtc_addr</A>
+<BR></DL>
+<H2><A NAME="_date_to_days">_date_to_days</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the number of days between January 1, 1980 and a given date.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	unsigned int _date_to_days(const std_date *ddate);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The number of days elapsed since January 1, 1980.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function calculates the number of days between January 1, 1980 and ddate and returns the result as an unsigned int. A ddate of 01-01-1980 returns 0, a ddate of 01-02-1980 returns 1, and so forth. The result is accurate for dates from 01-01-1980 to 12-31-2099. The result is undefined if ddate is outside this range.
+<BR>
+<BR>	ddate must be a structure of type std_date (defined in DATETIME.H) as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char day;
+<BR>	   unsigned char month;
+<BR>	   unsigned int year;
+<BR>	   unsigned char day-of-week;	/* not used by this function */
+<BR>	} std_date;
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   unsigned int numdays;
+	   std_date ddate;
+	   ...
+	   ddate.year= 1980;/* ddate = 01-06-1980 */
+	   ddate.month= 1;
+	   ddate.day= 6;
+	   numdays = _date_to_days(&ampddate);/* numdays = 5 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   unsigned int numdays;
+	   ...
+	   mov dx,1980	    	  /* DX = year */
+	   mov ah,1	    /* AH = month */
+	   mov al,6	    /* AL = day */
+	   	  	 	    /* date = 01-06-1980 */
+	   numdays = date_to_days();/* numdays = 5 */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DTDTDYS.ASM		  <B>ASM equiv</B>	DATE_TO_DAYS
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_days_to_date">_days_to_date</A>, <A HREF="rdatetim.htm#_time_to_hund">_time_to_hund</A>
+<BR></DL>
+<H2><A NAME="_days_to_date">_days_to_date</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Fills a structure with the date which corresponds to a specified number of days since January 1, 1980.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	void _days_to_date(int numdays, std_date *ddate);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	No return value.
+<BR>	ddate the date representation of numdays
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function calculates the date which is numdays from January 1, 1980. The calculated date is returned in ddate. If numdays is 0, ddate is set to 01-01-1980; if numdays is 1, ddate is set to 01-02-1980, and so forth. The result is accurate for numdays values in the range 0 to 43,829 (i.e., ddate values in the range 01-01-1980 to 12-31-2099). The result is undefined if numdays lies outside this range.
+<BR>
+<BR>	The std_date structure is defined in DATETIME.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char day;
+<BR>	   unsigned char month;
+<BR>	   unsigned int year;
+<BR>	   unsigned char day-of-week;/* 0=Sunday, 1=Monday, ... */
+<BR>	} std_date;
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   std_date ddate;
+	   _days_to_date(10, &ampddate);/* ddate = 01-11-1980 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   unsigned long date;
+	...
+	mov ax,10	 /* AX = days from 01-01-1980 */
+	date = days_to_date();/* date = 1/11/1980 */
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DTDYSDT.ASM		  <B>ASM equiv</B>	DAYS_TO_DATE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_date_to_days">_date_to_days</A>, <A HREF="rdatetim.htm#_hund_to_time">_hund_to_time</A>
+<BR></DL>
+<H2><A NAME="_diff_time">_diff_time</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Calculates the difference between two times.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>		std_time *_diff_time( std_time *time1, const std_time *time2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to time1.
+<BR>	time1 the chronological difference between time1 and time2
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function calculates the chronological difference between time1 and time2, where time1 is assumed to be a time which was read prior to time2, and the system clock may have wrapped past midnight before time2 was read. For example, if time1 is 23:59:00.0 and time2 is 0:01:00.0, the chronological difference is 0:02:00.0 (i.e., only two minutes elapsed, even though the absolute difference between the two times is 23:58:00.0).
+<BR>
+<BR>	The std_time structure is defined as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char hseconds;
+<BR>	   unsigned char seconds;
+<BR>	   unsigned char minutes;
+<BR>	   unsigned char hours;
+<BR>	} std_time;
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   static std_time time1, time2;
+	   time1.hours = 23;	/* time1 = 23:59:00.00 */
+	   time1.minutes= 59;
+	   time1.seconds= 0;
+	   time1.hseconds= 0;
+	   time2.hours = 0;	/* time2 = 00:01:00.00 */
+	   time2.minutes= 1;
+	   time2.seconds= 0;
+	   time2.hseconds= 0;
+	   _diff_time(&amptime1, &amptime2);/* time1 = 00:02:00.00 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   unsigned long diftime;
+	   ...
+	   mov ch,23	/* time1 = 23:59:00.00 */
+	   mov cl,59
+	   mov bh,0
+	   mov bl,0
+	   mov dh,0	/* time2 = 00:01:00.00 */
+	   mov dl,1
+	   mov ah,0
+	   mov al,0
+	   diftime = diff_time();  /* diftime = 00:02:00.00 */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DTDIFTM.ASM		  <B>ASM equiv</B>	DIFF_TIME
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_add_time">_add_time</A>
+<BR></DL>
+<H2><A NAME="dtc_addr">dtc_addr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Variable) Contains the address of the current date/time conversion options structure.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;dataconv.h&gt
+<BR>	extern dtcopts *dtc_addr;
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This near/far pointer maintains the address of the current date/time conversion options (dtcopts) structure. In small data models (TINY, SMALL, MEDIUM), this pointer is a near pointer which contains the offset of the structure within the default data segment (global or static non-far data). In large data models (COMPACT, LARGE, HUGE), this variable is a far pointer which contains the segment and offset of the structure.
+<BR>
+<BR>	The current dtcopts structure specifies global date/time conversion formatting options and is used by _asc_to_date, _asc_to_time, _date_to_asc, _time_to_asc, and the scripted I/O functions. The behavior of these functions may be changed by modifying this structure or by modifying dtc_addr to point to a different dtcopts structure.
+<BR>
+<BR>	dtc_addr is initialized with the address of the default dtcopts structure. The default dtcopts structure is defined in DATETIME.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   char dtc_dtformat;/* date format MDY/DMY/YMD (country) */
+<BR>	   char dtc_dtdelim; /* date delimiter (country) */
+<BR>	   char dtc_tmformat/* time format 12/24-hour (country) */
+<BR>	   char dtc_tmdelim;/* time delimiter (country) */
+<BR>	   char dtc_hdelim;/* delimiter for 100ths (default is cntry decimal delim) */
+<BR>	   char *dtc_amstr;/* address of AM string (default string is " AM") */
+<BR>	   char *dtc_pmstr;/* address of PM string (default string is " PM") */
+<BR>	} dtcopts;
+<BR>
+<BR>	The DTC_DEFAULT symbolic constant (defined in DATETIME.H) may be specified for any field which accepts a pointer. This causes the date/time conversion functions to use the default string, shown above, for each field in which it is specified.
+<BR>
+<BR></DL>
+<B>Source file</B>	DTCVARS.ASM
+<B>ASM equiv</B>â
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_dtc_init">_dtc_init</A>, <A HREF="rmiscdos.htm#_get_countryinfo">_get_countryinfo</A>
+<BR></DL>
+<H2><A NAME="_dtc_init">_dtc_init</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Initializes the date/time conversion options structure with DOS country information.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	int _dtc_init(int cntrycode);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The country code of the specified (or current) DOS country.
+<BR>
+<BR>	-1 if an error occurred (e.g., cntrycode is invalid).
+<BR>	 e_code	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function updates the current date/time conversion options structure (dtcopts) with the DOS country information for the specified country. The current DOS country may be specified by setting cntrycode to 0. If the operation was successful, the country code of the specified (or current) DOS country is returned and the current date/time conversion options structure is updated. If the function is unsuccessful, -1 is returned and the structure is left unmodified.
+<BR>
+<BR>	Valid cntrycode values are found in DOS user manuals for DOS 4.x and above and in many programming reference manuals.
+<BR>
+<BR>	The current date/time conversion options structure specifies global date/time formatting options and is used by _asc_to_date, _asc_to_time, _date_to_asc, _time_to_asc, and the scripted I/O functions. The dtc_addr variable maintains the address of the current structure. (See dtc_addr for further information.)
+<BR>
+<BR>	The following dtcopts information is updated by this function: date format, date delimiter, time format, time delimiter, and 100ths delimiter.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   dtcopts dtc;
+	   dtc_addr = &ampdtc;/* use dtc structure (country info) */
+	   if (dtc_init(0) == 0)
+	      _put_str("Unable to initialize DTC structure.");
+	   else
+	      /* ... continue with conversions ... */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   dtcopts dtc;
+	   char msg[] = "Unable to initialize DTC structure";
+	   ... 
+	   dtc_addr = &ampdtc;/* use dtc structure */
+	   xor ax,ax/* get current country information */
+	   dtc_init();/* initialize dtc w/DOS country info */
+	    jnccntry_010
+	   lea si,msg/* SI -&gt message string */
+	   put_str();/* output message */
+	cntry_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DTINIT.ASM		  <B>ASM equiv</B>	DTC_INIT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#dtc_addr">dtc_addr</A>, <A HREF="rmiscdos.htm#_get_countryinfo">_get_countryinfo</A>
+<BR></DL>
+<H2><A NAME="_get_clock">_get_clock</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the system clock tick count.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	unsigned long _get_clock(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The number of clock ticks since midnight.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the current system clock tick count. There are approximately 18.2 clock ticks per second. The count represents the number of ticks since midnight. The clock tick count rolls over to zero after 23 hours, 59 minutes and 59 seconds (system time) or a count of 1,573,040 has been reached. 
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   unsigned long clock;
+	   clock = _get_clock();
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   unsigned long clock;
+	   clock = get_clock();  
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	DTGETCLK.ASM		  <B>ASM equiv</B>	GET_CLOCK
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_get_time">_get_time</A>, <A HREF="rdatetim.htm#_set_clock">_set_clock</A>, <A HREF="rdatetim.htm#_tmr_read">_tmr_read</A>
+<BR></DL>
+<H2><A NAME="_get_date">_get_date</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Fills structure with the current system date and day of the week.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	void _get_date(const std_date *gdate);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	No return value.
+<BR>	gdate the current system date and day-of-week
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function places the current system date and day of the week in the std_date structure gdate. The indicated day of the week code represents the number of days since Sunday (0 for Sunday, 1 for Monday, etc).
+<BR>
+<BR>	When using inline assembly, the date is returned in an unsigned long. This format allows the date to be compared directly with other dates, producing a "greater than", "equal to", or "less than" result.
+<BR>
+<BR>	The std_date structure is defined in DATETIME.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char day;
+<BR>	   unsigned char month;
+<BR>	   unsigned int  year;
+<BR>	   unsigned char day_of_week;
+<BR>	} std_date;
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   std_date gdate;
+	   _get_date(&ampgdate); /* gdate filled w/current date */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char *str;
+	   unsigned cmpdate;
+	   ... 
+	   mov cx,word ptr cmpdate+2
+	   mov bx,word ptr cmpdate/* CX:BX = target date */
+	   get_date();	/* DX:AX = current date */
+	   cmp_dd();	/* past target date yet? */
+	    ja chk_date_100/*   y: display message */
+	   str = "Not past target date yet.";
+	   jmp short chk_date_200
+
+	chk_date_100:	 	/* write "past" message */
+	   str = "Past target date!";
+	chk_date_200:
+	   mov si,str	/* SI = offset of str */
+	   put_str();	/* display message */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DTGTDTE.ASM		  <B>ASM equiv</B>	GET_DATE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_get_day">_get_day</A>, <A HREF="rfileio.htm#_getftime_h">_getftime_h</A>, <A HREF="rdatetim.htm#_get_time">_get_time</A>, <A HREF="rdatetim.htm#_set_date">_set_date</A>
+<BR></DL>
+<H2><A NAME="_get_day">_get_day</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the day of the week for a given date.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	char _get_day(const std_date *gdate)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The day of the week value (0 to 6).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns a value which indicates the day of the week which corresponds to the date specified in gdate. The returned value indicates the number of days since Sunday (0 for Sunday, 1 for Monday, etc.).
+<BR>
+<BR>	The returned value is undefined if gdate is outside the range 01-01-1980 to 12-31-2099.
+<BR>
+<BR>	The std_date structure is defined in DATETIME.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char day;
+<BR>	   unsigned char month;
+<BR>	   unsigned int  year;
+<BR>	   unsigned char day_of_week;/* not used by this function */
+<BR>	};
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char day;
+	   std_date gday;
+	   gday.year= 2000;	/* gday = Jan 1, 2000 */
+	   gday.month= 1;
+	   gday.day= 1;
+	   day = _get_day(&ampgday); /* day = 6 (Saturday) */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char day;
+	   ...
+	   mov dx,2000	    /* DX = year */
+	   mov ah,1	/* AH = month */
+	   mov al,1	/* AL = day */
+	   get_day();	/* CL = 6 (Saturday) */
+	   mov day,cl	/* day = day of week */
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DTGTDAY.ASM		  <B>ASM equiv</B>	GET_DAY
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_get_date">_get_date</A>
+<BR></DL>
+<H2><A NAME="_get_time">_get_time</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets the current system time.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	void _get_time(std_time *gtime);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	No return value.
+<BR>	gtime the current system time
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function places the current system time in the specified std_time structure.
+<BR>
+<BR>	When using inline assembly, this function returns the system time value in unsigned long format. This format allows the time to be compared directly with other times, producing a "greater than", "equal to", or "less than" result.
+<BR>
+<BR>	The std_time structure is defined as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char hseconds;
+<BR>	   unsigned char seconds;
+<BR>	   unsigned char minutes;
+<BR>	   unsigned char hours;
+<BR>	} std_time;
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   ...
+	   std_time gtime;
+	   _get_time(&ampgtime);/* gtime filled with current time */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   unsigned long gtime, target;
+	   ...
+	   gtime = get_time();
+	   if (gtime == target)
+	            _put_str("Currently at target time!");
+	   else if (gtime &gt target)
+	            _put_str("Past target time!");
+	   else 
+	            _put_str("Not yet at target time!");
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DTGTTME.ASM		  <B>ASM equiv</B>	GET_TIME
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_get_clock">_get_clock</A>, <A HREF="rdatetim.htm#_get_date">_get_date</A>, <A HREF="rfileio.htm#_getftime_h">_getftime_h</A>, <A HREF="rdatetim.htm#_set_time">_set_time</A>
+<BR></DL>
+<H2><A NAME="_hund_to_time">_hund_to_time</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts hundredths of seconds into a time structure format.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	void _hund_to_time(unsigned long hundredths, std_time *htime);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	No return value.
+<BR>	htime the standard time format representation of hundredths
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function converts hundredths into a time in structure format. The result is undefined if hundredths is greater than 92,159,999 (which is equivalent to 255:59:59.99).
+<BR>
+<BR>	When using inline assembly, the time is returned as an unsigned long. This allows the time to be compared directly with other times, producing a "greater than", "equal to", or "less than" result.
+<BR>
+<BR>	The std_time structure is defined in DATETIME.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char hseconds;
+<BR>	   unsigned char seconds;
+<BR>	   unsigned char minutes;
+<BR>	   unsigned char hours;
+<BR>	} std_time;
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   std_time htime;
+	   _hund_to_time(92159998, &amphtime); /* htime = 255:59:59.98 */
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   unsigned long target;
+	   char *str;
+	   ...
+	   target = get_time();
+	   mov bx,0xF200
+	   mov cx,0x0026/* CX;BX = 8:00:00.00 (100ths) */
+	   if (target &lt; hund_to_time())
+	   {   str = "\n\r   Not at target time yet.";   }
+	   else
+	   {  str = "\n\r   Past target time!";  }
+	   mov si,str
+	   put_str();	/* display "str" */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DTHNTME.ASM		  <B>ASM equiv</B>	HUND_TO_TIME
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_days_to_date">_days_to_date</A>, <A HREF="rdatetim.htm#_ticks_to_time">_ticks_to_time</A>, <A HREF="rdatetim.htm#_time_to_hund">_time_to_hund</A>
+<BR></DL>
+<H2><A NAME="_init_msec">_init_msec</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Calibrates the millisecond timer.	  
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	void _init_msec(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function calibrates the millisecond timer. It should be called before using _sleep_msec. This ensures the accuracy of the millisecond timer even if system timer zero has been reprogrammed to run in a non-system default mode.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ...
+	   _init_msec();
+	   _sleep_msec(100);/* delay for 0.1 second */
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   init_msec();
+	   mov ax,200/* AX = thousandths of seconds */
+	   sleep_msec();/* delay for 0.2 seconds */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	DTINITMS.ASM		  <B>ASM equiv</B>	INIT_MSEC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_sleep_msec">_sleep_msec</A>
+<BR></DL>
+<H2><A NAME="_merge_date">_merge_date</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts a date from structure format to integer format.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	unsigned int _merge_date(const std_date *mdate);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The equivalent of mdate in integer date format.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function converts mdate from structure format to integer date format. The integer result is returned.
+<BR>
+<BR>	Integer date format is identical to the date format used in file date/time stamps maintained by DOS. This is the same format returned by _find_first, _find_next, and _getfdate_h:
+<BR>
+<BR>	Bits0x00-0x04day (1-31)
+<BR>	Bits0x05-0x08month (1-12)
+<BR>	Bits0x09-0x0Fyear (0-119, relative to 1980)
+<BR>
+<BR>	The result is undefined if mdate is out of range.
+<BR>
+<BR>	The std_date structure is defined in DATETIME.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char day;
+<BR>	   unsigned char month;
+<BR>	   unsigned int year;
+<BR>	   unsigned char day-of-week;/* not used by this function */
+<BR>	} std_date;
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   std_date mdate;
+	   fbuf mbuf; /* contains file info from last _find_next */
+	   ...
+	   mdate.day= 5;
+	   mdate.month= 11;
+	   mdate.year= 1992;
+	   if(mbuf.date != _merge_date(&ampmdate))
+	      exit(0); /* exit if file date &lt;&gt 11-05-1992 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   fbuf mbuf;/* contains file info from last _find_next */
+	   ...
+	   mov al,5	    /* AL = day   */
+	   mov ah,11	    /* AH = month */
+	   mov dx,1992	    	  /* DX = year  */
+	   merge_date();
+	   cmp word ptr mbuf.date,dx
+	    jnemain_100 /* exit if file date &lt;&gt 11-05-1992 */
+	   ...
+	main_100:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DTMRGDT.ASM		  <B>ASM equiv</B>	MERGE_DATE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_get_date">_get_date</A>, <A HREF="rdatetim.htm#_merge_time">_merge_time</A>, <A HREF="rdatetim.htm#_split_date">_split_date</A>
+<BR></DL>
+<H2><A NAME="_merge_time">_merge_time</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts a time from structure format to integer format.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	unsigned int _merge_time(const std_time *mtime);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The equivalent of mtime in integer format.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function converts mtime from structure format to integer time format. The integer result is returned.
+<BR>
+<BR>	Integer time format is identical to the time format used in file date/time stamps maintained by DOS. This is the same time format returned by _find_first, _find_next, and _getfdate_h:
+<BR>
+<BR>	Bits0x00-0x042-second increments (0-29)
+<BR>	Bits0x05-0x0Aminutes (0-59)
+<BR>	Bits0x0B-0x0Fhours (0-23)
+<BR>
+<BR>	The result is undefined if mtime is out of range.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   std_time mtime;
+	   fbuf mbuf;/* info from last _find_next */
+	   ...
+	   mtime.hours = 13;
+	   mtime.minutes= 1;
+	   mtime.seconds= 30;
+	   if(mbuf.time != _merge_time(&ampmtime))
+	      exit(0);/* exit if file time &lt;&gt 13:01:30 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   fbuf mbuf;	 /* info from last _find_next */
+	   ...   
+	   mov dh,12	    /* DH = hours */
+	   mov dl,1	    /* DL = minutes */
+	   mov ah,30	    /* AH = seconds */
+	   merge_time();	    /* AX = merged time */
+	   cmp word ptr mbuf.time,ax/* time = 12:01:30? */
+	    jnemain_100    /*   n: exit */
+	   ... 	 	    /*   y: continue 	  */
+	main_100:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DTMRGTM.ASM		  <B>ASM equiv</B>	MERGE_TIME
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_get_time">_get_time</A>, <A HREF="rdatetim.htm#_merge_date">_merge_date</A>, <A HREF="rdatetim.htm#_split_time">_split_time</A>
+<BR></DL>
+<H2><A NAME="_set_clock">_set_clock</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets the system clock tick count.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	void _set_clock(unsigned long count);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sets the current system clock tick count to count.
+<BR>
+<BR>	There are approximately 18.2 clock ticks per second. The count represents the number of ticks since midnight. The clock tick count rolls over to zero after 23 hours, 59 minutes and 59 seconds (system time) or a count of 1,573,040 has been reached.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ...
+	   unsigned long count = 1573039;
+	   _set_clock(count);
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	...
+	   unsigned long count = 1573039;
+	   ...
+	   mov ax,word ptr count
+	   mov dx,word ptr count+2/* DX;AX = count */
+	   set_clock();
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_DTSTCLK.ASM		  <B>ASM equiv</B>	SET_CLOCK
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_get_clock">_get_clock</A>, <A HREF="rdatetim.htm#_set_time">_set_time</A>
+<BR></DL>
+<H2><A NAME="_set_date">_set_date</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets the system date.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	int _set_date(const std_date *sdate);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the system date was set successfully.
+<BR>
+<BR>	-1 if sdate is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sets the system date to sdate. 0 is returned if the function was successful. If sdate is invalid, -1 is returned and the system date remains unchanged. The new system date remains in effect only until the system is rebooted.
+<BR>
+<BR>	The std_date structure is defined in DATETIME.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char day;
+<BR>	   unsigned char month;
+<BR>	   unsigned int  year;
+<BR>	   unsigned char day_of_week;/* not used by this function */
+<BR>	} std_date;
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   std_date sdate;
+	   sdate.year= 2000;
+	   sdate.month= 1;
+	   sdate.day= 1;
+	   _set_date(&ampsdate); /* set sys date to 01-01-2000 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	mov dx,2000	/* DX = year */
+	mov ah,1	 /* AH = month */
+	mov al,1	 /* AL = day */
+	set_date();	 /* set sys date to 01-01-2000 */
+	...
+
+</CODE></PRE>
+<B>Source file</B>	_DTSTDTE.ASM		  <B>ASM equiv</B>	SET_DATE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_get_date">_get_date</A>, <A HREF="rdatetim.htm#_set_time">_set_time</A>
+<BR></DL>
+<H2><A NAME="_set_time">_set_time</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets the system time.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	int _set_time(const std_time *stime);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the system time was successfully set.
+<BR>
+<BR>	-1 if stime is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sets the system time to stime. 0 is returned if the function was successful. If stime is invalid, -1 is returned and the system time remains unchanged. The new system time remains in effect only until the system is rebooted.
+<BR>
+<BR>	The std_time structure is defined as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char hseconds;
+<BR>	   unsigned char seconds;
+<BR>	   unsigned char minutes;
+<BR>	   unsigned char hours;
+<BR>	} std_time;
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ...
+	   std_time stime;
+	   stime.hours= 12;
+	   stime.minutes= 30;
+	   stime.seconds= 30;
+	   if(_set_time(&ampstime) == -1)
+	      _put_str("Time is invalid.");
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	...
+	   mov dx,12	/* DX = hours */
+	   mov ah,30	/* AH = minutes */
+	   mov al,30	/* AL = seconds */
+	   set_time();	    
+	    jnclabel_100/* if successful jump to label */
+	   _put_str("Time is invalid.");
+	label_100:
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_DTSTTME.ASM		  <B>ASM equiv</B>_SET_TIME
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_get_time">_get_time</A>, <A HREF="rdatetim.htm#_set_clock">_set_clock</A>, <A HREF="rdatetim.htm#_set_date">_set_date</A>
+<BR></DL>
+<H2><A NAME="_sleep_msec">_sleep_msec</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Suspends program execution for a specified number of milliseconds.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	void _sleep_msec(unsigned int msecs);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function suspends program execution for msecs milliseconds. The delay period is determined by monitoring system timer zero.
+<BR>
+<BR>	The _init_msec function should be called at some point prior to using this function in order to calibrate the millisecond timer. If _init_msec is not called, this function will assume that system timer zero is operating in thedefault mode (mode 3, reload count 0). If timer zero is operating in any other mode, the delay period will be incorrect. If system timer zero is reprogrammed, _init_msec should be called again.
+<BR>
+<BR>	If this function is called with interrupts off, they remain off for the entire duration of the function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ...
+	   _init_msec();/* initialize millisecond timer first */
+	   _sleep_msec(1000);/* sleep for 1 second */
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   init_msec();
+	   mov ax,2000	/* AX = thousandths of seconds */
+	   sleep_msec();/* sleep for 2 seconds */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_DTSLMSC.ASM		  <B>ASM equiv</B>	SLEEP_MSEC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_init_msec">_init_msec</A>, <A HREF="rdatetim.htm#_sleep_sec">_sleep_sec</A>
+<BR></DL>
+<H2><A NAME="_sleep_sec">_sleep_sec</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Suspends program execution for a specified number of hundredths of a second.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	void _sleep_sec(unsigned int hsecs)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function suspends program execution for hsecs hundredths of a second. The delay period is approximated to the nearest 1/18th of a second. If a more accurate delay period is required, use _sleep_msec.
+<BR>
+<BR>WARNING! This function will not operate properly when interrupts are off. If a delay is needed while interrupts are disabled, use _sleep_msec.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>
+	   _sleep_sec(100);/* sleep for 1 second */
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   mov ax,200/* AX = hundredths of seconds */
+	   sleep_sec();/* sleep for 2 seconds */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_DTSLPSC.ASM		  <B>ASM equiv</B>	SLEEP_SEC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_sleep_msec">_sleep_msec</A>, <A HREF="rdatetim.htm#_tmr_read">_tmr_read</A>
+<BR></DL>
+<H2><A NAME="_split_date">_split_date</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts a date from integer format to structure format.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	void _split_date(unsigned int idate, std_date *sdate);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	No return value.
+<BR>	sdate the resulting date value in std_date format
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function converts idate from integer format to structure format. The std_date result is returned in sdate.
+<BR>
+<BR>	Integer date format is identical to the date format used in file date/time stamps maintained by DOS. This is the same format returned by _find_first, _find_next, and _getfdate_h:
+<BR>
+<BR>	bits	    0x00-0x04day (1-31)
+<BR>	bits	    0x05-0x08month (1-12)
+<BR>	Bits	    0x09-0x0Fyear (0-119, relative to 1980)
+<BR>
+<BR>	The result is undefined if idate does not conform to the above format.
+<BR>
+<BR>	The std_date structure is defined in DATETIME.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char day;
+<BR>	   unsigned char month;
+<BR>	   unsigned int year;
+<BR>	   unsigned char day-of-week;/* not updated by this function */
+<BR>	} std_date;
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ...
+	   fbuf filebuf; /* file info from last _find_next */
+	   std_date sdate;
+	   ...
+	   _split_date(filebuf.date, &ampsdate);
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   unsigned long sdate;
+	   fbuf filebuf;/* info from last _find_next */
+	   ...
+	   mov dx,word ptr filebuf.date/* DX=time (int format) */
+	   sdate = split_date();
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_DTSPLDT.ASM		  <B>ASM equiv</B>	SPLIT_DATE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_get_date">_get_date</A>, <A HREF="rdatetim.htm#_merge_date">_merge_date</A></DL>
+<H2><A NAME="_split_time">_split_time</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts a time from integer format to structure format.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	void _split_time(unsigned int itime, std_time *stime);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	No return value.
+<BR>	stime the resulting time value in std_time format
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function converts itime from integer format to std_time structure format. The std_time result is placed in stime. Because integer time format only supports seconds in two-second intervals, the resulting number of seconds in stime is always an even number.
+<BR>
+<BR>	Integer time format is identical to the time format used in file date/time stamps maintained by DOS. This is the same format returned by _find_first, _find_next, and _getftime_h:
+<BR>
+<BR>	bits	    0x00-0x042-second increments (0-29)
+<BR>	bits	    0x05-0x0Aminutes (0-59)
+<BR>	bits	    0x0B-0x0Fhours (0-23)
+<BR>
+<BR>	The result is undefined if itime does not conform to the above format.
+<BR>
+<BR>	The std_time structure is defined DATETIME.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char hseconds;
+<BR>	   unsigned char seconds;
+<BR>	   unsigned char minutes;
+<BR>	   unsigned char hours;
+<BR>	} std_time;
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ...
+	   fbuf mbuf;/* info from last _find_next */
+	   std_time stime;
+	   _split_time(mbuf.time, &ampstime); /* stime struct = file time */
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   unsigned long ltime;
+	   fbuf mbuf;/* info from last _find_next */
+	   mov ax,word ptr mbuf.time
+	   	  	 /* AX = time in integer format */
+	   ltime = split_time();
+	   	  	 /* ltime is time in structure format */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_DTSPLTM.ASM		  <B>ASM equiv</B>	SPLIT_time
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_get_time">_get_time</A>, <A HREF="rdatetim.htm#_merge_time">_merge_time</A>
+<BR></DL>
+<H2><A NAME="_ticks_to_time">_ticks_to_time</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts a time value from timer ticks format to structure format.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	std_time *_ticks_to_time(unsigned long tticks, std_time *stime);
+<BR>	   
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to stime.
+<BR>	stime the std_time format result (equivalent to tticks)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function converts a time in timer ticks format into a time in std_time structure format. A pointer to stime is returned.
+<BR>
+<BR>	stime must be a structure of type std_time (defined in DATETIME.H) as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char hseconds;/* 0-99 */
+<BR>	   unsigned char seconds;/* 0-59 */
+<BR>	   unsigned char minutes;/* 0-59 */
+<BR>	   unsigned char hours;	 /* 0-255 */
+<BR>	} std_time;
+<BR>
+<BR>	The result in stime is undefined if tticks is greater than 16,779,092 (which is equivalent to 255:59:59.99).
+<BR>
+<BR>	This function, when used in conjunction with _get_clock, is much faster than the _get_time function. Use the _get_time function if code size is more important than speed.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   std_time stime;
+	   unsigned long ttime;
+	   ttime = _get_clock();
+	   _ticks_to_time(ttime, &ampstime);
+	   	  	 /* convert ticks to structure format */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   get_clock();/* DX;AX = time in ticks */
+	   ticks_to_time();
+	   	  /* DX;AX = time in unsigned long format */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_DTTKTME.ASM		  <B>ASM equiv</B>	TICKS_TO_TIME
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_hund_to_time">_hund_to_time</A>, <A HREF="rdatetim.htm#_time_to_ticks">_time_to_ticks</A>
+<BR></DL>
+<H2><A NAME="_time_to_asc">_time_to_asc</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts a time in structure format to a formatted ASCIIZ string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>		char *_time_to_asc(const std_time *atime, unsigned char flags, unsigned char width, char *outstr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to outstr.
+<BR>	outstr	resulting ASCIIZ representation of atime in the specified format
+<BR>
+<BR>	NULL if the length of the resulting string would have exceeded width.
+<BR>	outstr	undefined
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function converts atime to a formatted ASCIIZ time string in outstr. The resulting time string has the format specified in flags and in the current date/time conversion options structure. A pointer to outstr is returned if the conversion was successful. NULL is returned and outstr is left in an undefined state if the resulting time string would exceed width characters in length.
+<BR>
+<BR>	atime must be a structure of type std_time (defined in DATETIME.H) as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char hseconds;/* 0-99 */
+<BR>	   unsigned char seconds;/* 0-59 */
+<BR>	   unsigned char minutes;/* 0-59 */
+<BR>	   unsigned char hours;	/* 0-255 */
+<BR>	} std_time;
+<BR>
+<BR>	Conversion options specified in flags consist of time format flags, field suppress flags, and leading zero flags. The following symbolic constants (defined in DATETIME.H) may be bitwise ORed together to specify the time string format:
+<BR>	Time format flags:
+<BR>
+<BR>	TIME_CTIME	(0x03) Use country format from dtcopts structure
+<BR>	TIME_12HR    (0x01) Use 12-hour format
+<BR>	TIME_24HR    (0x02) Use 24-hour format
+<BR>	TIME_FLEXHR	(0x00) Writes TIME_CTIME, reads both 12-hour and 24-hour formats
+<BR>
+<BR>	Time field suppress flags:
+<BR>
+<BR>	TIME_HR    (0x00) Use hour field
+<BR>	TIME_NOHR    (0x04) Suppress hour field
+<BR>	TIME_MIN    (0x00) Use minute field
+<BR>	TIME_NOMIN(0x08) Suppress minute field
+<BR>	TIME_SEC    (0x00) Use second field
+<BR>	TIME_NOSEC(0x10) Suppress second field
+<BR>	TIME_100THS(0x00) Use 100ths field
+<BR>	TIME_NO100THS(0x20) Suppress 100ths field
+<BR>
+<BR>	Time leading zero flags:
+<BR>
+<BR>	TIME_PAD    (0x00) Write leading zero in 1st field (e.g. "1:00" to "01:00")
+<BR>	TIME_NOPAD(0x40) No leading zero in 1st field
+<BR>
+<BR>	The time leading zero flags specify whether or not to pad the leading field with a "0" if it only has one digit. All other fields always contain two digits.
+<BR>
+<BR>	The current date/time conversion options structure specifies global formatting options such as the country-default time format, the time delimiter character, and the 100ths separator character. These options may be accessed or modified through the DTC_ADDR variable. (See DTC_ADDR for further information.)
+<BR>
+<BR>WARNING! outstr must be at least width+1 bytes in size or data following the buffer will be overwritten.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   dtcopts dtc = {0,'-',0,':','.'," am", " pm"};
+	   std_time atime;
+	   char outstr[80];
+	   dtc_addr = &ampdtc; /* use dtc structure for conversion info */
+	   atime.hours = 12;
+	   atime.minutes = 59;
+	   atime.seconds = 59;
+	   atime.hseconds = 99; /* atime contains time to convert */
+	   _put_str(_time_to_asc(&ampatime, 0, 80, outstr));
+	   	  	 /* "12:59:59.99 pm" */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   dtcopts dtc = {0,'-',0,':','.'," am", " pm"};
+	   char outstr[80];
+	   ... 
+	   dtc_addr = &ampdtc; /* use dtc structure (conv. info) */
+	   xor ch,ch	/* CH = conversion flags */
+	   mov cl,80	/* CL = width of buffer */
+	   lea si,outstr/* SI -&gt outstr */
+	   mov  dh,11	/* DH = hours */
+	   mov dl,59	/* DL = minutes */
+	   mov ah,59	/* AH = seconds */
+	   mov al,99	/* AL = 100ths */
+	   time_to_asc();	/* time -&gt "string" */
+	   put_str();	/* "11:59:59.99 am" */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DTTMASC.ASM		  <B>ASM equiv</B>	TIME_TO_ASC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_asc_time">_asc_time</A>, <A HREF="rdatetim.htm#_asc_to_time">_asc_to_time</A>, <A HREF="rdatetim.htm#_time_to_asc">_time_to_asc</A>
+<BR></DL>
+<H2><A NAME="_time_to_asce">_time_to_asce</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts time in a structure to a formatted ASCII string, returning a pointer to the end of the resulting string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>		char *_time_to_asce(const std_time *atime, unsigned char flags, unsigned char width, char *outstr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the character after the last character written to outstr.
+<BR>	outstr	resulting ASCII representation of atime in the specified format
+<BR>
+<BR>	NULL if the length of the resulting string would have exceeded width.
+<BR>	outstr	undefined
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function converts atime to a formatted ASCII time string in outstr. The resulting time string is not NULL terminated and has the format specified in flags and in the current date/time conversion options structure. The returned pointer identifies the next available position in outstr (past the result). A subsequent call to _str_cpy or _str_cpye will append data to the result more rapidly than is possible with _time_to_asc. NULL is returned and outstr is left in an undefined state if the resulting time string would exceed width characters in length.
+<BR>
+<BR>	atime must be a structure of type std_time (defined in DATETIME.H) as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char hseconds;/* 0-99 */
+<BR>	   unsigned char seconds;/* 0-59 */
+<BR>	   unsigned char minutes;/* 0-59 */
+<BR>	   unsigned char hours;	/* 0-255 */
+<BR>	} std_time;
+<BR>
+<BR>	Conversion options specified in flags consist of time format flags, field suppress flags, and leading zero flags. The following symbolic constants (defined in DATETIME.H) may be bitwise ORed together to specify the time string format:
+<BR>
+<BR>	Time format flags:
+<BR>
+<BR>	TIME_CTIME	   (0x03) Use country format from dtcopts structure
+<BR>	TIME_12HR	   (0x01) Use 12-hour format
+<BR>	TIME_24HR	   (0x02) Use 24-hour format
+<BR>	TIME_FLEXHR	(0x00) Writes TIME_CTIME, reads both 12-hour and 24-hour formats
+<BR>
+<BR>	Time field suppress flags:
+<BR>
+<BR>	TIME_HR  	   (0x00) Use hour field
+<BR>	TIME_NOHR	   (0x04) Suppress hour field
+<BR>	TIME_MIN 	   (0x00) Use minute field
+<BR>	TIME_NOMIN(0x08) Suppress minute field
+<BR>	TIME_SEC 	   (0x00) Use second field
+<BR>	TIME_NOSEC(0x10) Suppress second field
+<BR>	TIME_100THS(0x00) Use 100ths field
+<BR>	TIME_NO100THS(0x20) Suppress 100ths field
+<BR>
+<BR>	Time leading zero flags:
+<BR>
+<BR>	TIME_PAD 	   (0x00) Write leading zero in 1st field (e.g. "1:00" to "01:00")
+<BR>	TIME_NOPAD(0x40) No leading zero in 1st field
+<BR>
+<BR>	The time leading zero flags specify whether or not to pad the leading field with a "0" if it only has one digit. All other fields always contain two digits.
+<BR>
+<BR>	The current date/time conversion options structure specifies global formatting options such as the country-default time format, the time delimiter character, and the 100ths separator character. These options may be accessed or modified through the DTC_ADDR variable. (See DTC_ADDR for further information.)
+<BR>
+<BR>WARNING! outstr must be at least width+1 bytes in size or data following the buffer will be overwritten.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   dtcopts dtc = {0,'-',0,':','.'," am", " pm"};
+	   std_time atime;
+	   char *outstr;
+	   dtc_addr = &ampdtc; /* use dtc structure (conversion info) */
+	   atime.hours = 12;
+	   atime.minutes = 59;
+	   atime.seconds = 59;
+	   atime.hseconds = 99; /* atime contains time to convert */
+	   outstr = "               is the current time";
+	   _time_to_asce(&ampatime, 0, 80, outstr);
+	   _put_str(outstr); /* "12:59:59.99 pm is the current time"*/
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   dtcopts dtc = {0,'-',0,':','.'," am", " pm"};
+	   char outstr[] = "               is the current time";
+	   ...   
+	   dtc_addr = &ampdtc; /* use DTC structure (conv. info) */
+	   xor ch,ch	/* CH = conversion flags */
+	   mov cl,80	/* CL = width of buffer */
+	   lea si,outstr/* SI -&gt outstr */
+	   mov      dh,11	/* DH = hours */
+	   mov dl,59	/* DL = minutes */
+	   mov ah,59	/* AH = seconds */
+	   mov al,99	/* AL = 100ths */
+	   time_to_asce();    /* time -&gt "string" */
+	   lea si,outstr/* reset SI -&gt outstr */
+	   put_str();/* "11:59:59.99 am is the current time"*/
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DTTMACE.ASM		  <B>ASM equiv</B>	TIME_TO_ASCE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_asc_time">_asc_time</A>, <A HREF="rdatetim.htm#_asc_to_time">_asc_to_time</A>, <A HREF="rdatetim.htm#_time_to_asc">_time_to_asc</A>
+<BR></DL>
+<H2><A NAME="_time_to_hund">_time_to_hund</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts a time from structure format to hundredths of seconds.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	unsigned long _time_to_hund(const std_time *stime);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The hundredths of seconds result.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function converts stime from structure format to hundredths of seconds and returns the hundredths of seconds result.
+<BR>
+<BR>	stime must be a structure of type std_time (defined in DATETIME.H) as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char hseconds;/* 0-99 */
+<BR>	   unsigned char seconds;/* 0-59 */
+<BR>	   unsigned char minutes;/* 0-59 */
+<BR>	   unsigned char hours;	/* 0-255 */
+<BR>	} std_time;
+<BR>
+<BR>	The result is undefined if any of the fields in stime are invalid or out of range.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   unsigned long hundredths;
+	   std_time htime;
+
+	   htime.hours = 10;
+	   htime.minutes= 30;
+	   htime.seconds= 5;
+	   htime.hseconds = 50;
+	   hundredths = _time_to_hund(&amphtime);
+	   	  /* = 3780550 hundredths of a sec */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   unsigned long hundredths;
+	   ...
+	   mov dh,10	/* DH = hours */
+	   mov dl,30	/* DL = minutes */
+	   mov ah,5	/* AH = seconds */
+	   mov al,50	/* AL = hseconds */
+	   hundredths = time_to_hund();
+	   	  	 /* 3780550 100ths of a sec */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DTTMHUN.ASM		  <B>ASM equiv</B>	TIME_TO_HUND
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_date_to_days">_date_to_days</A>, <A HREF="rdatetim.htm#_hund_to_time">_hund_to_time</A>, <A HREF="rdatetim.htm#_time_to_ticks">_time_to_ticks</A>
+<BR></DL>
+<H2><A NAME="_time_to_ticks">_time_to_ticks</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts a time from structure format to timer tick format.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	unsigned long _time_to_ticks(const std_time *stime);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The time represented by stime in timer tick format.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function converts a time from std_time structure format to timer ticks format. The return value indicates the number of system clock ticks between midnight (00:00:00.0) and the time specified in stime.
+<BR>
+<BR>	stime must be a structure of type std_time (defined in DATETIME.H) as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char hseconds;/* 0-99 */
+<BR>	   unsigned char seconds;/* 0-59 */
+<BR>	   unsigned char minutes;/* 0-59 */
+<BR>	   unsigned char hours;	/* 0-255 */
+<BR>	} std_time;
+<BR>
+<BR>	The result is undefined if any field in stime is invalid or out of range.
+<BR>
+<BR>	This function, when used in conjunction with _set_clock, is much faster than the _set_time function. Use the _set_time function if code size is more important than speed.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   std_time stime;
+	   unsigned long ttime;
+	   _get_time(&ampstime);
+	   ttime = _time_to_ticks(&ampstime);
+	/* convert structure time to timer ticks format */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   ...
+	   get_time();/* DX;AX = unsigned long format time */
+	   time_to_ticks();/* DX;AX = time in ticks */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DTTMETK.ASM		  <B>ASM equiv</B>	TIME_TO_TICKS
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_ticks_to_time">_ticks_to_time</A>, <A HREF="rdatetim.htm#_time_to_hund">_time_to_hund</A>
+<BR></DL>
+<H2><A NAME="_tmr_read">_tmr_read</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the elapsed time since the last call to _tmr_reset.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	std_time *_tmr_read(std_time *tmrtime);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to tmrtime.
+<BR>	tmrtime	the time since the last call to _tmr_reset
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function reads the elapsed time since the last call to _tmr_reset without interrupting the current timing sequence. The elapsed time is indicated in tmrtime. A pointer to tmrtime is returned.
+<BR>
+<BR>	tmrtime must be a structure of type std_time (defined in DATETIME.H) as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char hseconds;/* 0-99 */
+<BR>	   unsigned char seconds;/* 0-59 */
+<BR>	   unsigned char minutes;/* 0-59 */
+<BR>	   unsigned char hours;	/* 0-255 */
+<BR>	} std_time;
+<BR>
+<BR>	If this function is called prior to calling _tmr_reset, the current time of day is indicated in tmrtime.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   std_time tmrtime;
+	   _tmr_reset();
+	   ...
+	   _tmr_read(&amptmrtime);
+	   	  /* tmrtime = elapsed time after 1st section */
+	   ...
+	   _tmr_read(&amptmrtime); /* tmrtime = elapsed time at end */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   unsigned long tmrtime;
+	... 
+	_tmr_reset();	 /* start timer */
+	...
+	tmrtime = tmr_read();
+		/* tmrtime = elapsed time after 1st section */
+	...
+	tmrtime = tmr_read();/* tmrtime=elapsed time at end */
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DTTIMER.ASM		  <B>ASM equiv</B>	TMR_READ
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_get_clock">_get_clock</A>, <A HREF="rdatetim.htm#_sleep_sec">_sleep_sec</A>, <A HREF="rdatetim.htm#_tmr_reset">_tmr_reset</A>
+<BR></DL>
+<H2><A NAME="_tmr_reset">_tmr_reset</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Begins a new timing sequence.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;datetime.h&gt
+<BR>	void _tmr_reset(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function begins a new timing sequence by resetting the timer used by _tmr_read. The elapsed time (since the last call to this function) is obtained by calling _tmr_read.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   std_time tmr;
+
+	   _tmr_reset();
+	   ...
+	   _tmr_read(&amptmr);/* tmr = elapsed time */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   unsigned long tmr;
+	   ...
+	   _tmr_reset():	/* start timer */
+	   ...
+	   tmr = _tmr_read();/* tmr = elapsed time */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	DTTIMER.ASM		  <B>ASM equiv</B>	TMR_RESET
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_tmr_read">_tmr_read</A>
+<BR>
+<BR></BODY>
+<BR></HTML><BR>

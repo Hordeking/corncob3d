@@ -1,0 +1,1410 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Memory Management Reference</TITLE>
+</HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Memory Management</H1>
+<P ALIGN=CENTER>Reference Section </P>
+<UL>
+<LI><A HREF="TOC.htm">Table of Contents</A>
+<LI><A HREF="index.htm">Function Index</A>
+<LI><A HREF="gindex.htm">Group Index
+</UL>
+<A HREF="rmemanig.htm#_far_avail">_far_avail</A><BR>
+<A HREF="rmemanig.htm#_far_calloc">_far_calloc</A><BR>
+<A HREF="rmemanig.htm#_far_free">_far_free</A><BR>
+<A HREF="rmemanig.htm#_far_malloc">_far_malloc</A><BR>
+<A HREF="rmemanig.htm#_far_max">_far_max</A><BR>
+<A HREF="rmemanig.htm#_far_realloc">_far_realloc</A><BR>
+<A HREF="rmemanig.htm#fheap_dosmin">fheap_dosmin</A><BR>
+<A HREF="rmemanig.htm#fheap_len">fheap_len</A><BR>
+<A HREF="rmemanig.htm#fheap_size">fheap_size</A><BR>
+<A HREF="rmemanig.htm#fheap_start">fheap_start</A><BR>
+<A HREF="rmemanig.htm#_near_avail">_near_avail</A><BR>
+<A HREF="rmemanig.htm#_near_calloc">_near_calloc</A><BR>
+<A HREF="rmemanig.htm#_near_free">_near_free</A><BR>
+<A HREF="rmemanig.htm#_near_malloc">_near_malloc</A><BR>
+<A HREF="rmemanig.htm#_near_max">_near_max</A><BR>
+<A HREF="rmemanig.htm#_near_realloc">_near_realloc</A><BR>
+<A HREF="rmemanig.htm#nheap_comlen">nheap_comlen</A><BR>
+<A HREF="rmemanig.htm#nheap_len">nheap_len</A><BR>
+<A HREF="rmemanig.htm#nheap_size">nheap_size</A><BR>
+<A HREF="rmemanig.htm#nheap_start">nheap_start</A><BR>
+<A HREF="rmemanig.htm#_rel_avail">_rel_avail</A><BR>
+<A HREF="rmemanig.htm#_rel_calloc">_rel_calloc</A><BR>
+<A HREF="rmemanig.htm#_rel_free">_rel_free</A><BR>
+<A HREF="rmemanig.htm#_rel_init">_rel_init</A><BR>
+<A HREF="rmemanig.htm#_rel_malloc">_rel_malloc</A><BR>
+<A HREF="rmemanig.htm#_rel_max">_rel_max</A><BR>
+<A HREF="rmemanig.htm#_rel_realloc">_rel_realloc</A><BR>
+<H2><A NAME="_far_avail">_far_avail</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the number of available bytes on the far heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	long int _far_avail(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The number of available bytes on the far heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the total number of available bytes on the far heap. The return value is zero if the far heap is full or if the far heap is uninitialized.
+<BR>
+<BR>	See the Memory Management technical notes for special installation instructions that must be followed prior to using this function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *block;
+	   long int heap_left;
+	   block = (char *)_far_malloc(0x400);
+	   heap_left = _far_avail ();
+	   _far_free(block);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   void far *buffer;
+	   ...
+	   buffer = (char *)_far_malloc (0x400);
+	   far_avail();/* DX;AX = bytes left on heap */
+	   ...
+	   _far_free(buffer);
+	}
+
+</CODE></PRE>
+<B>Source file</B>	MAFAVAIL.ASM		  <B>ASM equiv</B>	FAR_AVAIL
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanig.htm#_far_avail">_far_avail</A>, <A HREF="rmemanig.htm#_far_max">_far_max</A>, <A HREF="rmemanig.htm#_near_avail">_near_avail</A>, <A HREF="rmemanig.htm#_rel_avail">_rel_avail</A>
+<BR></DL>
+<H2><A NAME="_far_calloc">_far_calloc</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Allocates space for a specified number of objects on the far heap and sets all allocated bytes to zero.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	void far *_far_calloc(int num, long int size);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the newly allocated block of memory.
+<BR>
+<BR>	NULL if num times size bytes could not be allocated.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function allocates a paragraph-aligned block on the far heap and returns a pointer to that block. The newly allocated block is num times size bytes in size; a maximum of 524,270 bytes may be allocated in one block. Each byte in the allocated block is cleared (set to zero). NULL is returned if num times size bytes cannot be allocated.
+<BR>
+<BR>	This function initializes the far heap if the far heap has not already been initialized. In SMALL data models this function also initializes the near heap if needed. The fheap_len and fheap_dosmin variables are used to control the size of the far heap; the nheap_len and nheap_comlen variables are used to control the size of the near heap.
+<BR>
+<BR>	See the Memory Management technical notes for special installation instructions that must be followed prior to using this function.
+<BR>
+<BR>WARNING! If num or size is zero, a valid block pointer is returned even though the block may have zero bytes of available space. Any attempt to write past the end of a block may corrupt the heap.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char far *fblk;
+	   ...
+	   fblk = (char *)_far_calloc(20,1); /* allocate a block and
+	   	  	 	    initialize to 0 */
+	   _fstr_cpy(fblk, "hello\n\r");/* copy string to far block */
+	   _fput_str(fblk);/* display string from far block */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	Because of variations between compilers, an inline version
+	   of this function has not been provided.
+
+</CODE></PRE>
+<B>Source file</B>	_MAFCALC.ASM		  <B>ASM equiv</B>	FAR_CALLOC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanig.htm#_far_free">_far_free</A>, _far_init, <A HREF="rmemanig.htm#_far_malloc">_far_malloc</A>, <A HREF="rmemanig.htm#_far_max">_far_max</A>, <A HREF="rmemanig.htm#_far_realloc">_far_realloc</A>, <A HREF="rmemanig.htm#_near_calloc">_near_calloc</A>, <A HREF="rmemanig.htm#_rel_calloc">_rel_calloc</A>
+<BR></DL>
+<H2><A NAME="_far_free">_far_free</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Frees a block on the far heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	int _far_free(void far *block);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if block was successfully released.
+<BR>
+<BR>	-1 if block is invalid or the far heap is uninitialized.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function releases the memory block at block on the far heap, making its memory available for future allocation. block must be a valid memory block pointer obtained by calling _far_malloc, _far_calloc, or _far_realloc. -1 is returned if block is invalid or if the far heap is not initialized.
+<BR>
+<BR>	See the Memory Management technical notes for special installation instructions that must be followed prior to using this function.
+<BR>
+<BR>WARNING! Only limited checking is performed to detect an invalid block. If an attempt is made to free a block using an invalid block value and -1 is not returned, the heap may be corrupted.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *pointer;
+	   ...
+	   pointer = (char *)_far_malloc (0x10);
+	   if (pointer == NULL)    /* allocate 16 byte block */
+	   {
+	      /* handle the error */
+	   } 
+	   ...
+	   if (_far_free (pointer) == -1) /* free block */
+	   {
+	      /* handle the error */
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	Because of variations between compilers, an inline version
+	   of this function has not been provided.
+
+</CODE></PRE>
+<B>Source file</B>	_MAFFREE.ASM		  <B>ASM equiv</B>	FAR_FREE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanig.htm#_far_calloc">_far_calloc</A>, _far_init, <A HREF="rmemanig.htm#_far_malloc">_far_malloc</A>, <A HREF="rmemanig.htm#_far_realloc">_far_realloc</A>, <A HREF="rmemanig.htm#_near_free">_near_free</A>, <A HREF="rmemanig.htm#_rel_free">_rel_free</A>
+<BR></DL>
+<H2><A NAME="_far_malloc">_far_malloc</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Allocates a specified number of bytes on the far heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	void far *_far_malloc(long int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the allocated block on the far heap.
+<BR>
+<BR>	NULL if num bytes could not be allocated.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function allocates a paragraph-aligned block of num bytes on the far heap. A maximum of 524,270 bytes may be allocated in one block. A pointer to the newly allocated block is returned. A NULL is returned if num bytes cannot be allocated.
+<BR>
+<BR>	This function initializes the far heap if the far heap has not already been initialized. In SMALL data models this function also initializes the near heap if needed. The fheap_len and fheap_dosmin variables are used to control the size of the far heap; the nheap_len and nheap_comlen variables are used to control the size of the near heap.
+<BR>
+<BR>	See the Memory Management technical notes for special installation instructions that must be followed prior to using this function.
+<BR>
+<BR>WARNING! If num is zero, a valid block pointer is returned even though the block may have zero bytes of available space. Any attempt to write past the end of a block may corrupt the heap.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char far *fblk;
+	   ...
+	   fblk = (char far *)_far_malloc(20);/* allocate far block */
+	   _fstr_cpy(fblk, "hello\n\r");/* copy string to far block */
+	   _fput_str(fblk);	/* display str from far block */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	Because of variations between compilers, an inline version
+	   of this function has not been provided.
+
+</CODE></PRE>
+<B>Source file</B>	_MAFMALC.ASM		  <B>ASM equiv</B>	FAR_MALLOC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_dos_malloc">_dos_malloc</A>, <A HREF="rmemanig.htm#_far_calloc">_far_calloc</A>, _far_init, <A HREF="rmemanig.htm#_far_max">_far_max</A>, <A HREF="rmemanig.htm#_far_realloc">_far_realloc</A>, <A HREF="rmemanig.htm#_near_malloc">_near_malloc</A>, <A HREF="rmemanig.htm#_rel_malloc">_rel_malloc</A>
+<BR></DL>
+<H2><A NAME="_far_max">_far_max</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the size of the largest available block on the far heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	long int _far_max(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The size of the largest available block on the far heap, in bytes.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the number of bytes in the largest available block on the far heap. 0 is returned if no space is available or the far heap is uninitialized.
+<BR>
+<BR>	See the Memory Management technical notes for special installation instructions that must be followed prior to using this function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *block;
+	   long int heap_largest;
+	   block = (char *)_far_malloc (0x400);
+	   heap_largest = _far_max ();
+	   ...
+	   _far_free (block);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   void far *buffer;
+	   ...
+	   buffer = (char *)_far_malloc (0x400);
+	   far_max();/* DX;AX = largest block avail */
+	   ...
+	   _far_free(buffer);
+	}
+
+</CODE></PRE>
+<B>Source file</B>	None				  <B>ASM equiv</B>	FAR_MAX
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanig.htm#_far_avail">_far_avail</A>, _far_init, <A HREF="rmemanig.htm#_near_max">_near_max</A>, <A HREF="rmemanig.htm#_rel_max">_rel_max</A>
+<BR></DL>
+<H2><A NAME="_far_realloc">_far_realloc</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Alters the size of a far heap memory block.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	void far *_far_realloc(void far *block, long int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the resized block of memory if the block was successfully resized.
+<BR>
+<BR>	NULL if the block could not be reallocated to num bytes.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function attempts to shrink or grow the memory block at block on the far heap so that it becomes num bytes in size. If the block at block cannot be resized directly, a new block of the requested size is allocated and the contents of the first block are copied into the second block. block must be a valid memory block pointer obtained by calling _far_malloc, _far_calloc, or _far_realloc. A maximum of 524,270 bytes may be allocated in one block. If successful a pointer to the resulting block is returned. NULL is returned if num bytes cannot be allocated, block is an invalid memory block pointer, or if the far heap is not initialized.
+<BR>
+<BR>	See the Memory Management technical notes for special installation instructions that must be followed prior to using this function.
+<BR>WARNING! Only limited checking is performed to detect an invalid block. If an attempt is made to resize a block using an invalid block pointer and NULL is not returned, the heap may be corrupted.
+<BR>
+<BR>WARNING! If num is zero, a valid pointer is returned even though the block has zero bytes of available space. Any attempt to write past the end of a block may corrupt the heap.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *pointer, far *extra_ptr;
+	   pointer = _far_malloc(0x10);/* allocate 16 byte block */
+	   if (pointer == NULL)
+	   {
+	      /* error allocating block */
+	   }
+	   ...
+	   extra_ptr = _far_realloc (pointer, 0x20);
+	   	  	 	/* reallocate block to 32 bytes */
+	   if (extra_ptr == NULL)
+	   {
+	      /* error allocating block */
+	   }
+	   pointer = extra_ptr;    /* reassign block pointer */
+	   ... 
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	Because of variations between compilers, an inline version
+	   of this function has not been provided.
+
+</CODE></PRE>
+<B>Source file</B>	_MAFRALC.ASM		  <B>ASM equiv</B>	FAR_REALLOC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanig.htm#_far_calloc">_far_calloc</A>, _far_init, <A HREF="rmemanig.htm#_far_malloc">_far_malloc</A>, <A HREF="rmemanig.htm#_far_max">_far_max</A>, <A HREF="rmemanig.htm#_near_realloc">_near_realloc</A>, <A HREF="rmemanig.htm#_rel_realloc">_rel_realloc</A>
+<BR></DL>
+<H2><A NAME="fheap_dosmin">fheap_dosmin</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Variable) Indicates the minimum number of paragraphs to leave available for DOS when the far heap is initialized.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	unsigned int fheap_dosmin;
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This unsigned int variable specifies the minimum number of paragraphs to leave available to DOS when the far heap is initialized. The fheap_dosmin variable always takes precedence over the fheap_len variable. The default value for fheap_dosmin is 0. If another value is needed, the fheap_dosmin variable must be set before the far heap is initialized. For example:
+<BR>
+<BR>	/* leave 4096 paragraphs (64K) for DOS when far heap is initialized */
+<BR>	externunsigned fheap_dosmin = 4096;
+<BR>	main ()
+<BR>	{
+<BR>		...
+<BR>	}
+<BR>
+<BR>	The first call to malloc or calloc in the LARGE data models or the first call to _far_malloc or _far_calloc in any memory model initializes the far heap.
+<BR>
+<BR>	See the Memory Management technical notes for special installation instructions that must be followed prior to using the Spontaneous Assembly far heap management functions.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MACVARS.ASM		  <B>ASM equiv</B>	None
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanig.htm#fheap_len">fheap_len</A>, <A HREF="rmemanig.htm#fheap_size">fheap_size</A>, <A HREF="rmemanig.htm#fheap_start">fheap_start</A>
+<BR></DL>
+<H2><A NAME="fheap_len">fheap_len</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Variable) Indicates the maximum size of the far heap, in paragraphs.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	extern unsigned int fheap_len;
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This unsigned int variable specifies the maximum size of the far heap, in paragraphs. This value is only used when the far heap is initialized. The default value for fheap_len is -1, which initializes the far heap to its largest possible size (minus fheap_dosmin paragraphs). If another value is needed, the fheap_len variable must be set before the far heap is initialized. For example:
+<BR>
+<BR>	/* initialize far heap to 8192 paragraphs (128K) */
+<BR>	externunsigned fheap_len = 8192;
+<BR>	main ()
+<BR>	{
+<BR>	...
+<BR>	}
+<BR>
+<BR>	The first call to malloc or calloc in the LARGE data models or the first call to _far_malloc or _far_calloc in any memory model initializes the far heap.
+<BR>
+<BR>	See the Memory Management technical notes for special installation instructions that must be followed prior to using the Spontaneous Assembly far heap management functions.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MACVARS.ASM		   <B>ASM equiv</B>	None
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanig.htm#fheap_dosmin">fheap_dosmin</A>, <A HREF="rmemanig.htm#fheap_size">fheap_size</A>, <A HREF="rmemanig.htm#fheap_start">fheap_start</A>
+<BR></DL>
+<H2><A NAME="fheap_size">fheap_size</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Variable) Indicates the current size of the far heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	unsigned int fheap_size;
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This unsigned int variable contains the current size of the far heap, in paragraphs. A size of zero indicates that the far heap is not initialized.
+<BR>
+<BR></DL>
+<B>Source file</B>	MAVARS.ASM		  <B>ASM equiv</B>	FHEAP_SIZE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanig.htm#fheap_dosmin">fheap_dosmin</A>, <A HREF="rmemanig.htm#fheap_len">fheap_len</A>, <A HREF="rmemanig.htm#fheap_start">fheap_start</A>
+<BR></DL>
+<H2><A NAME="fheap_start">fheap_start</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Variable) Contains the starting segment of the far heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	extern segaddr fheap_start;
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This unsigned int variable indicates the starting segment of the far heap if the far heap is initialized. This variable is undefined if the far heap is not initialized. If fheap_size is 0, the far heap is not initialized.
+<BR>
+<BR></DL>
+<B>Source file</B>	MAVARS.ASM		  <B>ASM equiv</B>	FHEAP_START
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanig.htm#fheap_dosmin">fheap_dosmin</A>, <A HREF="rmemanig.htm#fheap_len">fheap_len</A>, <A HREF="rmemanig.htm#fheap_size">fheap_size</A>
+<BR></DL>
+<H2><A NAME="_near_avail">_near_avail</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the number of available bytes on the near heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	unsigned int _near_avail(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The number of available bytes on the near heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the total number of available bytes on the near heap. 0 is returned if the near heap is full or if the near heap is uninitialized.
+<BR>
+<BR>	See the technical notes for special installation instructions which must be followed prior to using this function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void *block;
+	   unsigned int heap_left;
+	   block = _near_malloc(0x400);
+	   heap_left = _near_avail();
+	   _near_free(block);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	void *block;
+	   ...
+	   block = _near_malloc(0x400); /* AX -&gt allocated block */
+	   near_avail();/* AX = number of bytes available */
+	   ...
+	   _near_free (block);
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	MANAVAIL.ASM		  <B>ASM equiv</B>	NEAR_AVAIL
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanig.htm#_far_avail">_far_avail</A>, <A HREF="rmemanig.htm#_near_max">_near_max</A>, <A HREF="rmemanig.htm#_rel_avail">_rel_avail</A>
+<BR></DL>
+<H2><A NAME="_near_calloc">_near_calloc</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Allocates space for a specified number of objects on the near heap and sets all allocated bytes to zero.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	void near *_near_calloc(int num, int size);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the allocated block on the near heap if a block of num times size bytes was successfully allocated.
+<BR>
+<BR>	NULL if num times size bytes could not be allocated.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function allocates a word-aligned block on the near heap and returns a near pointer to that block. The newly allocated block is num times size bytes in size. A maximum of 32,764 bytes may be allocated in one block. Each allocated byte is cleared to zero. NULL is returned if num times size bytes cannot be allocated. The near heap is not available in large data models.
+<BR>
+<BR>	This function initializes the near heap if the near heap has not already been initialized. The nheap_len and nheap_comlen variables are used to control the size of the near heap.
+<BR>
+<BR>	See the technical notes for special installation instructions that must be followed prior to using this function.
+<BR>
+<BR>WARNING! If num or size is zero, a valid block pointer is returned even though the block has zero bytes of available space. Any attempt to write past the end of a block will corrupt the heap.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char * nblk;
+	   ...
+	   nblk = (char *)_near_calloc(20,1); /* allocate a block and
+	   	  	 	    initialize to 0 */
+	   _str_cpy(nblk, "hello\n\r");/* copy string to block */
+	   _put_str(nblk);	/* display string in block */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	Because of variations between compilers, an inline version
+	   of this function has not been provided.
+
+</CODE></PRE>
+<B>Source file</B>	_MANCALC.ASM		  <B>ASM equiv</B>	NEAR_CALLOC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanig.htm#_far_calloc">_far_calloc</A>, <A HREF="rmemanig.htm#_near_free">_near_free</A>, <A HREF="rmemanig.htm#_near_malloc">_near_malloc</A>, <A HREF="rmemanig.htm#_near_max">_near_max</A>, <A HREF="rmemanig.htm#_near_realloc">_near_realloc</A>, <A HREF="rmemanig.htm#_rel_calloc">_rel_calloc</A>
+<BR></DL>
+<H2><A NAME="_near_free">_near_free</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Frees a block on the near heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	int _near_free(void near *block);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the block was successfully released.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function releases the block at block on the near heap, freeing its memory for future allocation. block must be a valid block pointer obtained by calling _near_malloc, _near_calloc, or _near_realloc. -1 is returned if block is invalid or if the near heap is not initialized. The near heap is not available in large data models.
+<BR>
+<BR>	See the technical notes for special installation instructions that must be followed prior to using this function.
+<BR>
+<BR>WARNING! Only limited checking is performed to detect an invalid block. If an attempt is made to free a block using an invalid block pointer and -1 is not returned, the heap may be corrupted.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void *pointer;
+	   ...
+	   pointer = _near_malloc(0x100); /* allocate 100 bytes */
+	   if (pointer == NULL)
+	   {
+	      /* handle the error */
+	   }
+	   ... 
+	   if (_near_free(pointer) == -1)
+	   	  	 /* free block pointer to by pointer */
+	   {
+	      /* handle the error */
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	Because of variations between compilers, an inline version
+	   of this function has not been provided.
+
+</CODE></PRE>
+<B>Source file</B>	_MANFREE.ASM		  <B>ASM equiv</B>	NEAR_FREE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanig.htm#_far_free">_far_free</A>, <A HREF="rmemanig.htm#_near_calloc">_near_calloc</A>, <A HREF="rmemanig.htm#_near_malloc">_near_malloc</A>, <A HREF="rmemanig.htm#_near_realloc">_near_realloc</A>, <A HREF="rmemanig.htm#_rel_free">_rel_free</A>
+<BR></DL>
+<H2><A NAME="_near_malloc">_near_malloc</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Allocates a specified number of bytes on the near heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	void near *_near_malloc(int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the allocated block on the near heap if a block of num bytes was successfully allocated.
+<BR>
+<BR>	NULL if num bytes could not be allocated.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function allocates a word-aligned block of num bytes on the near heap and returns a near pointer to that block. A maximum of 32,764 bytes may be allocated in one block. NULL is returned if num bytes cannot be allocated. The near heap is not available in large data models.
+<BR>
+<BR>	This function initializes the near heap if the near heap has not already been initialized. The nheap_len and nheap_comlen variables are used to control the size of the near heap.
+<BR>
+<BR>	See the technical notes for special installation instructions that must be followed prior to using this function.
+<BR>
+<BR>WARNING! If num is zero, a valid block pointer is returned even though the block has zero bytes of available space. Any attempt to write past the end of a block will corrupt the heap.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char *nblk;
+	   ...
+	   nblk = (char *)_near_malloc(20);/* allocate a block */
+	   _str_cpy(nblk, "hello\n\r");	  /* copy string */
+	   _put_str(nblk);	    /* display block */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	Because of the variations between compilers, an inline version
+	   of this function has not been provided.
+
+</CODE></PRE>
+<B>Source file</B>	_MANMALC.ASM		  <B>ASM equiv</B>	NEAR_MALLOC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_dos_malloc">_dos_malloc</A>, <A HREF="rmemanig.htm#_far_malloc">_far_malloc</A>, <A HREF="rmemanig.htm#_near_calloc">_near_calloc</A>, <A HREF="rmemanig.htm#_near_max">_near_max</A>, <A HREF="rmemanig.htm#_near_realloc">_near_realloc</A>, <A HREF="rmemanig.htm#_rel_malloc">_rel_malloc</A>
+<BR></DL>
+<H2><A NAME="_near_max">_near_max</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the size of the largest available block on the near heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	unsigned int _near_max(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The size, in bytes, of the largest available block on the near heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the number of bytes in the largest available block on the near heap. 0 is returned if no space is available or the near heap is uninitialized.
+<BR>
+<BR>	See the technical notes for special installation instructions that must be followed prior to using this function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void *block;
+	   unsigned int heap_largest;
+	   block = _near_malloc(0x400);
+	   heap_largest = _near_max();
+	   _near_free(block);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   void *block;
+	   ...
+	   block = _near_malloc(0x400); /* AX -&gt allocated block */
+	   near_max();	    /* AX = size of largest block */
+	   ...
+	     _near_free(block);
+	}
+
+</CODE></PRE>
+<B>Source file</B>	MANMAX.ASM		  <B>ASM equiv</B>	NEAR_MAX
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanig.htm#_far_free">_far_free</A>, <A HREF="rmemanig.htm#_near_calloc">_near_calloc</A>, <A HREF="rmemanig.htm#_near_malloc">_near_malloc</A>, <A HREF="rmemanig.htm#_near_realloc">_near_realloc</A>, <A HREF="rmemanig.htm#_rel_free">_rel_free</A>
+<BR></DL>
+<H2><A NAME="_near_realloc">_near_realloc</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Alters the size of a near heap memory block.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	void near *_near_realloc(void near *block, int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the resized block if block was successfully resized.
+<BR>
+<BR>	NULL if the block could not be resized.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function attempts to shrink or grow the block at block on the near heap so that it becomes num bytes in size. If the block at block cannot be resized directly, a new block of the requested size is allocated and the contents of the first block are copied into the second block. block must be a valid block offset obtained by calling _near_malloc, _near_calloc, or _near_realloc. A maximum of 32,764 bytes may be allocated in one block. A near pointer to the resulting block is returned. NULL is returned if num bytes cannot be allocated, block is an invalid block offset, or if the near heap is not initialized. The near heap is not available in large data models.
+<BR>
+<BR>	See the technical notes for special installation instructions that must be followed prior to using this function.
+<BR>
+<BR>WARNING! Only limited checking is performed to detect an invalid block. Any attempt to resize a block using an invalid block may corrupt the heap if NULL is not returned.
+<BR>
+<BR>WARNING! If num is zero, a valid block pointer is returned even though the block has zero bytes of available space. Any attempt to write past the end of a block will corrupt the heap.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void *block, *extra_blk;
+	   ...
+	   block = _near_malloc(0x100); /*allocate a block of 100 bytes*/
+	   if (block == NULL)
+	   {
+	      /* error allocating block */
+	   }
+	   ...
+	   extra_blk = _near_realloc(block, 0x200);
+	   if (extra_blk == NULL)
+	   {
+	      /* error resizing block */
+	   }
+	   ... 
+	   block = extra_blk;/* reassign block pointer */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	Because of the variations between compilers, an inline version
+	   of this function has not been provided.
+
+</CODE></PRE>
+<B>Source file</B>	_MANRALC.ASM		  <B>ASM equiv</B>	NEAR_REALLOC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanig.htm#_far_realloc">_far_realloc</A>, <A HREF="rmemanig.htm#_near_calloc">_near_calloc</A>, <A HREF="rmemanig.htm#_near_malloc">_near_malloc</A>, <A HREF="rmemanig.htm#_near_max">_near_max</A>, <A HREF="rmemanig.htm#_rel_realloc">_rel_realloc</A>
+<BR></DL>
+<H2><A NAME="nheap_comlen">nheap_comlen</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Variable) Indicates the minimum number of bytes to leave available for the .COM stack when the near heap is initialized (TINY model only).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	extern unsigned int nheap_comlen;
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This unsigned int variable determines the number of bytes to leave for the .COM stack in the TINY data model. The near heap will be initialized between the end of static data in @DATASEG and the .COM stack.
+<BR>
+<BR>	The default value for nheap_comlen is 1000, which leaves 1000 bytes for the .COM stack. The nheap_comlen global variable may be modified as follows:
+<BR>
+<BR>	/* leave 2500 bytes for .COM stack when near heap is initialized */
+<BR>	externunsigned nheap_comlen = 2500;
+<BR>	main ()
+<BR>	{
+<BR>		...
+<BR>	}
+<BR>
+<BR>	The first call to malloc, calloc, _near_malloc, _near_calloc, _far_malloc, or _far_calloc initializes the near heap in small data models. The near heap is not available in large data models.
+<BR>
+<BR>	See the Memory Management technical notes for special installation instructions that must be followed prior to using the Spontaneous Assembly near heap management functions.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MACVARS.ASM		  <B>ASM equiv</B>	None
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanig.htm#_near_calloc">_near_calloc</A>, <A HREF="rmemanig.htm#_near_malloc">_near_malloc</A>, <A HREF="rmemanig.htm#nheap_len">nheap_len</A>
+<BR></DL>
+<H2><A NAME="nheap_len">nheap_len</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Variable) Indicates the maximum size of the near heap, in bytes (small data models only).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	extern unsigned int nheap_len;
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This unsigned int variable determines the size (in bytes) of the near heap in small data models only. The near heap is not available in large data models.
+<BR>
+<BR>	The default value for nheap_len is -1, which initializes the near heap to its largest possible size (minus nheap_comlen bytes in the TINY model). The nheap_len global variable may be modified as follows:
+<BR>
+<BR>	/* initialize a 10,000 byte near heap */
+<BR>	externunsigned nheap_len = 10000;
+<BR>	main ()
+<BR>	{
+<BR>		...
+<BR>	}
+<BR>
+<BR>	The first call to malloc, calloc, _near_malloc, _near_calloc, _far_malloc, or _far_calloc initializes the near heap in small data models.
+<BR>
+<BR>	See the Memory Management technical notes for special installation instructions that must be followed prior to using the Spontaneous Assembly near heap management functions. 
+<BR>
+<BR></DL>
+<B>Source file</B>	_MACVARS.ASM		  <B>ASM equiv</B>	None
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanig.htm#_near_malloc">_near_malloc</A>, <A HREF="rmemanig.htm#_near_calloc">_near_calloc</A>, <A HREF="rmemanig.htm#nheap_comlen">nheap_comlen</A>
+<BR></DL>
+<H2><A NAME="nheap_size">nheap_size</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Variable) Indicates the current size of the near heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	extern unsigned int nheap_size;
+<BR>
+<BR>Syntax
+<BR>	#include &lt;memalloc.h&gt
+<BR>	extern unsigned nheap_size;
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This unsigned int variable contains the current size of the near heap, in bytes. A size of zero indicates that the near heap is not initialized.
+<BR>
+<BR></DL>
+<B>Source file</B>	MAVARS.ASM		  <B>ASM equiv</B>	NHEAP_SIZE
+
+<BR><H2><A NAME="nheap_start">nheap_start</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Variable) Contains the starting offset of the near heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	extern unsigned nheap_start;
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This unsigned int variable contains the starting offset of the near heap relative to DGROUP if the near heap is initialized. This variable is undefined if the near heap is not initialized. (If nheap_size is 0, the near heap is not initialized.)
+<BR>
+<BR></DL>
+<B>Source file</B>	MAVARS.ASM		  <B>ASM equiv</B>	NHEAP_START
+
+<BR><H2><A NAME="_rel_avail">_rel_avail</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the number of available bytes on a relative heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	unsigned int _rel_avail(segaddr heapseg);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The number of bytes available on the relative heap at heapseg.
+<BR>
+<BR>	0 if the relative heap is full or if heapseg is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the total number of available bytes on the relative heap at heapseg. heapseg must be the segment address of a relative heap which was previously initialized using _rel_init. The return value is 0 if the relative heap is full or if heapseg is invalid.
+<BR>
+<BR>WARNING! Only limited checking is performed to detect an invalid heapseg. If heapseg is invalid, a non-zero value may be returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   segaddr heapseg;
+	   unsigned int heapsize, heapleft;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   heapleft = _rel_avail (heapseg);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   ...
+	   mov es,heapseg/* ES = segment for rel heap */
+	   mov ax,heapsize/* AX = size of rel heap */
+	   rel_init ();	/* initialize relative heap */
+	   rel_avail ();	/* AX = bytes avail on heap */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MARAVAL.ASM		  <B>ASM equiv</B>	REL_AVAIL
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanig.htm#_far_avail">_far_avail</A>, <A HREF="rmemanig.htm#_near_avail">_near_avail</A>, <A HREF="rmemanig.htm#_rel_init">_rel_init</A>, <A HREF="rmemanig.htm#_rel_max">_rel_max</A>
+<BR></DL>
+<H2><A NAME="_rel_calloc">_rel_calloc</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Allocates space for a specified number of objects on a relative heap and sets all allocated bytes to zero.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	void far *_rel_calloc(segaddr heapseg, int num, int size);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the allocated block on the relative heap if a block of num times size bytes was successfully allocated.
+<BR>
+<BR>	NULL if num times size bytes could not be allocated.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function allocates a word-aligned block on the relative heap at heapseg and returns a pointer to that block. The newly allocated block is num times size bytes in size; a maximum of 32,764 bytes may be allocated in one block. Each allocated byte is cleared to zero. heapseg must be the segment address of a relative heap which was previously initialized using _rel_init. NULL is returned if num times size bytes cannot be allocated or if heapseg is invalid.
+<BR>
+<BR>WARNING! Only limited checking is performed to detect an invalid heapseg. If heapseg is invalid and NULL is not returned, system memory is left in an undefined state.
+<BR>
+<BR>WARNING! If num or size is zero, a valid block pointer is returned even though the block has zero bytes of available space. Any attempt to write past the end of a block will corrupt the heap.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   /* allocate memory for one window */
+	   buffer = _rel_calloc (heapseg, 1, sizeof(sawin));
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   segaddr heapseg;
+	   unsigned int heapsize, size = sizeof(sawin);
+	      ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   mov cx,1
+	   rel_calloc ();	/* DI -&gt allocated block */
+	    jc label_010/* if unable to allocate block */
+	   ...
+	label_010:
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MARCALC.ASM		  <B>ASM equiv</B>	REL_CALLOC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanig.htm#_far_calloc">_far_calloc</A>, <A HREF="rmemanig.htm#_near_calloc">_near_calloc</A>, <A HREF="rmemanig.htm#_rel_free">_rel_free</A>, <A HREF="rmemanig.htm#_rel_init">_rel_init</A>, <A HREF="rmemanig.htm#_rel_malloc">_rel_malloc</A>, <A HREF="rmemanig.htm#_rel_max">_rel_max</A>, <A HREF="rmemanig.htm#_rel_realloc">_rel_realloc</A>
+<BR></DL>
+<H2><A NAME="_rel_free">_rel_free</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Frees a block on a relative heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	int _rel_free (void far *block);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the block was successfully released.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function releases the relative heap block at block. This frees the memory for future allocation. block must be the address of a relative heap block which was previously allocated with _rel_malloc, _rel_calloc, or _rel_realloc on a heap that was initialized using _rel_init. 0 is returned if the function was successful. -1 is returned if block is invalid.
+<BR>
+<BR>WARNING! Only limited checking is performed to detect if block is invalid. If block is invalid and -1 is not returned, system memory is left in an undefined state.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   segaddr heapseg;
+	   ...
+	   buffer = _rel_malloc (heapseg, 500);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	      ...
+	   mov es,heapseg/* ES = segment for rel heap */
+	   mov ax,heapsize/* AX = size of rel heap */
+	   rel_init ();
+	   mov ax,bufsize/* AX = size block to allocate */
+	   rel_malloc ();	/* DI = offset of block */
+	    jc rel_free_010/*   if error allocating block */
+	   ... 	 	/*   if successful */
+	   rel_free ();	/* free mem block at ES:DI */
+	    jc rel_free_010/*   if an error occurred */
+	   ... 	 	/*   if successful */
+	rel_free_010:
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_MARFREE.ASM		  <B>ASM equiv</B>	REL_FREE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanig.htm#_far_free">_far_free</A>, <A HREF="rmemanig.htm#_near_free">_near_free</A>, <A HREF="rmemanig.htm#_rel_calloc">_rel_calloc</A>, <A HREF="rmemanig.htm#_rel_init">_rel_init</A>, <A HREF="rmemanig.htm#_rel_malloc">_rel_malloc</A>, <A HREF="rmemanig.htm#_rel_realloc">_rel_realloc</A>
+<BR></DL>
+<H2><A NAME="_rel_init">_rel_init</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Initializes a relative heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	void _rel_init(segaddr heapseg, unsigned int size);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function initializes a relative heap. The starting address of the relative heap is heapseg. The size of the relative heap is size bytes. If the relative heap at heapseg was previously initialized, everything which is currently on the heap is discarded.
+<BR>
+<BR>	After initialization, all information about the relative heap is maintained within the heap itself. This allows any number of relative heaps to be defined and it makes each relative heap fully relocatable.
+<BR>
+<BR>WARNING! This function does not attempt to allocate memory for the relative heap. size bytes of memory must be available at heapseg for use by the relative heap or DOS memory blocks may be corrupted.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   ...
+	   mov es,heapseg/* ES = segment for rel heap */
+	   mov ax,heapsize/* AX = size of rel heap */
+	   rel_init ();	/* initialize relative heap */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MARNITC.ASM		  <B>ASM equiv</B>	REL_INIT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD>_near_init, <A HREF="rmemanig.htm#_rel_avail">_rel_avail</A>, <A HREF="rmemanig.htm#_rel_malloc">_rel_malloc</A>
+<BR></DL>
+<H2><A NAME="_rel_malloc">_rel_malloc</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Allocates a specified number of bytes on a relative heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	void far *_rel_malloc(segaddr heapseg, int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the allocated block on the relative heap if a block of num bytes was successfully allocated.
+<BR>
+<BR>	NULL if num bytes could not be allocated.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function allocates a word-aligned block of num bytes on the relative heap at heapseg and returns a pointer to that block. A maximum of 32,764 bytes may be allocated in one block. heapseg must be the segment address of a relative heap which was previously initialized using _rel_init. NULL is returned if num bytes cannot be allocated or if heapseg is invalid.
+<BR>
+<BR>WARNING! Only limited checking is performed to detect an invalid heapseg. If heapseg is invalid and NULL is not returned, system memory is left in an undefined state.
+<BR>
+<BR>WARNING! If num is zero, a valid pointer is returned even though the block has zero bytes of available space. Any attempt to write past the end of a block will corrupt the heap.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   ...
+	   mov es,heapseg/* ES = segment for rel heap */
+	   mov ax,heapsize/* AX = size of rel heap */
+	   rel_init ();
+	   mov ax,bufsize/* AX = size for block */
+	   rel_malloc ();	/* DI = offset of block */
+	    jc main_010/*   if error allocating block */
+	   ... 	 	/*   if successful */
+	main_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MARMALC.ASM		  <B>ASM equiv</B>	REL_MALLOC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_dos_malloc">_dos_malloc</A>, <A HREF="rmemanig.htm#_far_malloc">_far_malloc</A>, <A HREF="rmemanig.htm#_near_malloc">_near_malloc</A>, <A HREF="rmemanig.htm#_rel_calloc">_rel_calloc</A>, <A HREF="rmemanig.htm#_rel_init">_rel_init</A>, <A HREF="rmemanig.htm#_rel_max">_rel_max</A>, <A HREF="rmemanig.htm#_rel_realloc">_rel_realloc</A></DL>
+<H2><A NAME="_rel_max">_rel_max</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the size of the largest available block on a relative heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	int _rel_max(segaddr heapseg);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The size of the largest block that can be allocated from the relative heap at heapseg.
+<BR>
+<BR>	0 if the relative heap is full or if heapseg is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the number of bytes in the largest available block on the relative heap at heapseg. heapseg must be the segment address of a relative heap which was previously initialized using _rel_init. 0 is returned if no space is available or heapseg is invalid.
+<BR>
+<BR>WARNING! Only limited checking is performed to detect an invalid heapseg.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   segaddr heapseg;
+	   unsigned int heapsize, heapmax;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   heapmax = _rel_max (heapseg);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   ...
+	   mov es,heapseg/* ES = segment for rel heap */
+	   mov ax,heapsize/* AX = size of rel heap */
+	   rel_init ();	/* initialize in real heap */
+	   rel_max ();	/* AX = size of block */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MARMAX.ASM		  <B>ASM equiv</B>	REL_MAX
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanig.htm#_far_max">_far_max</A>, <A HREF="rmemanig.htm#_near_max">_near_max</A>, <A HREF="rmemanig.htm#_rel_avail">_rel_avail</A>, <A HREF="rmemanig.htm#_rel_init">_rel_init</A>
+<BR></DL>
+<H2><A NAME="_rel_realloc">_rel_realloc</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Alters the size of a relative heap memory block.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	void far *_rel_realloc(void far *block, int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the resized block if block was successfully resized.
+<BR>
+<BR>	NULL if block could not be resized.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function attempts to shrink or grow the relative heap block at block so that it becomes num bytes in size. If the block at block cannot be resized directly, a new block of the requested size is allocated and the contents of the first block are copied into the second block. block must be the address of a relative heap block which was previously allocated with _rel_malloc, _rel_calloc, or _rel_realloc on a heap that was initialized using _rel_init. A maximum of 32,764 bytes may be allocated in one block. A pointer to the resized block is returned if the function was successful. NULL is returned if num bytes cannot be allocated or if block is invalid.
+<BR>
+<BR>WARNING! Only limited checking is performed to detect if block is invalid. If block is invalid and NULL is not returned, system memory is left in an undefined state.
+<BR>WARNING! If num is zero, a valid block pointer is returned even though the block has zero bytes of available space. Any attempt to write past the end of a block will corrupt the heap.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *pointer1, far *pointer2;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize, newsize;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   pointer1 = _rel_malloc (heapseg, bufsize);
+	   if (pointer1 == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   pointer2 = _rel_realloc (pointer1, newsize);
+	   if (pointer2 == NULL)
+	   {
+	      /* handle the error */
+	      pointer2 = pointer1;
+	   }
+	   ...
+	   _rel_free (pointer2);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize, newsize;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();	/* initialize relative heap */
+	   mov ax,bufsize
+	   rel_malloc ();	/* DI = offset of block */
+	    jc label_020/* if error allocating memory */
+	   ...
+	   mov ax,newsize
+	   rel_realloc ();    /* DI = offset adjusted block */
+	    jc label_010/* if unable to expand block */
+	   ...
+	label_010:
+	   rel_free ();
+	    jnclabel_020/* if successful */
+	   ... 	 	/* if an error occurred */
+	label_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MARRALC.ASM		  <B>ASM equiv</B>	REL_REALLOC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanig.htm#_far_realloc">_far_realloc</A>, <A HREF="rmemanig.htm#_near_realloc">_near_realloc</A>, <A HREF="rmemanig.htm#_rel_calloc">_rel_calloc</A>, <A HREF="rmemanig.htm#_rel_init">_rel_init</A>, <A HREF="rmemanig.htm#_rel_malloc">_rel_malloc</A>, <A HREF="rmemanig.htm#_rel_max">_rel_max</A>
+<BR>
+<BR></BODY>
+<BR></HTML><BR>

@@ -1,0 +1,121 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: Memory Models</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Memory Models</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tMemmod.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tMemmod.htm#HEAD0001">What Is a Memory Model?
+</A><BR>
+<A HREF="tMemmod.htm#HEAD0002">Memory Model Characteristics
+</A><BR>
+<A HREF="tMemmod.htm#HEAD0003">Library Characteristics
+</A><BR>
+<A HREF="tMemmod.htm#HEAD0004">Choosing a Memory Model
+</A><BR>
+<A HREF="tMemmod.htm#HEAD0005">Memory Model Defines
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit consists of symbolic constants which may be used to control conditional compilation based on a selected memory model.
+
+<H2><A NAME="HEAD0001">What Is a Memory Model?
+</A></H2>
+
+A memory model is a segment naming and grouping convention which classifies and organizes program code and data. Six standard memory models are supported: TINY, SMALL, MEDIUM, COMPACT, LARGE, and HUGE. These models define segment naming and ordering schemes for programs with a single segment as well as programs with thousands of segments.
+
+<H2><A NAME="HEAD0002">Memory Model Characteristics
+</A></H2>
+
+The six standard memory models have the following characteristics:
+<DL COMPACT>
+<DT>TINY<DD>   All code and static data must fit in a single segment or group and is accessed relative to the beginning of that segment or group. Code and data space is limited to 64K. A program written using the TINY model must be converted to a .COM file.
+<DT>SMALL<DD>  All code must fit in a single segment or group and is accessed relative to the beginning of that segment or group. Code space is limited to 64K. Also, all data must fit in a single segment or group and is accessed relative to the beginning of that segment or group. Data space is limited to 64K.
+<DT>MEDIUM<DD> Code may be placed in multiple segments or groups and is referenced from the beginning of the segment or group in which it resides. There is no limitation on the number of code segments. Data must fit in a single segment or group and is accessed relative to the beginning of that segment or group. Data space is limited to 64K.
+<DT>COMPACT<DD>All code must fit in a single segment or group and is accessed relative to the beginning of that segment or group. Code space is limited to 64K. Data may be placed in multiple segments or groups and is referenced from the beginning of the segment or group in which it resides. There is no limitation on the number of data segments. Individual data structures are limited to a maximum size of 64K each and are accessed using offsets relative to the segment or group in which they reside.
+<DT>LARGE<DD>  Both code and static data may be placed in multiple segments or groups and is referenced from the beginning of the segment or group in which it resides. There is no limitation on the number of code or data segments. Individual data structures are limited to a maximum size of 64K each and are accessed using offsets relative to the segment or group in which they reside.
+<DT>HUGE<DD>   Both code and static data may be placed in multiple segments or groups and is referenced from the beginning of the segment or group in which it resides. There is no limitation on the number of code or data segments. Individual data structures can be larger than 64K and are accessed using normalized segment:offset pointers.
+</DL>
+Models which support only one code segment (TINY, SMALL, and COMPACT) are referred to as small code models. Models with multiple code segments (MEDIUM, LARGE, and HUGE) are large code models. Similarly, models which support only one data segment (TINY, SMALL, and MEDIUM) are small data models, while models which allow many data segments (COMPACT, LARGE, and HUGE) are large data models. These classifications (large code, small data, etc.) are referred to as the characteristics of the model. This terminology is used throughout the manual.
+
+<P>
+The characteristics (number of code and data segments) of the six standard memory models may be summarized as follows:
+<PRE>
+Model      Data     Code    Description
+
+TINY       Small    Small   One segment, code and data combined
+SMALL      Small    Small   One data segment, one code segment
+MEDIUM     Small    Large   One data segment, multiple code segments
+COMPACT    Large    Small   Multiple data segments, one code segment
+LARGE      Large    Large   Multiple code and data segments
+HUGE       Large    Large   Special case of LARGE (64K+ data structures)
+</PRE>
+The characteristics of each model are fixed and cannot be changed.
+
+<P>
+Note that the TINY model is a degenerate case of SMALL, since the code segment and the data segment are the same. Likewise, HUGE is a special case of the LARGE model which is used for LARGE model programs which deal with data structures greater than 64K in size. Spontaneous Assembly includes separate libraries for the TINY, SMALL, MEDIUM, COMPACT, and LARGE models. HUGE model programs may be created using the LARGE model library, but no direct support is provided for data structures greater than 64K in size. The TINY model is used to create .COM programs. All other models are used to create .EXE programs.
+
+<H2><A NAME="HEAD0003">Library Characteristics
+</A></H2>
+
+In the TINY or SMALL models, all Spontaneous Assembly library functions are accessed using near calls. The TINY and SMALL models produce the tightest, fastest code.
+
+<P>
+In the COMPACT model, Spontaneous Assembly library functions are also accessed using near calls. This slightly increases the size of functions which access internal data, but it allows these functions to support multiple data segments.
+
+<P>
+In the MEDIUM model, Spontaneous Assembly library functions are accessed using far calls. This makes the code slightly larger and slower.
+
+<P>
+In the LARGE model, the Spontaneous Assembly library functions are accessed using far calls. This model has the largest overall code size and slowest execution speed.
+
+<H2><A NAME="HEAD0004">Choosing a Memory Model
+</A></H2>
+
+The following general rules should simplify the process of choosing a memory model for a specific application:
+<OL>
+<LI>    TINY must be used if a .COM file is to be created.
+<LI>    SMALL is usually the best choice for small to medium sized applications.
+<LI>    MEDIUM is usually best for medium sized applications with more than 64K of code and less than 64K of data.
+<LI>    COMPACT is usually best for medium sized applications with more than 64K of data and less than 64K of code.
+<LI>    LARGE should be used for the largest and most complex applications.
+<LI>    If an application is likely to grow substantially in the future, model independent programming techniques should be considered. In this case, <A HREF="rexit.htm#start">start</A> with the smallest model the applicationcan currently support. As the program grows in size, the model may be changed and the application may be reassembled and relinked with little, if any modification.
+</OL>
+<H2><A NAME="HEAD0005">Memory Model Defines
+</A></H2>
+
+These numeric defines indicate the selected memory model and the characteristics of the selected memory model. They equal -1 if the indicated condition is true; otherwise, they equal 0. These defines are defined in SA_DEF.H (automatically included from most other header files) and are intended for use with conditional compilation.
+<DL COMPACT>
+<DT>__TINY__<DD>       Indicates whether or not the selected memory model is TINY.
+<DT>__SMALL__<DD>      Indicates whether or not the selected memory model is SMALL.
+<DT>__MEDIUM__<DD>     Indicates whether or not the selected memory model is MEDIUM.
+<DT>__COMPACT__<DD>    Indicates whether or not the selected memory model is COMPACT.
+<DT>__LARGE__<DD>      Indicates whether or not the selected memory model is LARGE.
+<DT>__HUGE__<DD>       Indicates whether or not the selected memory model is HUGE.
+<DT>__SMALL_CODE__<DD> Indicates whether or not the selected memory model is a small code model.
+<DT>__LARGE_CODE__<DD> Indicates whether or not the selected memory model is a large code model.
+<DT>__SMALL_DATA__<DD> Indicates whether or not the selected memory model is small data model.
+<DT>__LARGE_DATA__<DD> Indicates whether or not the selected memory model is a large data model.
+</DL>
+The following example demonstrates the use of memory model defines for conditional compilation:
+<PRE><CODE>
+#include <dosio.h>
+#include <inline.h>
+
+void _puts(char *str);
+{
+           ...
+#if __LARGE_DATA__
+           lds   si,str                   /* DS:SI -> str */
+#else
+           mov   si,str                   /* SI = offset of str */
+#endif
+           put_str();
+           ...
+}
+</CODE></PRE>
+</BOBY>
+</HTML>

@@ -1,0 +1,2251 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - File I/O Reference</TITLE>
+</HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>File I/O</H1>
+<P ALIGN=CENTER>Reference Section </P>
+<UL>
+<LI><A HREF="TOC.htm">Table of Contents</A>
+<LI><A HREF="index.htm">Function Index</A>
+<LI><A HREF="gindex.htm">Group Index
+</UL>
+<A HREF="rfileio.htm#_close_h">_close_h</A><BR>
+<A HREF="rfileio.htm#_create_h">_create_h</A><BR>
+<A HREF="rfileio.htm#_dup_h">_dup_h</A><BR>
+<A HREF="rfileio.htm#_dup2_h">_dup2_h</A><BR>
+<A HREF="rfileio.htm#_eof_h">_eof_h</A><BR>
+<A HREF="rfileio.htm#_flush_h">_flush_h</A><BR>
+<A HREF="rfileio.htm#_getfsize_h">_getfsize_h</A><BR>
+<A HREF="rfileio.htm#_getftime_h">_getftime_h</A><BR>
+<A HREF="rfileio.htm#_hget_chr">_hget_chr</A><BR>
+<A HREF="rfileio.htm#_hget_line">_hget_line</A><BR>
+<A HREF="rfileio.htm#_hget_str">_hget_str</A><BR>
+<A HREF="rfileio.htm#_hput_chr">_hput_chr</A><BR>
+<A HREF="rfileio.htm#_hput_str">_hput_str</A><BR>
+<A HREF="rfileio.htm#_isatty_h">_isatty_h</A><BR>
+<A HREF="rfileio.htm#_lseekb_h">_lseekb_h</A><BR>
+<A HREF="rfileio.htm#_lseekbof_h">_lseekbof_h</A><BR>
+<A HREF="rfileio.htm#_lseekc_h">_lseekc_h</A><BR>
+<A HREF="rfileio.htm#_lseeke_h">_lseeke_h</A><BR>
+<A HREF="rfileio.htm#_lseekeof_h">_lseekeof_h</A><BR>
+<A HREF="rfileio.htm#_openex_h">_openex_h</A><BR>
+<A HREF="rfileio.htm#_open_h">_open_h</A><BR>
+<A HREF="rfileio.htm#_read_h">_read_h</A><BR>
+<A HREF="rfileio.htm#_setfsize_h">_setfsize_h</A><BR>
+<A HREF="rfileio.htm#_setftime_h">_setftime_h</A><BR>
+<A HREF="rfileio.htm#_tell_h">_tell_h</A><BR>
+<A HREF="rfileio.htm#_write_h">_write_h</A><BR>
+<H2><A NAME="_close_h">_close_h</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Closes a file.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	int _close_h(int handle);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the file was successfully closed.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>	 e_code	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function closes the file associated with handle. This flushes all DOS buffers associated with the file. If the file was modified, the directory entry is updated to reflect the new size, date and time of modification. If a DOS error is encountered, -1 is returned.
+<BR>
+<BR>	e_code 	may be obtained using the _get_ecode 	function. Symbolic constants for e_code 	values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _create_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      ...
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   create_h ();	/* BX=file handle */
+	    jc main_010/* if an error occurred */
+	   ... 	 	/* if successful */
+	   close_h ();
+	    jc main_010/* if an error occurred */
+	   ... 	 	/* if successful */
+	   jmp short main_020
+
+	main_010:
+	   ... 	 	/* handle the error */
+	main_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIOCLOS.ASM		  <B>ASM equiv</B>	CLOSE_H
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfileio.htm#_create_h">_create_h</A>, <A HREF="rfileio.htm#_openex_h">_openex_h</A>, <A HREF="rfileio.htm#_open_h">_open_h</A>
+<BR></DL>
+<H2><A NAME="_create_h">_create_h</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Creates and opens a new file or truncates and opens an existing one.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	int _create_h(const char *namestr, int flags);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	Handle of the newly-created file if the file was created/truncated and opened successfully.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>	 e_code error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function creates and opens the file defined in namestr if it does not yet exist. If the file already exists and the O_EXCL flag is clear, the file is opened and truncated to zero length. If the file already exists and the O_EXCLflag is set, -1 is returned and a "file exists" error code (E_FEXISTS) is returned in the global variable  e_code. If the file is created, its DOS attributes match those specified by flags. If the file is successfully opened, it is opened with read/write access and compatibility mode sharing access. The associated file handle is returned.
+<BR>
+<BR>	The attribute/control flags are created by bitwise ORing together the following symbolic constants defined in FILECNTL.H (automatically included by FILEIO.H):
+<BR>
+<BR>	Attribute flags:
+<BR>
+<BR>	FA_NORM	  (0x0000) Ordinary
+<BR>	FA_RDONLY	  (0x0001) Read-only
+<BR>	FA_HIDDEN	  (0x0002) Hidden
+<BR>	FA_SYSTEM	  (0x0004) System
+<BR>	FA_ARCH	  (0x0020) Archive 
+<BR>
+<BR>	Control flags:
+<BR>
+<BR>	O_EXCL	  (0x0400) Return an error if file already exists
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _create_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      ...
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   create_h ();	/* BX=file handle */
+	    jc main_010/* if an error occurred */
+	   ... 	 	/* if successful */
+	   close_h ();
+	    jc main_010/* if an error occurred */
+	   ... 	 	/* if successful */
+	   jmp short main_020
+
+	main_010:
+	   ... 	 	/* Handle the error */
+	main_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIOCREA.ASM		  <B>ASM equiv</B>	CREATE_H
+<DL>
+<DT><B>See also</B>
+<DD><A HREF="rfileio.htm#_close_h">_close_h</A>, <A HREF="rfileio.htm#_open_h">_open_h</A>
+<BR></DL>
+<H2><A NAME="_dup_h">_dup_h</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Creates a second DOS handle for a file or device.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	int _dup_h(int handle);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The new file handle if the handle was successfully duplicated.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>	e_code  	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function creates a new DOS handle which is associated with the same file or device as handle. The newly-created handle is returned if the operation was successful. -1 is returned if a DOS error was encountered.
+<BR>
+<BR>	Once a file handle is duplicated, closing one of the handles will flush the file's DOS buffers to disk. The file will remain open and accessible via the other handle. See the File I/O technical notes for an example of the use of this function.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle1, handle2;
+	   char pathname[50];
+	   ...
+	   handle1 = _open_h (pathname, FA_NORM);
+	   if (handle1 == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      handle2 = _dup_h (handle1);
+	      ...
+	      _close_h (handle1);
+	      _close_h (handle2);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   create_h ();	/* BX=file handle */
+	    jc main_010/* if an error occurred */
+	   dup_h ();	/* AX=duplicated file handle */
+	    jc main_010/* if an error occurred */
+	   ...
+	   close_h ();
+	    jc main_010/* if an error occurred */
+	   mov bx,ax
+	   close_h ();
+	    jc main_010/* if an error occurred */
+	   jmp short main_020
+	main_010:
+	   ... 	 	/* Handle the error */
+	main_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIODUP.ASM		  <B>ASM equiv</B>	DUP_H
+
+<BR><H2><A NAME="_dup2_h">_dup2_h</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Redirects a DOS file handle to another file or device.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	int _dup2_h(int handle1, int handle2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if handle2 was successfully redirected to handle1.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>	 e_code	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function associates handle2 with the same file or device associated with handle1. If handle2 is already associated with an open file, that file is closed first. 0 is returned if the operation was successful. -1 is returned if a DOS error was encountered.
+<BR>
+<BR>	This function may be used to redirect STDOUT to another file or device by setting handle1 to STDOUT (0x01) and handle2 to the handle which is already associated with the destination file or device. See the File I/O technical notes for a detailed example.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _open_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      int extra_handle = _dup_h (STDOUT);
+	      if (_dup2_h (handle, STDOUT))
+	      {
+	         /* Handle the error */
+	      }
+	      ...
+	      if (_dup2_h (extra_handle, STDOUT))
+	      {
+	         /* Handle the error */
+	      }
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   create_h ();	/* BX=file handle */
+	    jc main_010/* if an error occurred */
+	   mov dx,bx	/* DX=file handle */
+	   mov bx,STDOUT/* BX=file handle for STDOUT*/
+	   dup_h ();	/* AX=new handle for STDOUT*/
+	    jc main_010/* if an error occurred */
+	   mov cx,ax	/* CX=new handle for STDOUT*/
+	   mov ax,bx	/* AX=file handle for STDOUT*/
+	   mov bx,dx	/* BX=file handle */
+	   dup2_h ();	/* redirect STDOUT to file */
+	    jc main_010/* if an error occurred */
+	   ...
+	   mov bx,cx	/* BX=new handle for STDOUT*/
+	   dup2_h ();	/* redirect STDOUT to console */
+	    jc main_010/* if an error occurred */
+	   close_h ();
+	    jc main_010/* if an error occurred */
+	   mov bx,ax	/* if an error occurred */
+	   close_h ();
+	    jncmain_020/* if an error occurred */
+	main_010:
+	   ... 	 	/* handle the error */
+	main_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIODUP2.ASM		  <B>ASM equiv</B>	DUP2_H
+
+<BR><H2><A NAME="_eof_h">_eof_h</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines if a file pointer is at end-of-file.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	int _eof_h (int handle);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if the file pointer is at end-of-file.
+<BR>
+<BR>	0 if the file pointer is not at end-of-file.
+<BR>
+<BR>	-1 if an error occurred.
+<BR>	e_code  	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function determines if the file pointer associated with handle is at end-of-file. The return value is 1 if the file pointer is at end-of-file. 0 is returned if the file pointer is not at end-of-file. -1 is returned if an error occurred.
+<BR>
+<BR>	The results are undefined if handle is not associated with a file.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _open_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      if (_eof_h (handle))
+	      {
+	         /* file pointer is at end of file */
+	      } else
+	      {
+	         /* file pointer is not at end of file */
+	      }
+	      ...
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   create_h ();	/* BX=file handle */
+	    jc main_020/* if an error occurred */
+	   eof_h ();
+	    jb main_020/* if an error occurred */
+	    ja main_010/* if not at end of file */
+	   ... 	 	/* file pointer at end of file */
+	main_010:
+	   ...
+	   close_h ();
+	    jc main_020/* if an error occurred */
+	   ...
+	   jmp short main_030
+
+	main_020:
+	   ... 	 	/* Handle the error */
+	main_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIOEOF.ASM		  <B>ASM equiv</B>	EOF_H
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfileio.htm#_lseekeof_h">_lseekeof_h</A>, <A HREF="rfileio.htm#_tell_h">_tell_h</A></DL>
+<H2><A NAME="_flush_h">_flush_h</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Flushes all DOS buffers associated with an open file.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	int _flush_h(int handle);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the file's DOS buffers where successfully flushed to disk.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>	 e_code error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function flushes to disk all DOS buffers which are associated with the file referenced by handle. If handle is associated with a character device, 0 is returned the function has no effect.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _open_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      /* Do some output to handle */
+	      _flush_h (handle);
+	      ...
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   create_h ();	/* BX=file handle */
+	    jc main_010/* if an error occurred */
+	   ...
+	   flush_h ();
+	    jc main_010/* if an error occurred */
+	   close_h ();
+	    jc main_010/* if an error occurred */
+	   jmp short main_020
+
+	main_010:
+	   ... 	 	/* Handle the error */
+	main_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIOFLSH.ASM		  <B>ASM equiv</B>	FLUSH_H
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfileio.htm#_close_h">_close_h</A>
+<BR></DL>
+<H2><A NAME="_getfsize_h">_getfsize_h</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets the current size of an open file.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	long int _getfsize_h(int handle);
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The size of the file, in bytes, if the function was successful.
+<BR>
+<BR>	-1 if an error occurred.
+<BR>	 e_code	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the size of the open file associated with handle. The size is reported in bytes.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _open_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      long int filesize = _getfsize_h (handle);
+	      ...
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   create_h ();
+	    jc main_010/* if an error occurred */
+	   ...
+	   getfsize_h ();
+	    jc main_010/* if an error occurred */
+	   close_h ();
+	    jc main_010/* if an error occurred */
+	   jmp short main_020
+
+	main_010:
+	   ... 	 	/* Handle the error */
+	main_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIOGFSZ.ASM		  <B>ASM equiv</B>	GETFSIZE_H
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_find_first">_find_first</A>, <A HREF="rfileio.htm#_setfsize_h">_setfsize_h</A>
+<BR></DL>
+<H2><A NAME="_getftime_h">_getftime_h</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets the date/time stamp of an open file.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	int _getftime_h(int handle, int *date, int *time);
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the date/time stamp was retrieved successfully.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>	date	date value
+<BR>	time	time value
+<BR>	 e_code	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the date/time stamp of the file associated with handle. The date and time values are returned in the following format:
+<BR>
+<BR>	Date value:
+<BR>
+<BR>	Bits 0-4Day (1-31)
+<BR>	Bits 5-8Month (1-12)
+<BR>	Bits 9-15Year (relative to 1980)
+<BR>
+<BR>	Time value:
+<BR>
+<BR>	Bits 0-42-second increments (0-29)
+<BR>	Bits 5-10Minutes (0-59)
+<BR>	Bits 11-15Hours (0-23)
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR>	This function returns date and time in compressed formats. Use _merge_date, _split_date, merge_time, and _split_time to convert these values to other formats.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _open_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      int time,date;
+	      if (_getftime_h (handle, &ampdate, &amptime))
+	      {
+	         /* handle the error */
+	      }
+	      ...
+	      if (_setftime_h (handle, date, time))
+	      {
+	         /* Handle the error */
+	      }
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   create_h ();	/* BX=file handle */
+	    jc main_010/* if an error occurred */
+	   ...
+	   getftime_h ();	/* DX;AX = date/time codes */
+	    jc main_010/* if an error occurred */
+	   ...
+	   setftime_h ();
+	    jc main_010/* if an error occurred */
+	   close_h ();
+	    jc main_010/* if an error occurred */
+	   jmp short main_020
+
+	main_010:
+	   ... 	 	/* Handle the error */
+	main_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIOGFTM.ASM		  <B>ASM equiv</B>	GETFTIME_H
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_find_first">_find_first</A>, <A HREF="rdatetim.htm#_split_date">_split_date</A>, <A HREF="rdatetim.htm#_split_time">_split_time</A>, <A HREF="rfileio.htm#_setftime_h">_setftime_h</A>
+<BR></DL>
+<H2><A NAME="_hget_chr">_hget_chr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets a character from a file or device.	 
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	int _hget_chr(int handle);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The ASCII character code if a character was read from the file.
+<BR>
+<BR>	-1 if an error other than EOF occurred.
+<BR>
+<BR>	-2 if the file pointer was already at EOF (end-of-file).
+<BR>	ecode   	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function reads a character from the file or device associated with handle. If handle is associated with a file, the file pointer must point to the character to be read when this function is called. If the character is successfully read, the character is returned and the file pointer is incremented on return. -2 is returned if the character could not be read because the file pointer is already at end-of-file. -1 is returned if a DOS error is encountered.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _open_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      int chr = _hget_chr (handle);
+	      if (chr &lt; 0)
+	      {
+	         /* handle the error */
+	      }
+	      ...
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   create_h ();	/* BX=file handle */
+	    jc hget_chr_010/* if an error occurred */
+	   ... 	 	/* if successful */
+	   write_h ();
+	    jc hget_chr_010/* if an error occurred */
+	   hget_chr ();	/* AL=character read */
+	    jnehget_chr_010/* if an error occurred */
+	   ...
+	   close_h ();
+	    jc hget_chr_010/* if an error occurred */
+	   jmp short hget_chr_020
+
+	hget_chr_010:
+	   ... 	 	/* Handle the error */
+	hget_chr_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIOGCHR.ASM		  <B>ASM equiv</B>	HGET_CHR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rconsole.htm#_cget_chr">_cget_chr</A>, <A HREF="rdosio.htm#_get_chr">_get_chr</A>, <A HREF="rfileio.htm#_hget_line">_hget_line</A>, <A HREF="rfileio.htm#_hget_str">_hget_str</A>
+<BR></DL>
+<H2><A NAME="_hget_line">_hget_line</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets a line from a file or device.	  
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	int _hget_line(int handle, char far *buffer, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The actual number of characters read if a line was read successfully.
+<BR>	bufferline read from the file, terminated with a NULL
+<BR>
+<BR>	0 if the file pointer was already at EOF (end-of-file).
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>	 e_code error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function gets characters from the file or device associated with handle until num characters have been read or until a LF character is read, whichever comes first. The characters are placed in buffer. The last character read into buffer is followed by a NULL character. The remainder of the buffer is undefined. The value returned is the actual number of bytes read, including the LF character (if any), and does not include the terminal NULL. If num is zero on input, 0 is returned and buffer contains a NULL string.
+<BR>
+<BR>	If handle is associated with a file, the file pointer must point to the first character to be read when this function is called. The file pointer returns pointing just past the last character read into buffer.
+<BR>
+<BR>	buffer should be at least one byte larger than num to allow space for the NULL character to be appended to the end of the string.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _open_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      char buffer[100];
+	      if (_hget_line (handle, buffer, 100))
+	      {
+	         /* Handle the error */
+	      }
+	      ...
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[100];
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   create_h ();
+	    jc hget_line_010/* if an error occurred */
+	   lea si,buffer
+	   mov cx,100
+	   hget_line ();
+	    jnehget_line_010/* if an error occurred */
+	   close_h ();
+	    jc hget_line_010/* if an error occurred */
+	   jmp short hget_line_020
+
+	hget_line_010:
+	   ... 	 	/* Handle the error */
+	hget_line_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIOGLIN.ASM		  <B>ASM equiv</B>	HGET_LINE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfileio.htm#_hget_chr">_hget_chr</A>, <A HREF="rfileio.htm#_hget_str">_hget_str</A>
+<BR></DL>
+<H2><A NAME="_hget_str">_hget_str</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets a string from a file or device.	  
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	int _hget_str(int handle, char far *buffer, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The actual number of characters read if a string was read successfully.
+<BR>	buffer	ASCIIZ string read from the file
+<BR>
+<BR>	0 if the file pointer was already at EOF (end-of-file).
+<BR>
+<BR>	-1 if an error occurred.
+<BR>	e_code  	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function reads characters from the file or device associated with handle until num characters have been read or until a LF, CR or CR/LF pair is read, whichever comes first. The characters are placed in buffer. A NULL character replaces the LF, CR or CR/LF pair, if one was read; otherwise, the last character read into buffer is followed by a NULL character. The rest of the buffer is undefined. On return, the value returned is the actual number of bytes read and does not include the terminal NULL. If num is zero on input, 0 is returned and buffer contains a NULL string.
+<BR>
+<BR>	If handle is associated with a file, the file pointer must point to the first character to be read when this function is called. The file pointer is advanced past the last character read into buffer.
+<BR>
+<BR>	buffer should be at least one byte larger than num to allow space for the NULL character to be appended to the end of the string. num must be less than 32k.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _open_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      char buffer[100];
+	      if (_hget_str (handle, buffer, 100))
+	      {
+	         /* Handle the error */
+	      }
+	      ...
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[100];
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   create_h ();	/* BX=file handle */
+	    jc hget_str_010/* if an error occurred */
+	   lea si,buffer
+	   mov cx,100
+	   hget_str ();
+	    jnehget_str_010/* if an error occurred */
+	   close_h ();
+	    jc hget_str_010/* if an error occurred */
+	   jmp short hget_str_020
+
+	hget_str_010:
+	   ... 	 	/* Handle the error */
+	hget_str_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIOGSTR.ASM		  <B>ASM equiv</B>	HGET_STR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rconsole.htm#_cget_s">_cget_s</A>, <A HREF="rdosio.htm#_get_str">_get_str</A>, <A HREF="rfileio.htm#_hget_chr">_hget_chr</A>, <A HREF="rfileio.htm#_hget_line">_hget_line</A>, <A HREF="rscript.htm#_hget_script">_hget_script</A>, <A HREF="rscript.htm#_vhget_script">_vhget_script</A>
+<BR></DL>
+<H2><A NAME="_hput_chr">_hput_chr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Writes a character to a file or device.	 
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	int _hput_chr(int handle, int chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the character was written successfully.
+<BR>
+<BR>	-1 if an error occurred.
+<BR>	 e_code error code
+<BR>
+<BR>	-2 if a disk full condition was detected.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function writes chr to the file or device associated with handle. If the function was successful, the file pointer is advanced past the written character and 0 is returned. If the disk is full, the write fails and -2 is returned. -1 is returned if any other error was encountered.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _open_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      if (_hput_chr (handle, 'a'))
+	      {
+	         /* Handle the error */
+	      }
+	      ...
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   create_h ();	/* BX=file handle */
+	    jc hput_chr_010/* if an error occurred */
+	   ...
+	   mov al,'A'
+	   hput_chr ();
+	    jnehput_chr_010/* if error writing char */
+	   close_h ();
+	    jc hput_chr_010/* if an error occurred */
+	   jmp short hput_chr_020
+
+	hput_chr_010:
+	   ... 	 	/* Handle the error */
+	hput_chr_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIOPCHR.ASM		  <B>ASM equiv</B>	HPUT_CHR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rconsole.htm#_cput_chr">_cput_chr</A>, <A HREF="rfileio.htm#_hget_chr">_hget_chr</A>, <A HREF="rfileio.htm#_hput_str">_hput_str</A>, <A HREF="rdosio.htm#_put_chr">_put_chr</A>
+<BR></DL>
+<H2><A NAME="_hput_str">_hput_str</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Writes a string to a file or device.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	int _hput_str(int handle, char *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The actual number of characters written if the string was written successfully.
+<BR>
+<BR>	-1 if an error was encountered.
+<BR>	 e_code	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function writes string to the file or device associated with handle. Each character of string up to but not including the terminating NULL character is copied to the file or device. If any characters from string are written, the file pointer is advanced past the last character written. If the string is written in its entirety, 0 is returned. If the string is only partially written, -2 is returned. If another error is encountered, -1 is returned.
+<BR>
+<BR>	If string is a NULL string, 0 is returned immediately (no write is performed since this would cause DOS to truncate the file at the current file pointer position). _setfsize_h should be used to establish file size if this is required.
+<BR>
+<BR>	A return value other than the length of string will occur if the disk is full, or if a Ctrl-Z is sent to a "cooked mode" character device (such as STDOUT) with additional characters following the Ctrl-Z character.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _open_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      char string[50];
+	      unsigned int num = _str_len (string);
+	      ...
+	      if (_hput_str (handle, string) != num)
+	      {
+	         /* Handle the error */
+	      }
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[100];
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   create_h ();	/* BX=file handle */
+	    jc hput_str_010/* if an error occurred */
+	   lea si,buffer
+	   hput_str ();
+	    jnehput_str_010/* if an error occurred */
+	   close_h ();
+	    jnchput_str_020/* if no error occurred */
+	hput_str_010:
+	   ... 	 	/* Handle the error */
+	hput_str_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIOPSTR.ASM		  <B>ASM equiv</B>	HPUT_STR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rconsole.htm#_cput_str">_cput_str</A>, <A HREF="rfileio.htm#_hput_chr">_hput_chr</A>, <A HREF="rscript.htm#_hput_script">_hput_script</A>, <A HREF="rdosio.htm#_put_str">_put_str</A>, <A HREF="rscript.htm#_vhput_script">_vhput_script</A>, <A HREF="rfileio.htm#_write_h">_write_h</A>
+<BR></DL>
+<H2><A NAME="_isatty_h">_isatty_h</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines if a handle is associated with a character device.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	int _isatty_h(int handle);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if handle is associated with a character device.
+<BR>
+<BR>	0 if handle is associated with a file.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>	e_code  	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function determines whether or not handle is associated with a character device. 0 is returned if handle is associated with a character device; 1 is returned if handle is associated with a file; -1 is returned if an error occurred.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _open_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      if (_isatty_h (handle))
+	      {
+	      } else
+	      {
+	      }
+	      ...
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   create_h ();	/* BX=file handle */
+	    jc main_020/* if an error occurred */
+	   ...
+	   isatty_h ();
+	    jc main_010/* if an error occurred */
+	 ja main_010/* if file is not a chr device */
+	...    	 /* file is a character device */
+	main_010:
+	...
+	close_h ();
+	 jc main_010/* if an error occurred */
+	jmp short main_030
+
+	main_020:
+	...    	 /* Handle the error */
+	main_030:
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIOISAT.ASM		  <B>ASM equiv</B>	ISATTY_H
+
+<BR><H2><A NAME="_lseekb_h">_lseekb_h</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Moves a file pointer to a new position (relative to the beginning of the file).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	long int _lseekb_h(int handle, long int offset);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The file pointer offset if the function was successful.
+<BR>
+<BR>	-1 if an error was encountered.
+<BR>	e_code  	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function moves the file pointer associated with handle to the absolute file offset specified by offset, which is specified in bytes. -1 is returned if an error occurs. The value of offset is returned otherwise.
+<BR>
+<BR>	The results are undefined if handle is not associated with a file.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _open_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      long int offset;
+	      ...
+	      _lseekb_h (handle, offset);
+	      ...
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   create_h ();	/* BX=file handle */
+	    jc main_010/* if an error occurred */
+	   ...
+	   write_h ();
+	    jc main_010/* if an error occurred */
+	   mov ax,100
+	   xor dx,dx
+	   lseekb_h ();
+	    jc main_010/* if an error occurred */
+	   ...
+	   close_h ();
+	    jc main_010/* if an error occurred */
+	   jmp short main_020
+
+	main_010:
+	   ... 	 	/* Handle the error */
+	main_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIOLSKB.ASM		  <B>ASM equiv</B>	LSEEKB_H
+
+<BR><H2><A NAME="_lseekbof_h">_lseekbof_h</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Moves a file pointer to the beginning of the file.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	int _lseekbof_h(int handle);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the file pointer was successfully moved.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>	e_code  	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function moves the file pointer associated with handle to the beginning of the file. 0 is returned if the operation was successful. -1 is returned if an error occurred.
+<BR>
+<BR>	The results are undefined if handle is not associated with a file.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _open_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      _lseekbof_h (handle);
+	      ...
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   create_h ();	/* BX=file handle */
+	    jc main_010/* if an error occurred */
+	   lseekbof_h ();
+	    jc main_010/* if an error occurred */
+	   close_h ();
+	    jc main_010/* if an error occurred */
+	   jmp short main_020
+
+	main_010:
+	   ... 	 	/* Handle the error */
+	main_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIOLSBF.ASM		  <B>ASM equiv</B>	LSEEKBOF_H
+
+<BR><H2><A NAME="_lseekc_h">_lseekc_h</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Moves a file pointer to a new position (relative to the current file position).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	long int _lseekc_h(int handle, long int offset);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The new file pointer position if the file pointer was successfully moved.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>	 e_code error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function moves the file pointer associated with handle to a new position offset bytes from the current file position. The final file pointer position is returned if the operation was successful. -1 is returned if an error occurred.
+<BR>
+<BR>	Because of the way DOS controls file handles, this function allows the file pointer to be moved either prior to the beginning of the file or beyond the end of the file without generating an error. However, an error may occur on a subsequent read/write if the pointer is positioned before the beginning of the file. If the pointer is positioned beyond the end of the file, a write will attempt to grow the file to that length or a read will generate an error. _set_fsize should be used to expand the size of a file; simply moving the file pointer beyond the end of the file has no affect on the file size.
+<BR>
+<BR>	The results are undefined if handle is not associated with a file.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _open_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      long int offset;
+	      ...
+	      _lseekc_h (handle, offset);
+	      ...
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   create_h ();	/* BX=file handle */
+	    jc main_010/* if an error occurred */
+	   ...
+	   write_h ();
+	    jc main_010/* if an error occurred */
+	   mov ax,100
+	   xor dx,dx
+	   lseekc_h ();
+	    jc main_010/* if an error occurred */
+	   close_h ();
+	    jc main_010/* if an error occurred */
+	   ...
+	   jmp short main_020
+
+	main_010:
+	   ... 	 	/* Handle the error */
+	main_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIOLSKC.ASM		  <B>ASM equiv</B>	LSEEKC_H
+
+<BR><H2><A NAME="_lseeke_h">_lseeke_h</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Moves a file pointer to a new position (relative to end-of-file).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	long int _lseeke_h(int handle, long int offset);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The new file pointer position if the file pointer was successfully moved.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>	 e_code error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function moves the file pointer associated with handle to a new position offset bytes from end-of-file. The final file pointer position is returned if the function was successful. -1 is returned if an error occurred.
+<BR>
+<BR>	Because of the way DOS controls file handles, this function allows the file pointer to be moved either prior to the beginning of the file or beyond the end of the file without generating an error. However, an error may occur on a subsequent read/write if the pointer is positioned before the beginning of the file. If the pointer is positioned beyond the end of the file, a write will attempt to grow the file to that length or a read will generate an error. _set_fsize should be used to expand the size of a file; simply moving the file pointer beyond the end of the file has no affect on the file size.
+<BR>
+<BR>	The results are undefined if handle is not associated with a file.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _open_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      long int offset;
+	      ...
+	      _lseeke_h (handle, offset);
+	      ...
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   create_h ();	/* BX=file handle */
+	    jc main_010/* if an error occurred */
+	   ...
+	   mov ax,100
+	   xor dx,dx
+	   lseeke_h ();
+	    jc main_010/* if an error occurred */
+	   close_h ();
+	    jc main_010/* if an error occurred */
+	   jmp short main_020
+
+	main_010:
+	   ... 	 	/* Handle the error */
+	main_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIOLSKE.ASM		  <B>ASM equiv</B>	LSEEKE_H
+
+<BR><H2><A NAME="_lseekeof_h">_lseekeof_h</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Moves a file pointer to end-of-file.	  
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	int _lseekeof_h(int handle);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the file pointer was successfully moved.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>	 e_code error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function moves the file pointer associated with handle to end-of-file. 0 is returned if the function is successful. -1 is returned if an error occurred. The results are undefined if handle is not associated with a file.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR>	If the new file pointer location is required, _tell_h or _lseeke_h with an offset of zero may be used.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _open_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      _lseekeof_h (handle);
+	      ...
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   create_h ();	/* BX=file handle */
+	    jc main_010/* if an error occurred */
+	   lseekeof_h ();
+	    jc main_010/* if an error occurred */
+	 ...
+	    close_h ();
+	     jc main_010/* if an error occurred */
+	    jmp short main_020
+
+	main_010:
+	    ... 	  	 /* Handle the error */
+	main_020:
+	    ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIOLSEF.ASM		  <B>ASM equiv</B>	LSEEKEOF_H
+
+<BR><H2><A NAME="_openex_h">_openex_h</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Opens an existing file.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	int _openex_h(const char *namestr, int flags);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The new DOS file handle if the file was successfully opened.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>	 e_code error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function opens the file referred to by namestr. The file access mode depends on flags. The associated file handle is returned if the file was successfully opened. -1 is returned if an error occurred.
+<BR>
+<BR>	The file access mode is specified in flags by bitwise ORing together constants from the following list (defined in FILECNTL.H and automatically included from FILEIO.H):
+<BR>
+<BR>	Access mode flags:
+<BR>
+<BR>	O_RDONLY 	   (0x0000) Read only
+<BR>	O_WRONLY 	   (0x0001) Write only
+<BR>	O_RDWR	    (0x0002) Read/write
+<BR>
+<BR>	Sharing mode flags (DOS 3.0 or above-ignored if DOS 2.x):
+<BR>
+<BR>	O_DENYRW 	   (0x0010) No sharing allowed
+<BR>	O_DENYWR 	   (0x0020) Read sharing only
+<BR>	O_DENYRD 	   (0x0030) Write sharing only
+<BR>	O_DENYNO 	   (0x0040) Read/write sharing
+<BR>
+<BR>	Inheritance flag (DOS 3.0 or above-ignored if DOS 2.x):
+<BR>
+<BR>	O_NOINHERIT(0x0080) No inheritance allowed
+<BR>
+<BR>	For example, O_RDONLY+O_NOINHERIT would open a file for read-only access with no inheritance allowed. A maximum of one flag from each of the access mode and sharing mode lists may be used.
+<BR>
+<BR>WARNING! Before using this function, _osmajor must be properly initialized or the share/inherit flags will be ignored. When using Spontaneous Assembly For C/C++, this variable is supplied and initialized by the compiler instead of the Spontaneous Assembly library.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _openex_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      ...
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   openex_h ();	/* BX=file handle */
+	    jc main_010/* if an error occurred */
+	   ...
+	   close_h ();
+	    jncmain_020/* if no error occurred */
+	main_010:
+	   ... 	 	/* Handle the error */
+	main_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIOOPNE.ASM		  <B>ASM equiv</B>	OPENEX_H
+
+<BR><DL>
+<DT><B>See also</B>
+<DD>close_h, <A HREF="rfileio.htm#_open_h">_open_h</A>
+<BR></DL>
+<H2><A NAME="_open_h">_open_h</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Opens a file, optionally creating or truncating it as required.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	int _open_h(const char *namestr, int flags);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The new DOS file handle if the file was successfully opened.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>	 e_code error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function opens, opens and truncates, or creates the file referred to by namestr. The type of open performed depends on flags and whether or not the file already exists. The associated file handle is returned if the file is successfully opened. -1 is returned if an error occurred.
+<BR>
+<BR>	The open flags are specified in flags by bitwise ORing together constants from the following list (defined in FILECNTL.H and automatically included from FILEIO.H):
+<BR>
+<BR>	Access mode flags:
+<BR>
+<BR>	O_RDONLY 	   (0x0000)Read only
+<BR>	O_WRONLY 	   (0x0001)Write only
+<BR>	O_RDWR	    (0x0002)Read/write
+<BR>
+<BR>	Sharing mode flags (DOS 3.0 or above-ignored if DOS 2.x):
+<BR>
+<BR>	O_DENYRW 	   (0x0010)No sharing allowed
+<BR>	O_DENYWR 	   (0x0020)Read sharing only
+<BR>	O_DENYRD 	   (0x0030)Write sharing only
+<BR>	O_DENYNO 	   (0x0040)Read/write sharing
+<BR>	Inheritance flag (DOS 3.0 or above-ignored if DOS 2.x):
+<BR>
+<BR>	O_NOINHERIT(0x0080)No inheritance allowed
+<BR>
+<BR>	Control flags:
+<BR>
+<BR>	O_CREAT	(0x0100)Create if file does not exist
+<BR>	O_TRUNC	(0x0200)Truncate to zero length on open if file exists
+<BR>	O_EXCL	(0x0400)Give error if O_CREAT and file exists
+<BR>
+<BR>	For example, O_RDONLY|O_CREAT would open a file for read-only access, creating the file if it does not already exist. A maximum of one flag from each of the access mode and sharing mode lists may be used.
+<BR>
+<BR>	The control flags determine which actions are performed when the file is opened. The following table describes the exact outcome of the open operation for all combinations of control flags:
+<BR>
+<BR>	  Control flag combination	    	    Action taken if file:
+<BR>
+<BR>	O_CREATO_TRUNCO_EXCL  Exists  	    	 Does Not Exist
+<BR>
+<BR>	Clear	  Clear  	 Any	    	 OPEN   	    ERROR (-1)
+<BR>	Clear	  Set  	 Any	    	 OPEN+TRUNCATEERROR (-1)
+<BR>	Set	  Clear  	 Clear    	 OPEN   	    CREATE+OPEN
+<BR>	Set	  Set  	 Clear    	 OPEN+TRUNCATECREATE+OPEN
+<BR>	Set	  Any  	 Set	    	 ERROR (-1)	  CREATE+OPEN
+<BR>
+<BR>	("Any" indicates that the state of that control flag makes no difference.)
+<BR>
+<BR>	Because _open_h checks to see if the file exists prior to opening it, this function cannot be used to open devices (e.g., STDIN, PRN, COM1). Use _openex_h instead.
+<BR>
+<BR>WARNING! Before using this function, _osmajor must be properly initialized or the Share/Inherit flags will be ignored. When using Spontaneous Assembly For C/C++, this variable is supplied and initialized by the compiler instead of the Spontaneous Assembly library.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _open_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      ...
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   open_h ();	/* BX=file handle */
+	    jc open_010/* if an error occurred */
+	   ...
+	   close_h ();
+	    jncopen_010/* if no error occurred */
+	open_010:
+	   ... 	 	/* Handle the error */
+	open_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIOOPEN.ASM		  <B>ASM equiv</B>	OPEN_H
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfileio.htm#_close_h">_close_h</A>, <A HREF="rfileio.htm#_create_h">_create_h</A>, <A HREF="rfileio.htm#_openex_h">_openex_h</A>
+<BR></DL>
+<H2><A NAME="_read_h">_read_h</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Reads a specified number of bytes from a file into a buffer.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	int _read_h(int handle, void far *buffer, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The actual number of bytes read if the read was successful.
+<BR>	buffer	data from file associated with handle
+<BR>
+<BR>	0 if the file pointer was already at end-of-file.
+<BR>
+<BR>	-1 if an error occurred.
+<BR>	e_code  	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function reads num bytes into buffer from the file or device associated with handle. If the specified number of characters are read, the file pointer is advanced just past the last character read and the number of characters read is returned. 0 is returned if no characters can be read because the file pointer is already at end-of-file. -1 is returned if an error is encountered.
+<BR>
+<BR>	If num is zero, 0 is returned immediately-no read is performed. If num is 65535, it is impossible to distinguish an error return since -1 and 65535 are indistinguishable.
+<BR>
+<BR>	If handle is associated with a "cooked mode" character device (such as STDIN), the read will terminate at the first occurrence of a CR character or after num characters have been read, whichever comes first.
+<BR>
+<BR>	If a positive integer less than num is returned, then end-of-file was encountered during the read or a CR character was read from a "cooked-mode" character device.  e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _open_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      char buffer[50];
+	      int num;
+	      if (_read_h (handle, buffer, num))
+	      {
+	         /* Handle the error */
+	      } else
+	      {
+	         ...
+	      }
+	      ...
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[100];
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   create_h ();	/* BX=file handle */
+	    jc main_010/* if an error occurred */
+	   lea si,buffer
+	   mov cx,100
+	   read_h ();
+	    jnemain_010/* if an error occurred */
+	   close_h ();
+	    jncmain_020/* if no error occurred */
+	main_010:
+	   ... 	 	/* display error message */
+	main_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIOREAD.ASM		  <B>ASM equiv</B>	READ_H
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfileio.htm#_hget_line">_hget_line</A>, <A HREF="rfileio.htm#_hget_str">_hget_str</A>
+<BR></DL>
+<H2><A NAME="_setfsize_h">_setfsize_h</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets the size of a file to a specified size.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	int _setfsize_h(int handle, long int newsize);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the file size was extended to newsize.
+<BR>
+<BR>	-1 if a DOS error occurred.
+<BR>	e_code  	error code
+<BR>
+<BR>	-2 if the file size could not be extended to newsize (disk full).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sets the size of the file associated with handle to newsize by either extending or truncating the file. If newsize is less than the actual file size, the file is truncated and any data beyond the new end-of-file is lost. If newsize is greater than the actual file size, the file is extended. In either case, the file pointer is left at the new end-of-file and 0 is returned. -2 is returned if an attempt to extend the file fails (but no error is returned by DOS). -1 is returned if a DOS error is encountered.
+<BR>
+<BR>	A return value of -2 is usually caused by an attempt to grow the file beyond the current capacity of the disk. In this case, the new file size may be obtained by using _getfsize_h.
+<BR>
+<BR>	The size of a file may be set to the current file pointer position by specifying the return value from _tell_h as newsize.
+<BR>
+<BR>	If the file is extended, the contents of the extended portion of the file are technically undefined. In practice, however, DOS merely allocates additional disk space to the file with whatever information already happens to reside in those sectors. This method can be used to examine or reclaim deleted information from disks.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _open_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      long int filesize;
+	      ...
+	      _setfsize_h (handle, filesize);
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "file.dat";
+	...
+	lea si,pathname
+	mov ax,FA_NORM/* AX=file attributes */
+	create_h ();
+	 jc main_010/* if an error occurred */
+	...
+	mov ax,100
+	xor dx,dx
+	setfsize_h ();
+	 jc main_010/* if an error occurred */
+	close_h ();
+	 jc main_010/* if an error occurred */
+	jmp short main_020
+
+	main_010:
+	...    	 /* Handle the error */
+	main_020:
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIOSFSZ.ASM		  <B>ASM equiv</B>	SETFSIZE_H
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfileio.htm#_getfsize_h">_getfsize_h</A>
+<BR></DL>
+<H2><A NAME="_setftime_h">_setftime_h</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets the date/time stamp of an open file.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	int _setftime_h(int handle, int date, int time);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if time and date were successfully set.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>	 e_code error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sets the date/time stamp of the file associated with handle. 0 is returned if the function was successful. -1 is returned if an error occurred. The date and time values are specified using the following format:
+<BR>
+<BR>	Date code (date):
+<BR>
+<BR>	Bits 0-4	 Day (1-31)
+<BR>	Bits 5-8	 Month (1-12)
+<BR>	Bits 9-15	 Year (relative to 1980)
+<BR>
+<BR>	Time code (time):
+<BR>
+<BR>	Bits 0-4	 2-second increments (0-29)
+<BR>	Bits 5-10	 Minutes (0-59)
+<BR>	Bits 11-15Hours (0-23)
+<BR>
+<BR>	The date/time stamp established using _setftime_h takes effect immediately for calls using file handles, (i.e., _getftime_h) but it may not take effect on disk (i.e., _find_first) until the file is closed.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR>	This function accepts date and time in compressed formats. Use _merge_date, _split_date, merge_time, and _split_time for conversion.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _open_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      int time,date;
+	      if (_getftime_h (handle, &ampdate, &amptime))
+	      {
+	         /* handle the error */
+	      }
+	      ...
+	      if (_setftime_h (handle, date, time))
+	      {
+	         /* Handle the error */
+	      }
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   create_h ();	/* BX=file handle */
+	    jc main_010/* if an error occurred */
+	   ...
+	   getftime_h ();	/* DX:AX = date/time codes */
+	    jc main_010/* if an error occurred */
+	   ...
+	   setftime_h ();
+	    jc main_010/* if an error occurred */
+	   close_h ();
+	    jc main_010/* if an error occurred */
+	   jmp short main_020
+
+	main_010:
+	   ... 	 	/* Handle the error */
+	main_020:
+	   ...
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_FIOSFTM.ASM		  <B>ASM equiv</B>	SETFTIME_H
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfileio.htm#_getftime_h">_getftime_h</A>
+<BR></DL>
+<H2><A NAME="_tell_h">_tell_h</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns a file pointer position for an open file.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	long int _tell_h(int handle);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The current file pointer position if the function was successful.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>	 e_code error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the current position of the file pointer associated with handle. -1 is returned if an error is encountered. The results are undefined if handle is not associated with a file.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _open_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      long int filepos = _tell_h (handle);
+	      ...
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   create_h ();	/* BX=file handle */
+	    jc main_010/* if an error occurred */
+	   ...
+	   tell_h ();
+	    jc main_010/* if an error occurred */
+	   ...
+	   close_h ();
+	    jncmain_020/* if an error occurred */
+	main_010:
+	   ... 	 	/* Handle the error */
+	main_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIOTELL.ASM		  <B>ASM equiv</B>	TELL_H
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfileio.htm#_eof_h">_eof_h</A>
+<BR></DL>
+<H2><A NAME="_write_h">_write_h</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Writes a specified number of bytes to a file or device from a buffer.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;fileio.h&gt
+<BR>	int _write_h(int handle, const void far *buffer, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The number of bytes written to handle if the write was successful.
+<BR>
+<BR>	-1 if an error occurred.
+<BR>	e_code  	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function writes num bytes from buffer to the file or device associated with handle. If any characters from buffer are written, the file pointer is advanced past the last character written. If all num characters were written, num is returned. If only some characters were successfully written, the number of bytes actually written is returned.-1 is returned if an error occurred during the write.
+<BR>
+<BR>	If num is 65535, it is accepted as valid input. However, -1 (65535) is returned on success, making it impossible to distinguish between success and error.
+<BR>
+<BR>	If num is zero, zero is returned immediately-no write is performed since it would cause DOS to truncate the file at the current file pointer position. _setfsize_h should be used to establish file size if this is required.
+<BR>
+<BR>	If a disk full condition is detected, the actual number of bytes written to the file is returned.
+<BR>
+<BR>	Because fewer than num bytes may be written to handle without causing an error, the programmer should compare the return value with num to ensure that all bytes were written. A positive return value other than num is returned if the disk is full or if a Ctrl-Z is sent to a "cooked mode" character device (such as STDOUT) with additional characters following the Ctrl-Z character.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int handle;
+	   char pathname[50];
+	   ...
+	   handle = _open_h (pathname, FA_NORM);
+	   if (handle == -1)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      char buffer[100];
+	      unsigned int num;
+	      ...
+	      if (_write_h (handle, buffer, num) != num)
+	      {
+	         /* Handle the error */
+	      } else
+	      {
+	         ...
+	      }
+	      ...
+	      _close_h (handle);
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[100];
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   mov ax,FA_NORM/* AX=file attributes */
+	   create_h ();	/* BX=file handle */
+	    jc main_010/* if an error occurred */
+	   lea si,buffer
+	   mov cx,100
+	   write_h ();
+	    jc main_010/* if an error occurred */
+	   close_h ();
+	    jc main_010/* if an error occurred */
+	   jmp short main_020
+
+	main_010:
+	   ... 	 	/* Handle the error */
+	main_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FIOWRIT.ASM		  <B>ASM equiv</B>	WRITE_H
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfileio.htm#_hput_str">_hput_str</A>
+<BR>
+<BR></BODY>
+<BR></HTML><BR>

@@ -1,0 +1,2132 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Program and Environment Control Reference</TITLE>
+</HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Program and Environment Control</H1>
+<P ALIGN=CENTER>Reference Section </P>
+<UL>
+<LI><A HREF="TOC.htm">Table of Contents</A>
+<LI><A HREF="index.htm">Function Index</A>
+<LI><A HREF="gindex.htm">Group Index
+</UL>
+<A HREF="rpgmctrl.htm#_arg_count">_arg_count</A><BR>
+<A HREF="rpgmctrl.htm#_arg_next">_arg_next</A><BR>
+<A HREF="rpgmctrl.htm#_arg_nth">_arg_nth</A><BR>
+<A HREF="rpgmctrl.htm#_arg_progname">_arg_progname</A><BR>
+<A HREF="rpgmctrl.htm#_arg_reset">_arg_reset</A><BR>
+<A HREF="rpgmctrl.htm#cmdln_next">cmdln_next</A><BR>
+<A HREF="rpgmctrl.htm#cmdln_start">cmdln_start</A><BR>
+<A HREF="rpgmctrl.htm#_copy_envblk">_copy_envblk</A><BR>
+<A HREF="rpgmctrl.htm#_create_envblk">_create_envblk</A><BR>
+<A HREF="rpgmctrl.htm#_environ_len">_environ_len</A><BR>
+<A HREF="rpgmctrl.htm#_environ_size">_environ_size</A><BR>
+<A HREF="rpgmctrl.htm#_exec_prog">_exec_prog</A><BR>
+<A HREF="rpgmctrl.htm#_exec_proge">_exec_proge</A><BR>
+<A HREF="rpgmctrl.htm#_exec_sys">_exec_sys</A><BR>
+<A HREF="rpgmctrl.htm#_exec_syse">_exec_syse</A><BR>
+<A HREF="rpgmctrl.htm#_exit_to_dos">_exit_to_dos</A><BR>
+<A HREF="rpgmctrl.htm#_get_curenvseg">_get_curenvseg</A><BR>
+<A HREF="rpgmctrl.htm#_get_dosenvseg">_get_dosenvseg</A><BR>
+<A HREF="rpgmctrl.htm#_get_env">_get_env</A><BR>
+<A HREF="rpgmctrl.htm#_get_envseg">_get_envseg</A><BR>
+<A HREF="rpgmctrl.htm#_get_parenvseg">_get_parenvseg</A><BR>
+<A HREF="rpgmctrl.htm#_get_psp">_get_psp</A><BR>
+<A HREF="rpgmctrl.htm#_get_rootenvseg">_get_rootenvseg</A><BR>
+<A HREF="rpgmctrl.htm#_reset_argtbls">_reset_argtbls</A><BR>
+<A HREF="rpgmctrl.htm#_reset_cmdln">_reset_cmdln</A><BR>
+<A HREF="rpgmctrl.htm#_set_argtbls">_set_argtbls</A><BR>
+<A HREF="rpgmctrl.htm#_set_cmdln">_set_cmdln</A><BR>
+<A HREF="rpgmctrl.htm#_set_env">_set_env</A><BR>
+<H2><A NAME="_arg_count">_arg_count</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the number of command line arguments.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	int _arg_count(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	Number of command line arguments.
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the number of arguments on the command line. 0 is returned only if the command line contains no arguments.
+<BR>
+<BR>	Arguments are parsed at the current command line address using the syntax defined by the currently installed parsing tables. The address of the command line is maintained in cmdln_start and cmdln_next. It may be set directly or by calling _set_cmdln or _reset_cmdln. Parsing tables may be specified by calling _set_argtbls or _reset_argtbls.
+<BR>
+<BR>WARNING! This function uses the _psp global variable in all models except TINY. When using Spontaneous Assembly for C/C++, this variable is supplied and initialized by the compiler instead of the Spontaneous Assembly library.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char argbuf[20];
+	   char args;
+	   _put_str("Number of command line args: "); 
+	   args = _arg_count();
+	   _put_str(_ui_to_dec(args, argbuf));
+	   _put_newline();
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char str[] = "Number of command line args: ";
+	   char argbuf[20];
+	   ...
+	   lea si,str	/* SI = offset of str */
+	   put_str();	/* display str */
+	   arg_count();	/* CX = number of cmdln args */
+	   lea si,argbuf/* SI = offset of buffer */
+	   mov ax,cx	/* AX = number of arguments */
+	   ui_to_dec();	/* int -&gt "string" */
+	   put_str();	/* display number of args */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_PCARCNT.ASM		  <B>ASM equiv</B>	ARG_COUNT
+
+<BR><H2><A NAME="_arg_next">_arg_next</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the next command line argument.	 
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	char *_arg_next(char *buffer, char *chr)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to buffer.
+<BR>	buffer	next command line argument
+<BR>	chr	terminating character
+<BR>
+<BR>	NULL if no more arguments exist.
+<BR>	chr	undefined
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function locates the next command line argument and copies it into buffer in ASCIIZ format. In addition, the most significant terminating character following the argument is returned in chr. The first command line argument is returned if no arguments were previously returned by _arg_next or _arg_nth; otherwise, the argument is returned which follows the last argument returned by _arg_next or _arg_nth. NULL is returned if no arguments remain on the command line.
+<BR>
+<BR>	Arguments are parsed at the current command line address using the syntax defined by the currently installed parsing tables. The address of the command line is maintained in cmdln_start and cmdln_next. It may be set directly or by calling _set_cmdln or _reset_cmdln. Parsing tables may be specified by calling _set_argtbls or _reset_argtbls.
+<BR>
+<BR>WARNING! This function uses the _PSP global variable in all models except TINY. When using Spontaneous Assembly for C/C++, this variable is supplied and initialized by the compiler instead of the Spontaneous Assembly library.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char *argptr;
+	   char chr, argbuf[20];
+	   ...
+	   if ((argptr = (char *)_arg_next(argbuf, &ampchr)) != NULL)
+	      _put_str(argptr);
+	   else
+	      _put_str("No arguments encountered.\n\r");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char *str = "No arguments encountered.\n\r";
+	   char argbuf[20];/* assume cmdln arg is char * type */
+	   ...
+	   lea si,argbuf/* SI = offset argbuf */
+	   arg_next();	/* is there another argument */
+	    jc label_100/*   n: display message */
+	   put_chr();	/* put terminating character */
+	   put_newline();
+	   jmp short label_200
+	label_100:
+	   mov si,str 	    /* SI = offset of str */
+	label_200:
+	   put_str();	/* display str or arg */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_PCARNXT.ASM		  <B>ASM equiv</B>	ARG_NEXT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_arg_count">_arg_count</A>, <A HREF="rpgmctrl.htm#_arg_nth">_arg_nth</A>, <A HREF="rpgmctrl.htm#_arg_reset">_arg_reset</A>, <A HREF="rpgmctrl.htm#_set_argtbls">_set_argtbls</A>, <A HREF="rpgmctrl.htm#_set_cmdln">_set_cmdln</A>
+<BR></DL>
+<H2><A NAME="_arg_nth">_arg_nth</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns a specified command line argument.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	char *_arg_nth(char *buffer, int n, char *chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to buffer.
+<BR>	buffer nth command line argument
+<BR>	chr	terminating character
+<BR>
+<BR>	NULL if no nth argument exists.
+<BR>	chr	undefined
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function locates the nth command line argument and copies it into buffer in ASCIIZ format. In addition, the most significant terminating character following the argument is returned in chr. NULL is returned if no arguments remain on the command line. The first argument is argument 1.
+<BR>
+<BR>	Arguments are parsed at the current command line address using the syntax defined by the currently installed parsing tables. The address of the command line is maintained in cmdln_start and cmdln_next. It may be set directly or by calling _set_cmdln or _reset_cmdln. Parsing tables may be specified by calling _set_argtbls or _reset_argtbls.
+<BR>
+<BR>	This function does not support an argument number of zero (unlike the C convention). The name of the executing program may be obtained by calling _arg_progname.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char argbuf[80], chr;
+	   char *cmdarg;
+	   if ((cmdarg = (char *)_arg_nth(argbuf, 2, &ampchr)) == NULL)
+	      _put_str("\n\r2nd argument not found.");
+	   else
+	   {
+	      _put_str("\n\rSecond argument: ");
+	      _put_str(cmdarg);
+	      _put_str("\n\rTerminating character: ");
+	      _put_chr(chr);
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char *str;
+	   char argbuf[20];	/* assume char * type arguments */
+	   ...
+	   lea si,argbuf/* SI = offset argbuf */
+	   mov al,2	/* AL = argument to find */
+	   arg_nth();	/* does argument exist? */
+	    jc label_100/*   n: display message */
+	   put_chr();	/* put terminating character */
+	   put_newline();
+	   jmp short label_200
+	label_100:
+	   str = "No arguments encountered.\n\r";
+	   mov si,str	/* SI = offset of str */
+	label_200:
+	   put_str();	/* display str or arg */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_PCARNTH.ASM		  <B>ASM equiv</B>	ARG_NTH
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_arg_next">_arg_next</A>
+<BR></DL>
+<H2><A NAME="_arg_progname">_arg_progname</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the name and path of the executing program.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	char *_arg_progname(char *buffer);
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to buffer.
+<BR>	bufferprogram pathname string
+<BR>
+<BR>	NULL if the program name does not exist.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the name and path of the executing program in buffer. The returned pathname includes a drive specifier, full path, program filename, and a terminal NULL. This information is retrieved from the end of the inherited environment and is usually available under versions of DOS starting with DOS 3.0. If the pathname information is not available for any reason, a NULL is returned and a NULL string is placed in buffer.
+<BR>
+<BR>	The version variables _osmajor and _osminor must be properly initialized prior to calling this function. When using Spontaneous Assembly for C/C++, these variables are supplied and initialized by the compiler instead of the Spontaneous Assembly library.
+<BR>
+<BR>WARNING! This function uses the _PSP global variable in all models except TINY. When using Spontaneous Assembly for C/C++, this variable is supplied and initialized by the compiler instead of the Spontaneous Assembly library.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char argbuf[80], *argptr;
+	   _put_str("Program name: ");
+	   if((argptr = _arg_progname(argbuf)) != NULL)
+	      _put_str(argptr);
+	   else
+	      _put_str("Unable to find program name!\n\r");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char argbuf[80], *str;
+	   ...
+	   str = "Program name: ";	  	 
+	   mov si,str	/* SI = offset of str */
+	   put_str();	/* display str message */
+	   lea si,argbuf/* SI = offset of argbuf */
+	   arg_progname();    /* is there a program name? */
+	    jnclabel_200/*   y: go display */
+	label_100:	 	/*   n: display error msg */
+	   str = "Unable to find program name! \n\r";
+	   mov si,str	/* SI = offset of str */
+	label_200:
+	   put_str();	/* display msg or prog name */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_PCARPRG.ASM		  <B>ASM equiv</B>	ARG_PROGNAME
+
+<BR><H2><A NAME="_arg_reset">_arg_reset</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Resets the current command line argument pointer.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	void _arg_reset(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	No return value.
+<BR>	cmdln_start	a pointer to the beginning of the current command line
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function resets the current command line argument pointer to the beginning of the command line. This causes the next call to _arg_next to return the first command line argument.
+<BR>
+<BR>	The starting address of the command line is maintained in cmdln_start. It may be set directly or by calling _set_cmdln or _reset_cmdln.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char *argptr;
+	   char chr, argbuf[20];
+	 
+	   if ((argptr = _arg_next(argbuf, &ampchr)) != NULL)
+	      _put_str(argptr);/* display argument */
+	   else	 	/*   (assume char *) */
+	      _arg_reset();/* reset argument pntr to 
+	                 beginning of command line */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char argbuf[20];
+	   ...
+	   lea si,argbuf/* SI = offset argbuf */
+	   arg_next();	/* is there another argument */
+	    jc label_100/*   n: reset arg pointer */
+	   put_str();	/*   y: display argument */
+	   put_chr();	/* put terminating character */
+	   jmp short label_200
+	label_100:
+	   arg_reset();	/*   n: reset arg pointer */
+	label_200:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	PCARRST.ASM		  <B>ASM equiv</B>	ARG_RESET
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_arg_next">_arg_next</A>, <A HREF="rpgmctrl.htm#_reset_cmdln">_reset_cmdln</A>, <A HREF="rpgmctrl.htm#_set_cmdln">_set_cmdln</A>
+<BR></DL>
+<H2><A NAME="cmdln_next">cmdln_next</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Variable) Indicates the offset of the next command line argument.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	extern char *cmdln_next;
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This char pointer variable contains the offset of the first byte past the last command line argument which was returned using _arg_next or _arg_nth. The offset is an offset within the command line segment specified by cmdln_start. If no arguments have been returned from the command line, this variable contains the offset of the start of the command line. This variable is initialized to 0x81.
+<BR>
+<BR>	This variable may be modified by calling _set_cmdln or _reset_cmdln. It may also be modified directly.
+<BR>
+<BR></DL>
+<B>Source file</B>	PCCMDLN.ASM
+<B>ASM equiv</B>â
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_arg_next">_arg_next</A>, <A HREF="rpgmctrl.htm#cmdln_start">cmdln_start</A>
+<BR></DL>
+<H2><A NAME="cmdln_start">cmdln_start</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Variable) Indicates the starting address of the command line.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	extern char far *cmdln_start;
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This char far pointer contains the starting address of the command line buffer. This is the buffer from which command line arguments are extracted using _arg_next and _arg_nth or counted using _arg_count. The high order word contains the segment address, and the low order word contains the offset. If the high order word is -1, then the segment address of the command line is assumed to be the segment address of the PSP. This variable is initialized to 0xFFFF:0081, which causes the _arg_... functions to parse the program command line at offset 0x81 within the psp.
+<BR>
+<BR>	This variable may be modified by calling _set_cmdln or _reset_cmdln. It may also be modified directly. If this variable is modified directly, the cmdln_next variable must be updated at the same time.
+<BR>
+<BR></DL>
+<B>Source file</B>	PCCMDLN.ASM
+<B>ASM equiv</B>â
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_arg_next">_arg_next</A>, <A HREF="rpgmctrl.htm#cmdln_next">cmdln_next</A>
+<BR></DL>
+<H2><A NAME="_copy_envblk">_copy_envblk</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Makes a copy of an environment block.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	segaddr _copy_envblk(segaddr env, segaddr buffer, unsigned int size);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	Segment address of copied environment string.
+<BR>	buffer	the copied environment
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function makes a copy of the environment block at env. The copy is placed in buffer and has approximately size-16 bytes of total environment space. The segment address of the copied environment string is returned.
+<BR>
+<BR>	The copied environment in buffer includes a simulated DOS Memory Control Block just below the environment information. This allows any of the Program Control unit environment functions to manipulate the copied environment using the segment address returned by this function. The copied environment may also be modified and passed to a child program via _exec_proge or _exec_syse.
+<BR>
+<BR>WARNING! buffer must always be at least two paragraphs larger than the environment block being copied, or data following buffer will be overwritten. The size of the original environment block may be determined using the _environ_size function.
+<BR>
+<BR>WARNING! The results are undefined if env is invalid.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   unsigned env_size;
+	   segaddr env_seg, new_seg;
+
+	   env_seg = _get_envseg(_get_psp()); /* env_seg=programs seg */
+	   env_size = _environ_size(env_seg); /* find size of env_seg */
+	   if(allocmem(((env_size+100)/16), &ampnew_seg) != -1)
+	      _put_str("Error allocating memory to copy environment!");
+	   new_seg = _copy_envblk(env_seg,new_seg,env_size+100);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char msg[] = "Error allocating memory to copy environment!";
+	   segaddr env_seg, new_seg;
+	   unsigned env_size;
+	   ...
+	   get_psp();	/* get program's seg prefix */
+	   get_envseg();	/* get programs environment */
+	   mov env_seg,dx/* save prog's segment */
+	   environ_size();    /* find environment size */
+	   mov env_size,cx/* save env's size */
+	   if (allocmem(((env_size+100)/16), &ampnew_seg) != -1)
+	       {
+	   	  lea  si,msg/* SI = offset of str */
+	   	  put_str();/* display error msg */
+	       }
+	   else
+	       {
+	   	  mov dx,env_seg  /* DX = seg of env to copy */
+	   	  mov es,new_seg  /* ES = seg to copy to */
+	   	  mov cx,env_size /* CX = size of env to copy */
+	   	  copy_envblk();
+	   	  mov new_seg,dx  /* save seg of environment */
+	       }
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_PCCPYEN.ASM		  <B>ASM equiv</B>	COPY_ENVBLK
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_create_envblk">_create_envblk</A>, <A HREF="rpgmctrl.htm#_environ_size">_environ_size</A>
+<BR></DL>
+<H2><A NAME="_create_envblk">_create_envblk</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Creates an empty environment block.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	segaddr _create_envblk(segaddr buffer, unsigned int size);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	Segment address of the new empty environment string in buffer.
+<BR>	buffer	the empty environment block
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function creates an empty environment block in buffer and returns the segment address of the environment. This empty environment block has approximately size-16 bytes of total environment space available to it.
+<BR>
+<BR>	The empty environment created in buffer includes a simulated DOS Memory Control Block just below the environment information. This allows any of the Program Control unit environment functions to manipulate the created environmentusing the returned segment address. This environment may also be modified and passed to a child program via _exec_proge or _exec_syse.
+<BR>
+<BR>WARNING! This function uses the _psp global variable in all models except TINY. When using Spontaneous Assembly for C/C++, this variable is supplied and initialized by the compiler instead of the Spontaneous Assembly library.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	void *fcpy_env;
+	segaddr new_seg;
+
+	   _put_str("Creating environment block... (malloc)");
+	   if ((fcpy_env = (char *)malloc(31000 + 50)) == NULL)
+	      _put_str("Error allocating enough memory\
+	   	  to \"create\" an environment");
+	   else
+	   {
+	      new_seg = _ptr_to_seg(fcpy_env);
+	      new_seg = _create_envblk(new_seg,31000);
+	   /* new_seg = segment address of created envblk */
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char str[] = "\n\rCreating env block... (dos_malloc)"; 
+	   segaddr new_seg;
+	   ...
+	   lea si,str	/* SI = offset of str */
+	   put_str();
+	   mov ax,0x7940/* 31040 bytes */
+	   dos_malloc();	/* allocate DOS memory */
+	    jnc label_010
+	   exit(1);	/* error allocating DOS space */
+	label_010:
+	   mov es,dx	/* ES = segment of DOS block */
+	   mov cx,31000
+	   create_envblk();/* create env block */
+	   mov new_seg,dx/* save segment of new envblk */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_PCCRTEN.ASM		  <B>ASM equiv</B>	CREATE_ENVBLK
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_copy_envblk">_copy_envblk</A>
+<BR></DL>
+<H2><A NAME="_environ_len">_environ_len</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the length of an environment string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	int _environ_len(segaddr env);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The length of the entire environment string at env, in bytes.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the length of the entire environment string at env. The environment string is made up of NULL terminated variable strings, the last of which is followed by an additional NULL character. The returned length includes the double NULL termination characters but does not include the environment tail.
+<BR>
+<BR>WARNING! The results are undefined if env is invalid.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   unsigned env_len;
+	   char outstr[80];
+	   ...
+	   env_seg = _get_envseg(_get_psp());/* get programs env seg */
+	   env_len = _environ_len(env_seg);/* get env's length */
+	   _put_str(_ui_to_dec(env_len, outstr));
+	   	  	 	/* display length in bytes */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char outstr[80];
+	   ...
+	   get_psp();	/* get PSP */
+	   get_envseg();	/* get segment of program */
+	   environ_len();	/* get env length */
+	   mov ax,cx	/* AX = length in bytes */
+	   lea si,outstr /* SI = offset of outstr */
+	   ui_to_dec();	/* convert unsigned to "string" */
+	   put_str();	/* display length in bytes */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_PCENVLN.ASM		  <B>ASM equiv</B>	ENVIRON_LEN
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_environ_size">_environ_size</A>
+<BR></DL>
+<H2><A NAME="_environ_size">_environ_size</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the size of an environment block.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	int _environ_size(segaddr env);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The size of the environment block at env, in bytes.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the total number of bytes allocated to the environment block at env, including the environment string, environment tail, and available environment space.
+<BR>
+<BR>WARNING! The results are undefined if env is invalid.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   unsigned env_size;
+	   char outstr[80];
+	   segaddr = env_seg;
+	   ...
+	   env_seg = _get_envseg(_get_psp()); /* get program's envseg */
+	   env_size = _environ_size(env_seg); /* get env's size */
+	   _put_str(_ui_to_dec(env_size, outstr)); /* display env size */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char outstr[80];
+	   ...
+	   get_psp();	/* get PSP */
+	   get_envseg();	/* get segment of program */
+	   environ_size();    /* get env size */
+	   mov ax,cx	/* AX = size in bytes */
+	   lea si,outstr/* SI = offset of outstr */
+	   ui_to_dec();	/* size -&gt "string" */
+	   put_str();	/* display size in bytes */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_PCENVSZ.ASM		  <B>ASM equiv</B>	ENVIRON_SIZE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_environ_len">_environ_len</A>
+<BR></DL>
+<H2><A NAME="_exec_prog">_exec_prog</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Executes a program.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	int _exec_prog(char *pathname, char *cmdline);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The child program's program termination code and ERRORLEVEL if the child program was successfully executed (the high byte contains the termination code; the low byte contains the ERRORLEVEL).
+<BR>
+<BR>	-1 if an error occurred.
+<BR>	 e_code	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function executes the program specified in pathname using the command line arguments in cmdline. An exact copy of the current program environment is passed to the child program. When the executed program terminates, the child program's ERRORLEVEL is returned in the low byte and the termination code is returned in the high byte of the return value. If the specified child program cannot be executed, -1 is returned and  e_code contains the error code.
+<BR>
+<BR>	pathname must contain the path and name of the file to be executed. The filename must include either an .EXE or .COM extension. A partial or full path may be included, but only the specified directory is searched for the file. If no directory or disk drive is specified, the current working directory on the active drive is the only directory searched.
+<BR>
+<BR>	cmdline must contain any command line arguments which are to be passed to pathname. The length of cmdline is limited to 127 bytes including the terminating NULL.
+<BR>
+<BR>	The following symbolic constants (defined in PROGCTL.H) identify the termination codes which may be returned in the high byte of the return value after the child program has been successfully executed:
+<BR>
+<BR>	TERM_NORMAL(0x0000) Normal termination
+<BR>	TERM_CBREAK(0x0100) Ctrl-break termination
+<BR>	TERM_CRITICAL(0x0200) Critical device error
+<BR>	TERM_TSR 	   (0x0300) TSR termination (DOS function 0x31)
+<BR>
+<BR>	_exec_sys may be used to execute a program anywhere in the current path without specifying a .EXE or .COM extension for the name of the program.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR>WARNING! This function requires approximately 250 bytes of stack space.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char progname[82];
+	   char cmdln[82];
+	   unsigned termcode;
+	   _put_str("Program name? ");
+	   _get_str(progname,80);
+	   _put_str("Command line? ");
+	   _get_str(cmdln,80);
+	   if(termcode = _exec_prog(progname, 0) == -1)
+	      _put_str("ERROR  .xxx (extension missing)\n\r"); 
+	   termcode &amp= 0xFF00;	/* strip level code */
+	   switch(termcode)
+	   {
+	      case TERM_NORMAL: _put_str("Normal termination\n\r");
+	         break;
+	      case TERM_CBREAK: _put_str("Ctrl-break termination\n\r");
+	         break;
+	      case TERM_CRITICAL:_put_str("Critical device error\n\r");
+	         break;
+	      case TERM_TSR: _put_str("TSR termination...\n\r"); break;
+	      default: _put_str("Invalid term code.\n\r"); break;
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char progname[] = "PROGNAME.EXE";/* program to execute */
+	   char cmdln[] = {0};/* no cmdln options */
+	   char *str;
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS (progname on stack) */
+	   lea di,progname/* DS:SI -&gt program name */
+	   lea si,cmdln/* ES:DI -&gt command line */
+	   exec_prog();
+	    jc label_060/* go handle error condition */
+	   cmp al,-1	/* missing extension? */
+	    jnelabel_010/*   n: find/display term code */
+	   str = "\n\rERROR: missing extension";
+	   mov si,str	/* DS:SI -&gt str */
+	   jmp short label_050
+	label_010:
+	   cmp ah,TERM_NORMAL/* Normal termination? */
+	    jnelabel_020/*  n: try next */  
+	     str = "\n\rNORMAL termination\n\r";
+	   mov si,str	/* DS:SI -&gt str */
+	   jmp short label_050	  
+	label_020:
+	   cmp ah,TERM_CBREAK/* Control Break termination? */
+	    jnelabel_030/*   n: try next */
+	   str = "\n\rCONTROL BREAK termination\n\r";
+	   mov si,str	/* DS:SI -&gt str */
+	   jmp short label_050/* continue */
+	label_030:
+	   cmp ah,TERM_CRITICAL /* CRITICAL termination? */
+	    jnelabel_040/*   n: try next */
+	   str = "\n\rCRITICAL termination\n\r";
+	   mov si,str	/* DS:SI -&gt str */
+	   jmp short label_050
+	label_040:
+	   cmp ah,TERM_TSR/* TSR termination? */
+	    jnelabel_060/*   n: continue */
+	   str = "\n\rTSR termination\n\r";
+	   mov si,str	/* DS:SI -&gt str */
+	label_050:
+	   put_str();	/* display termination result */
+	label_060:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_PCEXPRG.ASM		  <B>ASM equiv</B>	EXEC_PROG
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_exec_prog">_exec_prog</A>, <A HREF="rpgmctrl.htm#_exec_sys">_exec_sys</A>
+<BR></DL>
+<H2><A NAME="_exec_proge">_exec_proge</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Executes a program using a specified environment.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	int _exec_proge(char *pathname, char *cmdline, segaddr env);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The child program's program termination code and ERRORLEVEL if the child program was successfully executed (the high byte contains the termination code; the low byte contains the ERRORLEVEL).
+<BR>
+<BR>	-1 if an error occurred.
+<BR>	 e_code	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function executes the program specified in pathname using the command line arguments in cmdline. An exact copy of the environment at env is passed to the child program. When the executed program terminates, the child program's ERRORLEVEL is returned in the low byte and the termination code is returned in the high byte of the return value. If the specified child program cannot be executed, -1 is returned and  e_code contains the error code.
+<BR>
+<BR>	pathname must contain the path and name of the file to be executed. The filename must include either an .EXE or .COM extension. A partial or full path may be included, but only the specified directory is searched for the file. If no directory or disk drive is specified, the current working directory on the active drive is the only directory searched.
+<BR>
+<BR>	cmdline must contain any command line arguments which are to be passed to pathname. The length of cmdline is limited to 127 bytes including the terminating NULL.
+<BR>
+<BR>	The environment at env must consist of ASCIIZ variable strings of the form:
+<BR>
+<BR>	"variable=value"
+<BR>
+<BR>	where variable is the name of the environment variable (i.e., "PATH"), and value is the value of that variable (i.e., "C:\;C:\DOS;"). The entire environment must be double NULL terminated (i.e., a final NULL is required in addition to the terminating NULL of the final variable string) as in this example: 
+<BR>
+<BR>	   char envstr[]="COMSPEC=D:\\COMMAND.COM\0PATH=D:;C:\\DOS;C:\\UTIL;\n\0TEST=2\0";
+<BR>	   char env[256];
+<BR>	   char far *envptr;
+<BR>	   segaddr envseg;
+<BR>	   ...
+<BR>	   envseg = _ptr_to_seg(env);	  	   /* paragraph align env buffer */
+<BR>	   envptr = (void far *)((long)envseg&lt;&lt16);/* create far pointer */
+<BR>	   _fmem_cpy(envptr, envstr, sizeof(envstr));/* copy envstr to env buffer */
+<BR>	   exec_proge("prog.exe", env);	  	   /* exec prog with custom env */
+<BR>	   ...
+<BR>
+<BR>	A NULL environment may be specified by placing two NULLs at env.
+<BR>
+<BR>	The following symbolic constants (defined in PROGCTL.H) identify the termination codes which may be returned in the high byte of the return value after the child program has been successfully executed:
+<BR>
+<BR>	TERM_NORMAL(0x0000) Normal termination
+<BR>	TERM_CBREAK(0x0100) Ctrl-break termination
+<BR>	TERM_CRITICAL(0x0200) Critical device error
+<BR>	TERM_TSR    (0x0300) TSR termination (DOS function 0x31)
+<BR>
+<BR>	_exec_syse may be used to execute a program anywhere in a specified path without specifying a .EXE or .COM extension for the name of the program.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR>WARNING! This function requires approximately 250 bytes of stack space.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char progname[82];
+	   char cmdln[82];
+	   int termcode;
+	   _put_str("Program name? ");
+	   _get_str(progname,80);
+	   _put_str("Command line? ");
+	   _get_str(cmdln,80);
+	   if(termcode = _exec_proge(progname,0,_get_rootenvseg())==-1);
+	      _put_str("ERROR  .xxx (extension missing)\n\r"); 
+	   termcode &amp= 0xFF00;    /* strip level code */
+	   switch(termcode)
+	   {
+	      case TERM_NORMAL: _put_str("Normal termination\n\r");
+	         break;
+	      case TERM_CBREAK: _put_str("Ctrl-break termination\n\r");
+	         break;
+	      case TERM_CRITICAL:_put_str("Critical device error\n\r");
+	         break;
+	      case TERM_TSR: _put_str("TSR termination...\n\r"); break;
+	      default: _put_str("Invalid term code.\n\r"); break;
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char progname[] = "PROGNAME.EXE";/* program to execute */
+	   char cmdln[] = {0};/* no cmdln options */
+	   char *str;
+	   ...
+	   get_rootenvseg();/* DX = root env segment */
+	   pushss
+	   pop es	 	/* ES=SS (segment of progname) */
+	   lea di,progname/* DI = offset of program name */
+	   lea si,cmdln/* SI = offset of cmdln */
+	   exec_proge();	/* exec prog w/ specific env */
+	    jc label_060/* go handle error condition */
+	   cmp al,-1	/* missing extension? */
+	    jnelabel_010/*   n: find/display term code */
+	   str = "\n\rERROR: missing extension";
+	   mov si,str	/* DS:SI -&gt str */
+	   jmp label_050
+	label_010:
+	   cmp ah,TERM_NORMAL/* Normal termination? */
+	    jnelabel_020/*  n: try next */  
+	   str = "\n\rNORMAL termination";
+	   mov si,str	/* SI = offset of str */
+	   jmp short label_050
+	label_020:
+	   cmp ah,TERM_CBREAK/* Control Break termination? */
+	    jnelabel_030/*   n: try next */
+	   str = "\n\rCONTROL BREAK termination";
+	   mov si,str	/* DS:SI -&gt str */
+	   jmp short label_050/* continue */
+	label_030:
+	   cmp ah,TERM_CRITICAL /* CRITICAL termination? */
+	    jnelabel_040/*   n: try next */
+	   str = "\n\rCRITICAL termination";
+	   mov si,str	/* DS:SI -&gt str */
+	   jmp short label_050
+	label_040:
+	   cmp ah,TERM_TSR/* TSR termination? */
+	    jnelabel_060/*   n: continue */
+	   str = "\n\rTSR termination";
+	label_050:
+	   put_str();	/* display termination message */
+	label_060:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_PCEXPGE.ASM		  <B>ASM equiv</B>	EXEC_PROGE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_exec_prog">_exec_prog</A>, <A HREF="rpgmctrl.htm#_exec_sys">_exec_sys</A>
+<BR></DL>
+<H2><A NAME="_exec_sys">_exec_sys</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Executes a DOS command, batch file, or program.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	int _exec_sys(char *cmdstr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the program was successfully executed.
+<BR>
+<BR>	-1 if an error occurred.
+<BR>	 e_code	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function executes the DOS command, batch file, or program specified in cmdstr. This is done by passing cmdstr to the command processor specified by the COMSPEC environment variable (usually COMMAND.COM). An exact copy of the current program environment is passed to the command processor.
+<BR>
+<BR>	cmdstr MUST consist of "/c " followed by the DOS command or program name and any command line arguments. The DOS command or program name and command line arguments should appear exactly as they would if they were typed in at the DOS command prompt. The length of cmdstr is limited to 127 bytes including the terminating NULL.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR>WARNING! This function requires approximately 270 bytes of stack space.
+<BR>
+<BR>WARNING! This function uses the _psp global variable in all models except TINY. When using Spontaneous Assembly for C/C++, this variable is supplied and initialized by the compiler instead of the Spontaneous Assembly Library.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   if(_exec_sys("/c command.com") == -1)
+	   /* remember to use "/c" */
+	      _put_str("An error occurred.");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char cmdstr[] = "/c command.com";
+	   ...
+	   lea si,cmdstr
+	   exec_sys();
+	    jnce_sys_100
+	   ... handle error return ...
+	e_sys_100:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_PCEXSYS.ASM		  <B>ASM equiv</B>	EXEC_SYS
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_exec_prog">_exec_prog</A>, <A HREF="rpgmctrl.htm#_exec_sys">_exec_sys</A>, <A HREF="rexit.htm#_exit">_exit</A>
+<BR></DL>
+<H2><A NAME="_exec_syse">_exec_syse</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Executes a DOS command, batch file, or program using a specified environment.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	int _exec_syse(char *cmdstr, segaddr env);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the program was successfully executed.
+<BR>
+<BR>	-1 if an error occurred.
+<BR>	 e_code error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function executes the DOS command, batch file, or program specified in cmdstr. This is done by passing cmdstr to the command processor specified by the COMSPEC environment variable (usually COMMAND.COM). An exact copy of the environment at env is passed to the command processor.
+<BR>
+<BR>	cmdstr MUST consist of "/c " followed by the DOS command or program name and any command line arguments. The DOS command or program name and command line arguments should appear exactly as they would if they were typed in at the DOS command prompt. The length of cmdstr is limited to 127 bytes including the terminating NULL.
+<BR>
+<BR>	The environment at env must consist of ASCIIZ variable strings of the form:
+<BR>
+<BR>	"variable=value"
+<BR>
+<BR>	where variable is the name of the environment variable (i.e., "PATH"), and value is the value of that variable (i.e., "C:\;C:\DOS;"). The entire environment must be double NULL terminated (i.e., a final NULL is required in addition to the terminating NULL of the final variable string) as in the following example:
+<BR>
+<BR>	   char envstr[]="PATH=D:;C:\\DOS;C:\\UTIL;\0";
+<BR>	   char env[256];
+<BR>	   char far *envptr;
+<BR>	   segaddr envseg;
+<BR>	   ...
+<BR>	   envseg = _ptr_to_seg(env);	 	 /* paragraph align env buffer */
+<BR>	   envptr = (void far *)((long)envseg&lt;&lt16);/* create far pointer */
+<BR>	   _fmem_cpy(envptr, envstr, sizeof(envstr));/* copy envstr to env buffer */
+<BR>	   exec_syse("/c dir", env);/* exec "cmdstr" with custom env */
+<BR>	   ...
+<BR>
+<BR>	A NULL environment may be specified by placing two NULLs at env.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR>WARNING! This function requires approximately 270 bytes of stack space.
+<BR>
+<BR>WARNING! This function uses the _psp global variable in all models except TINY. When using Spontaneous Assembly for C/C++, this variable is supplied and initialized by the compiler instead of the Spontaneous Assembly library.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   if(_exec_syse("/c command.com", _get_rootenvseg()) == -1)
+	      /* remember to use "/c ..." */
+	      _put_str("An error occurred.");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char cmdstr[] = "/c command.com";
+	   ...
+	   get_rootenvseg();/* DX = env segment to use */
+	   lea si,cmdstr/* DS:SI -&gt command string */
+	   exec_syse();	/* execute DOS command */
+	    jnce_syse_100/* if error quit */
+	   ... handle an error return ...
+	e_syse_100:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_PCEXSYE.ASM		  <B>ASM equiv</B>	EXEC_SYSE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_exec_prog">_exec_prog</A>, <A HREF="rpgmctrl.htm#_exec_sys">_exec_sys</A>, <A HREF="rexit.htm#_exit">_exit</A>
+<BR></DL>
+<H2><A NAME="_exit_to_dos">_exit_to_dos</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Temporarily passes control to the DOS command processor.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	int _exit_to_dos(segaddr env);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the DOS command processor was successfully executed.
+<BR>
+<BR>	-1 if an error occurred.
+<BR>	 e_code error code.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function temporarily suspends program execution and passes control to the command processor specified by the COMSPEC environment variable (usually COMMAND.COM). An exact copy of the environment at env is passed to the command processor, or if env is zero, an exact copy of the current program environment is used. The command processor displays the command line prompt and waits for input.
+<BR>
+<BR>	Control returns to the current program when "EXIT" is typed at the DOS prompt.
+<BR>
+<BR>	The environment at env must consist of ASCIIZ variable strings of the form:
+<BR>
+<BR>	"variable=value"
+<BR>
+<BR>	where variable is the name of the environment variable (i.e., "PATH"), and value is the value of that variable (i.e., "C:\;C:\DOS;"). The entire environment must be double NULL terminated (i.e., a final NULL is required in addition to the terminating NULL of the final variable string) as in the following example:
+<BR>
+<BR>	char envstr[]="PATH=D:;C:\\DOS;C:\\UTIL;\0"\
+<BR>		   " PROMPT=Type \"EXIT\" to Return to Program $g\0";
+<BR>	char env[256];
+<BR>	char far *envptr;
+<BR>	segaddr envseg;
+<BR>	   ...
+<BR>	   envseg = _ptr_to_seg(env);		/* paragraph align env buffer */
+<BR>	   envptr = (void far *)((long)envseg&lt;&lt16);/* create far pointer */
+<BR>	   _fmem_cpy(envptr, envstr, sizeof(envstr));/* copy envstr to env buffer */
+<BR>	   _exit_to_dos(env);			/* exit to DOS w/custom prompt */
+<BR>	   ...
+<BR>
+<BR>	A NULL environment may be specified by placing two NULLs at env.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR>WARNING! This function requires approximately 270 bytes of stack space.
+<BR>
+<BR>WARNING! This function uses the _psp global variable in all models except TINY. When using Spontaneous Assembly for C/C++, this variable is supplied and initialized by the compiler instead of the Spontaneous Assembly library.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   segaddr envseg;
+	   _put_str("\n\rEnter \"EXIT\" to return");
+	   envseg = _get_envseg(_get_psp());/* use envseg for exit */
+	   if(_exit_to_dos(envseg) == -1)
+	      _put_str("Function was unsuccessful.");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char *str;
+	   ...
+	   str = "\n\rEnter \"EXIT\" to return to program";
+	   mov si,str	/* SI = offset of str */
+	   put_str();	
+	   get_psp();	/* get program segment prefix */
+	   get_envseg();	/* get program's environment */
+	   exit_to_dos();	/* shell to dos */
+	    jnce_to_dos/* if error, display next msg */
+	   str = "Function was unsuccessful.";
+	   mov si,str
+	   put_str();
+	e_to_dos:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_PCXTDOS.ASM		  <B>ASM equiv</B>	EXIT_TO_DOS
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_exec_sys">_exec_sys</A>, <A HREF="rpgmctrl.htm#_exec_sys">_exec_sys</A>
+<BR></DL>
+<H2><A NAME="_get_curenvseg">_get_curenvseg</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the segment address of the current program's inherited environment.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	segaddr _get_curenvseg(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The segment address of current inherited environment.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the segment address of the current program's inherited environment. This environment may be manipulated by passing the returned segment address to any of the Spontaneous Assembly environment functions.
+<BR>
+<BR>WARNING! This function uses the _psp global variable in all models except TINY. When using Spontaneous Assembly For C/C++, this variable is supplied and initialized by the compiler instead of the Spontaneous Assembly library.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char far *varname;
+	   _put_str("\n\rCurenvseg: \n\r");/* display msg */
+	   varname = _get_env("PATH",_get_curenvseg());
+	   if(varname == NULL)
+	      _put_str("Current env \"PATH\" varname not found.");
+	   else
+	      _fput_str(varname);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char *str;
+	   char varname[] = "PATH";
+	   ...
+	   str = "\n\rCurenvseg: \n\r";
+	   mov si,str	/* SI = offset of str */
+	   put_str();	/* display msg */
+	   get_curenvseg();/* get current env seg */
+	   lea si,varname/* SI = offset of varname */
+	   get_env();	/* is varname "PATH" found? */
+	    jc label_100/*   n: jump to next label */
+	   mov ax,es	/* ES:DI -&gt varname */
+	   mov ds,ax
+	   xchgdi,si	/* DS:SI -&gt varname */
+	   jmp short label_200
+
+	label_100:
+	   str = "Current environment \"PATH\" varname not found.";
+	   mov si,str	/* SI = offset of str */
+	label_200:
+	   put_str();	/* display string */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_PCCURSG.ASM		  <B>ASM equiv</B>	GET_CURENVSEG
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_get_dosenvseg">_get_dosenvseg</A>, <A HREF="rpgmctrl.htm#_get_env">_get_env</A>, <A HREF="rpgmctrl.htm#_get_parenvseg">_get_parenvseg</A>, <A HREF="rpgmctrl.htm#_get_rootenvseg">_get_rootenvseg</A>
+<BR></DL>
+<H2><A NAME="_get_dosenvseg">_get_dosenvseg</A></H2>
+ 
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the segment address of the active DOS environment.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	segaddr _get_dosenvseg(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	Segment address of the active DOS environment.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the segment address of the active DOS environment. This is the environment of the currently active COMMAND.COM. If no secondary copies of COMMAND.COM are present, this environment is also the root environment. This environment may be manipulated by passing the returned segment address to any of the Program Control environment functions.
+<BR>
+<BR>WARNING! The _osmajor and _osminor global variables must be properly initialized before this function is called. When using Spontaneous Assembly For C/C++, these variables are supplied and initialized by the compiler instead of the Spontaneous Assembly library. The results are undefined if _osmajor and _osminor are not initialized.
+<BR>
+<BR>WARNING! This function uses the _psp global variable in all models except TINY. When using Spontaneous Assembly for C/C++, this variable is supplied and initialized by the compiler instead of the Spontaneous Assembly library.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char far *varname;
+	   _put_str("\n\rDOSenvseg: \n\r");/* display msg */
+
+	   varname = _get_env("PATH",_get_dosenvseg());
+	   if(varname == NULL)
+	      _put_str("DOS environment \"PATH\" varname not found.");
+	   else
+	      _fput_str(varname);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char *str;
+	   char varname[] = "PATH";
+	   ...
+	str = "\n\rDOSenvseg: \n\r";
+	mov si,str	 /* SI = offset of str */
+	put_str();	 /* display msg */
+	get_dosenvseg();/* get DOS env seg */
+	lea si,varname/* SI = offset of varname */
+	get_env();	 /* is varname "PATH" found? */
+	 jc label_100/*   n: jump to next label */
+	mov ax,es	 /* ES:DI -&gt varname */
+	mov ds,ax
+	xchgdi,si	 /* DS:SI -&gt varname */
+	jmp short label_200
+
+	label_100:
+	str = "DOS environment \"PATH\" varname not found.";
+	mov si,str	 /* SI = offset of str */
+	label_200:
+	put_str();	 /* display "str" or varname */
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_PCDOSSG.ASM		  <B>ASM equiv</B>	GET_DOSENVSEG
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_get_curenvseg">_get_curenvseg</A>, <A HREF="rpgmctrl.htm#_get_env">_get_env</A>, <A HREF="rpgmctrl.htm#_get_parenvseg">_get_parenvseg</A>, <A HREF="rpgmctrl.htm#_get_rootenvseg">_get_rootenvseg</A>
+<BR></DL>
+<H2><A NAME="_get_env">_get_env</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns a pointer to the value of an environment variable.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	char far *_get_env(const char *varname, segaddr env);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to varname in the specified environment.
+<BR>
+<BR>	NULL if varname is not present in env.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches the environment at env for the varname environment variable. If varname is found in env, a pointer to the value of varname (the portion of the environment variable string which follows the equals sign) is returned. NULL is returned if varname is not found.  varname must NOT include an equal sign. The search for varname is case insensitive.
+<BR>
+<BR>WARNING! The returned pointer should only be used to read the environment. _set_env should be used to write to the environment. Writing to an environment directly may corrupt the environment. The results are undefined if env is invalid.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char far *varname;
+	   segaddr env_seg;
+	   _put_str("Program's environment path: \n\r");
+	   env_seg = _get_envseg(_get_psp());
+	   if((varname = _get_env("PATH",env_seg)) != 0)
+	      _put_str("Unable to find environment varname \"PATH\".");
+	   else
+	   {
+	      _fput_str(varname);
+	      if((_set_env("PATH=New Path",env_seg)) != 0)
+	         _put_str("Error setting new \"PATH\" in environment!");
+	      else
+	      {
+	         _put_str("New \"PATH\" = ");
+	         if((varname = _get_env("PATH",env_seg)) != 0)
+	            exit(0);
+	         else
+	            _fput_str(varname);
+	      }
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char *str;
+	   ...
+	   get_psp();	/* DX = _psp */
+	   get_envseg();	/* get programs env segment */
+	   str = "PATH";	
+	   mov si,str	/* DS:SI -&gt str */
+	   get_env();	/* PATH variable string found? */
+	    jc label_010/*   n: quit */
+	   str = "Program's current \"PATH\": ";
+	   mov si,str	/* DS:SI -&gt str */
+	   put_str();	/* display str */
+	   mov ax,es
+	   mov ds,ax
+	   xchgsi,di	/* DS:SI -&gt PATH string */
+	   put_str();	/* display PATH string */
+	label_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_PCGETEN.ASM		  <B>ASM equiv</B>	GET_ENV
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_get_curenvseg">_get_curenvseg</A>, <A HREF="rpgmctrl.htm#_set_env">_set_env</A>
+<BR></DL>
+<H2><A NAME="_get_envseg">_get_envseg</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the segment address of any program's environment.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	segaddr _get_envseg(segaddr progpsp);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The segment address of the program environment associated with progpsp.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the segment address of the environment assigned to progpsp, which must be a valid Program Segment Prefix address. The environment may be manipulated by passing the returned segment address to any of the Spontaneous Assembly environment functions.
+<BR>
+<BR>	The correct address is returned under all versions of DOS through 6.0, even if progpsp is a primary or secondary copy of COMMAND.COM.
+<BR>
+<BR>WARNING! The _osmajor and _osminor global variables must be properly initialized before this function is called. When using Spontaneous Assembly For C/C++, these variables are supplied and initialized by the compiler instead of the Spontaneous Assembly library.
+<BR>
+<BR>	If _osmajor and _osminor are not initialized, the results are undefined.
+<BR>
+<BR>WARNING! The results are undefined if progpsp is invalid.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char far *varname;
+	   segaddr env_seg;
+	   ...
+	   _put_str("\n\rEnvseg: \"PATH\" :\n\r");
+	   env_seg = _get_envseg(_get_psp());
+	   if((varname = _get_env("PATH",env_seg)) == 0)
+	      _put_str("Current environment \"PATH\" var not found.");
+	   else
+	      _fput_str(varname);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char varname[] = "PATH";
+	   char *str;
+	   ...
+	   str = "\n\rEnvseg: \"PATH\" :\n\r";
+	   mov si,str	/* SI = offset of str */
+	   put_str();	/* display str msg */
+	   get_psp();	/* get _PSP */
+	   get_envseg();	/* get program's environment */
+	   lea si,varname/* SI = offset of varname */
+	   get_env();	/* is varname "PATH" found? */
+	    jc label_100/*   n: jump to next label */
+	   mov ax,es	/* ES:DI -&gt varname */
+	   mov ds,ax;	
+	   xchgdi,si	/* DS:SI -&gt varname */
+	   jmp short label_200
+
+	label_100:
+	   str = "Current environment \"PATH\" var not found.";
+	   mov si,str	/* SI = offset of str */
+	label_200:
+	   put_str();	/* display str */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_PCENVSG.ASM		  <B>ASM equiv</B>	GET_ENVSEG
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_get_curenvseg">_get_curenvseg</A>, <A HREF="rpgmctrl.htm#_get_dosenvseg">_get_dosenvseg</A>, <A HREF="rpgmctrl.htm#_get_parenvseg">_get_parenvseg</A>, <A HREF="rpgmctrl.htm#_get_rootenvseg">_get_rootenvseg</A>
+<BR></DL>
+<H2><A NAME="_get_parenvseg">_get_parenvseg</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the segment address of the current program's parent environment.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	segaddr _get_parenvseg(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The segment address of the parent environment.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the segment address of the current program's parent environment (i.e., the environment of the program which executed the current program). This environment may be manipulated by passing the returned segment address to any of the Spontaneous Assembly environment functions.
+<BR>
+<BR>WARNING! The _osmajor and _osminor global variables must be properly initialized before this function is called. When using Spontaneous Assembly For C/C++, these variables are supplied and initialized by the compiler instead of the Spontaneous Assembly library. The results are undefined if _osmajor and _osminor are not initialized.
+<BR>
+<BR>WARNING! This function uses the _psp global variable in all models except TINY. When using Spontaneous Assembly For C/C++, this variable is supplied and initialized by the compiler instead of the Spontaneous Assembly library.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char far *varname;
+	   _put_str("\n\rParenvseg: \n\r");/* display msg */
+
+	   varname = _get_env("PATH",_get_parenvseg());
+	   if(varname == NULL)
+	      _put_str("Parent env \"PATH\" varname not found.");
+	   else
+	      _fput_str(varname);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char *str;
+	   char varname[] = "PATH";
+	   ...
+	   str = "\n\rParenvseg: \n\r";
+	   mov si,str	/* DS:SI -&gt offset of str */
+	   put_str();	/* display msg */
+	   get_parenvseg();/* get Parent env seg */
+	   lea si,varname/* DS:SI -&gt offset of varname */
+	   get_env();	/* is varname "PATH" found? */
+	    jc label_100/*   n: jump to next label */
+	   mov ax,es	/* ES:DI -&gt varname */
+	   mov ds,ax
+	   xchgsi,di	/* DS:SI -&gt varname */
+	   jmp short label_200
+	label_100:
+	str = "Parent environment \"PATH\" varname not found.";
+	mov si,str	 /* DS:SI = offset of str */
+	label_200:
+	put_str();	 /* display str or varname */
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_PCPRSEG.ASM		  <B>ASM equiv</B>	GET_PARENVSEG
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_get_curenvseg">_get_curenvseg</A>, <A HREF="rpgmctrl.htm#_get_dosenvseg">_get_dosenvseg</A>, <A HREF="rpgmctrl.htm#_get_env">_get_env</A>, <A HREF="rpgmctrl.htm#_get_rootenvseg">_get_rootenvseg</A>
+<BR></DL>
+<H2><A NAME="_get_psp">_get_psp</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the segment address of the Program Segment Prefix.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	segaddr _get_psp(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The segment address of the current program's PSP.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the segment address of the current program's Program Segment Prefix. This value is identical to the value stored in the _psp global variable.
+<BR>
+<BR>WARNING! This function uses the _psp global variable in all models except TINY. When using Spontaneous Assembly For C/C++, this variable is supplied and initialized by the compiler instead of the Spontaneous Assembly library.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   segaddr prog_prfx;
+	   prog_prfx = _get_psp();
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   segaddr prog_prfx;
+	   ...
+	   get_psp();
+	   mov prog_prfx,dx
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_PCGTPSP.ASM		  <B>ASM equiv</B>	GET_PSP
+
+<BR><DL>
+<DT><B>See also</B>
+<DD>_psp, <A HREF="rexit.htm#start">start</A>
+<BR></DL>
+<H2><A NAME="_get_rootenvseg">_get_rootenvseg</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the segment address of the DOS root environment.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	segaddr _get_rootenvseg(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The segment address of the DOS root environment.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the segment address of the DOS root environment. This is the environment of the primary copy of COMMAND.COM (even if a secondary copy of COMMAND.COM is active). This environment may be manipulated by passing the returned segment address to any of the Program Control environment functions.
+<BR>
+<BR>WARNING! The _osmajor and _osminor global variables must be properly initialized before this function is called. When using Spontaneous Assembly For C/C++, these variables are supplied and initialized by the compiler instead of the Spontaneous Assembly Library. The results are undefined if _osmajor and _osminor are not initialized.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char far *varname;
+	   ...
+	   _put_str("\n\rRootenvseg: \n\r");/* display msg */
+	   varname = _get_env("PATH",_get_rootenvseg());
+	   if(varname == NULL)
+	      _put_str("Root environment \"PATH\" varname not found.");
+	   else
+	      _fput_str(varname);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char *str;
+	   char varname[] = "PATH";
+	   ...
+	   str = "\n\rRootenvseg: \n\r";
+	   mov si,str	/* DS:SI -&gt str */
+	   put_str();	/* display msg */
+	   get_rootenvseg();/* get Root env seg */
+	   lea si,varname/* DS:SI -&gt varname */
+	   get_env();	/* is varname "PATH" found? */
+	    jc label_100/*   n: jump to next label */
+	   mov ax,es	/* ES:DI -&gt varname */
+	   mov ds,ax
+	   xchgsi,di	/* DS:SI -&gt varname */
+	   jmp short label_200
+
+	label_100:
+	   str = "Root environment \"PATH\" varname not found.";
+	   mov si,str	/* DS:SI -&gt str */
+	label_200:
+	   put_str();	/* display str or varname */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_PCRTSEG.ASM		  <B>ASM equiv</B>	GET_ROOTENVSEG
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_get_curenvseg">_get_curenvseg</A>, <A HREF="rpgmctrl.htm#_get_dosenvseg">_get_dosenvseg</A>, <A HREF="rpgmctrl.htm#_get_env">_get_env</A>, <A HREF="rpgmctrl.htm#_get_parenvseg">_get_parenvseg</A>
+<BR></DL>
+<H2><A NAME="_reset_argtbls">_reset_argtbls</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Resets the command line parser to use the default parsing tables.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	void _reset_argtbls(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function reinstalls the default command line parsing tables. These tables emulate the command line parsing syntax supported by most DOS commands.
+<BR>
+<BR>	The default parsing tables are defined as follows:
+<BR>
+<BR>	Insignificant Separator Table " \t";	 (Space, Tab)
+<BR>	Significant Separator Table",;+";	  (Comma, Semicolon, Plus)
+<BR>	Switch Character Table"/";	  (Forward Slash)
+<BR>
+<BR>	Parsing tables are always assumed to be in DGROUP. Custom tables must be defined as static arrays.
+<BR>
+<BR>	These tables control command line parsing as follows:
+<BR>
+<BR>	Insignificant Separator Table: Command line characters found in this table are skipped when they appear before or after an argument. They also terminate an argument. They are not copied into the buffer.
+<BR>
+<BR>	Significant Separator Table: Command line characters found in this table terminate an argument. They are never skipped and they are not copied into the buffer. 
+<BR>
+<BR>	Switch Character Table: Command line characters found in this table mark the beginning of a new argument and end any previous argument. They are copied into the buffer as the first character of an argument.
+<BR>
+<BR>	When a command line character is processed, these tables are searched in the following order: Switch Character Table, Significant Separator Table, Insignificant Separator Table. The character is then compared against CR and NULL to check for the end of the command line. 
+<BR>
+<BR>	Custom command line tables may be installed using set_argtbls. Unless custom parsing tables are installed, command line arguments are processed using the default tables.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char *str;
+	   char argbuf[20];
+	   static char argtbl[4] = {44,59,43,45}; /* ,;+- */
+
+	   _set_cmdln("\n\rfile1 file2-file3 , file4;");
+	   _put_str("Number of command line args: "); 
+	   args = _arg_count();
+	   _put_str(_ui_to_dec(args, argbuf)); /* 3 arguments */
+	   _set_argtbls(INHERIT_PTR,argtbl,INHERIT_PTR);
+	   /* set custom arg table */
+	   _put_str("\n\rNumber of command line args: ");
+	   args = _arg_count();
+	   _put_str(_ui_to_dec(args, argbuf)); /* 4 arguments */
+	   _reset_argtbls(); /* reset to default arg tables */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   static char argtbl[4] = {44,59,43,45}; /* ,;+- */
+	   char buf[20];
+	   char *str;
+	   ...
+	   pushss
+	   pop es	 	/* ES=SS (cmdln pntr on stack) */
+	   str = "\n\rfile1 file2-file3 , file4;";
+	   mov di,str	/* DI = offset of cmdln */
+	   set_cmdln();	/* set command line */
+	   str = "Number of command line args: ";
+	   mov si,str	/* SI = offset of str */
+	   put_str();	/* display str */
+	   arg_count();	
+	   mov ax,cx	/* AX = number of arguments */
+	   lea si,buf	/* SI = offset of buf */
+	   i_to_dec();	/* num args -&gt "string" */
+	   put_str();	/* display number of args */
+	   mov ax,-1	/* AX = offset of insig table */
+	   mov bx,offset argtbl
+	   mov dx,-1	/* DX = offset of switch table */
+	   set_argtbls();	/* set custom parsing table */
+	   str = "Number of command line args: ";
+	   mov si,str	/* SI = offset of str */
+	   put_str();	/* display str */
+	   arg_count();
+	   mov ax,cx	/* AX = number of arguments */
+	   lea si,buf	/* SI = offset of buf */
+	   i_to_dec();	/* num args -&gt "string" */
+	   put_str();	/* display new count arguments */
+	   reset_argtbls();/* reset to default arg tables */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	PCRSARTB.ASM		  <B>ASM equiv</B>	RESET_ARGTBLS
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_arg_next">_arg_next</A>, <A HREF="rpgmctrl.htm#_set_argtbls">_set_argtbls</A>
+<BR></DL>
+<H2><A NAME="_reset_cmdln">_reset_cmdln</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Resets the command line address to the default location.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	void _reset_cmdln(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function causes the _arg_count, _arg_next, and _arg_nth functions to process command line arguments on the default program command line. This command line resides at offset 0x81 in the PSP.
+<BR>
+<BR>	This function is equivalent to moving FFFF:0081 into cmdln_start and moving 0x81 into cmdln_next. The new command line address takes effect immediately.
+<BR>
+<BR>	An arbitrary command line address may be specified by calling _set_cmdln or by modifying cmdln_start and cmdln_next directly.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char argbuf[20];
+	   int args;
+	   ...
+	   _set_cmdln("\n\rfile1 file2-file3 , file4;");
+	   _put_str("Number of command line args: "); 
+	   args = _arg_count();
+	   _put_str(_i_to_dec(args, argbuf));
+	   _arg_reset();/* reset to beginning of cmdln */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buf = [20];
+	   char str[] = "\n\rfile1 file2-file3 , file4;";
+	   ...
+	   pushss
+	   pop es	 	/* ES=SS (cmdln pntr on stack) */
+	   lea di,str	/* DI = offset of cmdln */
+	   set_cmdln();	/* set custom cmdln */
+	   str = "Number of command line args: ";
+	   mov si,str	/* SI = offset of string */
+	   put_str();	/* display message */
+	   put_newline();	/* CR,LF */
+	   arg_count();
+	   mov ax,cx	/* AX = number of cmdln args */
+	   lea si,buf	/* SI = offset buf */
+	   i_to_dec();	/* num args -&gt "string" */
+	   put_str();	/* display number of args */
+	   arg_reset();	/* reset to beginning of cmdln */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	PCSMCDL.ASM		  <B>ASM equiv</B>	RESET_CMDLN
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_arg_next">_arg_next</A>, <A HREF="rpgmctrl.htm#_arg_reset">_arg_reset</A>, <A HREF="rpgmctrl.htm#cmdln_next">cmdln_next</A>, <A HREF="rpgmctrl.htm#cmdln_start">cmdln_start</A>, <A HREF="rpgmctrl.htm#_set_cmdln">_set_cmdln</A>
+<BR></DL>
+<H2><A NAME="_set_argtbls">_set_argtbls</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Installs custom parsing tables for use by the command line parser.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	void _set_argtbls(char near *isep_table, char near *ssep_table, char near *sw_table);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function installs custom command line parsing tables. These tables define the command line parsing syntax used by the _arg_count, _arg_next, and _arg_nth functions to process command line arguments. If -1 is specified for a particular table address, then the currently installed table remains installed. The symbolic constant INHERIT_PTR (0xFFFF) is provided for this purpose. (INHERIT_PTR is defined in SA_DEF.H.) Parsing tables must reside in DGROUP (global or static non-far data).
+<BR>
+<BR>	Command line parsing tables are ASCIIZ strings which identify argument separators and switch characters. They are used to parse the command line as follows:
+<BR>
+<BR>	Insignificant Separator Table (isep_table): Command line characters found in this table are skipped when they appear before or after an argument. They also terminate an argument. They are not copied into the buffer.
+<BR>
+<BR>	Significant Separator Table (ssep_table): Command line characters found in this table terminate an argument. They are never skipped and they are not copied into the buffer.
+<BR>
+<BR>	Switch Character Table (sw_table): Command line characters found in this table mark the beginning of a new argument and end any previous argument. They are copied into the buffer as the first character of an argument.
+<BR>
+<BR>	When a command line character is processed, these tables are searched in the following order: Switch Character Table, Significant Separator Table, Insignificant Separator Table. The character is then compared against CR and NULL to check for the end of the command line. The meaning of the CR character may be changed by placing CR in one of the three parsing tables. If the first character in a table is a NULL, then that table is ignored.
+<BR>
+<BR>	Default parsing tables are used to process the command line unless custom tables are installed using this function. The default parsing tables emulate the command line parsing syntax supported by most DOS commands. The default parsing tables are defined as follows:
+<BR>
+<BR>	Insignificant Separator Table" \t"	  (Space, Tab)
+<BR>	Significant Separator Table",;+"	  (Comma, Semicolon, Plus)
+<BR>	Switch Character Table"/"  	  (Forward Slash)
+<BR>
+<BR>	The default command line parsing tables may be reinstalled at any time using _reset_argtbls.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char *str;
+	   char argbuf[20];
+	   int args;
+	   static char argtbl[4] = {44,59,43,45}; /* ,;+- */
+	   ...
+	   _set_cmdln("\n\rfile1 file2-file3 , file4;");
+	   _put_str("Number of command line args: "); 
+	   args = _arg_count();
+	   _put_str(_ui_to_dec(args, argbuf)); /* 3 arguments */
+	   _set_argtbls(INHERIT_PTR, argtbl, INHERIT_PTR);
+		/* use these characters as delimiters */
+	   _put_str("\n\rNumber of command line args: ");
+	   args = _arg_count();
+	   _put_str(_ui_to_dec(args, argbuf)); /* 4 arguments */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buf[20];
+	   char *str;
+	   static char argtbl[4] = {44,59,43,45}; /* ,;+- */
+	   ...
+	   str = "\n\rfile1 file2-file3 , file4;";
+	   mov di,str	/* DI = offset of cmdln */
+	   pushss
+	   pop es	 	/* ES=SS (pntr on stack) */
+	   set_cmdln();	/* set custom cmdln */
+	   str = "Number of command line args: ";
+	   mov si,str	/* SI = offset of str */
+	   put_str();	/* display str */
+	   arg_count();
+	   mov ax,cx	/* AX = number of arguments */
+	   lea si,buf	/* SI = offset of buf */
+	   i_to_dec();	/* arg count -&gt "string" */
+	   put_str();	/* display number of args */
+	   mov ax,-1	/* AX = offset of insig table */
+	   mov bx,offset argtbl /* BX = offset of sig table */
+	   mov dx,-1	/* DX = offset of switch table */
+	   set_argtbls();	/* set custom parsing table */
+	   str = "Number of command line args: ";
+	   mov si,str	/* SI = offset of str */
+	   put_str();	/* display str */
+	   arg_count();
+	   mov ax,cx	/* AX = number of arguments */
+	   lea si,buf	/* SI = offset of buf */
+	   i_to_dec();	/* arg count -&gt "string" */
+	   put_str();	/* display count of arguments */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_PCSARTB.ASM		  <B>ASM equiv</B>	SET_ARGTBLS
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_arg_next">_arg_next</A>, <A HREF="rpgmctrl.htm#_reset_argtbls">_reset_argtbls</A>
+<BR></DL>
+<H2><A NAME="_set_cmdln">_set_cmdln</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Specifies the address of the command line.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	void _set_cmdln(char far *cmdln);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function specifies the location of the command line which is to be processed using the _arg_count, _arg_next, and _arg_nth functions. This is equivalent to moving cmdln into cmdln_start and moving the offset portion of cmdln into cmdln_next. The specified command line address takes effect immediately.
+<BR>
+<BR>	The default program command line resides at offset 0x81 in the PSP. This is the command line which is parsed by the _arg_... functions unless another command line address is specified. The command line address may be reset to this location by calling _reset_cmdln.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char argbuf[20];
+	   int args;
+	   ...
+	   _set_cmdln("\n\rfile1 file2-file3 , file4;");
+	   _put_str("Number of command line args: "); 
+	   args = _arg_count();
+	   _put_str(_i_to_dec(args, argbuf));
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char *str = "\n\rfile1 file2-file3 , file4;";
+	   ...
+	   mov di,str
+	   pushss
+	   pop es	 	/* ES=SS (cmdln pntr on stack) */
+	   set_cmdln();	/* set custom command line */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_PCSCMDL.ASM		  <B>ASM equiv</B>	SET_CMDLN
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_arg_next">_arg_next</A>, <A HREF="rpgmctrl.htm#_arg_reset">_arg_reset</A>, <A HREF="rpgmctrl.htm#cmdln_next">cmdln_next</A>, <A HREF="rpgmctrl.htm#cmdln_start">cmdln_start</A>, <A HREF="rpgmctrl.htm#_reset_cmdln">_reset_cmdln</A>
+<BR></DL>
+<H2><A NAME="_set_env">_set_env</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets the value of a variable string in an environment.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;progctl.h&gt
+<BR>	int _set_env(char *varstr, segaddr env);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if value of varstr was successfully set in env.
+<BR>
+<BR>	-1 if function was unsuccessful
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sets the value of a variable string in env. varstr must be an ASCIIZ string in the form "varname=value", where value may not include an equal sign ('='). If varname is not currently present in env, it is added. If varname is present, its value is changed. If varstr is NULL, varname is deleted from env. -1 is returned if there is no equal sign in varstr or if there is insufficient room in env to perform the change.
+<BR>
+<BR>	The search for varname is not case sensitive.
+<BR>
+<BR>WARNING! The results are undefined if env is undefined.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char far *varname;
+	   segaddr env_seg;
+	   ...
+	   _put_str("Program's environment path: \n\r");
+	   env_seg = _get_envseg(_get_psp());
+	   if((varname = _get_env("PATH",env_seg)) == 0)
+	      _put_str("Unable to find environment varname \"PATH\".");
+	   else
+	   {
+	      _fput_str(varname);
+	      if((_set_env("PATH=New Path",env_seg)) != 0)
+	         _put_str("Error setting new \"PATH\" in environment!");
+	      else
+	      {
+	         _put_str("New \"PATH\" = ");
+	         if((varname = _get_env("PATH",env_seg)) != 0)
+	            exit(0);
+	         else
+	            _fput_str(varname); /* display new varname */
+	      }
+	   }
+	   ...
+	}
+	...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char outstr[5];
+	   char varstr[] = "PATH=New Path";
+	   char *str;
+	   ...
+	   mov si,str	/* SI = offset of str */
+	   put_str();	/* display msg */
+	   get_psp();	/* DX = psp */
+	   get_envseg();	/* get env seg */
+	   lea si,varstr/* SI = offset of varstr */
+	   set_env();
+	    jc test1_100
+	   mov ax,dx	/* AX = segment address */
+	   lea si,outstr/* SI = offset of outstr */
+	   ui_to_hex();	/* convert segment to "string" */
+	   jmp short test1_200
+
+	test1_100:
+	   str = "Error in setting new \"PATH\"";
+	   mov si,str
+	test1_200:
+	   put_str();	/* display segment or errmsg */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_PCSETEN.ASM		  <B>ASM equiv</B>	SET_ENV
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_get_curenvseg">_get_curenvseg</A>, <A HREF="rpgmctrl.htm#_get_env">_get_env</A>
+<BR>
+<BR></BODY>
+<BR></HTML><BR>

@@ -1,0 +1,2311 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - File and Directory Management Reference</TITLE>
+</HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>File and Directory Management</H1>
+<P ALIGN=CENTER>Reference Section </P>
+<UL>
+<LI><A HREF="TOC.htm">Table of Contents</A>
+<LI><A HREF="index.htm">Function Index</A>
+<LI><A HREF="gindex.htm">Group Index
+</UL>
+<A HREF="rfiledir.htm#_access_f">_access_f</A><BR>
+<A HREF="rfiledir.htm#_ch_dir">_ch_dir</A><BR>
+<A HREF="rfiledir.htm#_exist_f">_exist_f</A><BR>
+<A HREF="rfiledir.htm#_expand_path">_expand_path</A><BR>
+<A HREF="rfiledir.htm#_find_first">_find_first</A><BR>
+<A HREF="rfiledir.htm#_find_next">_find_next</A><BR>
+<A HREF="rfiledir.htm#_fix_filename">_fix_filename</A><BR>
+<A HREF="rfiledir.htm#_fix_path">_fix_path</A><BR>
+<A HREF="rfiledir.htm#_get_curdir">_get_curdir</A><BR>
+<A HREF="rfiledir.htm#_get_cwd">_get_cwd</A><BR>
+<A HREF="rfiledir.htm#_get_drive">_get_drive</A><BR>
+<A HREF="rfiledir.htm#_getmode_f">_getmode_f</A><BR>
+<A HREF="rfiledir.htm#_merge_drive">_merge_drive</A><BR>
+<A HREF="rfiledir.htm#_merge_drvpath">_merge_drvpath</A><BR>
+<A HREF="rfiledir.htm#_merge_ext">_merge_ext</A><BR>
+<A HREF="rfiledir.htm#_merge_fname">_merge_fname</A><BR>
+<A HREF="rfiledir.htm#_merge_fnamext">_merge_fnamext</A><BR>
+<A HREF="rfiledir.htm#_merge_path">_merge_path</A><BR>
+<A HREF="rfiledir.htm#_mk_dir">_mk_dir</A><BR>
+<A HREF="rfiledir.htm#_mk_temp">_mk_temp</A><BR>
+<A HREF="rfiledir.htm#_remove_f">_remove_f</A><BR>
+<A HREF="rfiledir.htm#_rename_f">_rename_f</A><BR>
+<A HREF="rfiledir.htm#_rm_dir">_rm_dir</A><BR>
+<A HREF="rfiledir.htm#_search_path">_search_path</A><BR>
+<A HREF="rfiledir.htm#_set_drive">_set_drive</A><BR>
+<A HREF="rfiledir.htm#_setmode_f">_setmode_f</A><BR>
+<A HREF="rfiledir.htm#_split_drive">_split_drive</A><BR>
+<A HREF="rfiledir.htm#_split_drvpath">_split_drvpath</A><BR>
+<A HREF="rfiledir.htm#_split_ext">_split_ext</A><BR>
+<A HREF="rfiledir.htm#_split_fname">_split_fname</A><BR>
+<A HREF="rfiledir.htm#_split_fnamext">_split_fnamext</A><BR>
+<A HREF="rfiledir.htm#_split_path">_split_path</A><BR>
+<A HREF="rfiledir.htm#_term_path">_term_path</A><BR>
+<H2><A NAME="_access_f">_access_f</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines the accessibility of a file or directory.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	int _access_f(const char *name);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if name exists and has read/write permission or is a directory.
+<BR>
+<BR>	0 if name exists and has read-only permission.
+<BR>
+<BR>	-1 if name does not exist or an error occurred.
+<BR>	 e_code	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function determines if name exists. If name is a file, this function also determines if the file is read-write or read-only. 1 is returned if name refers to a directory or if it is a file with read/write permission. 0 is returned if name is a file with read-only permission. -1 is returned if name does not exist or the drive or path specified is invalid. name may include a drive specifier and a path.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[13];
+	   if (_access_f (buffer))
+	   {
+	      /* Does not have read/write permission */
+	   } else
+	   {
+	      /* Has read/write permission */
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	char buffer[13] = "file.dat";
+	   ...
+	   lea si,buffer
+	   access_f ();
+	    je access_f_010/* if read/write permission */
+	    ja access_f_020/* if read-only permission */
+	   ... 	 	/* if an error occurred */
+	   jmp short access_f_100
+	access_f_010:	 	/* read/write permission */
+	   ...
+	   jmp short access_f_100
+	access_f_020:	 	/* read-only permission */
+	   ...
+	access_f_100:	 	/* done... */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDACCES.ASM		  <B>ASM equiv</B>	ACCESS_F
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_exist_f">_exist_f</A>, <A HREF="rfiledir.htm#_find_first">_find_first</A>, <A HREF="rfiledir.htm#_getmode_f">_getmode_f</A>
+<BR></DL>
+<H2><A NAME="_ch_dir">_ch_dir</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Changes the current directory.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	int _ch_dir(const char *path);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the directory was successfully changed.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>	 e_code	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function changes the current working directory to path. The change takes place on the drive specified in path. If no drive specifier is provided in path, the change takes place on the current drive. If path does not include an explicit path specifier (i.e., the default path is specified), no change takes place and 0 is returned.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   if (_ch_dir(".") == -1)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char *dir= "D:\\TEMP";
+	   mov si,dir
+	   ch_dir ();
+	    jncch_dir_010/* If successful */
+	   ... 	 	/* if an error occurred */
+	ch_dir_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDCHDIR.ASM		  <B>ASM equiv</B>	CH_DIR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_get_cwd">_get_cwd</A>, <A HREF="rfiledir.htm#_mk_dir">_mk_dir</A>, <A HREF="rfiledir.htm#_rm_dir">_rm_dir</A>
+<BR></DL>
+<H2><A NAME="_exist_f">_exist_f</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines if a file, directory, or volume label exists and if its attributes match those provided.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	int _exist_f(const char *name, int *attr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if name exists and its attributes match those provided.
+<BR>	attr		attributes for name
+<BR>
+<BR>	1 if name exists, but its attributes do not match those provided.
+<BR>	attr		attributes for name
+<BR>
+<BR>	-1 if name does not exist or an error occurred.
+<BR>	 e_code	error code (E_PNOTFOUND if the file, directory, or volume label does not exist)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function determines if name exists and if its attributes match attr. name may be a file, directory, or volume label. 0 is returned if name exists and its attributes match the attributes specified in attr (see below) as follows: 1) If only FA_NORM is specified, name must be an ordinary or ordinary read-only file. If only FA_ARCH or FA_NORM+FA_ARCH is specified, name must be an ordinary or ordinary read-only file with its archive bit set. 2) If only FA_RDONLY is specified, name must be an ordinary read-only file. If only FA_RDONLY+FA_ARCH is specified, name must be an ordinary read-only file with its archive bit set. 3) If any other combination of attributes is specified, FA_NORM is ignored and all other specified attributes must match. Unspecified attributes are not considered. If name exists but none of the above conditions are true, 1 is returned.
+<BR>
+<BR>	attr is created by bitwise ORing together the symbolic constants defined in FILECNTL.H (automatically included from FILEDIR.H) as follows:
+<BR>
+<BR>	FA_NORM  (0x0000) Ordinary
+<BR>	FA_RDONLY(0x0001) Read-only
+<BR>	FA_HIDDEN(0x0002) Hidden
+<BR>	FA_SYSTEM(0x0004) System
+<BR>	FA_LABEL (0x0008) Volume label
+<BR>	FA_SUBDIR(0x0010) Directory
+<BR>	FA_ARCH  (0x0020) Archive
+<BR>
+<BR>	 e_code may be obtained using the get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int cond = FA_NORM;
+	   char filename[13];
+	   ...
+	   if (!_exist_f (filename, &ampcond) || cond)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	char filename[13] = "file.dat";
+	      ...
+	   lea si,filename
+	   mov ax,FA_NORM/* AX=file attrs to look for */
+	   exist_f ();
+	    ja exist_f_010/* if attributes didn't match */
+	    jb exist_f_020/* an error occurred */
+	   ... 	 	/* if attributes match */
+	   jmp short exist_f_030
+
+	exist_f_010:
+	   ... 	 	/* Attributes don't match */
+	   jmp short exist_f_030
+
+	exist_f_020:
+	   ... 	 	/* file doesn't exist or error */
+	exist_f_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDEXIST.ASM		  <B>ASM equiv</B>	EXIST_F
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_access_f">_access_f</A>, <A HREF="rfiledir.htm#_find_first">_find_first</A>, <A HREF="rfiledir.htm#_getmode_f">_getmode_f</A>
+<BR></DL>
+<H2><A NAME="_expand_path">_expand_path</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Expands a partial path to a full path.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	int _expand_path(char *pathname);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if pathname was a valid path.
+<BR>	pathname	full path
+<BR>
+<BR>	1 if pathname was a valid path plus filename.
+<BR>	pathname	full path plus filename
+<BR>
+<BR>	-1 if pathname was not a valid path or path plus filename.
+<BR>	pathname	original pathname string
+<BR>	 e_code 	 error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function expands the partial path in pathname to a full path including a drive specifier. pathname may consist of a drive specifier and/or a path and/or a filename. The full path is returned in pathname in all-uppercase characters.
+<BR>
+<BR>	If pathname is a filename only, the active drive and current working directory are returned affixed to the front of the filename, and 1 is returned. If pathname is a NULL string, the active drive and current working directory are returned in pathname, and 0 is returned. -1 is returned if pathname is invalid. If 1 is returned, the last element of the returned pathname is not a valid subdirectory and is assumed to be a filename. A return value of 1 is impossible if pathname is terminated with a backslash character.
+<BR>
+<BR>	This function assumes that any drive specifier in pathname consists of only a single drive letter followed by a colon. Network-type drive specifiers such as "SYS:" are not recognized.
+<BR>
+<BR>	This function uses approximately 180 bytes of stack space.
+<BR>
+<BR>	 e_code may be obtained using the get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[50];
+	   ...
+	   switch (_expand_path (buffer))
+	   {
+	      case 1:
+	         /* Pathname is a valid path plus filename */
+	         break;
+	      case 0:
+	         /* Pathname is a valid path */
+	         break;
+	      case -1:
+	         /* Pathname is not a valid path or filename */
+	         break;
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[50] = "file.dat";
+	   ...
+	   lea si,buffer
+	   expand_path ();
+	    ja expand_p_010/* path + filename */
+	    jb expand_p_020/* error or file doesn't exist */
+	   ... 	 	/* filename was a path */
+	   jmp short expand_p_030
+	expand_p_010:
+	   ... 	 	/* filename = path + filename */
+	   jmp short expand_p_030
+	expand_p_020:
+	   ... 	 	/* file doesn't exist or error */
+	expand_p_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDEXPND.ASM		  <B>ASM equiv</B>	EXPAND_PATH
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_fix_filename">_fix_filename</A>
+<BR></DL>
+<H2><A NAME="_find_first">_find_first</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Finds the first file which matches the name and attributes provided.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	int _find_first(const char *name, fbuf far *buffer, int attr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if a matching file was found.
+<BR>	buffer	information about the matching file
+<BR>
+<BR>	1 if no matching file was found or if the path was not found.
+<BR>	 e_code	error code (E_PNOTFOUND)
+<BR>
+<BR>	-1 if an error occurred.
+<BR>	 e_code	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function finds the first file that matches name with attributes matching attr. name may include the "*" and "?" wildcard characters. attr is created by bitwise ORing together symbolic constants from the list below. These constants are defined in FILECNTL.H and are automatically included from FILEDIR.H:
+<BR>
+<BR>	FA_NORM  (0x0000) Ordinary
+<BR>	FA_HIDDEN(0x0002) Hidden
+<BR>	FA_SYSTEM(0x0004) System
+<BR>	FA_LABEL (0x0008) Volume label
+<BR>	FA_SUBDIR(0x0010) Directory
+<BR>
+<BR>	If only the FA_NORM flag is specified, only ordinary files are found.
+<BR>
+<BR>	If any combination of the FA_HIDDEN, FA_SYSTEM, or FA_SUBDIR flags are specified, _find_first will match all ordinary files as well as any files with these attributes (this is the way the DOS Find First function call works). If the FA_LABEL flag is used, only volume labels are found. Note that the FA_RDONLY and FA_ARCH flags do not apply to this function.
+<BR>
+<BR>	1 is returned if a matching path and/or file does not exist. -1 is returned if an error occurred. 0 is returned and buffer is filled in with the file information if a matching file is found.
+<BR>
+<BR>	buffer is a structure of type fbuf, which is defined in FILEDIR.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   char reserved[21];/* reserved by DOS */
+<BR>	   char attr;	/* file attributes */
+<BR>	   int time;	/* file time */
+<BR>	   int date;	/* file date */
+<BR>	   long size;	/* file size */
+<BR>	   char name[13];/* ASCIIZ filename */
+<BR>	} fbuf;
+<BR>
+<BR>	A return value of 1 indicates nonexistent paths as well as nonexistent files because DOS does not properly differentiate these cases. To determine if a path exists, use _exist_f or _expand_path.
+<BR>
+<BR>	Note that the date and time values returned by this function use the same format returned by _getftime_h, _merge_time and _merge_date.
+<BR>
+<BR>WARNING! After _find_first has been called, changes to the DTA must be made using _set_dta. Failure to comply with this rule will cause subsequent _find_next calls to fail.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   fbuf filebuf;
+	   int code;
+	   code = _find_first ("*.c", &ampfilebuf, FA_NORM);
+	   if (code == -1)
+	   {
+	      /* Handle the error */
+	   } else if (code == 1)
+	   {
+	      /* handle no matching files */
+	   } else
+	   {
+	      do {
+	         ...
+	      } while (!_find_next (&ampfilebuf));
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   fbuf filebuf;
+	   char *filespec = "*.c";
+	   ...
+	   mov si,filespec
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea di,filebuf
+	   mov ax,FA_NORM/* AX = attributes to look for */
+	   find_first ();
+	    ja find_first_060/* if no matching files found */
+	    jb find_first_040/* if an error occurred */
+	find_first_020:
+	   ... 	 /* process the matching files here... */
+	   find_next ();
+	    je find_first_020/* if a matching file was found */
+	    ja find_first_060/* if no matching files found */
+	find_first_040:
+	   ... 	 	/* DOS error ... */
+	   jmp find_first_080
+	find_first_060:
+	   ... 	 	/* no more matching files */
+	find_first_080:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDFINDF.ASM		  <B>ASM equiv</B>	FIND_FIRST
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_exist_f">_exist_f</A>, <A HREF="rfiledir.htm#_find_next">_find_next</A>
+<BR></DL>
+<H2><A NAME="_find_next">_find_next</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Finds the next file which matches the name and attributes specified with a previous _find_first.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	int _find_next(fbuf far *buffer);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if a matching file was found.
+<BR>	buffer	information about the matching file
+<BR>
+<BR>	1 if no more matching files exist.
+<BR>	 e_code	error code (E_NMOREFILE)
+<BR>
+<BR>	-1 if an error occurred.
+<BR>	 e_code	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function finds the next file which matches the name and attributes that were preserved in buffer by a previous call to _find_first. 1 is returned if no more matching files exist. -1 is returned if an error occurred. 0 is returned and buffer is filled in with the file information if a matching file is found. buffer is a structure of type fbuf, which is defined in FILECNTL.H (automatically included from FILEDIR.H) as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   char reserved[21];/* reserved by DOS */
+<BR>	   char attr;	/* file attributes */
+<BR>	   int time;	/* file time */
+<BR>	   int date;	/* file date */
+<BR>	   long size;	/* file size */
+<BR>	   char name[13];/* ASCIIZ filename */
+<BR>	} fbuf;
+<BR>
+<BR>	Different filename templates may be searched for interchangeably by specifying a unique buffer for each _find_first and using a different buffer on each subsequent call to _find_next.
+<BR>
+<BR>	Note that the date and time values returned by this function use the same format returned by _getftime_h, _merge_time and _merge_date.
+<BR>
+<BR>WARNING! After find_first has been called, changes to the DTA must be made using _set_dta. Failure to comply with this rule will cause subsequent _find_next calls to fail.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   fbuf filebuf;
+	   int code;
+	   code = _find_first ("*.c", &ampfilebuf, FA_NORM);
+	   if (code == -1)
+	   {
+	      /* Handle the error */
+	   } else if (code == 1)
+	   {
+	      /* handle no matching files */
+	   } else
+	   {
+	      do {
+	         ...
+	      } while (!_find_next (&ampfilebuf));
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   fbuf filebuf;
+	   char *filespec = "*.c";
+
+	   mov si,filespec
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea di,filebuf
+	   mov ax,FA_NORM/* AX = attributes to look for */
+	   find_first ();
+	    ja find_first_060/* if no matching files found */
+	    jb find_first_040/* if an error occurred */
+	find_first_020:
+	   ... 	 	/* process matching files ... */
+	   find_next ();
+	    je find_first_020/* if matching file was found */
+	    ja find_first_060/* if no matching files found */
+	find_first_040:
+	   ... 	 	/* handle the error... */
+	   jmp find_first_080
+
+	find_first_060:
+	   ... 	 	/* no more matching files */
+	find_first_080:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDFINDN.ASM		  <B>ASM equiv</B>	FIND_NEXT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_find_first">_find_first</A>
+<BR></DL>
+<H2><A NAME="_fix_filename">_fix_filename</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Forces the filename portion of a path string into the form of a valid filename.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	char *_fix_filename(char *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to string if the function was successful.
+<BR>	string	a copy of string with the filename portion forced into the form of a valid filename
+<BR>
+<BR>	NULL if the filename portion of string is missing or if it could not be forced into the form of a valid filename.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function validates the filename portion of string, forcing it into the form FFFFFFFF.XXX, where "F" represents an optional filename character and "X" represents an optional extension character. Up to eight filename characters are copied (excluding any extension). If a period is found in string, up to three extension characters are copied.
+<BR>
+<BR>	A period is copied only if an extension follows it. If the first character in string is a period or if string is a NULL string, NULL is returned.
+<BR>
+<BR>	The following are examples of path strings before and after calling _fix_path:
+<BR>
+<BR>	BEFOREAFTERCHANGE
+<BR>	BASETWO.DEVELOPMENTBASETWO.DEV    extension truncated
+<BR>	ASSEMBLER.EXEASSEMBLE.EXE	    name truncated
+<BR>	LONGFILENAME.TEXTLONGFILE.TEX	    name and extension truncated
+<BR>	LONG NAME WITH NO EXTLONG NAM	    name truncated, no extension
+<BR>
+<BR>	Note that only the form of the filename is forced, the individual characters are not validated as legal filename characters.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char filename[13];
+	   ...
+	   _fix_filename (filename);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char filename[40] = "longfilename.longext";
+	   ...
+	   lea si,filename
+	   fix_filename ();
+	    jncfix_fname_010/* if successful */
+	   ... /* filename could not be forced to the form 
+	   	     of a valid filename */
+	fix_fname_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDFIXFN.ASM		  <B>ASM equiv</B>	FIX_FILENAME
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_expand_path">_expand_path</A>
+<BR></DL>
+<H2><A NAME="_fix_path">_fix_path</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts a path string from internal format to DOS format.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	char *_fix_path(char *path);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to path.
+<BR>	path	copy of path without an extraneous terminal backslash character ("\")
+<BR>
+<BR>	NULL if path was already in DOS format.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function converts a string from internal Spontaneous Assembly format to DOS format by removing an extraneous terminal backslash character ("\") at the end of path (if one is found). The terminal backslash immediately following a drive specifier is not removed because it denotes the root directory.
+<BR>
+<BR>	The following are examples of path strings before and after calling _fix_path:
+<BR>
+<BR>	BEFOREAFTER CHANGE
+<BR>	C:\SPONTASM\C:\SPONTASM	backslash removed
+<BR>	C:\	    C:\ no change
+<BR>	\SPONTASM\FAST.C\SPONTASM\FAST.Cno change
+<BR>	\  	    \   no change
+<BR>	This function may be used to prepare path strings for display or for direct use with DOS function calls.
+<BR>
+<BR>	The terminal backslash character is appended to path-only strings in internal Spontaneous Assembly format to allow filename manipulation functions to differentiate between path-only and path-filename strings. 
+<BR>
+<BR>	See the File/Directory technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char filename[13];
+	   ...
+	   _fix_path (filename);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char path[50] = "c:\\util\\";
+	   ...
+	   lea si,path
+	   fix_path ();
+	    jnefix_path_010/* path already in DOS format */
+	   ... 	 	/* if path was changed */
+	fix_path_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDFIXP.ASM		  <B>ASM equiv</B>	FIX_PATH
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_term_path">_term_path</A>
+<BR></DL>
+<H2><A NAME="_get_curdir">_get_curdir</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns a string which describes the current working directory on a specified drive.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	int _get_curdir(char *buffer, int drive);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the function was successful.
+<BR>	buffer		ASCIIZ current working directory path string for drive
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>	buffer		undefined
+<BR>	 e_code	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns an ASCIIZ string which describes the current working directory on drive. Up to 68 characters may be returned in buffer, including a terminating NULL. The path returned is a complete path which includes the drive letter. drive may be any alphabetic character of either case, or 0x00 for the default drive (i.e., 'C' for drive C, 'a' for drive A, 0 for the default drive, etc.). For example, this function might return:
+<BR>
+<BR>	"D:\LANGS\SACPPLUS\"
+<BR>
+<BR>	where "D" is the drive letter provided and "\LANGS\SACPPLUS" is the current working directory on that drive. Note that this function places a terminating backslash character after the last path element. The backslash can be removed by calling the _fix_path function.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[68];
+	   if (_get_curdir (buffer, 'C'))
+	   {
+	      /* Handle an error */
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[68];
+	   ...
+	   lea si,buffer
+	   mov al,'C'	/* use C drive */
+	   get_curdir ();
+	    jncget_curdir_010/* if successful */
+	   ... 	 	/* if an error occurred */
+	get_curdir_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDCURDR.ASM		  <B>ASM equiv</B>	GET_CURDIR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_ch_dir">_ch_dir</A>, <A HREF="rfiledir.htm#_get_cwd">_get_cwd</A>
+<BR></DL>
+<H2><A NAME="_get_cwd">_get_cwd</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns a string which describes the current working directory on the active drive.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	char *_get_cwd(char *buffer);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to buffer if the function was successful.
+<BR>	buffer		ASCIIZ current working directory path string
+<BR>
+<BR>	NULL if the function was unsuccessful.
+<BR>	buffer		undefined
+<BR>	e_code  	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns an ASCIIZ string which describes the current working directory on the active drive. Up to 68 characters may be returned in buffer, including the terminating NULL. The path returned is a complete path, including the drive letter. For example, this function might return:
+<BR>
+<BR>	"C:\LANGS\SACPPLUS\"
+<BR>
+<BR>	where "C" is the active drive and "LANGS\SACPPLUS" is the current working directory on that drive. Note that this function places a terminating backslash character after the last path element. It can be removed using the _fix_path function.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[68];
+	   if (!_get_cwd (buffer))
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[68];
+	   ...
+	   lea si,buffer
+	   get_cwd ();
+	    jncget_cwd_010/* if successful */
+	   ... 	 	/* if an error occurred */
+	get_cwd_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDCWD.ASM		  <B>ASM equiv</B>	GET_CWD
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_ch_dir">_ch_dir</A>, <A HREF="rfiledir.htm#_get_curdir">_get_curdir</A>
+<BR></DL>
+<H2><A NAME="_get_drive">_get_drive</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets the drive letter of the current drive.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	char _get_drive(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The uppercase drive letter of the current drive ('A' through 'Z').
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the uppercase ASCII drive letter of the current drive.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char drive;
+	   drive = _get_drive(); /* drive = drive letter */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   get_drive();	/* AL = drive letter */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	FDGDRIVE.ASM		  <B>ASM equiv</B>	GET_DRIVE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_set_drive">_set_drive</A>
+<BR></DL>
+<H2><A NAME="_getmode_f">_getmode_f</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets the access mode of a file, directory, or volume label.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	int _getmode_f(const char *filename);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The file attributes for filename if the function was successful.
+<BR>
+<BR>	-1 if an error occurred.
+<BR>	e_code		error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function gets the access mode of the file, directory, or volume label identified by filename. The access mode is a combination of the following attribute flags defined in FILECNTL.H (automatically included in FILEDIR.H):
+<BR>
+<BR>	FA_NORM  (0x0000) Ordinary 
+<BR>	FA_RDONLY(0x0001) Read-only
+<BR>	FA_HIDDEN(0x0002) Hidden 
+<BR>	FA_SYSTEM(0x0004) System
+<BR>	FA_LABEL(0x0008) Volume label 
+<BR>	FA_SUBDIR(0x0010) Directory
+<BR>	FA_ARCH(0x0020) Archive
+<BR>
+<BR>	filename may not end with a terminal backslash character. If a pathname with a terminal backslash needs to be passed to this function, _fix_path should be called first.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   if (_getmode_f ("$fd.c") != FA_NORM)
+	   {
+	      /* Handle file mode not matching FA_NORM */
+	   } else
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char filename[13] = "file.dat";
+	   ...
+	   lea si,filename
+	   getmode_f ();	/* AX=file attributes */
+	    jncgetmode_f_010/* if successful */
+	   ... 	 	/* if an error occurred */
+	getmode_f_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDGETMD.ASM		  <B>ASM equiv</B>	GETMODE_F
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_access_f">_access_f</A>, <A HREF="rfiledir.htm#_setmode_f">_setmode_f</A>
+<BR></DL>
+<H2><A NAME="_merge_drive">_merge_drive</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Merges a drive specifier from one path string into another path string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	char *_merge_drive(char far *destpath, const char *srcpath);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to destpath.
+<BR>	destpath		copy of destpath with drive specifier from srcpath merged into the appropriate location
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function merges the drive specifier portion of srcpath into the appropriate place in destpath. If srcpath contains more than a drive specifier, only the drive specifier portion is merged. If destpath already contains a drive specifier, it is replaced with the drive specifier in srcpath. If srcpath does not contain a drive specifier, any drive specifier in destpath is removed. If destpath is a NULL string, destpath contains only the drive specifier portion of srcpath.
+<BR>
+<BR>	The following table shows the resulting destpath for various input srcpath and destpath string combinations:
+<BR>
+<BR>	Input source pathInput destination pathResulting destination path
+<BR>
+<BR>	"C:""TEST.C""C:TEST.C"
+<BR>	"A:\ASM\TEST.C""C:TEST.OBJ"	"A:TEST.OBJ"
+<BR>	"\TEST\TEST.C""C:ASM\TEST.OBJ""ASM\TEST.OBJ"
+<BR>	"SYS:ASM\TEST.C"0			"SYS:"
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[68];
+	   ...
+	   _merge_drive (buffer, "c:");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[68] = "a:\\data\\file.dat", *drive = "c";
+	   ...
+	   mov si,drive
+	   pushss
+	   pop es	 /* ES=seg buffer */
+	   lea di,buffer
+	   merge_drive ();/* buffer = "C:\DATA\FILE.DAT" */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDMERGD.ASM		  <B>ASM equiv</B>	MERGE_DRIVE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_merge_drvpath">_merge_drvpath</A>, <A HREF="rfiledir.htm#_merge_ext">_merge_ext</A>, <A HREF="rfiledir.htm#_merge_fname">_merge_fname</A>, <A HREF="rfiledir.htm#_merge_path">_merge_path</A>, <A HREF="rfiledir.htm#_split_drive">_split_drive</A>
+<BR></DL>
+<H2><A NAME="_merge_drvpath">_merge_drvpath</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Merges a drive specifier and path from one path string into another.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	char *_merge_drvpath(char far *destpath, const char *srcpath);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to destpath.
+<BR>	destpath		copy of destpath with drive specifier and path from srcpath merged into the appropriate location
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function merges the drive specifier and path portion of srcpath into the appropriate place in destpath. If srcpath contains more than a drive specifier and path, only the drive specifier and path portion is merged. If destpath already contains a drive specifier and/or path, it is replaced with the drive specifier and path in srcpath. If srcpath does not contain a drive specifier or path, any drive specifier or path in destpath is removed. If destpath is a NULL string, destpath returns only the drive specifier and path portion of srcpath.
+<BR>
+<BR>	The following table shows the resulting destpath for various input srcpath and destpath string combinations:
+<BR>
+<BR>	Input source pathInput destination pathResulting destination path
+<BR>
+<BR>	"C:\SPONTASM\""TEST"		  "C:\SPONTASM\TEST"
+<BR>	"C:\""ANYTHING.OBJ"		  "C:\ANYTHING.OBJ"
+<BR>	"C:\SPONTASM\""A:TEST.OBJ"	  "C:\SPONTASM\TEST.OBJ"
+<BR>	"C:\SPONTASM\""A:TEST.OBJ"	  "C:\TEST.OBJ"
+<BR>	"SPONTASM\""A:TEST.OBJ"	  "TEST.OBJ"
+<BR>	"SPONTASM\*.C""A:TEMP\TEST.OBJ" "SPONTASM\TEST.OBJ"
+<BR>	"SYS:TEMP\TEST.C"0			  "SYS:TEMP\"
+<BR>
+<BR>	This function requires that the path portion of pathname be terminated with a backslash character ("\"). This makes it possible to differentiate between path-only and path-filename strings. The _term_path function is provided to force path-only strings to conform to this internal Spontaneous Assembly format. _fix_path is provided to convert strings from this format into DOS-compatible format. See the technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[68];
+	   ...
+	   _merge_drvpath (buffer, "c:\\util\\");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[68] ="a:\\data\\file.dat", *string = "c:\\util\\";
+	   ...
+	   mov si,string
+	   pushss
+	   pop es	 	/* ES=seg buffer */
+	   lea di,buffer
+	   merge_drvpath ();/* buffer = "C:\UTIL\FILE.DAT" */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDMERGV.ASM		  <B>ASM equiv</B>	MERGE_DRVPATH
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_merge_drive">_merge_drive</A>, <A HREF="rfiledir.htm#_merge_path">_merge_path</A>, <A HREF="rfiledir.htm#_split_drvpath">_split_drvpath</A>
+<BR></DL>
+<H2><A NAME="_merge_ext">_merge_ext</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Merges a filename extension from one path string into another path string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	char *_merge_ext(char far *destpath, const char *srcpath);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to destpath.
+<BR>	destpath		copy of destpath with filename extension from srcpath merged into the appropriate location
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function merges the filename extension portion of srcpath into the appropriate place in destpath. If srcpath contains more than a filename extension, only the filename extension portion is merged. If destpath already containsa filename extension, it is replaced with the filename extension in srcpath. If srcpath does not contain a filename extension, any filename extension in destpath is removed. If destpath is a NULL string, destpath returns only the filename extension portion of srcpath.
+<BR>
+<BR>	The following table shows the resulting destpath for various input srcpath and destpath string combinations:
+<BR>
+<BR>	Input source pathInput destination pathResulting destination path
+<BR>
+<BR>	".C""TEST""TEST.C"
+<BR>	"\TEST\TEST.C""C:\WORK\*"	  "C:WORK\*.C"
+<BR>	"TEST.C" "C:TEST.OBJ"	  "C:TEST.C"
+<BR>	"TEST""C:\WORK\*.*"		  "C:\WORK\*"
+<BR>	"TEST.OBJ"0			  ".OBJ"
+<BR>
+<BR>	This function requires that the path portion of pathname be terminated with a backslash character ("\"). This makes it possible to differentiate between path-only and path-filename strings. The _term_path function is provided to force path-only strings to conform to this internal format. _fix_path is provided to convert strings from this format into DOS-compatible format. See the technical notes for more information about internal and DOS path string formats.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[68];
+	   ...
+	   _merge_ext (buffer, ".bak");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[68] = "a:\\data\\file.dat", *string = ".bak";
+	   ...
+	   mov si,string
+	   pushss
+	   pop es	 /* ES=seg buffer */
+	   lea di,buffer
+	   merge_ext ();/* buffer = "A:\DATA\FILE.BAK" */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDMERGE.ASM		  <B>ASM equiv</B>	MERGE_EXT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_merge_drive">_merge_drive</A>, <A HREF="rfiledir.htm#_merge_fname">_merge_fname</A>, <A HREF="rfiledir.htm#_merge_fname">_merge_fname</A>, <A HREF="rfiledir.htm#_merge_path">_merge_path</A>, <A HREF="rfiledir.htm#_split_ext">_split_ext</A>
+<BR></DL>
+<H2><A NAME="_merge_fname">_merge_fname</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Merges a filename from one path string into another path string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	char *_merge_fname(char far *destpath, const char *srcpath);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to destpath.
+<BR>	destpath		copy of destpath with filename from srcpath merged into the appropriate location
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function merges the filename portion of srcpath into the appropriate place in destpath. If srcpath contains more than a filename, only the filename portion is merged. If destpath already contains a filename, it is replaced with the filename in srcpath. If srcpath does not contain a filename, any filename in destpath is removed. If destpath is a NULL string, destpath returns only the filename portion of srcpath.
+<BR>
+<BR>	Note that this function merges only the filename-not the extension. The extension may be merged using _merge_ext, or the filename and extension may be merged as a unit using _merge_fnamext.
+<BR>
+<BR>	The following table shows the resulting destpath for various input srcpath and destpath string combinations:
+<BR>
+<BR>	Input source pathInput destination pathResulting destination path
+<BR>
+<BR>	"TEST.C" "PROGRAM.EXE"	"TEST.EXE"
+<BR>	"C:\TEST\TEST.C""C:\FAST\*.*"	"C:FAST\TEST.*"
+<BR>	"A:\KEVIN""M:CRENSHAW\"	"M:CRENSHAW\KEVIN"
+<BR>	0  "ANYTHING.CPP"		".CPP"
+<BR>	"TEST.OBJ"0			"TEST"
+<BR>
+<BR>	This function requires that the path portion of pathname be terminated with a backslash character ("\"). This makes it possible to differentiate between path-only and path-filename strings. The _term_path function is provided to force path-only strings to conform to this internal format. _fix_path is provided to convert strings from this format into DOS-compatible format. See the technical notes for more information about internal and DOS path string formats.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[68];
+	   ...
+	   _merge_fname (buffer, "tempfile");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[68] = "a:\\data\\file.dat", *string = "tempfile";
+	   ...
+	   mov si,string
+	   pushss
+	   pop es	 /* ES=seg buffer */
+	   lea di,buffer
+	   merge_fname ();/* buffer = "A:\DATA\TEMPFILE.DAT" */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDMERGN.ASM		  <B>ASM equiv</B>	MERGE_FNAME
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_merge_drive">_merge_drive</A>, <A HREF="rfiledir.htm#_merge_ext">_merge_ext</A>, <A HREF="rfiledir.htm#_merge_fname">_merge_fname</A>, <A HREF="rfiledir.htm#_merge_path">_merge_path</A>, <A HREF="rfiledir.htm#_split_fname">_split_fname</A>
+<BR></DL>
+<H2><A NAME="_merge_fnamext">_merge_fnamext</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Merges a filename and extension from one path string into another path string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	char *_merge_fnamext(char far *destpath, const char *srcpath);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to destpath.
+<BR>	destpath		copy of destpath with filename and extension from srcpath merged into the appropriate location
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function merges the filename and extension portion of srcpath into the appropriate place in destpath. If srcpath contains more than a filename and extension, only the filename and extension portion is merged. If destpath already contains a filename and/or extension, it is replaced with the filename and extension in srcpath. If srcpath does not contain a filename or extension, any filename or extension in destpath is removed. If destpath is a NULL string, destpath returns only the filename and extension portion of srcpath.
+<BR>
+<BR>	The following table shows the resulting destpath for various input srcpath and destpath string combinations:
+<BR>	Input source pathInput destination pathResulting destination path
+<BR>
+<BR>	"TEST.CPP""PROGRAM.EXE"	  "TEST.CPP"
+<BR>	"C:\TEST\TEST.C""C:\WORK\*.*"	  "C:WORK\TEST.C"
+<BR>	"TEST\ANYTHING.C""C:\WORK\"		  "C:WORK\ANYTHING.C"
+<BR>	"A:\TEST.OBJ"0			  "TEST.OBJ"
+<BR>	0   "A:ANYTHING.C"		  "A:"
+<BR>
+<BR>	This function requires that the path portion of pathname be terminated with a backslash character ("\"). This makes it possible to differentiate between path-only and path-filename strings. The _term_path function is provided to force path-only strings to conform to this internal format. _fix_path is provided to convert strings from this format into DOS-compatible format. See the technical notes for more information about internal and DOS path string formats.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[68];
+	   ...
+	   _merge_fnamext (buffer, "tempfile.tmp");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[68] ="a:\\data\\file.dat", *string = "tfile.tmp";
+	   ...
+	   mov si,string
+	   pushss
+	   pop es	 	/* ES=seg buffer */
+	   lea di,buffer
+	   merge_fnamext ();/* buffer = "A:\DATA\TFILE.TMP" */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDMERGX.ASM		  <B>ASM equiv</B>	MERGE_FNAMEXT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_merge_ext">_merge_ext</A>, <A HREF="rfiledir.htm#_merge_fname">_merge_fname</A>, <A HREF="rfiledir.htm#_split_fname">_split_fname</A>
+<BR></DL>
+<H2><A NAME="_merge_path">_merge_path</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Merges a path from one path string into another path string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	char *_merge_path(char far *destpath, const char *srcpath);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to destpath.
+<BR>	destpath		copy of destpath with path from srcpath merged into the appropriate location
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function merges the path portion of srcpath into the appropriate place in destpath. If srcpath contains more than a path, only the path portion is merged. If destpath already contains a path, it is replaced with the path in srcpath. If srcpath does not contain a path, any path in destpath is removed. If destpath is a NULL string, destpath returns only the path portion of srcpath.
+<BR>
+<BR>	Note that this function merges only the path-not the drive specifier. The drive specifier may be merged using _merge_drive, or the drive specifier and path may be merged as a unit using _merge_drvpath.
+<BR>
+<BR>	The following table shows the resulting destpath for a few input srcpath and destpath strings:
+<BR>
+<BR>	Input source pathInput destination pathResulting destination path
+<BR>
+<BR>	"C:\SPONTASM\""TEST"		  "\SPONTASM\TEST"
+<BR>	"C:\""ANYTHING.OBJ"		  "\ANYTHING.OBJ"
+<BR>	"C:\SPONTASM""A:TEST.OBJ"	  "A:\TEST.OBJ"
+<BR>	"SPONTASM\*.CPP""A:WORK\TEST.OBJ" "A:SPONTASM\TEST.OBJ"
+<BR>	"C:WORK\TEST.CPP"0			  "WORK\"
+<BR>
+<BR>	This function requires that the path portion of pathname be terminated with a backslash character ("\"). This makes it possible to differentiate between path-only and path-filename strings. The _term_path function is provided to force path-only strings to conform to this internal format, and _fix_path is provided to convert strings from this format into DOS-compatible format. See the technical notes for more information about internal and DOS path string formats.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[68];
+	   ...
+	   _merge_path (buffer, "\\util\\");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[68] = "a:\\data\\file.dat", *string = "\\util\\";
+	   ...
+	   mov si,string
+	   pushss
+	   pop es	 	/* ES=seg buffer */
+	   lea di,buffer
+	   merge_path ();	/* buffer = "A:\UTIL\FILE.DAT" */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDMERGP.ASM		  <B>ASM equiv</B>	MERGE_PATH
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_merge_drive">_merge_drive</A>, <A HREF="rfiledir.htm#_merge_drvpath">_merge_drvpath</A>, <A HREF="rfiledir.htm#_merge_ext">_merge_ext</A>, <A HREF="rfiledir.htm#_merge_fname">_merge_fname</A>, <A HREF="rfiledir.htm#_split_path">_split_path</A>
+<BR></DL>
+<H2><A NAME="_mk_dir">_mk_dir</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Creates a new directory.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	int _mk_dir(const char *path);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the directory was successfully created.
+<BR>
+<BR>	-1 if the directory could not be created.
+<BR>	 e_code error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function creates a new directory on any valid drive. If path includes a drive specifier, the directory is created on that drive. If no drive is specified, the directory is created on the active drive. 0 is returned if the function was successful. -1 is returned and the corresponding error code is placed in  e_code if the directory could not be created.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char pathname[50] = "temp????";
+	   ...
+	   if (_mk_temp (pathname) || _mk_dir (pathname))
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      if (_rm_dir (pathname))
+	      {
+	         /* Handle the error */
+	      } else
+	      {
+	         ...
+	      }
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "mydir";
+	   ...
+	   lea si,pathname
+	   mk_dir ();	/* make "MYDIR" subdirectory */
+	    jc mk_dir_010/*   if an error occurred */
+	   ... 	 	/*   if successful */
+	   rm_dir ();	/* remove "MYDIR" subdirectory */
+	    jc mk_dir_010/*   if an error occurred */
+	   ... 	 	/*   if successful */
+	   jmp short mk_dir_020
+
+	mk_dir_010:
+	   ... 	 	/* handle the error */
+	mk_dir_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDMKDIR.ASM		  <B>ASM equiv</B>	MK_DIR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_ch_dir">_ch_dir</A>, <A HREF="rfiledir.htm#_rm_dir">_rm_dir</A>
+<BR></DL>
+<H2><A NAME="_mk_temp">_mk_temp</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Generates a unique filename from a template.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	int _mk_temp(char *fname);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the function was successful.
+<BR>	name	 temporary ASCIIZ filename
+<BR>
+<BR>	1 if a unique filename could not be generated from fname.
+<BR>	name  undefined
+<BR>
+<BR>	-1 if an error occurred.
+<BR>	name  undefined
+<BR>	 e_code error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function generates a unique filename for use in the specified directory using a template. A drive and path may be specified in fname. If no drive or path is specified, the active drive and current working directory are used. The temporary filename is formed from the filename portion of fname, which must be a template consisting of valid filename characters and '?' wildcard characters. Each occurrence of a '?' character in the filename is replaced with a '0' through '9' character until an available filename is found or until all possibilities have been tried without success. 0 is returned if the temporary filename was successfully created in fname. 1 is returned if no unique filenames could be constructed from the template in fname. -1 is returned if an error occurred.
+<BR>
+<BR>WARNING! If the '*' character is encountered in name, 1 is returned.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char pathname[50] = "temp????";
+	   ...
+	   if (_mk_temp (pathname) || _mk_dir (pathname))
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      if (_rm_dir (pathname))
+	      {
+	         /* Handle the error */
+	      } else
+	      {
+	         ...
+	      }
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[13] = "temp????";
+	   ...
+	   lea si,buffer
+	   mk_temp ();	/* generate a temp filename */
+	    jc mk_temp_010/*   if an error occurred */
+	   mov ax,FA_NORM/* setup to create as "normal" */
+	   create_h ();	/* create tempfile, BX = handle */
+	    jc mk_temp_010/*   if an error occurred */
+	   ... 	 	/*   if successful */
+	   close_h ();	/* close file w/handle in BX */
+	    jc mk_temp_010/*   if an error occurred */
+	   remove_h ();	/* remove temp file */
+	    jc mk_temp_010/*   if an error occurred */
+	   ... 	 	/* more stuff... */
+	mk_temp_010:
+	   ... 	 	/* handle the error */
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDMKTMP.ASM		  <B>ASM equiv</B>	MK_TEMP
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfileio.htm#_create_h">_create_h</A>
+<BR></DL>
+<H2><A NAME="_remove_f">_remove_f</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Deletes a file.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	int _remove_f(const char *pathname);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the file was successfully deleted.
+<BR>
+<BR>	-1 if an error occurred.
+<BR>	 e_code error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function deletes the file indicated by pathname. If pathname does not include a drive specifier or path, this function attempts to delete the file from the current working directory on the active drive.
+<BR>
+<BR>	This function cannot be used to remove a subdirectory. The _rm_dir function is provided for this purpose.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char pathname[50];
+	   ...
+	   if (_remove_f (pathname))
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "file.dat";
+	   ...
+	   lea si,pathname
+	   remove_f ();
+	    jc remove_f_010/* if an error occurred */
+	   ... 	 	/* if successful */
+	   jmp short remove_f_020
+
+	remove_f_010:
+	   ... 	 	/* handle the error */
+	remove_f_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDREMOV.ASM		  <B>ASM equiv</B>	REMOVE_F
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfileio.htm#_create_h">_create_h</A>, <A HREF="rfiledir.htm#_rm_dir">_rm_dir</A>
+<BR></DL>
+<H2><A NAME="_rename_f">_rename_f</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Renames a file or directory.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	int _rename_f(const char *oldname, const char far *newname);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if oldname was successfully renamed to newname.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>	 e_code	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function renames oldname to newname. oldname can be a file (or directory if DOS 3.0 or above is being used) and can include a drive specifier and a path. A file can be moved using _rename_f by providing a path in newname that is different than the path specified in oldname. However, due to DOS limitations, the drive specifiers in the path strings must be the same or -1 is returned.
+<BR>
+<BR>	Directories can only be renamed under DOS 3.0 and above.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char pathname1[50], pathname2[50];
+	   ...
+	   if (_rename_f (pathname1, pathname2))
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname1[50] = "file.dat", pathname2[50] = "temp.fil";
+	   ...
+	   lea si,pathname1
+	   pushss
+	   pop es	 	/* ES=SS */
+	   lea di,pathname2
+	   rename_f ();
+	    jc rename_f_010/* if an error occurred */
+	   ... 	 	/* if successful */
+	   jmp short rename_f_020
+
+	rename_f_010:
+	   ... 	 	/* handle the error */
+	rename_f_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDRENAM.ASM		  <B>ASM equiv</B>	RENAME_F
+
+<BR><H2><A NAME="_rm_dir">_rm_dir</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Removes an empty directory.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	int _rm_dir(const char *name);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the directory was successfully deleted.
+<BR>
+<BR>	-1 if the directory could not be deleted.
+<BR>	 e_code	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function removes the directory specified by name if it is empty. Directories can be deleted from any valid drive. name may include a trailing backslash character ("\"). -1 is returned if the directory is not empty or if it is currently in use.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char pathname[50] = "temp????";
+	   int cond;
+	   ...
+	   if (_mk_temp (pathname, &ampcond) || _mk_dir (pathname))
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      if (_rm_dir (pathname))
+	      {
+	         /* Handle the error */
+	      } else
+	      {
+	         ...
+	      }
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "mydir";
+	   ...
+	   lea si,pathname
+	   mk_dir ();	/* make "MYDIR" subdirectory */
+	    jc mk_dir_010/*   if an error occurred */
+	   ... 	 	/*   if successful */
+	   rm_dir ();	/* remove "MYDIR" subdirectory */
+	    jc mk_dir_010/*   if an error occurred */
+	   ... 	 	/*   if successful */
+	   jmp short mk_dir_020
+
+	mk_dir_010:
+	   ... 	 	/* handle the error */
+	mk_dir_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDRMDIR.ASM		  <B>ASM equiv</B>	RM_DIR_
+
+<BR><DL>
+<DT><B>See also</B>
+<DD>ch_dir, <A HREF="rfiledir.htm#_mk_dir">_mk_dir</A>
+<BR></DL>
+<H2><A NAME="_search_path">_search_path</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches for a file.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	char *_search_path(char *namebuf, const char far *pathstr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to namebuf if a matching file was found.
+<BR>	namebuf	the complete path followed by the specified ASCIIZ filename template
+<BR>
+<BR>	NULL if an error occurred or no match was found.
+<BR>	 e_code	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches for a file which matches the filename template in namebuf. The current working directory is searched first, followed by each path specified in pathstr. If an invalid path is specified in pathstr, it is ignored. Searching continues until a matching file is found or until all the paths have been searched unsuccessfully. If a matching file is found, a pointer to namebuf is returned, and the filename template in namebuf is prefixed with the path where the matching file was found. NULL is returned if no matching file is found or if an error occurred.
+<BR>
+<BR>	pathstr must be in the same form as the PATH environment string (each pathname must be terminated by a semicolon and the entire list must be terminated with a NULL character), as follows:
+<BR>
+<BR>	"C:\;C:\DOS;C:\LANGS\SPONTASM;D:\;"
+<BR>
+<BR>	This string should contain no whitespace characters. The semicolon after the last path in the string is optional. The _get_env function may be used to obtain a pointer to the PATH environment variable or any other environment variable which contains a path string.
+<BR>
+<BR>	The filename template in namebuf may include wildcard characters, but it must not include a drive specifier or path.
+<BR>
+<BR>WARNING! The resulting path and filename string in namebuf may contain up to 80 characters including the terminal NULL. If namebuf is not large enough, data following namebuf may be overwritten.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[80];
+	   ...
+	   if (_search_path (buffer, "c:\\;c:\\work\\stub;") == NULL)
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[50] = "file.dat", *path="c:\\;c:\\util;c:\\bin;";
+	   ...
+	   pushss
+	   pop es	 	/* ES=DS (path pntr on stack) */
+	   mov di,path	    /* DI = offset of buffer */
+	   lea si,buffer/* SI = offset of buffer */
+	   search_path ();    /* specified pathname found? */
+	    je srch_path_010/*   y: process pathname */
+	    ja srch_path_020/*   n: path not found */
+	   ... 	 	/*   if an error occurred */
+	   jmp short srch_path_030
+
+	srch_path_010:
+	   ... 	 	/* process pathname */
+	   jmp short srch_path_030
+	srch_path_020:
+	   ... 	 	/* path not found */
+	srch_path_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDSRCHP.ASM		  <B>ASM equiv</B>	SEARCH_PATH
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rpgmctrl.htm#_get_env">_get_env</A>
+<BR></DL>
+<H2><A NAME="_set_drive">_set_drive</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Selects a new disk drive.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	int _set_drive(int drive);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if drive was selected as the new default disk drive.
+<BR>
+<BR>	-1 if drive is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function selects drive to be the new default disk drive. drive must be a valid drive letter ('A' through 'Z'). -1 is returned if drive represents an invalid drive.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   if (_set_drive ('D'))
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      ...
+	   }
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   mov al,'C'	/* AL=drive letter to use */
+	   set_drive ();
+	    jncset_drive_010/* if successful */
+	   ... 	 	/* if an error occurred */
+	set_drive_010:
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_FDSDRIV.ASM		  <B>ASM equiv</B>	SET_DRIVE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_get_drive">_get_drive</A>
+<BR></DL>
+<H2><A NAME="_setmode_f">_setmode_f</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Changes the access mode of a file.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	int _setmode_f(const char *filename, int attr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the function was successful.
+<BR>	-1 if an error occurred.
+<BR>	 e_code	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function changes the access mode or file attributes of filename to attr. 0 is returned if the function was successful. -1 is returned and an error code is placed in  e_code if an error occurred.
+<BR>
+<BR>	attr is created by bitwise ORing together the following symbolic constants defined in FILECNTL.H (automatically included from FILEDIR.H):
+<BR>
+<BR>	FA_NORM(0x0000) Ordinary 
+<BR>	FA_RDONLY(0x0001) Read-only
+<BR>	FA_HIDDEN(0x0002) Hidden 
+<BR>	FA_SYSTEM(0x0004) System
+<BR>	FA_ARCH(0x0020) Archive
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char filename[13];
+	   ...
+	   if (_setmode_f (filename, FA_NORM))
+	   {
+	      /* Handle the error */
+	   } else
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char filename[13] = "file.dat";
+	   ...
+	   lea si,filename
+	   mov ax,FA_NORM/* AX=file mode attributes */
+	   setmode_f ();
+	    jncsetmode_f_010/* if successful */
+	   ... 	 	/* if an error occurred */
+	setmode_f_010:
+	   ...
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_FDSETMD.ASM		  <B>ASM equiv</B>	SETMODE_F
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_getmode_f">_getmode_f</A>
+<BR></DL>
+<H2><A NAME="_split_drive">_split_drive</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns a drive specifier string from a pathname.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	char *_split_drive(char far *buffer, const char *pathname);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to buffer.
+<BR>	buffer		ASCIIZ drive specifier string (NULL string if none)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function copies the drive specifier portion of pathname into buffer and appends a terminating NULL. If pathname does not contain a drive specifier, a NULL string is placed in buffer. For example, if pathname is "C:\SPONTASM\FAST.C" then "C:" is copied into buffer.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer1[50], buffer2[50];
+	   ...
+	   _split_drive (buffer1, buffer2);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer1[50], buffer2[50] = "a:\\data\\file.dat";
+	   ...
+	   lea si,buffer2
+	   pushss
+	   pop es	 	/* ES=SS (pntr on stack) */
+	   lea di,buffer1/* DI = offset buffer1 */
+	   split_drive ();    /* buffer1 = "C:" */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDSPLTD.ASM		  <B>ASM equiv</B>	SPLIT_DRIVE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_merge_drive">_merge_drive</A>, <A HREF="rfiledir.htm#_split_drvpath">_split_drvpath</A>, <A HREF="rfiledir.htm#_split_ext">_split_ext</A>, <A HREF="rfiledir.htm#_split_fname">_split_fname</A>, <A HREF="rfiledir.htm#_split_path">_split_path</A>
+<BR></DL>
+<H2><A NAME="_split_drvpath">_split_drvpath</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns a drive specifier and path string from a pathname.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	char *_split_drvpath(char far *buffer, const char *pathname);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to buffer.
+<BR>	buffer		ASCIIZ drive specifier and path string (NULL string if none)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function copies the drive specifier and path portion of pathname into buffer and appends a terminating NULL. If pathname does not contain a drive specifier or path, a NULL string is placed in buffer. For example, if pathname is "C:\SPONTASM\FAST.C" then "C:\SPONTASM\" is copied into buffer.
+<BR>
+<BR>	This function requires that the path portion of pathname be terminated with a backslash character ("\"). This makes it possible to differentiate betweenpath-only and path-filename strings. The _term_path function is provided to force path-only strings to conform to this internal format. _fix_path is provided to convert strings from this format into DOS-compatible format.
+<BR>
+<BR>	See the technical notes for more information about internal and DOS path string formats.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer1[50], buffer2[50];
+	   ...
+	   _split_drvpath (buffer1, buffer2);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer1[50], buffer2[50] = "a:\\data\\file.dat";
+	   ...
+	   lea si,buffer2
+	   pushss
+	   pop es	 	/* ES=SS */
+	   lea di,buffer1
+	   split_drvpath ();/* buffer1 = "C:\DATA\" */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDSPLTV.ASM		  <B>ASM equiv</B>	SPLIT_DRVPATH
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_merge_drvpath">_merge_drvpath</A>, <A HREF="rfiledir.htm#_split_drive">_split_drive</A>, <A HREF="rfiledir.htm#_split_path">_split_path</A>
+<BR></DL>
+<H2><A NAME="_split_ext">_split_ext</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns a file extension string from a pathname.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	char *_split_ext(char far *buffer, const char *pathname);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to buffer.
+<BR>	buffer		ASCIIZ file extension string (NULL string if none)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function copies the file extension portion of pathname into buffer and appends a terminating NULL. If pathname does not contain a file extension, a NULL string is placed in buffer. For example, if pathname is "C:\SPONTASM\SMALL.CPP" then ".CPP" is copied into buffer.
+<BR>
+<BR>	This function requires that the path portion of pathname be terminated with a backslash character ("\"). This makes it possible to differentiate between path-only and path-filename strings. The _term_path function is provided to force path-only strings to conform to this internal format. _fix_path is provided to convert strings from this format into DOS-compatible format.
+<BR>
+<BR>	See the technical notes for more information about internal and DOS path string formats.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer1[50], buffer2[50];
+	   ...
+	   _split_ext (buffer1, buffer2);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer1[50], buffer2[50] = "a:\\data\\file.dat";
+	...
+	lea si,buffer2
+	pushss
+	pop es 	 /* ES=SS */
+	lea di,buffer1
+	split_ext ();	 /* buffer1 = ".DAT" */
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDSPLTE.ASM		  <B>ASM equiv</B>	SPLIT_EXT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_merge_ext">_merge_ext</A>, <A HREF="rfiledir.htm#_split_drive">_split_drive</A>, <A HREF="rfiledir.htm#_split_fname">_split_fname</A>, <A HREF="rfiledir.htm#_split_fname">_split_fname</A>, <A HREF="rfiledir.htm#_split_path">_split_path</A>
+<BR></DL>
+<H2><A NAME="_split_fname">_split_fname</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns a filename string from a pathname.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	char *_split_fname(char far *buffer, const char *pathname);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to buffer.
+<BR>	buffer		ASCIIZ filename string (NULL string if none)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function copies the filename portion of pathname into buffer and appends a terminating NULL. If pathname does not contain a filename, a NULL string is placed in buffer. For example, if pathname is "C:\SPONTASM\FAST.C" then "FAST" is copied into buffer.
+<BR>
+<BR>	This function requires that the path portion of pathname be terminated with a backslash character ("\"). This makes it possible to differentiate between path-only and path-filename strings. The _term_path function is provided to force path-only strings to conform to this internal format. _fix_path is provided to convert strings from this format into DOS-compatible format.
+<BR>
+<BR>	See the technical notes for more information about internal and DOS path string formats.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer1[50], buffer2[50];
+	   ...
+	   _split_fname (buffer1, buffer2);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer1[50], buffer2[50] = "a:\\data\\file.dat";
+	...
+	lea si,buffer2
+	pushss
+	pop es 	 /* ES=SS */
+	lea di,buffer1
+	split_fname ();	/* buffer1 = "FILE" */
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDSPLTN.ASM		  <B>ASM equiv</B>	SPLIT_FNAME
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_merge_fname">_merge_fname</A>, <A HREF="rfiledir.htm#_split_drive">_split_drive</A>, <A HREF="rfiledir.htm#_split_ext">_split_ext</A>, <A HREF="rfiledir.htm#_split_fname">_split_fname</A>, <A HREF="rfiledir.htm#_split_path">_split_path</A>
+<BR></DL>
+<H2><A NAME="_split_fnamext">_split_fnamext</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns a filename and extension string from a pathname.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	char *_split_fnamext(char far *buffer, const char *pathname);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to buffer.
+<BR>	buffer		ASCIIZ filename and extension string (NULL string if none)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function copies the filename and extension portion of pathname into buffer and appends a terminating NULL. If string does not contain a filename and extension, a NULL string is placed in buffer. For example, if pathname is "C:\SPONTASM\SMALL.C" then "SMALL.C" is copied into buffer.
+<BR>
+<BR>	This function requires that the path portion of pathname be terminated with a backslash character ("\"). This makes it possible to differentiate between path-only and path-filename strings. The _term_path function is provided to force path-only strings to conform to this internal format. _fix_path is provided to convert strings from this format into DOS-compatible format.
+<BR>
+<BR>	See the technical notes for more information about internal and DOS path string formats.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer1[50], buffer2[50];
+	   ...
+	   _split_fnamext (buffer1, buffer2);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer1[50], buffer2[50] = "a:\\data\\file.dat";
+	   ...
+	   lea si,buffer2
+	   pushss
+	   pop es	 	/* ES=SS */
+	lea di,buffer1
+	split_fnamext ();/* buffer1 = "FILE.DAT" */
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDSPLTX.ASM		  <B>ASM equiv</B>	SPLIT_FNAMEXT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_merge_fname">_merge_fname</A>, <A HREF="rfiledir.htm#_split_ext">_split_ext</A>, <A HREF="rfiledir.htm#_split_fname">_split_fname</A>
+<BR></DL>
+<H2><A NAME="_split_path">_split_path</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns a path string from a pathname.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	char *_split_path(char far *buffer, const char *pathname);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to buffer.
+<BR>	buffer		ASCIIZ path string (NULL string if none)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function copies the path portion of pathname into buffer and appends a terminating NULL. If pathname does not contain a path, a NULL string is placed in buffer. For example, if pathname is "C:\SPONTASM\SMALL.C" then "\SPONTASM\" is copied into buffer.
+<BR>
+<BR>	This function requires that the path portion of pathname be terminated with a backslash character ("\"). This makes it possible to differentiate between path-only and path-filename strings. The _term_path function is provided to force path-only strings to conform to this internal format. _fix_path is provided to convert strings from this format into DOS-compatible format.
+<BR>
+<BR>	See the technical notes for more information about internal and DOS path string formats.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer1[50], buffer2[50];
+	   ...
+	   _split_path (buffer1, buffer2);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer1[50], buffer2[50] = "a:\\data\\file.dat";
+	   ...
+	   lea si,buffer2
+	   pushss
+	   pop es	 	/* ES=SS */
+	   lea di,buffer1
+	   split_path ();	/* buffer1 = "\DATA\" */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDSPLTP.ASM		  <B>ASM equiv</B>	SPLIT_PATH
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_merge_path">_merge_path</A>, <A HREF="rfiledir.htm#_split_drive">_split_drive</A>, <A HREF="rfiledir.htm#_split_drvpath">_split_drvpath</A>, <A HREF="rfiledir.htm#_split_ext">_split_ext</A>, <A HREF="rfiledir.htm#_split_fname">_split_fname</A>
+<BR></DL>
+<H2><A NAME="_term_path">_term_path</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts a path string from DOS format to internal format.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;filedir.h&gt
+<BR>	char *_term_path(char *path);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to path.
+<BR>	path		a copy of path with a terminal backslash character ("\") appended
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function converts a path-only string into Spontaneous Assembly internal format by appending a backslash character ("\") if one is not already present and if at least one subdirectory is present in path. 
+<BR>
+<BR>	The following are examples of path strings before and after calling TERM_PATH:
+<BR>
+<BR>	BEFORE  AFTER			 CHANGE
+<BR>	C:\SPONTASMC:\SPONTASM\	 append backslash
+<BR>	C:SPONTASMC:SPONTASM\		 append backslash
+<BR>	C:\	   C:\			 no change
+<BR>	\SPONTASM\\SPONTASM\		 no change
+<BR>	C:	   C:			 no change
+<BR>
+<BR>	A terminal backslash character is appended to path-only strings in Spontaneous Assembly internal format to allow filename manipulation functions to differentiate between path-only and path-filename strings. Terminal backslashes must be removed before using path strings with DOS function calls. _fix_path is provided for this purpose.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char pathname[50];
+	   ...
+	   _term_path (pathname);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char pathname[50] = "\\util";
+	   ...
+	   lea si,pathname
+	   term_path ();/* pathname = "\UTIL\" */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_FDTERMP.ASM		  <B>ASM equiv</B>	TERM_PATH
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_fix_path">_fix_path</A>
+<BR>
+<BR></BODY>
+<BR></HTML><BR>

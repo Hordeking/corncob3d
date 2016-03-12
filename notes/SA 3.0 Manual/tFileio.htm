@@ -1,0 +1,184 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: File I/O</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>File I/O</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tFileio.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tFileio.htm#HEAD0001">Creating, Opening and Closing Files
+</A><BR>
+<A HREF="tFileio.htm#HEAD0002">Reading and Writing Data
+</A><BR>
+<A HREF="tFileio.htm#HEAD0003">Manipulating Files and Devices Using a Handle
+</A><BR>
+<A HREF="tFileio.htm#HEAD0004">Manipulating File Pointers
+</A><BR>
+<A HREF="tFileio.htm#HEAD0005">Manipulating File Handles
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit consists of handle-oriented file I/O functions which open and create files, manipulate files and devices, manipulate file pointers, and manipulate file handles.
+
+<P>
+When any file I/O function returns an error code, it does so through the global  <A HREF="rmiscdos.htm#e_code">e_code</A> variable. This convention minimizes the number of registers changed by the functions, and it allows inputs and returns to be more consistent. This convention also allows error conditions to be handled at a later time or ignored altogether. Symbolic constants are defined in ECODES.H for each error code. A list of these codes, their symbolic constants, and their meanings can be found in Appendix A. The error code symbolic constants follow an E_... naming convention.
+
+<P>
+The naming convention for GET and PUT functions with console I/O and DOS console I/O equivalents is _h...; the naming convention for all other handle-oriented file I/O functions is ..._h.
+
+<H2><A NAME="HEAD0001">Creating, Opening and Closing Files
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rfileio.htm#_close_h">_close_h</A><DD>       Closes a file.
+<DT><A HREF="rfileio.htm#_create_h">_create_h</A><DD>      Creates and opens a new file or truncates and opens an existing one.
+<DT><A HREF="rfileio.htm#_open_h">_open_h</A><DD>Opens a file, optionally creating or truncating it as required.
+<DT><A HREF="rfileio.htm#_openex_h">_openex_h</A><DD>      Opens an existing file.
+</DL>
+Each of these functions (except <A HREF="rfileio.htm#_close_h">_close_h</A>) takes a file pathname as input and, if successful, returns a DOS file handle for the created or opened file. <A HREF="rfileio.htm#_close_h">_close_h</A> accepts a DOS file handle and closes the file or device associated with the handle.
+
+<P>
+Three distinct functions are provided for opening files. <A HREF="rfileio.htm#_open_h">_open_h</A> is a full-featured function which automatically creates nonexisting files and/or truncates existing ones. <A HREF="rfileio.htm#_openex_h">_openex_h</A> is a significantly smaller function which opens already-existing files. <A HREF="rfileio.htm#_create_h">_create_h</A> creates and opens nonexisting files or truncates and opens existing ones.
+
+<P>
+<A HREF="rfileio.htm#_open_h">_open_h</A> supports all DOS file access modes (read only, write only and read/write), sharing modes (read sharing, write sharing, etc.), and inheritance modes. The sharing and inheritance modes are only supported by DOS 3.0 and later-they are ignored under earlier versions of DOS. <A HREF="rfileio.htm#_open_h">_open_h</A> can also be directed to create nonexisting files and truncate existing files before opening them. Created files are assigned normal file attributes (non-hidden, non-system and non-read-only).
+
+<P>
+<A HREF="rfileio.htm#_openex_h">_openex_h</A> also supports all DOS access modes. This function assumes that the file exists and opens it if it does. An error condition results if the file does not exist. <A HREF="rfileio.htm#_openex_h">_openex_h</A> should be used if a device is to be opened.
+
+<P>
+<A HREF="rfileio.htm#_create_h">_create_h</A> creates nonexisting files or truncates existing ones prior to opening them. Files may be assigned any file attributes (i.e., hidden, system or read-only). The newly-created files are then opened with read/write access and compatibility-mode sharing characteristics.
+<P>
+The following example demonstrates use of <A HREF="rfileio.htm#_open_h">_open_h</A>:
+<PRE><CODE>
+#include                 <fileio.h>
+...
+char *tfile ="TEMPFILE.TXT";
+int handle;
+...
+void main (void)
+{
+   ...
+   handle = <A HREF="rfileio.htm#_open_h">_open_h</A>(tfile, O_RDWR+O_TRUNC+O_CREAT);
+   if (handle == -1)
+   {
+   /* error occurred */
+   }
+   ...
+}
+</CODE></PRE>
+<H2><A NAME="HEAD0002">Reading and Writing Data
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rfileio.htm#_flush_h">_flush_h</A><DD>       Flushes all DOS buffers associated with an open file.
+<DT><A HREF="rfileio.htm#_hget_chr">_hget_chr</A><DD>      Gets a character from a file or device.
+<DT><A HREF="rfileio.htm#_hget_line">_hget_line</A><DD>     Gets a line from a file or device.
+<DT><A HREF="rfileio.htm#_hget_str">_hget_str</A><DD>      Gets a string from a file or device.
+<DT><A HREF="rfileio.htm#_hput_chr">_hput_chr</A><DD>      Writes a character to a file or device.
+<DT><A HREF="rfileio.htm#_hput_str">_hput_str</A><DD>      Writes a string to a file or device.
+<DT><A HREF="rfileio.htm#_read_h">_read_h</A><DD>Reads a specified number of bytes from a file into a buffer.
+<DT><A HREF="rfileio.htm#_write_h">_write_h</A><DD>       Writes a specified number of bytes to a file or device from a buffer.
+</DL>
+These functions read and write data to/from the file or device associated with a DOS file handle. Each of these functions assumes that the file pointer associated with the handle already points to the file position where data is to be read or written. The file pointer is always adjusted to reflect the data read or written.
+
+<P>
+<A HREF="rfileio.htm#_read_h">_read_h</A> and <A HREF="rfileio.htm#_write_h">_write_h</A> read and write a specified number of bytes to or from a buffer. If a DOS error is encountered, it is reported and the error code is returned in  <A HREF="rmiscdos.htm#e_code">e_code</A>. If a disk full condition is encountered, it is reported, but it is not treated as an error (no error code is returned in  <A HREF="rmiscdos.htm#e_code">e_code</A>). In all cases, the actual number of bytes read or written is reported. Note that <A HREF="rfileio.htm#_read_h">_read_h</A> and <A HREF="rfileio.htm#_write_h">_write_h</A> do not always read or write the exact number of bytes requested, even if no error or disk full condition is reported.
+
+<P>
+<A HREF="rfileio.htm#_flush_h">_flush_h</A> forces DOS to flush all file data to disk. This flushes all changed DOS buffers to disk.
+
+<P>
+The _hget_... and _hput_... functions are the counterparts of the _?get... and _?put... functions in the DOS console I/O and console I/O units. _get_... and _put_... operate on STDIN and STDOUT. _cget_... and _cput_... operate on the console via BIOS calls or direct writes to video hardware. _hget_... and _hput_... operate on any file or device associated with a handle.
+
+<P>
+<A HREF="rfileio.htm#_hget_chr">_hget_chr</A> and <A HREF="rfileio.htm#_hput_chr">_hput_chr</A> read and write a single character to or from the file or device associated with the DOS file handle. <A HREF="rfileio.htm#_hget_str">_hget_str</A> and <A HREF="rfileio.htm#_hput_str">_hput_str</A> read and write strings. <A HREF="rfileio.htm#_hput_str">_hput_str</A> writes an ASCIIZ string, intact, up to but not including the terminal NULL. <A HREF="rfileio.htm#_hget_str">_hget_str</A> reads a string of characters up to a CR/LF pair, terminating the string with a NULL in place of the CR/LF. <A HREF="rfileio.htm#_hget_line">_hget_line</A> behaves like <A HREF="rfileio.htm#_hget_str">_hget_str</A>, except the returned ASCIIZ string includes the final CR/LF character(s).
+
+<P>
+Although the _hget_... functions may be used to get characters from STDIN, this should be done with caution. At least some DOS versions buffer input from STDIN, returning control to the program only after the return key has been pressed. However, if more characters are entered than are to be read by the _hget_... function, characters are left in the buffer and are returned immediately on a subsequent read. For this reason, the DOS console I/O _get_... and _put_... functions are recommended for reading and writing STDIN and STDOUT.
+
+<H2><A NAME="HEAD0003">Manipulating Files and Devices Using a Handle
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rfileio.htm#_getfsize_h">_getfsize_h</A><DD>    Gets the current size of an open file.
+<DT><A HREF="rfileio.htm#_getftime_h">_getftime_h</A><DD>    Gets the date/time stamp of an open file.
+<DT><A HREF="rfileio.htm#_isatty_h">_isatty_h</A><DD>      Determines if a handle is associated with a character device.
+<DT><A HREF="rfileio.htm#_setfsize_h">_setfsize_h</A><DD>    Sets the size of a file to a specified size.
+<DT><A HREF="rfileio.htm#_setftime_h">_setftime_h</A><DD>    Sets the date/time stamp of an open file.
+</DL>
+These functions return or modify information about the file or device associated with a given handle.
+
+<P>
+<A HREF="rfileio.htm#_getftime_h">_getftime_h</A> and <A HREF="rfileio.htm#_setftime_h">_setftime_h</A> return or set the date/time stamp which is affixed to the file when it is closed. This may not take effect until the file is closed.
+
+<P>
+<A HREF="rfileio.htm#_getfsize_h">_getfsize_h</A> and <A HREF="rfileio.htm#_setfsize_h">_setfsize_h</A> return or set the current size of the file associated with a DOS file handle. <A HREF="rfileio.htm#_setfsize_h">_setfsize_h</A> extends or truncates the file as needed.
+
+<P>
+<A HREF="rfileio.htm#_isatty_h">_isatty_h</A> allows a given DOS file handle to be queried to see if it refers to a file or device.
+
+<H2><A NAME="HEAD0004">Manipulating File Pointers
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rfileio.htm#_eof_h">_eof_h</A><DD> Determines if a file pointer is at end-of-file.
+<DT><A HREF="rfileio.htm#_lseekb_h">_lseekb_h</A><DD>      Moves a file pointer to a new position (relative to the beginning of the file).
+<DT><A HREF="rfileio.htm#_lseekbof_h">_lseekbof_h</A><DD>    Moves a file pointer to the beginning of the file.
+<DT><A HREF="rfileio.htm#_lseekc_h">_lseekc_h</A><DD>      Moves a file pointer to a new position (relative to the current file position).
+<DT><A HREF="rfileio.htm#_lseeke_h">_lseeke_h</A><DD>      Moves a file pointer to a new position (relative to end-of-file).
+<DT><A HREF="rfileio.htm#_lseekeof_h">_lseekeof_h</A><DD>    Moves a file pointer to end-of-file.
+<DT><A HREF="rfileio.htm#_tell_h">_tell_h</A><DD>Returns a file pointer position for an open file.
+</DL>
+These functions manipulate or get information about the file pointer associated with a given DOS file handle. They are intended to be used only with handles which are associated with files (not devices).
+
+<P>
+The _lseek... functions move the file pointer to a specified position relative the beginning of the file, the end of the file, or the current file pointer position. <A HREF="rfileio.htm#_lseekbof_h">_lseekbof_h</A> and <A HREF="rfileio.htm#_lseekeof_h">_lseekeof_h</A> reset the file pointer to the beginning or the end of the file, respectively. This allows a file to be opened (_open_h) and then prepared for appending (_lseekeof_h) using two back-to-back function calls.
+
+<P>
+_lseekb_h treats the supplied long int as an unsigned offset relative to the beginning of the file (allowing file sizes up to 1 byte less than 4 gigabytes). <A HREF="rfileio.htm#_lseekc_h">_lseekc_h</A> and <A HREF="rfileio.htm#_lseeke_h">_lseeke_h</A> each use the supplied long int as a signed offset relative to the current position or the end of file, respectively. Where an offset is returned, the offset is the pointer's absolute position relative to the beginning of the file.
+
+<P>
+Because of the way DOS controls file handles, <A HREF="rfileio.htm#_lseekc_h">_lseekc_h</A> and <A HREF="rfileio.htm#_lseeke_h">_lseeke_h</A> allow the file pointer to be moved either prior to the beginning of the file or beyond the end of the file without generating an error. However, an error may occur on a subsequent read/write if the pointer is positioned before the beginning of the file. If the pointer is positioned beyond the end of the file, a write will attempt to grow the file to that length or a read will generate an error. <A HREF="rfileio.htm#_setfsize_h">_setfsize_h</A> should be used to expand the size of a file; simply moving the file pointer beyond the end of the file has no affect on the file size.
+
+<H2><A NAME="HEAD0005">Manipulating File Handles
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rfileio.htm#_dup_h">_dup_h</A><DD> Creates a second DOS handle for a file or device.
+<DT><A HREF="rfileio.htm#_dup2_h">_dup2_h</A><DD>Redirects a DOS file handle to another file or device.
+</DL>
+These functions manipulate file handles. <A HREF="rfileio.htm#_dup2_h">_dup2_h</A> redirects I/O from one file or device to another. For example, <A HREF="rfileio.htm#_dup2_h">_dup2_h</A> may be used to redirect output going to STDOUT into a file. <A HREF="rfileio.htm#_dup_h">_dup_h</A>, on the other hand, gives a duplicate handle for the handle that was passed in. The following code demonstrates how to redirect STDOUT to a file and then restore the handle associated with STDOUT to its original state:
+<PRE><CODE>
+#include                 <fileio.h>
+char *rfile = "RECEIVE.TXT";
+int stdout_h = -1, rfile_h = -1;
+
+void main (void)
+{
+   ...
+/* ---- create a duplicate handle for STDOUT */
+   stdout_h = <A HREF="rfileio.htm#_dup_h">_dup_h</A> (STDOUT);
+   if (stdout_h == -1)
+   {
+      /* error occurred */
+   }
+/* ---- create the file RECEIVE.TXT */
+   rfile_h = <A HREF="rfileio.htm#_create_h">_create_h</A> (rfile, FA_NORM);
+   if (rfile_h == -1)
+   {
+      /* error occurred */
+   }
+/* ---- redirect STDOUT to RECEIVE.TXT */
+   if (_dup2_h (rfile_h, STDOUT))
+   {
+      /* error occurred */
+   }
+           ...
+/* ---- restore output path to STDOUT */
+   if (_dup2_h (stdout_h, STDOUT))
+   {
+      /* error occurred */
+   }
+   ...
+}
+</CODE></PRE>
+</BOBY>
+</HTML>

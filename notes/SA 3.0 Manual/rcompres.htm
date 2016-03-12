@@ -1,0 +1,1582 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Data Compression Reference</TITLE>
+</HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Data Compression</H1>
+<P ALIGN=CENTER>Reference Section </P>
+<UL>
+<LI><A HREF="TOC.htm">Table of Contents</A>
+<LI><A HREF="index.htm">Function Index</A>
+<LI><A HREF="gindex.htm">Group Index
+</UL>
+<A HREF="rcompres.htm#_crc_ccitt">_crc_ccitt</A><BR>
+<A HREF="rcompres.htm#_get_packcmpl">_get_packcmpl</A><BR>
+<A HREF="rcompres.htm#_get_packprefix">_get_packprefix</A><BR>
+<A HREF="rcompres.htm#_get_packratio">_get_packratio</A><BR>
+<A HREF="rcompres.htm#_get_unpackcmpl">_get_unpackcmpl</A><BR>
+<A HREF="rcompres.htm#_pack_bufsize">_pack_bufsize</A><BR>
+<A HREF="rcompres.htm#_pack_bufsizec">_pack_bufsizec</A><BR>
+<A HREF="rcompres.htm#_pack_cmplinit">_pack_cmplinit</A><BR>
+<A HREF="rcompres.htm#_pack_continue">_pack_continue</A><BR>
+<A HREF="rcompres.htm#_pack_start">_pack_start</A><BR>
+<A HREF="rcompres.htm#_pack_startc">_pack_startc</A><BR>
+<A HREF="rcompres.htm#_unpack_bufsize">_unpack_bufsize</A><BR>
+<A HREF="rcompres.htm#_unpack_bufsizec">_unpack_bufsizec</A><BR>
+<A HREF="rcompres.htm#_unpack_cmplinit">_unpack_cmplinit</A><BR>
+<A HREF="rcompres.htm#_unpack_continue">_unpack_continue</A><BR>
+<A HREF="rcompres.htm#_unpack_start">_unpack_start</A><BR>
+<A HREF="rcompres.htm#_unpack_startc">_unpack_startc</A><BR>
+<H2><A NAME="_crc_ccitt">_crc_ccitt</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Calculates or updates a 16-bit CCITT CRC value.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;compress.h&gt
+<BR>	int _crc_ccitt(void far *buffer, int size, int current_crc);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The adjusted CRC value.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function calculates or updates a CRC (cyclic redundancy check) that conforms to the CCITT standard. size bytes from buffer along with current_crc are used in the calculation. The resulting CRC value is returned.
+<BR>
+<BR>	To calculate a new CRC, a current_crc of zero (or a known value) should be specified when this function is called for the first time. To continue calculating a CRC, current_crc must be the previous return value and buffer must point to the next block of data in the same data stream. This process may be continued until all data in the stream has been processed. The final return value is the CRC for the entire data stream.
+<BR>
+<BR>	The CRC value may be used to check the integrity of a block of data. The CRC is usually calculated prior to storing or processing the data in some way. For example, a CRC is normally calculated after data has been compressed. The resulting CRC value is then stored with the compressed result. This allows the CRC to be recalculated and compared with the original before attempting to decompress the data. If the CRC values do not match, the data has been corrupted.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	#define SIZE 1000
+	{
+	   char buffer[SIZE];
+	   int crc_value = 0;	/* initialize CRC to zero */
+	   ...
+	   crc_value = _crc_ccitt (buffer, SIZE, crc_value);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	#define SIZE 1000
+
+	{
+	   char buffer[SIZE];
+	   int crc_value = 0;
+	   ...
+	   lea si,buffer    /* SI=offset of buf */
+	   mov cx,SIZE	    	  /* CX=size of buf */
+	   mov ax,crc_value    /* AX = starting CRC */
+	   crc_value = crc_ccitt ();/* AX = new CRC */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_CMCRCCI.ASM		  <B>ASM equiv</B>	CRC_CCITT
+
+<BR><H2><A NAME="_get_packcmpl">_get_packcmpl</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the percentage of data compression completed.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;compress.h&gt
+<BR>	char _get_packcmpl(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The completion percentage.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the completion percentage since the _pack_cmplinit function was last called. The completion percentage is an integer between 0 and 100. This value is calculated by dividing the number of bytes processed by the total size of the data before compression. _pack_cmplinit must be called before this function is called, else zero is returned.
+<BR>
+<BR>	This function may be called any time after the compression system has been initialized with _pack_start or _pack_startc (even after the compression has finished). If the compression system is not initialized, the results of this function are undefined. (Calling _unpack_start or _unpack_startc effectively "uninitializes" the compression system.)
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char ss_spec = 0;/* best compression */
+	   int inhandle, outhandle, flag = 1;
+	   unsigned int min_mem, max_mem, rec_mem, dos_mem, read_size;
+	   void far *buffer;
+	   ...	  	 /* open input and output files */
+	   _pack_cmplinit (_getfsize_h (inhandle));
+	   rec_mem = _pack_bufsize (ss_spec, &ampmin_mem, &ampmax_mem);
+	   dos_mem = _dos_malloc (rec_mem);
+	   if (dos_mem == 0)
+	   return;
+	   buffer = _pack_start(SS_SPEC, dos_mem, rec_mem, &ampread_size);
+	   if (buffer == NULL)
+	   _put_str ("Error initializing compression system");
+	   do {
+	      switch (flag)
+	      {
+	         case 1:
+	            read_size = _read_h (inhandle, buffer, read_size);
+	            if (read_size == 0xffff)
+	            {
+	               _put_str ("Error reading from input file");
+	               return;
+	         }
+	         break;
+	      case -1:
+	         read_size = _write_h (outhandle, buffer, read_size);
+	         if (read_size == 0xffff)
+	         {
+	            _put_str ("Error writing to output file");
+	            return;
+	         }
+	      }
+	      flag = _pack_continue (&ampbuffer, &ampread_size);
+	      printf ("\r%d%% complete",_get_packcmpl ());
+	   } while (flag);
+	   printf("\nOutput file is %2.2f%% the size of the\ 
+	  input file\n",(float)(_get_packratio ())/100);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char ss_spec = 0;	/* set for best compression */
+	   int inhandle, outhandle;
+	   unsigned int dos_mem;
+	   ... 	 	/* open input/output files */
+	   mov bx,inhandle
+	   getfsize_h ();	/* DX;AX=infile size */
+	   pack_cmplinit ();
+	   mov dl,ss_spec/* DL = speedsize */
+	   pack_bufsize ();/* BX = rec buf size */
+	   mov ax,bx	/* alloc rec memory */
+	   dos_malloc ();	/* was mem allocated? */
+	    jc p_cont_050/*   n: print err msg */
+	   mov dos_mem,dx/* save seg of block */
+	   mov es,dx	/* ES = seg of block */
+	   mov dl,ss_spec/* DL = speedsize */
+	   pushds
+	   pack_start ();	/* DS:SI-&gtinput buf */
+	   pop es	 	/* CX=count, ES=DS */
+	    jc p_cont_050/* if error */
+	p_cont_020:
+	   mov bx,es:inhandle
+	   read_h ();	/* read successful? */
+	    jc p_cont_050/*   n: print err msg */
+	p_cont_030:
+	   pushcx
+	   printf ("\r%d%% complete", get_packcmpl ());
+	   pop cx
+	   pack_continue ();
+	    ja p_cont_020/* to get more input */
+	    je p_cont_040/* compression done */
+	   write_h ();	/* else flush output */
+	    jncp_cont_030/* go compress more */
+	   jmp p_cont_050/* if error occurred */
+
+	p_cont_040:
+	   printf ("\nOutput file is %2.2f%% the size of the\
+	   	  input file\n",(float)(_get_packratio ())/100);
+	   ...
+	p_cont_050:
+	   _put_str ("Unable to compress data");
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	CMPCMPL.ASM		  <B>ASM equiv</B>	GET_PACKCMPL
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rcompres.htm#_get_packratio">_get_packratio</A>, <A HREF="rcompres.htm#_get_unpackcmpl">_get_unpackcmpl</A>
+<BR></DL>
+<H2><A NAME="_get_packprefix">_get_packprefix</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets the current data compression prefix.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;compress.h&gt
+<BR>	void _get_packprefix(void *buffer);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	No return value.
+<BR>	buffer	current compression prefix
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function copies the compression prefix for the current data compression session into buffer. The compression prefix is a structure of type packp, which is defined in COMPRESS.H. The current format of the packp structure is as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   char len;	/* prefix length, in bytes */
+<BR>	   int  ver;	/* compression system version number */
+<BR>	   int  winlen;	/* window length */
+<BR>	   int  looklen;/* look-ahead length */
+<BR>	   int  maxweight;/* maximum huffman tree weight */
+<BR>	} packp;
+<BR>
+<BR>WARNING! In future releases, the packp structure may include additional fields not shown above.
+<BR>
+<BR>	buffer must be at least the size of the packp structure.
+<BR>
+<BR>	The compression prefix is required by _unpack_bufsize, _unpack_bufsizec, _unpack_start, and _unpack_startc. It is automatically written to the output buffer (followed by a 0xFF marker) at the start of the compressed data stream by _pack_start and _pack_startc. _get_packprefix makes it possible to store an optional copy of the compression prefix in an alternate location.
+<BR>
+<BR>	_pack_start or _pack_startc must be called prior to using this function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	#include &lt;compress.h&gt
+	{
+	   packp buffer;
+	   _get_packprefix ((void *)buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	#include &lt;compress.h&gt
+	{
+	   packp buffer;
+	   ...
+	   lea di,buffer
+	   pushss
+	   pop es	 	/* ES = SS */
+	   get_packprefix ();
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_CMPRFIX.ASM		  <B>ASM equiv</B>	GET_PACKPREFIX
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rcompres.htm#_unpack_bufsize">_unpack_bufsize</A>, <A HREF="rcompres.htm#_unpack_bufsize">_unpack_bufsize</A>, <A HREF="rcompres.htm#_unpack_start">_unpack_start</A>
+<BR></DL>
+<H2><A NAME="_get_packratio">_get_packratio</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the compression ratio for the current data compression session.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;compress.h&gt
+<BR>	int _get_packratio(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	Compression ratio * 10000.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function calculates the compression ratio for the current data compression session. The returned integer value is equal to 10,000 times the average number of output bytes for every input byte (or 100 times the compression percentage). The value is calculated by  multiplying the total number of output bytes by 10,000 and dividing by the total number of input bytes. The number of input and output bytes are maintained since the last initialization of the compression system.
+<BR>
+<BR>	A return value greater than 9500 may indicate that the input data is random, encrypted, or already compressed. When this situation is encountered, processing speed can be enhanced by storing the data "as is" instead of continuing the compression.
+<BR>
+<BR>	This function may be called any time after the compression system has been initialized with _pack_start or _pack_startc (even after the compression has finished). If the compression system is not initialized, the results of this function are undefined. (Calling _unpack_start or _unpack_startc effectively "uninitializes" the compression system.)
+<BR>
+<BR>	ratio may be displayed as a percentage by using the Spontaneous Assembly fixed-point data conversion or scripted I/O functions.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char ss_spec = 0;/* best compression */
+	   int inhandle, outhandle, flag = 1;
+	   unsigned int min_mem, max_mem, rec_mem, dos_mem, read_size;
+	   void far *buffer;
+	   ...	  	 /* open input and output files */
+	   _pack_cmplinit (_getfsize_h (inhandle));
+	   rec_mem = _pack_bufsize (ss_spec, &ampmin_mem, &ampmax_mem);
+	   dos_mem = _dos_malloc (rec_mem);
+	   if (dos_mem == 0)
+	   return;
+	   buffer = _pack_start(ss_spec, dos_mem, rec_mem, &ampread_size);
+	   if (buffer == NULL)
+	   _put_str ("Error initializing compression system");
+	   do {
+	      switch (flag)
+	      {
+	         case 1:
+	            read_size = _read_h (inhandle, buffer, read_size);
+	            if (read_size == 0xffff)
+	            {
+	               _put_str ("Error reading from input file");
+	               return;
+	         }
+	         break;
+	      case -1:
+	         read_size = _write_h (outhandle, buffer, read_size);
+	         if (read_size == 0xffff)
+	         {
+	            _put_str ("Error writing to output file");
+	            return;
+	         }
+	      }
+	      flag = _pack_continue (&ampbuffer, &ampread_size);
+	      printf ("\r%d%% complete",_get_packcmpl ());
+	   } while (flag);
+	   printf ("\noutput file is %2.2f%% the size of the input\
+		file\n",(float)(_get_packratio ())/100);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char ss_spec = 0;	/*  set for best compression */
+	   int inhandle, outhandle;
+	   unsigned int dos_mem;
+	   ... 	 	/* open input/output files */
+	   mov bx,inhandle
+	   getfsize_h ();	/* DX;AX = input file size */
+	   pack_cmplinit ();
+	   mov dl,ss_spec/* DL = speedsize spec */
+	   pack_bufsize ();/* BX = recommended buf size */
+	   mov ax,bx	/* allocate recommended memory */
+	   dos_malloc ();	/* was the memory allocated? */
+	    jc p_cont_050/*   n: print error message */
+	   mov dos_mem,dx/* save segment of mem block */
+	   mov es,dx	/* ES = segment of mem block */
+	   mov dl,ss_spec/* DL = speedsize spec */
+	   pushds
+	   pack_start ();	/* DS:SI-&gt input buffer, 
+	   	  	 	   CX = count */
+	   pop es	 	/* ES = DS */
+	    jc p_cont_050/* if init was unsuccessful */
+	p_cont_020:
+	   mov bx,es:inhandle
+	   read_h ();	/* was the read successful? */
+	    jc p_cont_050/*   n: print error message */
+	p_cont_030:
+	   pushcx
+	   printf ("\r%d%% complete", get_packcmpl ());
+	   pop cx
+	   pack_continue ();
+	    ja p_cont_020/* if more input is needed */
+	    je p_cont_040/* if compression is finished */
+	   write_h ();	/* if output needs flushed */
+	    jncp_cont_030/* if write was successful */
+	   jmp p_cont_050/* if an error occurred */
+	p_cont_040:
+	   printf ("\noutput file is %2.2f%% the size of the input\
+	      file\n",(float)(_get_packratio ())/100);
+	   ...
+	p_cont_050:
+	   _put_str ("Unable to compress data");
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	CMPRAT.ASM		  <B>ASM equiv</B>	GET_PACKRATIO
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rcompres.htm#_get_packcmpl">_get_packcmpl</A></DL>
+<H2><A NAME="_get_unpackcmpl">_get_unpackcmpl</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the percentage of data decompression completed.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;compress.h&gt
+<BR>	char _get_unpackcmpl(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The completion percentage.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the completion percentage since the _unpack_cmplinit function was last called. The completion percentage is a char value between 0 and 100. This value is calculated by dividing the number of bytes processed by the total size of the data before compression. _unpack_cmplinit must be called before this function is called, or zero is returned.
+<BR>
+<BR>	This function may be called any time after the decompression system has been initialized with _unpack_start or _unpack_startc (even after the decompression has finished). If the decompression system is not initialized, the results of this function are undefined. (Calling _pack_start or _pack_startc effectively "uninitializes" the decompression system.)
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int inhandle, outhandle, flag = 1;
+	   unsigned int min_mem, max_mem, rec_mem, dos_mem, read_size;
+	   void far *buffer;
+	   packp prefix;
+	   .../* open input/output files */
+	   .../* call _pack_cmplinit with
+	   	  	 size of data before compression */
+	   if (_read_h (inhandle, prefix, sizeof(packp)))
+	      _put_str ("Error reading from input file");
+	   else
+	      rec_mem = _unpack_bufsize (prefix, &ampmin_mem, &ampmax_mem);
+	   if (rec_mem == 0)
+	   {
+	      _put_str ("File has invalid format");
+	      return;
+	   }
+	   dos_mem = _dos_malloc (rec_mem);
+	   if (dos_mem == 0)
+	      return;
+	   buffer = _unpack_start (prefix, dos_mem, rec_mem,\
+	   	  &ampread_size);
+	   if (buffer == NULL)
+	   {
+	      _put_str ("Error initializing decompression system");
+	   } else
+	   do {
+	      switch (flag)
+	      {
+	         case 1:
+	            read_size = _read_h (inhandle, buffer, read_size);
+	            if (read_size == 0xffff)
+	            {
+	               _put_str ("Error reading from input file");
+	               return;
+	         }
+	         break;
+	      case -1:
+	         read_size = _write_h (outhandle, buffer, read_size);
+	         if (read_size == 0xffff)
+	         {
+	            _put_str ("Error writing to output file");
+	            return;
+	         }
+	      }
+	      flag = _unpack_continue (&ampbuffer, &ampread_size);
+	      printf ("\r%d%% complete",_get_unpackcmpl ());
+	   } while (flag);
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	(C Interface Recommended)
+
+</CODE></PRE>
+<B>Source file</B>	CMUCMPL.ASM		  <B>ASM equiv</B>	GET_UNPACKCMPL
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rcompres.htm#_get_packcmpl">_get_packcmpl</A>, <A HREF="rcompres.htm#_get_packratio">_get_packratio</A>
+<BR></DL>
+<H2><A NAME="_pack_bufsize">_pack_bufsize</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the memory requirements of the compression system.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;compress.h&gt
+<BR>	int _pack_bufsize(char speedsize, unsigned int *min_mem, unsigned int *max_mem);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The recommended work buffer size, in paragraphs.
+<BR>	min_mem		   		minimum work buffer size, in paragraphs
+<BR>	max_mem		maximum work buffer size, in paragraphs
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function indicates the minimum, maximum, and recommended amount of memory to allocate for the compression system. All three values depend on the value of speedsize. min_mem indicates the minimum work buffer size which may be used without sacrificing compression. The return value indicates a suggested work buffer size which allows for reasonable speed optimizations. max_mem indicates the largest work buffer size which can be used for speed optimizations. All values are specified in paragraphs (16 byte blocks).
+<BR>
+<BR>	The speed/size specifier is interpreted as an unsigned char. speedsize must be in the range 0 to 255. A value of 0 gives the tightest compression and 255 gives the fastest compression; a value of 127 gives a good balance between speed and size.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char ss_spec = 0;	/* best compression */
+	   unsigned int min_mem, max_mem, rec_mem;
+	   rec_mem = _pack_bufsize (ss_spec, &ampmin_mem, &ampmax_mem);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   mov dl,0	/* setup for best compression */
+	   pack_bufsize ();/* BX = recommended memory */
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_CMPBSZ.ASM		  <B>ASM equiv</B>	PACK_BUFSIZE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rcompres.htm#_pack_bufsize">_pack_bufsize</A>, <A HREF="rcompres.htm#_pack_start">_pack_start</A>, <A HREF="rcompres.htm#_unpack_bufsize">_unpack_bufsize</A>
+<BR></DL>
+<H2><A NAME="_pack_bufsizec">_pack_bufsizec</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the memory requirements of the compression system using a custom configuration.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;compress.h&gt
+<BR>		int _pack_bufsizec(pdat *settings, char speedsize, unsigned int *min_mem,      unsigned int *max_mem);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The recommended work buffer size, in paragraphs.
+<BR>	min_mem			minimum work buffer size, in paragraphs
+<BR>	max_mem		maximum work buffer size, in paragraphs
+<BR>
+<BR>	0 if any of the values in settings are invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function indicates the minimum, maximum, and recommended amount of memory to allocate for the compression system based on the value of speedsize as well as the values provided in settings. This allows the compression system to be fine-tuned for maximum performance based on specific needs and the availability of existing memory buffers. Thereturn value indicates the suggested work buffer size which allows for reasonable speed optimizations. If this value is non-zero, min_mem indicates the minimum work buffer size which may be used without sacrificing compression and max_mem indicates the largest work buffer size which can be used for speed optimizations. All return values are specified in paragraphs (16 byte blocks). 0 is returned if any of the values in settings are invalid.
+<BR>
+<BR>	The speed/size specifier (speedsize) is interpreted as an unsigned char. speedsize must be in the range 0 to 255. A value of 0 gives the tightest compression and 255 gives the fastest compression; a value of 127 gives a good balance between speed and size.
+<BR>
+<BR>	settings must be a structure of type pdat (defined in COMPRESS.H) as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   void far * buf1;/* pointer to user buffer 1 */
+<BR>	   int buf1size;/* size of user buffer 1 (in bytes, 0=none) */
+<BR>	   void far * buf2;/* pointer to user buffer 2 */
+<BR>	   int buf2size;/* size of user buffer 2 (in bytes, 0=none) */
+<BR>	   int winlen;	/* size of sliding window (512-32k bytes) */
+<BR>	   int looklen;	/* size of look-ahead buffer (256-16k bytes) */
+<BR>	   int maxweight;/* maximum weight of huffman tree (512-32k) */
+<BR>	   char hash;	/* hash setting (9-15 bits, 15=fastest) */
+<BR>	} pdat;
+<BR>
+<BR>	If the value of winlen, looklen, maxweight, or hash is zero, that value will be calculated based on speedsize.
+<BR>
+<BR>	A non-zero value for bufsize1 or bufsize2 indicates that a user buffer of the indicated size is available for use by the compression system. User buffers must be at least 512 bytes in size.
+<BR>
+<BR>	For maximum compression when memory is not limited, winlen should be set to 32K and hash should be set to 15. When speed is most critical, winlen should be set to 512. See the technical notes for more information on fine-tuning the compression system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char ss_spec = 0;/* best compression */
+	   unsigned int min_mem, max_mem, rec_mem;
+	   pdat settings;
+	   ...
+	   rec_mem = _pack_bufsizec (&ampsettings, ss_spec, &ampmin_mem,
+	   	  	      &ampmax_mem);
+	   if (rec_mem == 0)
+	   _put_str ("Values in settings were invalid");
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   pdat settings;
+	   ...
+	   mov dl,0	/* setup for best compression */
+	   lea si,settings/* SI = offset of pdat struct */
+	   pack_bufsizec ();/* BX = recommended memory */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_CMPBSZC.ASM		  <B>ASM equiv</B>	PACK_BUFSIZEC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rcompres.htm#_pack_bufsize">_pack_bufsize</A>, <A HREF="rcompres.htm#_pack_start">_pack_start</A>, <A HREF="rcompres.htm#_unpack_bufsize">_unpack_bufsize</A>
+<BR></DL>
+<H2><A NAME="_pack_cmplinit">_pack_cmplinit</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Initializes the compression system to allow subsequent calculation of the completion percentage.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;compress.h&gt
+<BR>	void _pack_cmplinit(long int size);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function initializes the compression status variables to allow _get_packcmpl to return an accurate completion percentage. size must be the original number of bytes in the uncompressed data stream (before compression).
+<BR>
+<BR>	Calling this function again effectively resets the completion percentage to zero. The completion percentage is always measured from the last call to this function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char ss_spec = 0;/* best compression */
+	   int inhandle, outhandle, flag = 1;
+	   unsigned int min_mem, max_mem, rec_mem, dos_mem, read_size;
+	   void far *buffer;
+	   ...	  	 /* open input and output files */
+	   _pack_cmplinit (_getfsize_h (inhandle));
+	   rec_mem = _pack_bufsize (ss_spec, &ampmin_mem, &ampmax_mem);
+	   dos_mem = _dos_malloc (rec_mem);
+	   if (dos_mem == 0)
+	   return;
+	   buffer = _pack_start (ss_spec, dos_mem, rec_mem, &ampread_size);
+	   if (buffer == NULL)
+	   _put_str ("Error initializing compression system");
+	   do {
+	      switch (flag)
+	      {
+	         case 1:
+	            read_size = _read_h (inhandle, buffer, read_size);
+	            if (read_size == 0xffff)
+	            {
+	               _put_str ("Error reading from input file");
+	               return;
+	         }
+	         break;
+	      case -1:
+	         read_size = _write_h (outhandle, buffer, read_size);
+	         if (read_size == 0xffff)
+	         {
+	            _put_str ("Error writing to output file");
+	            return;
+	         }
+	      }
+	      flag = _pack_continue (&ampbuffer, &ampread_size);
+	      printf ("\r%d%% complete",_get_packcmpl ());
+	   } while (flag);
+	   printf ("\noutput file is %2.2f%% the size of the\
+	      input file\n",(float)(_get_packratio ())/100);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char ss_spec = 0;	/* setup for best compression */
+	   int inhandle, outhandle;
+	   unsigned int dos_mem;
+	   ...      	/* open input and output files
+	   mov bx,inhandle
+	   getfsize_h ();	/* DX;AX = input file size */
+	   pack_cmplinit ();
+	   mov dl,ss_spec/* DL = speedsize spec */
+	   pack_bufsize ();/* BX = recommended buffer size */
+	   mov ax,bx	/* allocate memory (AX) */
+	   dos_malloc ();	/* was the memory allocated? */
+	    jc p_cont_050/*   n: print error message */
+	   mov dos_mem,dx/* save segment of mem block */
+	   mov es,dx	/* ES = segment of mem block */
+	   mov dl,ss_spec/* DL = speedsize spec */
+	   pushds
+	   pack_start ();	/* DS:SI-&gtinput, CX = count */
+	   pop es	 	/* ES = DS */
+	    jc p_cont_050/* if init was unsuccessful */
+	p_cont_020:
+	   mov bx,es:inhandle
+	   read_h ();	/* was the read successful? */
+	    jc p_cont_050/*   n: print error message */
+	p_cont_030:
+	   pushcx
+	   printf ("\r%d%% complete", get_packcmpl ());
+	   pop cx
+	   pack_continue ();
+	    ja p_cont_020/* if more input is needed */
+	    je p_cont_040/* if compression is finished */
+	   write_h ();	/* if output needs flushed */
+	    jncp_cont_030/* if write was successful */
+	   jmp p_cont_050/* if an error occurred */
+	p_cont_040:
+	   printf ("\noutput file is %2.2f%% the size of the\ 
+	   	  input file\n",(float)(_get_packratio ())/100);
+	   ...
+	p_cont_050:
+	   _put_str ("Unable to compress data");
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_CMPCINT.ASM		  <B>ASM equiv</B>	PACK_CMPLINIT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rcompres.htm#_get_packcmpl">_get_packcmpl</A>, <A HREF="rcompres.htm#_get_packratio">_get_packratio</A>, <A HREF="rcompres.htm#_unpack_cmplinit">_unpack_cmplinit</A>
+<BR></DL>
+<H2><A NAME="_pack_continue">_pack_continue</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compresses data.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;compress.h&gt
+<BR>	int _pack_continue(void far **buffptr, unsigned int *num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if more input is needed.
+<BR>	buffer	address of where to place data to compress (inbuf)
+<BR>	num		 maximum number of bytes that can be placed into inbuf
+<BR>
+<BR>	0 if the compression is complete.
+<BR>
+<BR>	-1 if the output buffer needs to be flushed.
+<BR>	buffer	address of the data to flush (outbuf)
+<BR>	num		 number of bytes to flush from outbuf
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function compresses the data in inbuf and places resulting compressed data in outbuf. This function must be called successively until 0 is returned. On the first call to _pack_continue, num must indicate the initial(non-zero) number of bytes in inbuf waiting to be compressed. The address of inbuf is specified in bufptr and must be obtained from a previous call to _pack_start or _pack_startc. 1 is returned if more input data is needed for compression. If outbuf needs to be flushed, -1 is returned, the address of outbuf is placed in bufptr, and the number of bytes to flush is placed in num. 0 is returned when compression is complete.
+<BR>
+<BR>	If 1 is returned, more input data should be copied into inbuf. This function should then be re-called with the exact number of new input bytes in inbuf specified in num. If -1 is returned, all data in outbuf should be written or copied to its final destination and this function should be re-called WITHOUT copying additional data into the input buffer.
+<BR>
+<BR>	A value of 0 is returned only after this function has been called with num set to 0 (no further input data). When this input is encountered, the compression system finishes the compression and returns -1 (one or more times) to flush all remaining output data. 0 is returned only after all output data has been flushed. After 0 is returned, _pack_start or _pack_startc must be called again before more data can be compressed.
+<BR>
+<BR>	The compression percentage and the completion percentage may be obtained after the first call to this function by calling _get_packratio and _get_packcmpl.
+<BR>
+<BR>	_pack_start or _pack_startc must be called to initialize the compression system. If the compression system has not been initialized, the results of this function are undefined.
+<BR>
+<BR>WARNING! _unpack_start or _unpack_startc should not be called while compression is in progress since these functions effectively "uninitialize" the compression system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char ss_spec = 0;/* best compression */
+	   int inhandle, outhandle, flag = 1;
+	   unsigned int min_mem, max_mem, rec_mem, dos_mem, read_size;
+	   void far *buffer;
+	   ...	  	 /* open input and output files */
+	   _pack_cmplinit (_getfsize_h (inhandle));
+	   rec_mem = _pack_bufsize (ss_spec, &ampmin_mem, &ampmax_mem);
+	   dos_mem = _dos_malloc (rec_mem);
+	   if (dos_mem == 0)
+	   return;
+	   buffer = _pack_start (ss_spec, dos_mem, rec_mem, &ampread_size);
+	   if (buffer == NULL)
+	   _put_str ("Error initializing compression system");
+	   do {
+	      switch (flag)
+	      {
+	         case 1:
+	            read_size = _read_h (inhandle, buffer, read_size);
+	            if (read_size == 0xffff)
+	            {
+	               _put_str ("Error reading from input file");
+	               return;
+	         }
+	         break;
+	      case -1:
+	         read_size = _write_h (outhandle, buffer, read_size);
+	         if (read_size == 0xffff)
+	         {
+	            _put_str ("Error writing to output file");
+	            return;
+	         }
+	      }
+	      flag = _pack_continue (&ampbuffer, &ampread_size);
+	      printf ("\r%d%% complete",_get_packcmpl ());
+	   } while (flag);
+	   printf ("\noutput file is %2.2f%% the size of the input
+	      file\n",(float)(_get_packratio ())/100);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char ss_spec = 0;	/* setup for best compression */
+	   int inhandle, outhandle;
+	   unsigned int dos_mem;
+	      ...	 	/* open input and output files */
+	   mov bx,inhandle
+	   getfsize_h ();	/* DX;AX = input file size */
+	   pack_cmplinit ();
+	   mov dl,ss_spec/* DL = speedsize spec */
+	   pack_bufsize ();/* BX = recommended buf size */
+	   mov ax,bx	/* allocate memory (AX) */
+	   dos_malloc ();	/* was the memory allocated? */
+	    jc p_cont_050/*   n: print error message */
+	   mov dos_mem,dx/* save segment of mem block */
+	   mov es,dx	/* ES = segment of mem block */
+	   mov dl,ss_spec/* DL = speedsize spec */
+	   pushds
+	   pack_start ();	/* DS:SI-&gtinput, CX = count */
+	   pop es	 	/* ES = DS */
+	    jc p_cont_050/* if init was unsuccessful */
+	p_cont_020:
+	   mov bx,es:inhandle
+	   read_h ();	/* was the read successful? */
+	    jc p_cont_050/*   n: print error message */
+	p_cont_030:
+	   pushcx
+	   printf ("\r%d%% complete", get_packcmpl ());
+	   pop cx
+	   pack_continue ();
+	    ja p_cont_020/* if more input is needed */
+	    je p_cont_040/* if compression is finished */
+	   write_h ();	/* if output needs flushed */
+	    jncp_cont_030/* if write was successful */
+	   jmp p_cont_050/* if an error occurred */
+
+	p_cont_040:
+	   printf ("\noutput file is %2.2f%% the size of the input\
+	   	  file\n",(float)(_get_packratio ())/100);
+	   ...
+	p_cont_050:
+	   _put_str ("Unable to compress data");
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_CMPACK.ASM		  <B>ASM equiv</B>	PACK_CONTINUE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rcompres.htm#_pack_start">_pack_start</A>, <A HREF="rcompres.htm#_unpack_continue">_unpack_continue</A>
+<BR></DL>
+<H2><A NAME="_pack_start">_pack_start</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Initializes the compression system.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;compress.h&gt
+<BR>		void far *_pack_start(char speedsize, segaddr wbuf, unsigned int paragraphs, unsigned int *read_size);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the initial input buffer.
+<BR>	read_size	size of the initial input buffer, in bytes
+<BR>
+<BR>	NULL if insufficient memory was provided to initialize the compression system.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function initializes the compression system. The work buffer at wbuf is used internally for speed and/or compression optimizations based on the value of speedsize. If the work buffer size (paragraphs) is adequate, the compression system is initialized, a pointer to the initial input buffer is returned, and the size of the initial input buffer is returned in read_size. Otherwise, NULL is returned and the compression system is left in an uninitialized state. Once the compression system has been initialized, the input buffer must be filled with the initial data to be compressed and _pack_continue must be called repeatedly until the compression is complete. Note that the position and size of the input buffer changes after each call to _pack_continue.
+<BR>
+<BR>	The speed/size specifier is interpreted as an unsigned char. speedsize must be in the range 0 to 255. A value of 0 gives the tightest compression and 255 gives the fastest compression; a value of 127 gives a good balance between speed and size.
+<BR>
+<BR>	_pack_bufsize may be called to determine the memory requirements of the compression system for a given speedsize setting. If paragraphs is less than the minimum size specified by _pack_bufsize but greater than or equal to the absolute minimum requirements of the compression system, compression is sacrificed by increasing the value of speedsize internally until the compression system can be initialized.
+<BR>
+<BR>	If the compression system is successfully initialized, this function writes a "compression prefix" to the beginning of the compression system output buffer. The compression prefix is always the first block of data written to the compressed data stream. The compression prefix is required by _unpack_start or _unpack_startc and may also be obtained by calling _get_packprefix.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char ss_spec = 0;	/* best compression */
+	   unsigned int min_mem, max_mem, rec_mem, dos_mem, read_size;
+	   void far *buffer;
+	   ...
+	   rec_mem = _pack_bufsize (ss_spec, &ampmin_mem, &ampmax_mem);
+	   dos_mem = _dos_malloc (rec_mem);
+	   if (dos_mem == 0)
+	   return;
+	   buffer = _pack_start (ss_spec, dos_mem, rec_mem, &ampread_size);
+	   if (buffer == NULL)
+	   _put_str ("Error initializing compression system");
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   unsigned int dos_mem;
+	   void far *buffer;
+	   ...
+	   mov dl,255	/* set for fastest compression */
+	   pack_bufsize ();
+	   mov ax,bx	/* allocate memory (AX) */
+	   dos_malloc ();	/* was the memory allocated? */
+	    jc p_start_050/*   n: print error message */
+	   mov dos_mem,dx/* save segment of mem block */
+	   mov es,dx	/* ES = segment of mem block */
+	   mov dl,255	/* set for fastest compression */
+	   pack_start ();	/* DS:SI-&gtinput, CX = count */
+	    jncp_start_100/* if init was successful */
+	p_start_050:
+	   _put_str ("Error initializing compression system");
+	p_start_100:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_CMPSTRT.ASM		  <B>ASM equiv</B>	PACK_START
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rcompres.htm#_pack_bufsize">_pack_bufsize</A>, <A HREF="rcompres.htm#_pack_continue">_pack_continue</A>, <A HREF="rcompres.htm#_pack_start">_pack_start</A>, <A HREF="rcompres.htm#_unpack_start">_unpack_start</A>
+<BR></DL>
+<H2><A NAME="_pack_startc">_pack_startc</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Initializes the compression system using a custom configuration.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;compress.h&gt
+<BR>		void far *_pack_startc(pdat *settings, char speedsize, segaddr wbuf, unsigned int paragraphs, unsigned int *read_size);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the initial input buffer.
+<BR>	read_size	size of the initial input buffer, in bytes
+<BR>
+<BR>	NULL if insufficient memory was provided or if any of the values in settings are invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function initializes the compression system. The work buffer at wbuf is used internally for speed and/or compression optimizations based on the value of speedsize and the values provided in settings. This allows the compression system to be fine-tuned for maximum performance based on specific needs and the availability of existing memory buffers. If the values in settings are valid and the size of the work buffer (paragraphs) is adequate, the compression system is initialized, a pointer to the initial input buffer is returned, and the size of the initial input buffer is returned in read_size. Otherwise, NULL is returned and the compression system is left in an uninitialized state. Once the compression system has been initialized, the input buffer must be filled with the initial data to be compressed and _pack_continue must be called repeatedly until the compression is complete. Note that the position and size of the input buffer changes after each call to _pack_continue.
+<BR>
+<BR>	The speed/size specifier is interpreted as an unsigned char. speedsize must be in the range 0 to 255. A value of 0 gives the tightest compression and 255 gives the fastest compression; a value of 127 gives a good balance between speed and size.
+<BR>
+<BR>	_pack_bufsizec may be called to determine the memory requirements of the compression system for settings and a given speedsize value. If paragraphs is less than the minimum size specified by _pack_bufsizec but greater than or equal to the absolute minimum requirements of the compression system, compression is sacrificed by increasing the value of speedsize internally until the compression system can be initialized.
+<BR>
+<BR>	settings must be a structure of type pdat (defined in COMPRESS.H) as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   void far * buf1;/* pointer to user buffer 1 */
+<BR>	   int buf1size;/* size of user buffer 1 (in bytes, 0=none) */
+<BR>	   void far * buf2;/* pointer to user buffer 2 */
+<BR>	   int buf2size;/* size of user buffer 2 (in bytes, 0=none) */
+<BR>	   int winlen;	/* size of sliding window (512-32k bytes) */
+<BR>	   int looklen;	/* size of look-ahead buffer (256-16k bytes) */
+<BR>	   int maxweight;/* maximum weight of huffman tree (512-32k) */
+<BR>	   char hash;	/* hash setting (9-15 bits, 15=fastest) */
+<BR>	} pdat;
+<BR>
+<BR>	If the value of winlen, looklen, maxweight, or hash is zero, that value will be calculated based on speedsize.
+<BR>
+<BR>	A non-zero value for bufsize1 or bufsize2 indicates that a user buffer of the indicated size is available for use by the compression system. User buffers must be at least 512 bytes in size.
+<BR>
+<BR>	For maximum compression when memory is not limited, winlen should be set to 32K and hash should be set to 15. When speed is most critical, winlen should be set to 512. See the technical notes for more information on fine-tuning the compression system.
+<BR>
+<BR>	If the compression system is successfully initialized, this function writes a "compression prefix" to the beginning of the compression system output buffer. The compression prefix is always the first block of data written to the compressed data stream. The compression prefix is required by _unpack_start or _unpack_startc and may also be obtained by calling _get_packprefix.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char ss_spec = 0;	/* best compression */
+	   unsigned int min_mem, max_mem, rec_mem, dos_mem, read_size;
+	   void far *buffer;
+	   pdat settings;
+	   ...
+	   rec_mem = _pack_bufsizec(&ampsettings, ss_spec, &ampmin_mem,
+	      &ampmax_mem);
+	   if (rec_mem == 0)
+	   {
+	      _put_str ("Values in settings were invalid");
+	      return;
+	   }
+	   dos_mem = _dos_malloc (rec_mem);
+	   if (dos_mem == 0)
+	   return;
+	   buffer = _pack_startc (&ampsettings, SS_SPEC, dos_mem, rec_mem,
+	      &ampread_size);
+	   if (buffer == NULL)
+	   _put_str ("Error initializing compression system");
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   unsigned int dos_mem;
+	   pdat settings;	/* make this variable a global */
+	   ...
+	   mov dl,0	/* setup for best compression */
+	   mov si,offset settings /* DS:SI -&gt settings */
+	   pack_bufsizec ();
+	   mov ax,bx	/* allocate recommended memory */
+	   dos_malloc ();	/* was the memory allocated? */
+	    jc p_startc_050/*   n: print error message */
+	   mov dos_mem,dx/* save segment of mem block */
+	   mov es,dx	/* ES = segment of mem block */
+	   mov dl,0	/* setup for best compression */
+	   pack_startc ();    /* DS:SI-&gtinput, CX = count */
+	    jncp_startc_100/* if init was successful */
+	p_startc_050:
+	   _put_str ("Error initializing compression system");
+	p_startc_100:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_CMPSTRC.ASM		  <B>ASM equiv</B>	PACK_STARTC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rcompres.htm#_pack_bufsize">_pack_bufsize</A>, <A HREF="rcompres.htm#_pack_continue">_pack_continue</A>, <A HREF="rcompres.htm#_pack_start">_pack_start</A>, <A HREF="rcompres.htm#_unpack_start">_unpack_start</A>
+<BR></DL>
+<H2><A NAME="_unpack_bufsize">_unpack_bufsize</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the memory requirements of the decompression system.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;compress.h&gt
+<BR>	int _unpack_bufsize(void *prefix, unsigned int *min_mem, unsigned int *max_mem);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The recommended work buffer size, in paragraphs.
+<BR>	min_mem			minimum work buffer size, in paragraphs
+<BR>	max_mem		maximum work buffer size, in paragraphs
+<BR>
+<BR>	0 if the decompression system cannot be initialized using prefix.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function determines the minimum, recommended, and maximum amount of memory to allocate for the decompression work buffer. All three values depend on the information contained in prefix. The return value indicates the recommended work buffer size. If this value is non-zero, the minimum allowable work buffer size is placed in min_mem, and the maximum useable work buffer size is placed in max_mem. 0 is returned only if prefix is invalid or if the data was compressed using an incompatible version of the data compression system. When more memory is given to the decompression system, fewer disk reads and writes are required.
+<BR>
+<BR>	prefix is the compression prefix for the next data stream which is to be decompressed. The compression prefix is always written at the beginning of the data stream and may optionally be obtained during the compression session by calling _get_packprefix. The compression prefix is a structure of type packp. The current format of the packp structure is defined in COMPRESS.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   char len;	/* prefix length, in bytes */
+<BR>	   int ver;	/* compression system version number */
+<BR>	   int winlen;	/* window length */
+<BR>	   int looklen;	/* look-ahead length */
+<BR>	   int maxweight;/* maximum huffman tree weight */
+<BR>	} packp;
+<BR>
+<BR>	In future releases, the packp structure may include additional fields not shown above. However, the decompression system may be safely initialized using only the fields shown above, even if the data was compressed by a more recent version of the compression system.
+<BR>
+<BR>	This function may be called after the compression system has been initialized (without initializing the decompression system) to determine the decompression memory requirements.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   unsigned int min_mem, max_mem, rec_mem;
+	   packp prefix;
+	   int inhandle;
+	   .../* open the input file */
+	   if (_read_h (inhandle, prefix, sizeof(packp)))
+	      _put_str ("Error reading from input file");
+	   else
+	      rec_mem = _unpack_bufsize (prefix, &ampmin_mem, &ampmax_mem);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   packp prefix;
+	   int handle, readsize = sizeof(packp);
+	   ... 	 	/* open the input file */
+	   lea si,prefix/* SI = offset filesize */
+	   mov bx,handle/* BX = file handle */
+	   xor dx,dx
+	   mov ax,readsize/* DX;AX = num bytes to read */
+	   read_h ();
+	    jc unpack_b_100/* if a read error occurred */
+
+	   ... 	 	/* open the input file */
+	   lea si,prefix/* DS:SI -&gt prefix */
+	   unpack_bufsize ();/* AX = min, 
+	   	              BX = recommended, 
+	   	  	 	CX = max */
+	    jnc     unpack_b_100
+	   _put_str ("File has invalid format");
+	unpack_b_100:
+	      ...
+	         }
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_CMUBSZ.ASM		  <B>ASM equiv</B>	UNPACK_BUFSIZE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rcompres.htm#_pack_bufsize">_pack_bufsize</A>, <A HREF="rcompres.htm#_unpack_bufsize">_unpack_bufsize</A>, <A HREF="rcompres.htm#_unpack_start">_unpack_start</A>
+<BR></DL>
+<H2><A NAME="_unpack_bufsizec">_unpack_bufsizec</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the memory requirements of the decompression system using a custom configuration.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;compress.h&gt
+<BR>		int _unpack_bufsizec(udat *config, void *prefix, unsigned int *min_mem, unsigned int *max_mem);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The recommended work buffer size, in paragraphs.
+<BR>	min_mem			minimum number of additional paragraphs required
+<BR>	max_mem		maximum number of additional paragraphs than can be used
+<BR>
+<BR>	0 if the decompression system could not be initialized using prefix.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function determines the minimum, recommended, and maximum amount of memory to allocate for the decompression work buffer. All three values depend on the information contained in prefix as well as config (which allows user buffers to be specified to reduce the memory requirements of the decompression system). The return value indicates the recommended work buffer size. If the return value is non-zero, the minimum allowable work buffer size is placed in min_mem, and the maximum useable work buffer size is placed in max_mem. 0 is returned only if prefix is invalid orif the data was compressed using an incompatible version of the data compression system. When more memory is given to the decompression system, fewer disk reads and writes are required.
+<BR>
+<BR>	User buffers specified in config must be at least 512 bytes in size to be used. config must be a structure of type udat, which is defined in COMPRESS.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   void far * buf1;/* pointer to user buffer 1 */
+<BR>	   int buf1size;/* size of user buffer 1 (in bytes, 0=none) */
+<BR>	   void far * buf2;/* pointer to user buffer 2 */
+<BR>	   int buf2size;/* size of user buffer 2 (in bytes, 0=none) */
+<BR>	} udat;
+<BR>
+<BR>	prefix is the compression prefix for the next data stream which is to be decompressed. The compression prefix is always written at the beginning of the data stream and may optionally be obtained during the compression session by calling _get_packprefix. The compression prefix is a structure of type packp. The current format of the packp structure is defined in COMPRESS.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   char len;	/* prefix length, in bytes */
+<BR>	   int ver;	/* compression system version number */
+<BR>	   int winlen;	/* window length */
+<BR>	   int looklen;	/* look-ahead length */
+<BR>	   int maxweight;/* maximum huffman tree weight */
+<BR>	} packp;
+<BR>
+<BR>	In future releases, the packp structure may include additional fields not shown above. However, the decompression system may be safely initialized using only the fields shown above, even if the data was compressed by a more recent version of the compression system.
+<BR>
+<BR>	This function may be called after the compression system has been initialized (without initializing the decompression system) to determine the decompression memory requirements.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   unsigned int min_mem, max_mem, rec_mem;
+	   udat settings;
+	   packp prefix;
+	   int inhandle;
+	   ... /* open the input file */
+	   if (_read_h (inhandle, prefix, sizeof(packp)))
+	      _put_str ("Error reading from input file");
+	   else
+	      rec_mem=_unpack_bufsizec(&ampsettings,prefix,&ampmin_mem,&ampmax_mem);
+	   if (rec_mem == 0)
+	      _put_str ("File has invalid format");
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   udat settings;
+	   packp prefix;
+	   int handle, readsize = sizeof(packp);
+	   ... 	 	/* open the input file */
+	   lea si,prefix/* SI = offset filesize */
+	   mov bx,handle/* BX = file handle */
+	   xor dx,dx
+	   mov ax,readsize/* DX;AX = num bytes to read */
+	   read_h ();
+	    jc unpack_bc_100/* if a read error occurred */
+	   lea si,prefix/* DS:SI -&gt prefix */
+	   lea di,settings/* ES:DI -&gt settings */
+	   unpack_bufsizec ();/* AX=min,BX=recommended,CX=max */
+	    jnc     unpack_bc_100
+	   _put_str ("File has invalid format");
+	unpack_bc_100:...
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_CMUBSZC.ASM		  <B>ASM equiv</B>	UNPACK_BUFSIZEC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rcompres.htm#_pack_bufsize">_pack_bufsize</A>, <A HREF="rcompres.htm#_unpack_bufsize">_unpack_bufsize</A>, <A HREF="rcompres.htm#_unpack_start">_unpack_start</A>
+<BR></DL>
+<H2><A NAME="_unpack_cmplinit">_unpack_cmplinit</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Initializes the decompression system to allow subsequent calculation of the completion percentage.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;compress.h&gt
+<BR>	void _unpack_cmplinit(long size);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function initializes the decompression status variables to allow _get_unpackcmpl to return an accurate completion percentage. size must be the original number of bytes in the uncompressed data stream (before compression).
+<BR>
+<BR>	Calling this function again effectively resets the completion percentage to zero. The completion percentage is always measured from the last call to this function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	(This example assumes that the original file size is saved 
+	 in the first four bytes of the input file.)
+	{
+	   long int filesize;
+	   unsigned int handle;
+	   ...
+	   _read_h (handle, (void *)&ampfilesize, 4);
+	   _unpack_cmplinit (filesize);
+	   	  /* initialize for %complete calculation */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	(This example assumes that the original file size is saved
+	 in the first four bytes of the input file.)
+	#include &lt;inline.h&gt
+	{
+	   long int filesize;
+	   unsigned int handle;
+	   ... 	 	/* open input file */
+	lea si,filesize/* SI = offset filesize */
+	    mov bx,handle/* BX = file handle */
+	    xor dx,dx
+	    mov ax,4	 /* DX;AX = num bytes to read */
+	    read_h ();	 /* read first 4 bytes */
+	    mov ax,word ptr filesize
+	    mov dx,word ptr filesize+2 /* DX;AX = size of file */
+	    unpack_cmplinit ();/* init for %complete calc */
+	    ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_CMPCINT.ASM		  <B>ASM equiv</B>	UNPACK_CMPLINIT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rcompres.htm#_get_packcmpl">_get_packcmpl</A>, <A HREF="rcompres.htm#_get_packratio">_get_packratio</A>, <A HREF="rcompres.htm#_pack_cmplinit">_pack_cmplinit</A>
+<BR></DL>
+<H2><A NAME="_unpack_continue">_unpack_continue</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Decompresses data.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;compress.h&gt
+<BR>	int _unpack_continue(void far **bufptr, unsigned int *num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if more data is needed for decompression.
+<BR>	buffer	address of the input buffer (inbuf)
+<BR>	num		 maximum number of bytes to copy into the input buffer
+<BR>
+<BR>	-1 if the output buffer needs to be flushed.
+<BR>	buffer	address of the output buffer (outbuf)
+<BR>	num		 number of bytes that need to be flushed
+<BR>
+<BR>	0 if decompression is complete or if the data format is unrecognizable.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function decompresses the data in inbuf and places the resulting decompressed data in outbuf. This function must be called successively until 0 is returned. On the first call to _unpack_continue, num must indicate the initial (non-zero) number of bytes waiting to be decompressed in inbuf. The address of inbuf is specified in bufptr and must be obtained by a previous call to _unpack_start or _unpack_startc. This function returns 1 if more input data is needed for decompression. If outbuf needs to be flushed, -1 is returned, the address of outbuf is placed in bufptr, and the number of bytes to flush is placed in num. If the format of the initial input data is unrecognizable, 0 is returned immediately. A subsequent return value of 0 indicates that the decompression is complete.
+<BR>
+<BR>	If 1 is returned, more input data should be copied into inbuf. This function should then be re-called with the exact number of new input bytes in inbuf specified in num. If -1 is returned, all data in outbuf should be written or copied to its final destination. This function should then be re-called WITHOUT copying additional data into the input buffer.
+<BR>
+<BR>	A value of 0 is returned the first time this function is called only if the format of the initial input data is unrecognizable. Subsequently, a return value of 0 is only possible after this function has been called with num set to zero (no further input data). When this input is encountered, the decompression system finishes the decompression and returns -1 one or more times to flush all remaining output data. 0 is returned only after all output data has been flushed. After 0 is returned, _unpack_start or _unpack_startc must be called again before more data can be decompressed.
+<BR>
+<BR>	The initial input data must begin with a compression prefix length byte and a 0xFF marker byte immediately after the prefix; the 0xFF marker alone is also recognized. This scheme allows the compression prefix to be manually omitted from the output data and stored elsewhere when compression is performed (e.g., in a master table of prefix information for multiple files which are compressed individually in one archive file).
+<BR>
+<BR>	The decompression completion percentage may be obtained after the first call to this function by calling _get_unpackcmpl.
+<BR>
+<BR>	_unpack_start or _unpack_startc must be called to initialize the decompression system before this function may be used. Calling _pack_start or _pack_startc effectively "uninitializes" the decompression system. If the decompression system has not been initialized, the results of this function are undefined.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int inhandle, outhandle, flag = 1;
+	   unsigned int min_mem, max_mem, rec_mem, dos_mem, read_size;
+	   void far *buffer;
+	   packp prefix;
+	   ... /* open input and output files */
+	   ... /* call _pack_cmplinit with size of
+	   	    data before compression */
+	   if (_read_h (inhandle, prefix, sizeof(packp)))
+	   {
+	      _put_str ("Error reading from input file");
+	      return;
+	   } else
+	      rec_mem = _unpack_bufsize(prefix, &ampmin_mem, &ampmax_mem);
+	   if (rec_mem == 0)
+	   {
+	      _put_str ("File has invalid format");
+	      return;
+	   }
+	   dos_mem = _dos_malloc (rec_mem);
+	   if (dos_mem == 0)
+	      return;
+	   buffer =_unpack_start(prefix,dos_mem,rec_mem,&ampread_size);
+	   if (buffer == NULL)
+	      _put_str ("Error initializing decompression system");
+	   else 
+	      do {
+	         switch (flag)
+	         {
+	            case 1:
+	                 read_size = _read_h (inhandle, buffer, read_size);
+	                 if (read_size == 0xffff)
+	                 {
+	                    _put_str ("Error reading from input file");
+	                    return;
+	                 } break;
+	            case -1:
+	                 read_size =_write_h(outhandle, buffer, read_size);
+	                 if (read_size == 0xffff)
+	                 {
+	                    _put_str ("Error writing to output file");
+	                    return;
+	                 }
+	         }
+	         flag = _unpack_continue (&ampbuffer, &ampread_size);
+	         printf ("\r%d%% complete",_get_packcmpl ());
+	      } while (flag);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	(C Interface Recommended)
+
+</CODE></PRE>
+<B>Source file</B>	_CMUPACK.ASM		  <B>ASM equiv</B>	UNPACK_CONTINUE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rcompres.htm#_pack_continue">_pack_continue</A>, <A HREF="rcompres.htm#_unpack_start">_unpack_start</A>
+<BR></DL>
+<H2><A NAME="_unpack_start">_unpack_start</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Initializes the decompression system.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;compress.h&gt
+<BR>		void far *_unpack_start(void *prefix, segaddr wbuf, unsigned int paragraphs, unsigned int *read_size);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The address of the initial input buffer (inbuf).
+<BR>	read_size	size of initial input buffer, in bytes
+<BR>
+<BR>	NULL if the work buffer is too small, if prefix is invalid, or if the data was compressed using an incompatible version of the data compression system.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function initializes the decompression system to decompress the data associated with prefix. The decompression system is initialized only if the specified work buffer size (paragraphs) is large enough, if prefix is valid, and if prefix indicates that the data was compressed using a compatible version of the Spontaneous Assembly data compression system. If these conditions are satisfied, the address of the initial input buffer is returned and its size is placed in read_size. Otherwise, NULL is returned and the decompression system is left in an uninitialized state. Once the decompression system has been initialized, the input buffer must be filled with the initial data to be compressed and _unpack_continue must be called repeatedly until the decompression is complete. Note that the position and size of the input buffer changes after each call to _unpack_continue.
+<BR>
+<BR>	prefix is the compression prefix for the next data stream which is to be decompressed. The compression prefix is always written at the beginning of the data stream and may optionally be obtained during compression by calling_get_packprefix. The compression prefix is a structure of type packp. The current format of the packp structure is defined in COMPRESS.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   char len;	/* prefix length, in bytes */
+<BR>	   int ver;	/* compression system version number */
+<BR>	   int winlen;	/* window length */
+<BR>	   int looklen;	/* look-ahead length */
+<BR>	   int maxweight;/* maximum huffman tree weight */
+<BR>	} packp;
+<BR>
+<BR>	In future releases, the packp structure may include additional fields not shown above. However, the decompression system may be safely initialized using only the fields shown above, even if the data was compressed by a more recent version of the compression system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   unsigned int min_mem, max_mem, rec_mem, dos_mem, read_size;
+	   void far *buffer;
+	   packp prefix;
+	   int inhandle;
+	   ...	  	 /* open the input file */
+	   if (_read_h (inhandle, prefix, sizeof(packp)))
+	      _put_str ("Error reading from input file");
+	   else
+	   {
+	      rec_mem = _unpack_bufsize (prefix, &ampmin_mem, &ampmax_mem);
+	      if (rec_mem == 0)
+	      {
+	         _put_str ("File has invalid format");
+	         return;
+	      }
+	      dos_mem = _dos_malloc (rec_mem);
+	      if (dos_mem == 0)
+	         return;
+	      buffer = _unpack_start(prefix, dos_mem, rec_mem, &ampread_size);
+	      if (buffer == NULL)
+	         _put_str ("Error initializing decompression system");
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   unsigned int dos_mem;
+	   packp prefix;
+	   int inhandle, readsize = sizeof(packp);
+	   ... 	 	/* open the input file */
+	   mov bx,inhandle
+	   lea si,prefix
+	   mov cx,readsize
+	   read_h ();
+	    jc     ustart_050/* if an error occurred */
+	   mov di,si
+	   unpack_bufsize ();/* AX=min, BX=recommend, CX=max */
+	    jc     ustart_050/* if an error occurred */
+	   mov ax,bx	/* allocate recommended memory */
+	   dos_malloc ();	/* was the memory allocated? */
+	    jc ustart_050/*   n: print error message */
+	   unpack_start ();
+	    jncp_startc_100/* if init was successful */
+	ustart_050:
+	   _put_str ("Error initializing decompression system");
+	ustart_100:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_CMUSTRT.ASM		  <B>ASM equiv</B>	UNPACK_START
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rcompres.htm#_pack_start">_pack_start</A>, <A HREF="rcompres.htm#_unpack_bufsize">_unpack_bufsize</A>, <A HREF="rcompres.htm#_unpack_continue">_unpack_continue</A>, <A HREF="rcompres.htm#_unpack_start">_unpack_start</A>
+<BR></DL>
+<H2><A NAME="_unpack_startc">_unpack_startc</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Initializes the decompression system using a custom configuration.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;compress.h&gt
+<BR>		void far *_unpack_startc(udat *config, void *prefix, segaddr wbuf, unsigned int paragraphs, unsigned int *read_size);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The address of the initial input buffer (inbuf).
+<BR>	read_size	size of initial input buffer, in bytes
+<BR>
+<BR>	NULL if the work buffer is too small, if prefix is invalid, or if the data was compressed using an incompatible version of the data compression system.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function initializes the decompression system to decompress the data associated with prefix. The config structure allows user buffers to be specified to reduce the memory requirements of the decompression system. The decompression system is initialized only if the specified work buffer size (paragraphs) is large enough, if prefix is valid, and if prefix indicates that the data was compressed using a compatible version of the Spontaneous Assembly data compression system. If these conditions are satisfied, the address of the initial input buffer is returned and its size is placed in read_size. Otherwise, NULL is returned and the decompression system is left in an uninitialized state. Once the decompression system has been initialized, the input buffer must be filled with the initial data to be compressed and _unpack_continue must be called repeatedly until the decompression is complete. Note that the position and size of the input buffer changes after each call to _unpack_continue.
+<BR>
+<BR>	User buffers specified in config must be at least 512 bytes in size to be used. config must be a structure of type udat, which is defined in COMPRESS.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   void far * buf1;/* pointer to user buffer 1 */
+<BR>	   int buf1size;/* size of user buffer 1 (in bytes, 0=none) */
+<BR>	   void far * buf2;/* pointer to user buffer 2 */
+<BR>	   int buf2size;/* size of user buffer 2 (in bytes, 0=none) */
+<BR>	} udat;
+<BR>
+<BR>	prefix is the compression prefix for the next data stream which is to be decompressed. The compression prefix is always written at the beginning of the data stream and may optionally be obtained during compression by calling _get_packprefix. The compression prefix is a structure of type packp. The current format of the packp structure is defined in COMPRESS.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   char len;	/* prefix length, in bytes */
+<BR>	   int ver;	/* compression system version number */
+<BR>	   int winlen;	/* window length */
+<BR>	   int looklen;	/* look-ahead length */
+<BR>	   int maxweight;/* maximum huffman tree weight */
+<BR>	} packp;
+<BR>
+<BR>	In future releases, the packp structure may include additional fields not shown above. However, the decompression system may be safely initialized using only the fields shown above, even if the data was compressed by a more recent version of the compression system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   unsigned int min_mem, max_mem, rec_mem, dos_mem, read_size;
+	   void far *buffer;
+	   udat settings;
+	   packp prefix;
+	   int inhandle;
+	   ... /* open the input file */
+	   if (_read_h (inhandle, prefix, sizeof(packp)))
+	      _put_str ("Error reading from input file");
+	   else
+	      rec_mem=_unpack_bufsizec(&ampsettings,prefix,&ampmin_mem,&ampmax_mem);
+	   if (rec_mem == 0)
+	   {
+	      _put_str ("File has invalid format");
+	      return;
+	   }
+	   dos_mem = _dos_malloc (rec_mem);
+	   if (dos_mem == 0)
+	      return;
+	   buffer=_unpack_startc(&ampsettings,prefix,dos_mem,
+	   	  	  rec_mem,&ampread_size);
+	   if (buffer == NULL)
+	      _put_str ("Error initializing decompression system");
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	(C Interface Recommended)
+
+</CODE></PRE>
+<B>Source file</B>	_CMUSTRC.ASM		  <B>ASM equiv</B>	UNPACK_STARTC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rcompres.htm#_pack_start">_pack_start</A>, <A HREF="rcompres.htm#_unpack_bufsize">_unpack_bufsize</A>, <A HREF="rcompres.htm#_unpack_continue">_unpack_continue</A>, <A HREF="rcompres.htm#_unpack_start">_unpack_start</A>
+<BR>
+<BR></BODY>
+<BR></HTML><BR>
+

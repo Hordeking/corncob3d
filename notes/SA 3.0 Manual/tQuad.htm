@@ -1,0 +1,275 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: Quad Class for C++</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Quad Class for C++</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tQuad.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tQuad.htm#HEAD0001">General Philosophy
+</A><BR>
+<A HREF="tQuad.htm#HEAD0002">Signed vs. Unsigned Arithmetic
+</A><BR>
+<A HREF="tQuad.htm#HEAD0003">Floating Point vs. Quad Arithmetic
+</A><BR>
+<A HREF="tQuad.htm#HEAD0004">Supported Operators
+</A><BR>
+<A HREF="tQuad.htm#HEAD0005">Operator Interaction
+</A><BR>
+<A HREF="tQuad.htm#HEAD0006">Compile Optimization
+</A><BR>
+<A HREF="tQuad.htm#HEAD0007">Sample Program
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit consists of a C++ class which has arithmetic operators overloaded to allow 64-bit integers to be used interchangeably with other C integer types.
+
+<H2><A NAME="HEAD0001">General Philosophy
+</A></H2>
+
+Most C compilers already provide integer math support for int and long numeric types but have no support for 64-bit integer math. Use of the quad and uquad classes in C++ allows 64-bit integers to be manipulated using the same operators as int and long types (+, -, /, *, etc.). This makes the quad and uquad types a viable replacement for many operations which normally require floating point math, such as financial calculations. All applicable quad math functionality has been provided.
+
+<P>
+Any variable declared as a quad or uquad in a C++ program can be used with either the operators provided by the class or the functions provided in the integer math unit.
+
+<P>
+The following table shows numeric types which are supported by the operators in the quad and uquad classes:
+<PRE>
+Numeric Type                     Size                   Range
+
+unsigned char (inline only)8-bit integer                0 to 255
+char (inline only)               8-bit integer          -128 to 127
+unsigned int                     16-bit integer         0 to 65,535
+int                              16-bit integer         -32,768 to 32,767
+unsigned long                    32-bit integer         0 to 4,294,967,295
+long                             32-bit integer         -2,147,483,648 to 2,147,483,647
+uquad                            64-bit integer         0 to 264-1
+quad                             64-bit integer         -263 to 263-1
+</PRE>
+Because C does not supply defined types for 64-bit integers, the following integer classes are provided to simplify the use of 64-bit integers in C++ applications: uquad for unsigned 64-bit integers and quad for signed 64-bit integers. When compiling a C program, the quad and uquad types are defined using typedef, as follows:
+<PRE><CODE>
+typedef signed char quad[8];
+typedef unsigned char uquad[8];
+</CODE></PRE>
+When using C++, quad and uquad are defined as classes. There are no additional coding requirements when using the quad or uquad classes in C++ programs. The standard quad and uquad integer math functions work in both C and C++.
+
+<P>
+64-bit integers should be declared by using uquad for unsigned values and quad for signed values, as in the following example:
+<PRE><CODE>
+           ...
+           uquad num1, num2;        /* declare two unsigned quads */
+           quad num3, num4;         /* declare two signed quads */
+           ...
+</CODE></PRE>
+An extensive set of routines is provided for mixed-type operations (quad-quad, quad-long, and quad-int). The programmer should choose carefully from among these routines to avoid proliferation of code.
+
+<H2><A NAME="HEAD0002">Signed vs. Unsigned Arithmetic
+</A></H2>
+
+The distinction between signed and unsigned values must be made by the programmer when variables are declared. Once this decision is made, the distinction is enforced by the compiler. This decision should be based on the range of values supported by each type of integer. For example, if 64-bit arithmetic is to be performed and values greater than 263-1 are required, then the uquad class should be used. If values less than zero are to be used, then the quad class should be used. Note that the ranges for signed and unsigned values overlap (i.e., quad values from 0 to 263-1 may be considered either signed or unsigned). If a given operation only needs to support values within this range, either class may be used. Unsigned arithmetic (using the uquad class) is preferable, however, since it is usually faster and tighter than signed arithmetic.
+
+<H2><A NAME="HEAD0003">Floating Point vs. Quad Arithmetic
+</A></H2>
+
+quad operations provide a fast, tight, exact alternative to floating point operations when transcendental functions are not required and the values of interest lie in the range 0 to 264-1 (0 to 1.84E19) or -263 to 263-1 (-9.22E18 to 9.22E18).
+
+<P>
+For example, in monetary-type operations, floating point types often lose accuracy over time due to the imprecise representation of base ten values. Furthermore, emulated floating point operations execute roughly 4 to 7 times more slowly than 64-bit integer calculations. Financial operations may be performed with the quad class by counting pennies instead of fractions of dollars; there is no loss of precision and the calculations are much faster. The fixed-point data conversion functions are ideal for input and output of values of this type (see the Data Conversion technical notes).
+
+<P>
+The code size difference between quad functions and floating point functions is striking. If a program is compiled with floating-point emulation support, the .EXE size increases by 10K to 20K. By contrast, all of the Spontaneous Assembly integer math functions and their C binders occupy less than 3.2K, including every variation of every function (i.e., functions which perform mixed-type operations). The actual memory usage for quad functions is, however, usually less than 800 bytes since only the required Spontaneous Assembly functions are linked into the final program and a limited number of functions is required for most applications.
+
+<H2><A NAME="HEAD0004">Supported Operators
+</A></H2>
+
+The following list describes all of the supported quad and uquad arithmetic operators.
+
+<P>
+Unary Operators:
+<PRE>
+++      Increment (pre or post)
+--      Decrement (pre or post)
+
+Binary Operators:
+
++       Add
+-       Subtract
+*       Multiply
+/       Divide
+=       Assign to
+%       Remainder
+<       Less than
+<=      Less than or equal to
+>       Greater than
+>=      Greater than or equal to
+==      Equal to
+!=      Not equal
++=      Assign sum
+-=      Assign difference
+*=      Assign product
+/=      Assign quotient
+%=      Assign remainder (mod)
+</PRE>
+Operators for the quad and uquad classes are defined in QUAD.HPP, which is automatically included in IMATH.H if the file is being compiled as a C++ file.
+
+<P>
+Whenever possible, use assignment operators (+=,*=) in place of straight arithmetic operators (+,þ,*). For example, use
+<PRE><CODE>
+   num *= 3;                // generates more efficient code
+</CODE></PRE>
+instead of
+<PRE><CODE>
+   num = num * 3;           // generates less efficient code.
+</CODE></PRE>
+The compiler generates more efficient code for assignment operators because they do not require the creation of a temporary quad or uquad to hold the result.
+
+<H2><A NAME="HEAD0005">Operator Interaction
+</A></H2>
+
+The overloaded operators are grouped into the following categories in the QUAD.HPP header file:
+
+<P>
+quad Class:
+<PRE>
+int-to-quad (includes char type)
+long-to-quad
+quad-to-quad
+
+uquad Class:
+
+int-to-uquad (includes char type)
+unsigned int-to-uquad (includes unsigned char type)
+long-to-uquad
+unsigned long-to-uquad
+uquad-to-uquad
+</PRE>
+WARNING!        The operators for the uquad class are overloaded for int and long types to allow the use of immediate values. DO NOT use signed values with uquad operators, or the result will be incorrect. For example, if -1 is added to a uquad with a value of 30, the result will be 65565 instead of 29.
+
+<P>
+The compiler may occasionally become confused as to which overloaded operator to use for a given situation. For example, the following code generates an "ambiguity between operators" error in Borland C++:
+<PRE><CODE>
+char x;
+quad y;
+...
+if (x == y)
+   return (1);
+</CODE></PRE>
+This error can be fixed as follows by adding a type cast to resolve any ambiguity:
+<PRE><CODE>
+char x;
+quad y;
+...
+if (x == (char)y)
+   return (1);
+</CODE></PRE>
+<H2><A NAME="HEAD0006">Compile Optimization
+</A></H2>
+
+Because the quad class covers every possible combination among quad, long, and int types, the classes are large and, therefore, may compile slowly. Compilation time may be improved by commenting out unused sections of the QUAD.HPP header file. For example, if int-to-quad operations are not used, the section of the header file that overloads the int-to-quad operators may be commented out to save compile time.
+
+<H2><A NAME="HEAD0007">Sample Program
+</A></H2>
+
+The sample program shown below uses all of the C++ quad operators as well as comparable floating point operators (for benchmark purposes). The program is listed in its entirety.
+<PRE><CODE>
+#include <stdio.h>
+#include <dosio.h>
+#include <imath.h>
+#include <datetime.h>
+
+int test_quad (void);
+int test_float (void);
+int test_double (void);
+int test_ldouble (void);
+
+#define LOOPS 1000
+
+void main (void)
+{
+   int lloop = 0;
+   std_time time;
+
+   <A HREF="rdatetim.htm#_tmr_reset">_tmr_reset</A> ();
+   printf ("\nQUAD class:        ");
+   for (lloop = 0; lloop < LOOPS; lloop++)
+      test_quad ();
+   <A HREF="rdatetim.htm#_tmr_read">_tmr_read</A> (&time);
+   printf ("%d minutes %d.%02d seconds\n", time.minutes, time.seconds, time.hseconds);
+
+   <A HREF="rdatetim.htm#_tmr_reset">_tmr_reset</A> ();
+   printf ("FLOAT type:        ");
+   for (lloop = 0; lloop < LOOPS; lloop++)
+      test_float ();
+   <A HREF="rdatetim.htm#_tmr_read">_tmr_read</A> (&time);
+   printf ("%d minutes %d.%02d seconds\n", time.minutes, time.seconds, time.hseconds);
+
+   <A HREF="rdatetim.htm#_tmr_reset">_tmr_reset</A> ();
+   printf ("DOUBLE type:       ");
+   for (lloop = 0; lloop < LOOPS; lloop++)
+      test_double ();
+   <A HREF="rdatetim.htm#_tmr_read">_tmr_read</A> (&time);
+   printf ("%d minutes %d.%02d seconds\n", time.minutes, time.seconds, time.hseconds);
+
+   <A HREF="rdatetim.htm#_tmr_reset">_tmr_reset</A> ();
+   printf ("LONG DOUBLE type:  ");
+   for (lloop = 0; lloop < LOOPS; lloop++)
+      test_ldouble ();
+   <A HREF="rdatetim.htm#_tmr_read">_tmr_read</A> (&time);
+   printf ("%d minutes %d.%02d seconds\n", time.minutes, time.seconds, time.hseconds);
+}
+
+//         The following macro defines the functions called above
+
+#define FUNC(FUNC_NAME,TYPE) \
+int FUNC_NAME (void)\
+{\
+   TYPE a = 10, b = 2, c = 3;\
+   b++;\
+   a--;\
+   b+=a;\
+   a=b*c;\
+   b=a/c;\
+   b+=a+c;\
+   a-=b-c;\
+   a=b/c;\
+   a*=b;\
+   b/=c;\
+   if (a != 867)\
+      return (1);\
+   if (!(b == 17))\
+      return (1);\
+   if (b == c)\
+      return (1);\
+   if (!(b != c))\
+      return (1);\
+   if (c != b - 14)\
+      return (1);\
+   if (c >= b || b < c)\
+      return (1);\
+   if (c > b || b <= c)\
+      return (1);\
+   return (0);\
+}
+
+FUNC (test_quad, quad);
+FUNC (test_float, float);
+FUNC (test_double, double);
+FUNC (test_ldouble, long double);
+</CODE></PRE>
+The sample program shown above (QUAD.CPP) is provided on the distribution diskettes and may be compiled and linked using the following Microsoft C and Borland C command lines:
+
+<P>
+Microsoft C:
+<PRE><CODE>
+cl /c /I\msc\include /I\sa\include quad.cpp
+link quad,quad,,\sa\lib\_sas \msc\lib\slibce
+</CODE></PRE>
+Borland C:
+<PRE><CODE>
+bcc /c /ms /I\bc\include /I\sa\include quad.cpp
+tlink \bc\lib\c0s quad,quad,,\sa\lib\_sas \bc\lib\cs
+</CODE></PRE>
+</BOBY>
+</HTML>

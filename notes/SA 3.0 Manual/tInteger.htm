@@ -1,0 +1,578 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: Integer Math</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Integer Math</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tInteger.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tInteger.htm#HEAD0001">General Philosophy
+</A><BR>
+<A HREF="tInteger.htm#HEAD0002">Naming Conventions
+</A><BR>
+<A HREF="tInteger.htm#HEAD0003">Supported Numeric Types
+</A><BR>
+<A HREF="tInteger.htm#HEAD0004">Floating Point vs. Quad Arithmetic
+</A><BR>
+<A HREF="tInteger.htm#HEAD0005">Fixed-Point Integer Arithmetic
+</A><BR>
+<A HREF="tInteger.htm#HEAD0006">Subtraction
+</A><BR>
+<A HREF="tInteger.htm#HEAD0007">Multiplication
+</A><BR>
+<A HREF="tInteger.htm#HEAD0008">Division
+</A><BR>
+<A HREF="tInteger.htm#HEAD0009">Rounded Division
+</A><BR>
+<A HREF="tInteger.htm#HEAD000A">Comparing Integer Values
+</A><BR>
+<A HREF="tInteger.htm#HEAD000B">Incrementing and Decrementing Integer Values
+</A><BR>
+<A HREF="tInteger.htm#HEAD000C">Type Conversion, Manipulation, and Initialization
+</A><BR>
+<A HREF="tInteger.htm#HEAD000D">Sign Determination
+</A><BR>
+<A HREF="tInteger.htm#HEAD000E">Negation
+</A><BR>
+<A HREF="tInteger.htm#HEAD000F">Taking Absolute Value
+</A><BR>
+<A HREF="tInteger.htm#HEAD0010">Generating Random Numbers
+</A><BR>
+<A HREF="tInteger.htm#HEAD0011">Modulo Arithmetic
+</A><BR>
+<A HREF="tInteger.htm#HEAD0012">Sample Program
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit consists of functions which perform all essential quad (64-bit) integer math operations. Random number generation is also included in this unit.
+
+<P>
+For C/C++ applications, use of the supplied quad class is recommended instead of the functions in this unit. See the Quad Class For C/C++ technical notes for further information.
+
+<H2><A NAME="HEAD0001">General Philosophy
+</A></H2>
+
+Most C compilers support int (16-bit) and long (32-bit) numeric types but have no support for 64-bit integer math. For this reason, this unit only contains a C interface to the quad (64-bit) integer math functions and is not a complete mapping of the integer math functions available in Spontaneous Assembly 3.0. The complete set of integer math functions is available through inline assembly.
+
+<P>
+In keeping with C philosophy, the integer math functions do not necessarily check for or return indicators of overflow. If overflow occurs, the returned values represent the low-order bits of the result (unless otherwise documented).
+
+<P>
+Since math operations are usually speed critical, the functions in this unit are designed with more emphasis on speed and less emphasis on size than the other library functions. Wherever it is possible to obtain a reasonable speed increase, a moderate amount of code is added. For example, <A HREF="rinteger.htm#_div_ql">_div_ql</A> includes an early-out algorithm (roughly a 30% size increase) which reduces the average execution time by 45%.
+
+<H2><A NAME="HEAD0002">Naming Conventions
+</A></H2>
+
+The names of the binary functions in this unit list the operation first (_add_..., _sub_..., _mul_..., _div_..., _divr_..., _cmp_..., or _mov_...). If the function is designed to work on two unsigned values, the next character is "u." The next character is always "q" to indicate that the destination numeric type is a quad, followed by "i", "l", or "q" to designate the source type (int, long int, or quad). For example, the function to add an unsigned int into a uquad (unsigned quad) is <A HREF="rinteger.htm#_add_uqi">_add_uqi</A>.
+
+<P>
+The names of the unary functions in this unit also list the operation first, (_dec_..., _inc_..., _sgn_..., _neg_..., or _abs_...) followed by one letter to indicate the type of the operator.
+
+<H2><A NAME="HEAD0003">Supported Numeric Types
+</A></H2>
+
+The table below shows the numeric types which are supported by the integer math functions.
+<PRE>
+Numeric Type                    Size                        Range
+
+unsigned char (inline only)     8-bit integer                0 to 255
+char (inline only)              8-bit integer             -128 to 127
+unsigned int                    16-bit integer               0 to 65,535
+int                             16-bit integer         -32,768 to 32,767
+unsigned long                   32-bit integer               0 to 4,294,967,295
+long                            32-bit integer  -2,147,483,648 to 2,147,483,647
+uquad                           64-bit integer               0 to 264-1
+quad                            64-bit integer            -263 to 263-1
+<PRE>
+Because C does not supply defined types for 64-bit integers, a uquad unsigned 64-bit type and a quad 64-bit type are provided to simplify the use of 64-bit integers. When compiling a C program, the quad and uquad types are defined using typedef, as follows:
+<PRE><CODE>
+typedef signed char quad[8];
+typedef unsigned char uquad[8];
+</CODE></PRE>
+When using C++, quad and uquad are defined as classes to allow mathematical operators to be used with quad and uquad values. (See the Quad Class For C++ technical notes for more information.) 64-bit integers may be declared by using uquad for unsigned values or quad for signed values, as in the following example:
+<PRE><CODE>
+           ...
+           uquad num1, num2;        /* declare two uquads */
+           quad num3, num4;         /* declare two quads */
+           ...
+</CODE></PRE>
+An extensive set of routines are provided for mixed-type operations (quad-quad, quad-long, and quad-int). The programmer should choose carefully from among these routines to avoid proliferation of code.
+
+<P>
+Signed vs. Unsigned Arithmetic
+
+<P>
+The distinction between signed and unsigned values must first be made by the programmer and then enforced as the code is written. This decision is based on the range of values supported by each type of integer (see the Supported Numeric Types table, above). For example, if 64-bit arithmetic is to be performed and values greater than 263-1 are required, then uquad should be used. If values less than zero are required, then quad arithmetic must be used instead. Note that the ranges for signed and unsigned values overlap (i.e., quad values from 0 to 263-1 may be considered either signed or unsigned). If a given operation only needs to support values within this range, either type of operation may be performed. Unsigned arithmetic is preferable, however, since it is usually faster and tighter than signed arithmetic. Examples of both types of arithmentic are shown below.
+
+<P>
+Unsigned arithmetic:
+<PRE><CODE>
+           ...
+           uquad num;                                   /* initialize a uquad */
+           <A HREF="rinteger.htm#_mov_uql">_mov_uql</A>(num, 0xFFFFFFFF);           /* num = 0xFFFFFFFF */
+           <A HREF="rinteger.htm#_mul_uqi">_mul_uqi</A>(num, 2);                    /* num = num x 2 */
+           <A HREF="rinteger.htm#_divr_uqi">_divr_uqi</A>(num, 2);                   /* num = num/2 (rounded) */
+           ...
+</CODE></PRE>
+Signed arithmetic:
+<PRE><CODE>
+           ...
+           quad num;                                    /* initialize a quad */
+           <A HREF="rinteger.htm#_mov_ql">_mov_ql</A>(num, 0x7FFFFFFF);            /* num = 0x7FFFFFFF */
+           <A HREF="rinteger.htm#_mul_qi">_mul_qi</A>(num, 2);                             /* num = num x 2 */
+           <A HREF="rinteger.htm#_divr_qi">_divr_qi</A>(num, 2);                    /* num = num/2 */
+           ...
+</CODE></PRE>
+<H2><A NAME="HEAD0004">Floating Point vs. Quad Arithmetic
+</A></H2>
+
+quad operations provide a fast, tight, exact alternative to floating point operations whenever transcendental functions are not required and the values of interest lie in the range 0 to 264-1 (0 to 1.84E19) or -263 to 263-1 (-9.22E18 to 9.22E18).
+
+<P>
+The code size difference between quad functions and floating point functions is striking. If a program is compiled with floating-point emulation support, the .EXE size increases by 10K to 20K. By contrast, all of the Spontaneous Assembly integer math functions and their C binders occupy less than 3.2K, including every variation of every function (i.e., functions which perform mixed-type operations). The actual memory usage for quad functions is, however, usually less than 800 bytes since only the required Spontaneous Assembly functions are linked into the final program and a limited number of functions is required for most applications.
+
+<H2><A NAME="HEAD0005">Fixed-Point Integer Arithmetic
+</A></H2>
+
+Fixed-point integers are true integer values with an implied number of decimal digits to the right of an implied decimal point. The precision of a fixed-point number specifies the fixed number of digits to the right of the decimal point. Restated, a fixed-point integer (fixint) has an implied exponent of þprecision or a value of fixintþ10þprecision.
+
+<P>
+For example, a fixed-point integer value of 54,321 with a precision of 3 represents 54321e-3 or 54.321. A fixed-point integer value of 10,025 in U.S. monetary units (precision of 2), represents 10,025 cents or $100.25.
+
+<P>
+The precision of a fixed-point value is only specified when the _dec_to_fixp or _fixp_to_dec data conversion functions are called. In all other respects, fixed-point integers are treated as integer values. Because fixed-point integers are manipulated using standard integer math routines, they provide a fast, tight alternative to floating-point values.
+
+<P>
+WARNING!        It is the responsibility of the programmer to keep track of the precision of each fixed-point value. When fixed-point values are multiplied, their precisions must be added to determine the precision of the result. When fixed-point values are divided, the precision of the divisor must be subtracted from the precision of the dividend. Negative precisions are not supported. Standard integer values have a precision of 0.
+
+<P>
+Addition
+<DL COMPACT>
+<DT><A HREF="rinteger.htm#_add_uqi">_add_uqi</A><DD>       Adds an unsigned int into a uquad.
+<DT><A HREF="rinteger.htm#_add_uql">_add_uql</A><DD>       Adds an unsigned long into a uquad.
+<DT><A HREF="rinteger.htm#_add_uqq">_add_uqq</A><DD>       Adds two uquad values.
+<DT><A HREF="rinteger.htm#_add_qi">_add_qi</A><DD>Adds a int into a quad.
+<DT><A HREF="rinteger.htm#_add_ql">_add_ql</A><DD>Adds a long into a quad.
+<DT><A HREF="rinteger.htm#_add_qq">_add_qq</A><DD>Adds two quad values.
+</DL>
+These functions add int, long, and quad values into quad destinations. Separate functions are provided for signed and unsigned values. These functions expect both arguments to be either signed or unsigned; no mixing of signed and unsigned values is supported. If overflow occurs, the returned value represents the low-order bits of the result.
+
+<H2><A NAME="HEAD0006">Subtraction
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rinteger.htm#_sub_uqi">_sub_uqi</A><DD>       Subtracts an unsigned int from a uquad.
+<DT><A HREF="rinteger.htm#_sub_uql">_sub_uql</A><DD>       Subtracts an unsigned long from a uquad.
+<DT><A HREF="rinteger.htm#_sub_uqq">_sub_uqq</A><DD>       Subtracts one uquad from another.
+<DT><A HREF="rinteger.htm#_sub_qi">_sub_qi</A><DD>Subtracts a int from a quad.
+<DT><A HREF="rinteger.htm#_sub_ql">_sub_ql</A><DD>Subtracts a long from a quad.
+<DT><A HREF="rinteger.htm#_sub_qq">_sub_qq</A><DD>Subtracts one quad from another.
+</DL>
+These functions subtract int, long, and quad, from quad destinations. Separate functions are provided for signed and unsigned values. These functions expect both arguments to be either signed or unsigned; no mixing of signed and unsigned values is supported. If overflow occurs, the returned value represents the low-order bits of the result.
+
+<H2><A NAME="HEAD0007">Multiplication
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rinteger.htm#_mul_uqi">_mul_uqi</A><DD>       Multiplies a uquad by an unsigned int, returning a uquad result.
+<DT><A HREF="rinteger.htm#_mul_uql">_mul_uql</A><DD>       Multiplies a uquad by an unsigned long, returning a uquad result.
+<DT><A HREF="rinteger.htm#_mul_uqq">_mul_uqq</A><DD>       Multiplies one uquad by another, returning a uquad result.
+<DT><A HREF="rinteger.htm#_mul_qi">_mul_qi</A><DD>Multiplies a quad by a int, returning a quad result.
+<DT><A HREF="rinteger.htm#_mul_ql">_mul_ql</A><DD>Multiplies a quad by a long, returning a quad result.
+<DT><A HREF="rinteger.htm#_mul_qq">_mul_qq</A><DD>Multiplies one quad by another, returning a quad result.
+</DL>
+These functions multiply quads by int, long, and quad multipliers. Results are always returned in the location of the multiplied quad, so the size of the result never exceeds the size of either of the input values (unlike the results of the MUL and IMUL instructions). These functions expect both arguments to be either signed or unsigned; no mixing of signed and unsigned values is supported.
+
+<P>
+If overflow occurs when multiplying unsigned values, the returned value represents the low-order bits of the result. If overflow occurs when multiplying signed values, the result is undefined.
+
+<H2><A NAME="HEAD0008">Division
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rinteger.htm#_div_uqi">_div_uqi</A><DD>       Divides a uquad by an unsigned int, returning a uquad result.
+<DT><A HREF="rinteger.htm#_div_uql">_div_uql</A><DD>       Divides a uquad by an unsigned long, returning a uquad result.
+<DT><A HREF="rinteger.htm#_div_uqq">_div_uqq</A><DD>       Divides one uquad by another, returning a uquad result.
+<DT><A HREF="rinteger.htm#_div_qi">_div_qi</A><DD>Divides a quad by a int, returning a quad result.
+<DT><A HREF="rinteger.htm#_div_ql">_div_ql</A><DD>Divides a quad by a long, returning a quad result.
+<DT><A HREF="rinteger.htm#_div_qq">_div_qq</A><DD>Divides one quad by another, returning a quad result.
+</DL>
+These functions divide quad values by int, long, and quad divisors. The resulting quotient is returned in place of the dividend. The remainder is also returned. These functions expect both arguments to be either signed or unsigned; no mixing of signed and unsigned values is supported.
+
+<P>
+For signed operations, the sign of the remainder is the same as the sign of the dividend, and the sign of the quotient is the product of the signs of the dividend and divisor.
+
+<P>
+If overflow occurs, the results are undefined. However, no divide overflow interrupts take place. Overflow is only possible if the divisor is zero.
+
+<H2><A NAME="HEAD0009">Rounded Division
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rinteger.htm#_divr_uqi">_divr_uqi</A><DD>      Divides a uquad by an unsigned int, returning a rounded uquad result.
+<DT><A HREF="rinteger.htm#_divr_uql">_divr_uql</A><DD>      Divides a uquad by an unsigned long, returning a rounded uquad result.
+<DT><A HREF="rinteger.htm#_divr_uqq">_divr_uqq</A><DD>      Divides one uquad by another, returning a rounded uquad result.
+<DT><A HREF="rinteger.htm#_divr_qi">_divr_qi</A><DD>       Divides a quad by a int, returning a rounded quad result.
+<DT><A HREF="rinteger.htm#_divr_ql">_divr_ql</A><DD>       Divides a quad by a long, returning a rounded quad result.
+<DT><A HREF="rinteger.htm#_divr_qq">_divr_qq</A><DD>       Divides one quad by another, returning a rounded quad result.
+</DL>
+These functions divide quad values by int, long, and quad divisors. The resulting rounded quotient is returned in place of the dividend. These functions expect both arguments to be either signed or unsigned; no mixing of signed and unsigned values is supported.
+
+<P>
+For signed operations, the sign of the rounded quotient is the product of the signs of the dividend and divisor.
+
+<P>
+If overflow occurs, the results are undefined. However, no divide overflow interrupts take place. Overflow is only possible if the divisor is zero or, in the case of signed operations, if the quotient is the maximum possible negative number before rounding takes place.
+
+<H2><A NAME="HEAD000A">Comparing Integer Values
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rinteger.htm#_cmp_uqi">_cmp_uqi</A><DD>       Compares a uquad and an unsigned int.
+<DT><A HREF="rinteger.htm#_cmp_uql">_cmp_uql</A><DD>       Compares a uquad and an unsigned long.
+<DT><A HREF="rinteger.htm#_cmp_uqq">_cmp_uqq</A><DD>       Compares two uquad valuess.
+<DT><A HREF="rinteger.htm#_cmp_qi">_cmp_qi</A><DD>Compares a quad and a int.
+<DT><A HREF="rinteger.htm#_cmp_ql">_cmp_ql</A><DD>Compares a quad and a long.
+<DT><A HREF="rinteger.htm#_cmp_qq">_cmp_qq</A><DD>Compares two quad values.
+</DL>
+These functions compare quad values against int, long, and quad values. The result of the comparison is returned as -1, 0, or 1. These functions expect both arguments to be either signed or unsigned; no mixing of signed and unsigned values is supported.
+
+<H2><A NAME="HEAD000B">Incrementing and Decrementing Integer Values
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rinteger.htm#_dec_q">_dec_q</A><DD> Decrements a quad or uquad.
+<DT><A HREF="rinteger.htm#_inc_q">_inc_q</A><DD> Increments a quad or uquad.
+</DL>
+These functions increment and decrement quads. They may be used with signed or unsigned values. If overflow occurs, the returned value represents the low-order bits of the result.
+
+<H2><A NAME="HEAD000C">Type Conversion, Manipulation, and Initialization
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rinteger.htm#_mov_uqi">_mov_uqi</A><DD>       Moves the value of an unsigned int into a uquad.
+<DT><A HREF="rinteger.htm#_mov_uql">_mov_uql</A><DD>       Moves the value of an unsigned long into a uquad.
+<DT><A HREF="rinteger.htm#_mov_uqq">_mov_uqq</A><DD>       Moves the value of one uquad into another.
+<DT><A HREF="rinteger.htm#_mov_qi">_mov_qi</A><DD>Moves the value of a int into a quad.
+<DT><A HREF="rinteger.htm#_mov_ql">_mov_ql</A><DD>Moves the value of a long into a quad.
+<DT><A HREF="rinteger.htm#_mov_qq">_mov_qq</A><DD>Moves the value of one quad into another.
+</DL>
+The _mov_... functions allow int, long, and quad values to be moved into quad destinations. If the destination type is larger, the value is sign extended to the proper size.
+
+<H2><A NAME="HEAD000D">Sign Determination
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rinteger.htm#_sgn_q">_sgn_q</A><DD> Determines the sign of a quad.
+</DL>
+This function determines the sign of a quad value. It can also be used to check the high bit of uquads. The result of the test is returned as 1 for negative and 0 for positive.
+
+<H2><A NAME="HEAD000E">Negation
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rinteger.htm#_neg_q">_neg_q</A><DD> Negates a quad.
+</DL>
+This function negates a quad.
+
+<P>
+Overflow occurs if the input value is the maximum possible negative number. In this case, the value remains unchanged. No other indicator of overflow is returned.
+
+<H2><A NAME="HEAD000F">Taking Absolute Value
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rinteger.htm#_abs_q">_abs_q</A><DD> Converts a quad to its absolute value.
+</DL>
+This function converts a quad to its absolute value.
+
+<P>
+Overflow occurs if the input value is the maximum possible negative number. In this case, the value remains unchanged. No other indicator of overflow is returned.
+
+<H2><A NAME="HEAD0010">Generating Random Numbers
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rinteger.htm#_rand_init">_rand_init</A><DD>     Initializes the random number generator.
+<DT><A HREF="rinteger.htm#_rand_w">_rand_w</A><DD>Generates a random number.
+<DT><A HREF="rinteger.htm#_randr_w">_randr_w</A><DD>       Generates a random number within a specific range.
+<DT><A HREF="rinteger.htm#rand_seed">rand_seed</A><DD>      (Variable) Holds the seed value for the random number generator.
+</DL>
+These functions generate pseudo-random numbers from 0 to any arbitrary limit less than 65536. A proven, well-tested, multiplicative random number generator with a period of 230 is employed. A function is also provided (_rand_init) to initialize the random number generator using the system time. This allows different sequences of random numbers to be generated automatically. Access is provided to the generator's seed value (rand_seed) to allow exact sequences of pseudo-random numbers to be easily reproduced.
+
+<H2><A NAME="HEAD0011">Modulo Arithmetic
+</A></H2>
+
+The MOD operator is not directly supported dor quad or uquad values in the Spontaneous Assembly library. Instead, modulo arithmetic is performed by dividing and using the remainder instead of the quotient. This is shown in the following example:
+<PRE><CODE>
+           ...
+           uquad num;
+           unsigned long remainder, lmod;
+           <A HREF="rinteger.htm#_mov_uql">_mov_uql</A>(num, 0xFFFFFFFF);                      /* num = value not divisible by 2 */
+           <A HREF="rinteger.htm#_div_uql">_div_uql</A>(num, 2, &remainder);                   /* num = num/2, remainder is modified */
+           lmod = remainder;                               /* lmod = remainder value */
+           ...
+</CODE></PRE>
+<H2><A NAME="HEAD0012">Sample Program
+</A></H2>
+
+The sample program shown below uses several integer math functions and demonstrates calculating input/output field size from radix and calculating quad values entered by the user. Several console I/O functions are used to manipulate the position of the displayed calculations and to manipulate the cursor during input. Also, the use of several data conversion functions and program control functions are presented in this example. The program is listed in its entirety.
+<PRE><CODE>
+#include <alloc.h>                              /* C headers */
+#include <stdlib.h>
+#include <conio.h>                              /* SA headers */
+#include <dataconv.h>
+#include <imath.h>
+#include <progctl.h>
+#include <sastring.h>
+
+#define BS  0x08
+#define ESC 0x1B
+
+/* functions */
+
+char field_len(int);                            /* determine field size of input/output */
+void help_msg(void);                            /* display syntax */
+void input(int);                                /* get number and operator */
+int display(char *, int);                       /* display converted number */
+char * calculate(void);                         /* calculate quad values */
+
+/* data */
+
+static char strbuf[80];                         /* buffer for input/output */
+static char curr_op, next_op, equal_op, op;
+static int bang, pass, width, radix;
+uquad num1, num2;                               /* declare uquads */
+
+void main()
+{
+   char *strindx, ch;
+
+   <A HREF="rconsole.htm#_console_init">_console_init</A>();                             /* initialize console i/o */
+   help_msg();                                  /* display command line and instructions */
+   if (_arg_count() == 0)                       /* if no arguments, default to decimal */
+      radix = 10;
+   else                                         /* else check if actual radix */
+   {
+      radix = <A HREF="rdata.htm#_dec_to_c">_dec_to_c</A>(_arg_next(strbuf, &ch), &strindx);
+      if (radix  2 || radix  36)                /* valid radix? */
+      {
+         <A HREF="rconsole.htm#_cput_str">_cput_str</A>("Invalid radix, use radix in range 2 to 36.");
+         exit(0);                               /*   n: exit */
+      }
+   }
+   width = field_len(radix);                    /* determine field size for input/output */
+   <A HREF="rdata.htm#_asc_to_uq">_asc_to_uq</A>("0", radix, num1, &strindx);      /* num1 = 0 */
+   pass = 0;                                    /* clear pass flag */
+   for (;;)                                     /* run until turned off (ESC) */
+   {
+      while (pass != -1)                        /* run until CLEAR */
+      {
+         do {                                   /* get numbers and display */
+               input(width);                    /* get user input */                           
+               if (bang == 1) break;            /* CLEAR? */                                   
+               pass = display(strbuf, pass);                                          
+               } while (pass != -1);            /* display right justified number */           
+               if (bang == 1) break;            /* CLEAR? */                                   
+               <A HREF="rconsole.htm#_cput_chr">_cput_chr</A>('=');                                                        
+               <A HREF="rconsole.htm#_cput_strji">_cput_strji</A>(calculate(), width+2);                                     
+               <A HREF="rconsole.htm#_cput_newline">_cput_newline</A>();                 /* display right justified result */           
+               <A HREF="rconsole.htm#_cput_chr">_cput_chr</A>(curr_op);              /* put next operator */                        
+               pass = 1;                        /* reset num1 */                    
+         }
+      <A HREF="rconsole.htm#_clr_line">_clr_line</A>(); <A HREF="rconsole.htm#_goto_left">_goto_left</A>();                
+      <A HREF="rconsole.htm#_cput_str">_cput_str</A>("CLEAR\n\r");                   /* display "CLEAR" msg */
+      pass = 0; bang = 0;                       /* reset num1 */
+      }
+   }
+}
+ /*============================================================================
+  FUNC: CALCULATE
+  DESC: Calculates new quad value using user defined operator.
+ ============================================================================*/
+char * calculate(void)
+{
+   switch(curr_op)
+   {
+      case '*': <A HREF="rdata.htm#_uq_to_asc">_uq_to_asc</A>(_mul_uqq(num1,num2), radix, strbuf); break;
+      case '/': <A HREF="rdata.htm#_uq_to_asc">_uq_to_asc</A>(_divr_uqq(num1,num2), radix, strbuf); break;
+      case '+': <A HREF="rdata.htm#_uq_to_asc">_uq_to_asc</A>(_add_uqq(num1,num2), radix, strbuf); break;
+      case '-': <A HREF="rdata.htm#_uq_to_asc">_uq_to_asc</A>(_sub_uqq(num1,num2), radix, strbuf); break;
+      default: break;
+   }
+   curr_op = next_op;
+   return(strbuf);
+}
+
+/*============================================================================
+  FUNC: DISPLAY
+  DESC: Converts user input numbers to quad values, converts quad to ASCII
+           string, right justifies display      of string. Uses flag to determine
+           which number to convert, returns (-1) both values are ready for
+           calculation, (0) if num1 needs value and conversion, or (1) if num2
+           needs value and conversion.
+============================================================================*/
+int display(char * strbuf, int flag)
+{
+   int status;
+   char *sptr;
+   <A HREF="rconsole.htm#_clr_eol">_clr_eol</A>();
+   if (flag == 1)
+   {
+      <A HREF="rdata.htm#_asc_to_uq">_asc_to_uq</A>(strbuf, radix, num2, &sptr);            
+       <A HREF="rconsole.htm#_clr_line">_clr_line</A>();                                   /* clear current line */
+      <A HREF="rconsole.htm#_goto_left">_goto_left</A>();                                   /* cursor at left-most column */
+      <A HREF="rconsole.htm#_cput_chr">_cput_chr</A>(curr_op);                             /* display current operator */
+      <A HREF="rconsole.htm#_cput_strji">_cput_strji</A>(_uq_to_asc(num2, radix, strbuf), width+2); <A HREF="rconsole.htm#_cput_newline">_cput_newline</A>();
+      if (equal_op)
+      {
+            <A HREF="rconsole.htm#_goto_x">_goto_x</A>(3); <A HREF="rconsole.htm#_cput_nchr">_cput_nchr</A>('',width); <A HREF="rconsole.htm#_cput_newline">_cput_newline</A>();
+      }
+      return(-1);
+   }
+   else
+   {
+      <A HREF="rdata.htm#_asc_to_uq">_asc_to_uq</A>(strbuf, radix, num1, &sptr);
+      <A HREF="rconsole.htm#_clr_line">_clr_line</A>();                                    /* clear current line */
+      <A HREF="rconsole.htm#_goto_left">_goto_left</A>();                                   /* cursor at left-most column */
+      <A HREF="rconsole.htm#_cput_strji">_cput_strji</A>(_uq_to_asc(num1, radix, strbuf), width+3); <A HREF="rconsole.htm#_cput_newline">_cput_newline</A>();
+      <A HREF="rconsole.htm#_cput_chr">_cput_chr</A>(curr_op);                             /* display current operator */
+      if (equal_op)
+      {
+         <A HREF="rconsole.htm#_goto_x">_goto_x</A>(3); <A HREF="rconsole.htm#_cput_nchr">_cput_nchr</A>('',width); <A HREF="rconsole.htm#_cput_newline">_cput_newline</A>();
+      }
+      return(1);
+   }
+}
+
+/*============================================================================
+  FUNC: FIELD_LEN
+  DESC: Determine field size based on radix value.
+============================================================================*/
+char field_len(int i)
+{
+   char array[35] = {64,42,32,27,24,22,21,20,19,18,17,17,16,16,16,15,15,15,14,\
+                           14,14,14,13,13,13,13,13,13,13,12,12,12,12,12,12};
+
+   i -= 2;
+   return(array[i]);
+}
+
+/*============================================================================
+  FUNC: HELP_MSG
+  DESC: Determine field size based on radix value.
+============================================================================*/
+void help_msg(void)
+{
+   <A HREF="rconsole.htm#_cput_str">_cput_str</A>("\n\r\n\rCALC - Calculator using integer quad arithmetic");
+   <A HREF="rconsole.htm#_cput_str">_cput_str</A>("\n\rSyntax:        calc [base]");
+   <A HREF="rconsole.htm#_cput_str">_cput_str</A>("\n\rWhere:         base is the radix (2 to 36), default is 10");
+   <A HREF="rconsole.htm#_cput_str">_cput_str</A>("\n\n\r  Enter '!' to clear, ESC to turn off\n\n\r");
+}
+
+ /*============================================================================
+  FUNC: INPUT
+  DESC: Get a character at a time, switch on each character, add numbers
+           to a string and break on operators.
+ ============================================================================*/
+void input(int num_cnt)
+{
+   char num;
+   int flag = pass;
+   int i = 0;
+   int op_flag=0;
+   <A HREF="rstring.htm#_str_set">_str_set</A>(strbuf,0);                                             /* clear buffer */
+   do
+   {
+      while(num_cnt != 0)
+      {
+         num = <A HREF="rconsole.htm#_cget_chre">_cget_chre</A>();                               /* get user number/operator */
+         switch(num)
+            {
+               case  BS: if (_where_x()  1)             /* handle BACKSPACE */
+                                {   i--;                /* dec counter for string buffer */
+                                       num_cnt++;       /* counter backed up 1 */
+                                       strbuf[i] = 0;   /* NULL out previous number */
+                                       <A HREF="rconsole.htm#_move_left">_move_left</A>();    /* move cursor left 1 space */
+                                       <A HREF="rconsole.htm#_cput_chr">_cput_chr</A>(' ');  /* erase number from scr */
+                                       <A HREF="rconsole.htm#_move_left">_move_left</A>();
+                                } break;
+               case ESC: exit(0);                       /* turn off */
+               case '!': bang = 1; num_cnt = 0; op_flag = 1; break;
+               case  13:                           /* (CR or =) preserves current operator */
+               case '=': num_cnt = 0; op_flag = 1; equal_op = 1; next_op = curr_op; break;
+               case '+':
+               case '-':
+               case '*':
+               case '/': if (flag == 0)            /* handle 1 of 4 operators */
+                                {
+                                   curr_op = num;  /* set current operator */
+                                      flag = 1;
+                                }
+                                if (_where_x() == 2)
+                                {
+                                      curr_op = num;      
+                                      <A HREF="rconsole.htm#_move_left">_move_left</A>();        /* move cursor left 1 space */
+                                      <A HREF="rconsole.htm#_move_left">_move_left</A>();        /* ditto */
+                                      <A HREF="rconsole.htm#_cput_chr">_cput_chr</A>(num);      /* erase current operator */
+                                      <A HREF="rconsole.htm#_cput_chr">_cput_chr</A>(' ');      /* clear 2 character */
+                                      <A HREF="rconsole.htm#_move_left">_move_left</A>();
+                                }
+                                else
+                                   next_op = num;          /* save for next operator */
+                                if (i == 0)                /* if number already entered, done */
+                                {
+                                      num_cnt = 0; op_flag = 1; }
+                                   equal_op = 0;
+                                }
+                                break;
+               default:  if (num  123 && num  47)
+                                {
+                                   strbuf[i] = num;        /* add number to string */
+                                   num_cnt--;              /* decrement space left in buffer */
+                                   i++;                    /* increment numbers entered */
+                                }
+                                break;
+            }    /* end switch 1 */
+      };
+
+      while (op_flag == 0)                                 /* if no operator entered yet */
+      {
+         num = <A HREF="rconsole.htm#_cget_chr">_cget_chr</A>();
+            switch(num)
+            {
+               case '+':
+               case '-':
+               case '*':
+               case '/': if (pass == 0)                    /* if pass one */
+                                      curr_op = num;       /*   this is current operator */
+                                else                       /* else it is the next operator */
+                                      next_op = num;
+                                op_flag = 1;
+                                equal_op = 0;
+                                break;
+               case '=':
+               case  13: equal_op = 1; next_op = curr_op; op_flag = 1; break;
+               case  BS: op_flag = 1; break;
+               case ESC: exit(0);
+               default: <A HREF="rconsole.htm#_cflush_keys">_cflush_keys</A>(); <A HREF="rconsole.htm#_cput_beep">_cput_beep</A>(); break;
+         }
+      }
+
+      if(num == BS)
+      {
+            num_cnt++; i--; op_flag = 0;
+            strbuf[i] = 0;                                 /* NULL out previous number */
+            <A HREF="rconsole.htm#_move_left">_move_left</A>();                                  /* move cursor left 1 space */
+            <A HREF="rconsole.htm#_cput_chr">_cput_chr</A>(' ');                                /* erase number from scr */
+            <A HREF="rconsole.htm#_move_left">_move_left</A>();
+      }
+   } while (num_cnt != 0);
+}
+</CODE></PRE>
+The sample program shown above (CALC.C) is provided on the distribution diskettes and may be compiled and linked using the following Microsoft C and Borland C command lines:
+
+<P>
+Microsoft C:
+<PRE><CODE>
+cl /c /I\msc\include /I\sa\include calc.c
+link calc,calc,,\sa\lib\_sas \msc\lib\slibce
+</CODE></PRE>
+Borland C:
+<PRE><CODE>
+bcc /c /ms /I\bc\include /I\sa\include calc.c
+tlink \bc\lib\c0s calc,calc,,\sa\lib\_sas \bc\lib\cs
+</CODE></PRE>
+</BOBY>
+</HTML>

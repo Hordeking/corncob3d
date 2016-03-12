@@ -1,0 +1,642 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - DOS Console I/O Reference</TITLE>
+</HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>DOS Console I/O</H1>
+<P ALIGN=CENTER>Reference Section </P>
+<UL>
+<LI><A HREF="TOC.htm">Table of Contents</A>
+<LI><A HREF="index.htm">Function Index</A>
+<LI><A HREF="gindex.htm">Group Index
+</UL>
+<A HREF="rdosio.htm#_check_key">_check_key</A><BR>
+<A HREF="rdosio.htm#_flush_keys">_flush_keys</A><BR>
+<A HREF="rdosio.htm#_fput_str">_fput_str</A><BR>
+<A HREF="rdosio.htm#_get_chr">_get_chr</A><BR>
+<A HREF="rdosio.htm#_get_chra">_get_chra</A><BR>
+<A HREF="rdosio.htm#_get_chrae">_get_chrae</A><BR>
+<A HREF="rdosio.htm#_get_chre">_get_chre</A><BR>
+<A HREF="rdosio.htm#_get_str">_get_str</A><BR>
+<A HREF="rdosio.htm#_put_beep">_put_beep</A><BR>
+<A HREF="rdosio.htm#_put_chr">_put_chr</A><BR>
+<A HREF="rdosio.htm#_put_newline">_put_newline</A><BR>
+<A HREF="rdosio.htm#_put_str">_put_str</A><BR>
+<H2><A NAME="_check_key">_check_key</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Checks STDIN to determine if a keystroke is waiting to be read.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;dosio.h&gt
+<BR>	int _check_key(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if a keystroke is waiting to be read.
+<BR>
+<BR>	0 if no keystroke is waiting to be read.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function determines if a keystroke is waiting to be read at the STDIN device. O is returned if a key is waiting to be read; otherwise, 1 is returned. Redirection, ctrl-break and ctrl-C checking are supported.
+<BR>
+<BR>	This function is typically used prior to calling _get_chr or _get_chre to allow background processing while waiting for a keystroke.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ...
+	   if (_check_key())
+	   {
+	      _put_str ("\n\rKeystrokes are in the buffer--flushing");
+	      _flush_keys ();
+	   } else
+	      _put_str ("\n\rNo keystrokes are in the buffer");
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   ...
+	   check_key ();	/* is keystroke pending? */
+	    jnecheck_key_010/*   n: display "No" message */
+	   _put_str ("\n\rKeystrokes are in the buffer--flushing");
+	   flush_keys ();
+	   jmp short check_key_020
+
+	check_key_010:
+	   _put_str ("\n\rNo keystrokes are in the buffer");
+	check_key_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DIOCHKE.ASM		  <B>ASM equiv</B>	CHECK_KEY
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rconsole.htm#_ccheck_key">_ccheck_key</A>
+<BR></DL>
+<H2><A NAME="_flush_keys">_flush_keys</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Flushes pending input from STDIN.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;dosio.h&gt
+<BR>	void _flush_keys(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function flushes all characters which are waiting to be read from the STDIN device. Redirection, ctrl-break and ctrl-C checking are supported. If redirection is in effect, all redirected input characters are flushed.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ...
+	   if (_check_key ())
+	   {
+	      _put_str ("\n\rKeystrokes are in the buffer--flushing");
+	      _flush_keys ();
+	   }
+	   else
+	      _put_str ("\n\rNo keystrokes are in the buffer");
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   check_key ();	/* is a keystroke waiting? */
+	    jnecheck_key_010/*   n: write "no" message */
+	   _put_str ("\n\rKeystrokes are in the buffer--flushing");
+	   flush_keys ();
+	   jmp short check_key_020
+
+	check_key_010:
+	   _put_str ("\n\rNo keystrokes are in the buffer");
+	check_key_020:
+	...
+
+</CODE></PRE>
+<B>Source file</B>	DIOFLKEY.ASM		  <B>ASM equiv</B>	FLUSH_KEYS
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdosio.htm#_check_key">_check_key</A>
+<BR></DL>
+<H2><A NAME="_fput_str">_fput_str</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Puts a string to STDOUT.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;dosio.h&gt
+<BR>	void _fput_str(char far *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _put_str.
+<BR>
+<BR></DL>
+<B>Source file</B>	_DIOFPST.ASM		  <B>ASM equiv</B>	PUT_STR
+
+<BR><H2><A NAME="_get_chr">_get_chr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets a character from STDIN.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;dosio.h&gt
+<BR>	int _get_chr(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The character code if the keystroke was a normal or ALT-keypad character.
+<BR>
+<BR>	0 if the keystroke was an extended keystroke (the character code is obtained on the next call to _get_chr).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function gets a character from the STDIN device. No echoing is performed. If no characters are waiting to be read, this function waits until a key is pressed. Redirection, ctrl-break checking, and ctrl-C checking are supported. 0 is returned if an extended keystroke is retrieved from STDIN. If 0 is returned, the next call to _get_chr returns the character code of the extended keystroke.
+<BR>
+<BR>	This function is similar to C's getch function. It is included to provide similar functionality. Use of _get_chra is preferable.
+<BR>
+<BR>WARNING! If STDIN is redirected from a file and the last character in the file is a NULL, this function will interpret the NULL as an extended character flag and it will wait indefinitely for the second half of the extended character to become available.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char chr;
+	   chr = _get_chr ();
+	   if (chr != 0)
+	   {
+	      /* handle regular keystroke */
+	   } else
+	   {
+	      chr = _get_chr ();
+	      /* handle extended keystroke */
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   get_chr ();	/* AL = chr */
+	    jc get_chr_010
+	   ... 	 	/* regular keystroke */
+	   jmp short get_chr_020
+
+	get_chr_010:
+	   ... 	 	/* extended keystroke */
+	get_chr_020:
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_DIOGCHR.ASM		  <B>ASM equiv</B>	GET_CHR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rconsole.htm#_cget_chr">_cget_chr</A>, <A HREF="rdosio.htm#_get_chr">_get_chr</A>, <A HREF="rdosio.htm#_check_key">_check_key</A>, <A HREF="rdosio.htm#_get_chr">_get_chr</A>, <A HREF="rdosio.htm#_get_chr">_get_chr</A>, <A HREF="rdosio.htm#_get_str">_get_str</A>, <A HREF="rfileio.htm#_hget_chr">_hget_chr</A>, <A HREF="rdosio.htm#_put_chr">_put_chr</A>
+<BR></DL>
+<H2><A NAME="_get_chra">_get_chra</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets a character from STDIN.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;dosio.h&gt
+<BR>	int _get_chra(char *chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if a normal or ALT-keypad character was retrieved from STDIN.
+<BR>	chr 	character code
+<BR>
+<BR>	-1 if an extended character was retrieved from STDIN.
+<BR>	chr 	character code for extended character
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function gets a character from the STDIN device and copies it into chr. No echoing is performed. If no characters are waiting to be read, this function waits until a key is pressed. Redirection, ctrl-break checking, and ctrl-C checking are supported. -1 is returned if an extended keystroke is retrieved from STDIN; otherwise, 0 is returned.
+<BR>
+<BR>	This function provides an alternative to using two calls to obtain an extended character value. chr always contains the character code regardless of the character type; this allows the programmer to switch on the return value to determine how chr should be processed.
+<BR>
+<BR>WARNING! If STDIN is redirected from a file and the last character in the file is a NULL, this function will interpret the NULL as an extended character flag and it will wait indefinitely for the second half of the extended character to become available.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char chr;
+	   if (_get_chra (&ampchr) == 0)
+	   {
+	      /* handle regular keystroke */
+	   } else
+	   {
+	      /* handle extended keystroke */
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+
+	   get_chr ();/* AL = new chr */
+	    jc get_chr_010
+	   ... 	 /*  handle regular keystroke */
+	   jmp short get_chr_020
+
+	get_chr_010:
+	   ... 	 /* handle extended keystroke */
+
+	get_chr_020:
+
+</CODE></PRE>
+<B>Source file</B>	_DIOGCHA.ASM		  <B>ASM equiv</B>	GET_CHR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rconsole.htm#_cget_chr">_cget_chr</A>, <A HREF="rdosio.htm#_get_chr">_get_chr</A>, <A HREF="rdosio.htm#_get_chr">_get_chr</A>, <A HREF="rdosio.htm#_get_chr">_get_chr</A>
+<BR></DL>
+<H2><A NAME="_get_chrae">_get_chrae</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets a character from STDIN and echoes it to STDOUT.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;dosio.h&gt
+<BR>	int _get_chrae(char *chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if a normal or ALT-keypad character was retrieved from STDIN.
+<BR>	chr 	character code
+<BR>
+<BR>	-1 if an extended character was retrieved from STDIN.
+<BR>	chr 	character code for extended character
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function gets a character from the STDIN device, echoes it to the STDOUT device, and copies it into chr. The character is echoed only if it is a normal or ALT-keypad character in the range 0x20 to 0x7E. All characters which are ALT-keypad characters are returned as normal characters. If no characters are waiting to be read, this function waits until a key is pressed. Redirection, ctrl-break checking, and ctrl-C checking are supported. If an extended keystroke is retrieved from STDIN, -1 is returned. Otherwise 0 is returned.
+<BR>
+<BR>	This function provides an alternative to using two calls to obtain an extended character value. chr always contains the character code regardless of the character type; this allows the programmer to switch on the return value to determine how chr should be processed.
+<BR>
+<BR>WARNING! If STDIN is redirected from a file and the last character in the file is a NULL, this function will interpret the NULL as an extended character flag and it will wait indefinitely for the second half of the extended character to become available.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char chr;
+	   if (!_get_chrae (&ampchr))
+	   {
+	      /* handle regular keystroke */
+	   } else
+	   {
+	      /* handle extended keystroke */
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   get_chre ();	/* AL = chr, is chr extended? */
+	    jc get_chre_010/*   y: handle extended key */
+	   ... 	 	/*   n: handle regular key */
+	   jmp short get_chre_020
+
+	get_chre_010:
+	   ... 	 	/* handle extended keystroke */
+	get_chre_020:
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_DIOGCAE.ASM		  <B>ASM equiv</B>	GET_CHRE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rconsole.htm#_cget_chr">_cget_chr</A>, <A HREF="rdosio.htm#_get_chr">_get_chr</A>, <A HREF="rdosio.htm#_get_chr">_get_chr</A>, <A HREF="rdosio.htm#_get_chr">_get_chr</A>, <A HREF="rdosio.htm#_get_chr">_get_chr</A>
+<BR></DL>
+<H2><A NAME="_get_chre">_get_chre</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets a character from STDIN and echoes it to STDOUT.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;dosio.h&gt
+<BR>	int _get_chre(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	Character code if the keystroke was a normal or ALT-keypad character.
+<BR>
+<BR>	0 if the keystroke was an extended keystroke (the character code is obtained on the next call to _get_chre).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function gets a character from the STDIN device and echoes it to the STDOUT device. The character is echoed only if it is a normal or ALT-keypad character in the range 0x20 to 0x7E. All characters are returned. ALT-keypad characters are returned as normal characters. 0 is returned if an extended keystroke is retrieved from STDIN. If 0 is returned, the next call to _get_chre returns the value of the extended keystroke.
+<BR>
+<BR>	If no characters are waiting to be read, this function waits until a key is pressed. Redirection, ctrl-break checking, and ctrl-C checking are supported.
+<BR>
+<BR>	This function is similar to C's getche function. It is included to provide similar functionality. Use of _get_chrae is preferable.
+<BR>
+<BR>WARNING! If STDIN is redirected from a file and the last character in the file is a NULL, this function will interpret the NULL as an extended character flag and it will wait indefinitely for the second half of the extended character to become available.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char chr;
+	   chr = _get_chre ();
+	   if (chr)
+	   {
+	      /* handle regular keystroke */
+	   } else
+	   {
+	      chr = _get_chre ();
+	      /* handle extended keystroke */
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	...
+	get_chre ();/* AL = new chr, is chr extended? */
+	 jc get_chre_010/*   y: handle extended keys */
+	...    	 /*   n: handle regular keys */
+	jmp short get_chre_020
+
+	get_chre_010:
+	...    	 /* handle extended keystroke */
+	get_chre_020:
+	...
+
+</CODE></PRE>
+<B>Source file</B>	_DIOGCHE.ASM		  <B>ASM equiv</B>	GET_CHRE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rconsole.htm#_cget_chr">_cget_chr</A>, <A HREF="rdosio.htm#_get_chr">_get_chr</A>, <A HREF="rdosio.htm#_get_chr">_get_chr</A>, <A HREF="rdosio.htm#_get_chr">_get_chr</A>
+<BR></DL>
+<H2><A NAME="_get_str">_get_str</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets a string from the STDIN device.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;dosio.h&gt
+<BR>	char *_get_str(char *buffer, char num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to buffer.
+<BR>	buffer	ASCIIZ string retrieved from STDIN
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function gets up to num characters from the STDIN device and places them in buffer. Each character is echoed as it is read if it is a normal or ALT-keypad character in the range 0x20 to 0x7E. Non-echoed characters are not placed in buffer. If an attempt is made to enter more than num characters into the buffer, the BEL character is echoed to STDOUT and the character is ignored. If the backspace key is pressed, the last character in buffer is removed and the last character echoed to STDOUT is overwritten with a space character. If the Enter key is pressed, a NULL character is placed after the last character written into buffer, a CR and a LF are echoed to STDOUT, and the function returns. Redirection, ctrl-break checking, and ctrl-C checking are supported.
+<BR>
+<BR>WARNING! buffer must be at least num+3 bytes in size. The contents of the two bytes in buffer just beyond the end of the returned ASCIIZ string are undefined.
+<BR>
+<BR>WARNING! Even if _cbrk_disable has been used to disable ctrl-break checking, a ctrl-C will still cause a ^C and a CR/LF to be written to STDOUT. However, calling _cbrk_disable will prevent the ctrl-break handler from receiving control.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char str[10];
+	   ...
+	   _get_str (str, 9);/* process the string */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char str[10];
+	   ...
+	   mov cl,9	/* CL = max # chars to read */
+	   lea si,str	/* SI -&gt str buffer */
+	   get_str ();	/* get a max of CL chars */
+	   put_str ();	/* write them to STDOUT */
+	   ... 	 	
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DIOGSTR.ASM		  <B>ASM equiv</B>	GET_STR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rconsole.htm#_cget_s">_cget_s</A>, <A HREF="rdosio.htm#_get_chr">_get_chr</A>, <A HREF="rscript.htm#_get_script">_get_script</A>, <A HREF="rscript.htm#_vget_script">_vget_script</A>, <A HREF="rfileio.htm#_hget_str">_hget_str</A>
+<BR></DL>
+<H2><A NAME="_put_beep">_put_beep</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Puts a BEL character to STDOUT.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;dosio.h&gt
+<BR>	void _put_beep(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sends a BEL character to the STDOUT device. The BEL character may be redirected.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   _put_beep ();
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   put_beep ();
+
+</CODE></PRE>
+<B>Source file</B>	DIOPBEEP.ASM		  <B>ASM equiv</B>	PUT_BEEP
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rconsole.htm#_cput_beep">_cput_beep</A>, <A HREF="rdosio.htm#_put_chr">_put_chr</A>
+<BR></DL>
+<H2><A NAME="_put_chr">_put_chr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Puts a character to STDOUT.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;dosio.h&gt
+<BR>	void _put_chr(int chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function writes chr to the STDOUT device. Redirection is supported. If redirection is not being performed, then the character is displayed on the screen at the current cursor position.
+<BR>
+<BR>	The following characters receive special interpretation by the STDOUT device: BEL, BS, TAB, LF, and CR. All other characters are written to STDOUT without modification.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   _put_chr ('c');/* write 'c' to STDOUT */
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   mov al,'a'/* AL = char to write */
+	   put_chr ();/* write it to STDOUT */
+
+</CODE></PRE>
+<B>Source file</B>	_DIOPCHR.ASM		  <B>ASM equiv</B>	PUT_CHR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdosio.htm#_get_chr">_get_chr</A>, <A HREF="rconsole.htm#_cput_chr">_cput_chr</A>, <A HREF="rfileio.htm#_hput_chr">_hput_chr</A>, <A HREF="rdosio.htm#_put_str">_put_str</A>
+<BR></DL>
+<H2><A NAME="_put_newline">_put_newline</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Puts a carriage return and linefeed to STDOUT.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;dosio.h&gt
+<BR>	void _put_newline(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function echoes a CR and a LF to the STDOUT device. Redirection is supported. If redirection is not being performed, then this function returns the cursor to the left-most column of the screen and moves it down one line.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   _put_newline();
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   put_newline();
+
+</CODE></PRE>
+<B>Source file</B>	DIOPNLIN.ASM		  <B>ASM equiv</B>	PUT_NEWLINE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rconsole.htm#_cput_newline">_cput_newline</A>
+<BR></DL>
+<H2><A NAME="_put_str">_put_str</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Puts a string to STDOUT.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;dosio.h&gt
+<BR>	void _put_str(char *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function writes an ASCIIZ string to STDOUT. Each character of string is copied to STDOUT except the terminating NULL character. Redirection is supported. If redirection is not being performed, then the string is displayed starting at the current cursor position.
+<BR>
+<BR>	The following characters receive special interpretation by the STDOUT device: BEL, BS, TAB, LF, and CR. All other characters are written to STDOUT without modification.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   char *str = "Hello, world";
+	   _put_str(str)
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char str[10];
+	   ...
+	   mov cl,9	/* CL = max # of chars to read */
+	   lea si,str	/* DS:SI -&gt str buffer */
+	   get_str ();	/* get a max of CL chars */
+	   put_str ();	/* write them to STDOUT */
+	   ... 	 	/* process the string */
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_DIOPSTR.ASM		  <B>ASM equiv</B>	PUT_STR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rconsole.htm#_cput_str">_cput_str</A>, <A HREF="rdosio.htm#_fput_str">_fput_str</A>, <A HREF="rfileio.htm#_hput_str">_hput_str</A>, <A HREF="rdosio.htm#_put_chr">_put_chr</A>, <A HREF="rscript.htm#_put_script">_put_script</A>, <A HREF="rscript.htm#_vput_script">_vput_script</A>
+<BR>
+<BR></BODY>
+<BR></HTML><BR>

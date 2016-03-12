@@ -1,0 +1,168 @@
+<HTML>
+<head>
+<TITLE>SpontaneousAssembly 3.0 Online Manual - Introduction</TITLE>
+</head>
+<body>
+
+<H1 ALIGN=CENTER> Introduction </H1>
+
+<UL>
+<LI><A HREF="Intro.htm#H21">About This Manual </A>
+	<UL>
+	<LI><A HREF="Intro.htm#H31">Purpose and Philosophy </A>
+	<LI><A HREF="Intro.htm#H32">Overview</A>
+	<LI><A HREF="Intro.htm#H33">Typefaces and Styles Used</A>
+	<LI><A HREF="Intro.htm#H34">Example Philosophy</A>
+	</UL>
+<LI><A HREF="#H22>Spontaneous Assembly For C/C++</A>
+	<UL>
+	<LI><A HREF="Intro.htm#H35">What is Spontaneous Assembly For C/C++?</A>
+	<LI><A HREF="Intro.htm#H36">What Does Spontaneous Assembly For C/C++ Include?</A>
+	<LI><A HREF="Intro.htm#H37">Why Does Spontaneous Assembly For C/C++ Use a "Binder" Interface?</A>
+	<LI><A HREF="Intro.htm#H38">Library Philosophy</A>
+	<LI><A HREF="Intro.htm#H39">Library Overview</A>
+	<LI><A HREF="Intro.htm#H310">Quad Class</A>
+	<LI><A HREF="Intro.htm#H311">Compatibility</A>
+	<LI><A HREF="Intro.htm#H312">System Requirements</A>
+	</UL>
+</UL>	
+
+<H2 ALIGN=CENTER><A NAME="H21"> About This Manual</A></H1>
+<P ALIGN=CENTER>Chapter one </P>
+
+<H3><A NAME="H31">Purpose and Philosophy</A></H3>
+This manual is a comprehensive reference guide to Spontaneous Assembly For C/C++ version 3.0. It is intended for programmers who are familiar with the C programming language.
+<P>
+Spontaneous Assembly For C/C++ is designed to be a complete C programming and optimization tool which does not require the direct use of assembly language. However, because assembly is desirable in many applications, complete assembly language documentation, modules, and examples are also provided. This allows the programmer to develop and program in C while providing unrestricted access to the underlying assembly language functions.
+<P>
+Because this manual is intended as a reference work, discussion is kept to a minimum. Pertinent information is usually provided where it is required, even if the information is duplicated elsewhere in the manual. The intent of this approach is to make using Spontaneous Assembly For C/C++ as straightforward as possible.
+
+<H3><A NAME="H32">Overview</A></H3>
+
+The manual is divided into six sections: Introduction, Using Spontaneous Assembly For C/C++, Technical Notes, Reference Section, Appendices, and Index.
+<P>
+The first two sections of the manual, Introduction and Using Spontaneous Assembly For C/C++, are introductory in nature. These sections include an overall description of Spontaneous Assembly For C/C++, a detailed description of the library functionality, an explanation of how programs use Spontaneous Assembly For C/C++, and step-by-step instructions describing how to integrate Spontaneous Assembly library functions using inline assembly into existing C programs.
+<P>
+The next three sections of the manual provide detailed reference material for using the Spontaneous Assembly library routines and macros. The technical notes section appears first. This section divides the library functions, macros, and variables into groups of related functions called units. Each unit is documented separately. This documentation includes: a general description of the unit; brief descriptions of each function, macro, and variable in the unit; and notes which explain general requirements, limitations, how related functions coordinate together, and other technical topics which are beyond the scope of the Reference Section.
+<P>
+Primary emphasis is placed on the Reference Section. This section explains every function, macro, and variable in detail, including inputs and outputs, detailed guidelines for use, C and inline assembly examples, warnings, related functions, source files, and more. The entries in this section are arranged alphabetically for quick reference.
+<P>
+Finally, the Appendices contain tables of error codes, keystrokes and keystroke codes, a cross reference for standard C functions and Spontaneous Assembly For C/C++ functions, and a discussion of advanced TSR topics. A thorough Index is also provided.
+
+<H3><A NAME="H33">Typefaces and Styles Used</A></H3>
+
+The following is a list of the typefaces and styles used throughout the manual to indicate specifics such as function names, variables, structures, and parameter names:
+<P>           
+
+<DL COMPACT>
+<DT><B>keyword</B>	<DD>Indicates the name of a keyword, function, variable, or typedef.
+
+<DT>CAPS
+<DD>Indicates the name of an include file, macro, or defined symbol.
+
+<DT><I>italics</I>
+<DD>Indicates a previously-specified parameter name or structure field which is being referenced in the text.
+
+<DT><B><I>bold italics</B></I>
+<DD>Indicates a parameter which has been modified by a function.
+
+<DT>[   ]
+<DD>Used in the syntax to indicate optional parameters.
+
+<DT>&lt;  &gt
+<DD>Used in the syntax to indicate the name of the include file.
+
+<DT><CODE>regular type</CODE>
+<DD>Used for sample keyboard input or screen output.
+
+<DT><SMALL>small type</SMALL>
+<DD>Used for example code or structure definitions.
+</DL>
+
+<H3><A NAME="H34">Example Philosophy</A></H3>
+
+Although both C and inline assembly examples are usually provided in the reference section, it is left to the developer to determine the most appropriate interface for their purposes. See Chapter 4, Programming with Inline Assembly for a discussion of the relative merits of using inline assembly and/or C interface functions.
+<P>
+In some cases, binders have been provided for assembly language macros (not functions) from the Spontaneous Assembly library. Since macros are not supported in inline assembly, there is no inline assembly equivalent for these C functions. In these cases, "(Not Applicable)" appears where the inline assembly example normally belongs. In addition, "(C Interface Recommended)" appears in cases where there is no significant size or speed advantage to using inline assembly.
+<P>
+Some of the examples in the reference section use heap management functions calls such as malloc and free. These function calls automatically use Spontaneous Assembly For C/C++ heap management functions instead of the standard heap functions if the required installation is performed (see the Memory Management technical notes). However, either heap management system may be successfully used for these examples.
+<P>
+For the sake of simplicity, inline examples are written for the SMALL memory model (near data and near code). Many of these examples may be used in the LARGE memory model (far data or far code) without modification. Most other examples may be modified for LARGE model use simply by setting up far pointers to reference the needed data.
+<P>
+Finally, some examples make use of printf and other examples use the more powerful Spontaneous Assembly scripted I/O functions (e.g., _cput_script and _put_script). While both methods are shown, the scripted I/O functions are recommended in applications where speed, size, and flexibility are important.
+
+
+<H2 ALIGN=CENTER><A NAME="H22">Spontaneous Assembly For C/C++</A></H2>
+<P ALIGN=CENTER>Chapter two</P>
+
+
+<H3><A NAME="H35">What is Spontaneous Assembly For C/C++?</H3>
+
+Spontaneous Assembly For C/C++ is a complete C language library specifically designed for enhancing and optimizing C and C++ programs in assembly-without requiring a knowledge of assembly language. Built on the platform of Spontaneous Assembly 3.0, Spontaneous Assembly For C/C++ contains more than 900 tight, fast assembly language functions and macros covering everything from string manipulation and dynamic memory management to TSRs and windowing. And because these functions are directly accessible from C, Spontaneous Assembly For C/C++ instantly puts the power of tested, well-documented assembly language functions at the fingertips of the C developer.
+
+<H3><A NAME="H36">What Does Spontaneous Assembly For C/C++ Include?</H3>
+
+Spontaneous Assembly For C/C++ includes function libraries, binder libraries, header files, full source code, and examples for more than 900 functions and macros in five memory models. It also includes a skeleton file for creating TSRs and device drivers, optional TSR startup code, and special startup code for C applications which eliminates the unnecessary overhead of standard C startup modules.
+
+<H3><A NAME="H37">Why Does Spontaneous Assembly For C/C++ Use a "Binder" Interface?</H3>
+
+Internally, whenever a function is accessed as a C function, a binder (front end) is called which translates the call from the standard C interface to the internal assembly language interface. The binder then calls the assembly version of the function and converts the return values from the assembly convention to the C convention before returning.
+<P>
+At first glance, the use of binders might seem inefficient since the added overhead of a binder can reduce the advantage of calling an assembly language function. However, it turns out that in a complex library where many functions depend on each other, a C binder interface usually provides better optimization than rewriting the library to support a C interface directly! This is true because the assembly parameter-passing convention (parameters in registers, conditions in flags) is inherently more efficient than the C convention (parameters on the stack, conditions in a register). Although binders must convert parameters before calling their assembly counterparts, from that point on all internal function calls use the faster, tighter assembly language convention. This makes the internal library code much more efficient than would otherwise be possible. (Restated, an assembly library written with an external C interface would also be constrained to use an internal C interface. This is due to the fact that the high-level library functions must call the low-level functions using whatever interface is supported by those functions. This would make the library less efficient.)
+<P>
+Furthermore, by providing an optional binder interface, Spontaneous Assembly For C/C++ also allows C binders and inline assembly calls for the same functions to be used interchangeably in the same program. This flexibility would be impossible if the library supported a C interface directly.
+
+<H3><A NAME="H38">Library Philosophy</H3>
+
+The library is highly granular. Functions are maintained in separate modules unless they are always used together. This results in a large number of source and object files and can increase the time required to link compiled programs. However, it produces the minimum possible program size.
+
+<H3><A NAME="H39">Library Overview</H3>
+
+Spontaneous Assembly For C/C++ supports high-speed layered windowing, array management, critical error management, high-speed console I/O, dynamic memory management, program control, environment control, buffer management, table management, quadword integer math (including C++ classes), date and time manipulation, DOS console I/O, enhanced DOS file I/O, file and directory management, data conversion, sound generation, hardware control, character classification and conversion, string manipulation, memory manipulation, and more. Spontaneous Assembly also includes flexible macros which support custom memory models as well as the Borland/ Microsoft standard memory models.
+<P>
+Each area of library functionality is described in detail in Chapter 2 of the white Spontaneous Assembly 3.0 manual which accompanies this manual. In addition, Spontaneous Assembly For C/C++ includes a quadword arithmetic class for C++ use. This unit is described below.
+
+<H3><A NAME="H310">Quad Class</H3>
+
+The Spontaneous Assembly For C/C++ quad class (available in C++ only) is a complete quadword integer (64-bit) math class with all arithmetic operators fully overloaded. This makes the use of Spontaneous Assembly quadword math functions nearly transparent to the C++ application and allows quadword values to be used interchangeably with other C integer types. Quadword math functions provide a fast, tight, and accurate alternative to floating-point math. This class automatically allows all of the following operations to be performed using the standard C arithmetic operators:
+<UL>
+<LI>	Add char, int, long, and quad values into quad values
+<LI>	Subtract char, int, long, and quad values from quad values
+<LI>	Multiply quad values by char, int, long, and quad values
+<LI>	Divide quad values by char, int, long, and quad values
+<LI>	Compare char, int, long, and quad values with quad values
+<LI>	Increment and decrement quad values
+<LI>	Move char, int, long, and quad values into a quad value
+<LI>	Negate quad values
+</UL>
+
+See the Quad Class For C/C++ technical notes for more information about this functionality.
+
+<H3><A NAME="H311">Compatibility</H3>
+
+Compatibility has been tested with the following compilers and their associated standard libraries:
+<UL>
+<LI>	Borland C++		 Versions 2.0, 3.0, 3.1
+<LI>	Microsoft C/C++	 Versions 6.0, 6.0A, 7.0
+<LI>	Zortech C/C++	 Version 3.0
+<LI>	TopSpeed C/C++	 Version 3.02
+</UL>
+
+Spontaneous Assembly For C/C++ is designed for use with all IBM PC compatible MS-DOS systems. It does not make use of self-modifying code, undefined opcodes, or special instructions which do not work on all 8088 compatible CPUs. "Undocumented" DOS calls are used only if they are well understood in the industry. BIOS calls are only used if they function properly on all standard IBM and compatible systems. I/O delays for hardware access are designed to work on fastand slow systems alike. In addition, documented 8088, 80286, and DOS bugs are carefully sidestepped to make the library functions as reliable as possible.
+<P>
+While many of the library functions may be useful for protected mode programming, no effort has been made to make them fully protected mode compatible in the current version of the product. Data is never written into the code segment (except for the TSR functions), but some functions perform segment register arithmetic (e.g., _far_malloc) and make use of the SAHF instruction (e.g., _cmp_qq).
+
+<H3><A NAME="H312">System Requirements</H3>
+
+Applications written using Spontaneous Assembly For C/C++ are compatible with the following operating environments:
+<UL>
+<LI>	80x86 or compatible CPU (8088, V20, 80286, 80386, etc.)
+<LI>	IBM PC or compatible BIOS
+<LI>	DOS 2.0 or later
+<LI>	MDA, CGA, EGA, MCGA, or VGA display adapter or compatible
+<LI>	Single or dual monitor systems
+</UL>
+    
+</body>
+</html>
+

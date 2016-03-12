@@ -1,0 +1,771 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: Windowing</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Windowing</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tWindow.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tWindow.htm#HEAD0001">What Are Windows?
+</A><BR>
+<A HREF="tWindow.htm#HEAD0002">The Window Plane
+</A><BR>
+<A HREF="tWindow.htm#HEAD0003">The Active Window
+</A><BR>
+<A HREF="tWindow.htm#HEAD0004">Window Levels
+</A><BR>
+<A HREF="tWindow.htm#HEAD0005">Window Handles
+</A><BR>
+<A HREF="tWindow.htm#HEAD0006">The Default Window (STDWIN)
+</A><BR>
+<A HREF="tWindow.htm#HEAD0007">The Backdrop
+</A><BR>
+<A HREF="tWindow.htm#HEAD0008">The Top Open Window and Hardware Cursor
+</A><BR>
+<A HREF="tWindow.htm#HEAD0009">The Active Region and the Border Region
+</A><BR>
+<A HREF="tWindow.htm#HEAD000A">Window Borders
+</A><BR>
+<A HREF="tWindow.htm#HEAD000B">Predefined Borders
+</A><BR>
+<A HREF="tWindow.htm#HEAD000C">Window Shadows
+</A><BR>
+<A HREF="tWindow.htm#HEAD000D">Transparent Shadows
+</A><BR>
+<A HREF="tWindow.htm#HEAD000E">Predefined Shadows
+</A><BR>
+<A HREF="tWindow.htm#HEAD000F">Auto Update
+</A><BR>
+<A HREF="tWindow.htm#HEAD0010">Initializing the Windowing System
+</A><BR>
+<A HREF="tWindow.htm#HEAD0011">Creating Windows
+</A><BR>
+<A HREF="tWindow.htm#HEAD0012">Manipulating Windows
+</A><BR>
+<A HREF="tWindow.htm#HEAD0013">Changing the Border
+</A><BR>
+<A HREF="tWindow.htm#HEAD0014">Changing a Shadow
+</A><BR>
+<A HREF="tWindow.htm#HEAD0015">Moving a Shadow
+</A><BR>
+<A HREF="tWindow.htm#HEAD0016">Setting the Level of a Window
+</A><BR>
+<A HREF="tWindow.htm#HEAD0017">Determining Miscellaneous Window Information
+</A><BR>
+<A HREF="tWindow.htm#HEAD0018">Specifying Backdrops
+</A><BR>
+<A HREF="tWindow.htm#HEAD0019">Controlling the Auto Update State
+</A><BR>
+<A HREF="tWindow.htm#HEAD001A">Updating the Screen
+</A><BR>
+<A HREF="tWindow.htm#HEAD001B">Suspending and Resuming Windowing
+</A><BR>
+<A HREF="tWindow.htm#HEAD001C">Resizing Windows (without preserving the window contents)
+</A><BR>
+<A HREF="tWindow.htm#HEAD001D">Steps for Initializing and Using the Windowing System
+</A><BR>
+<A HREF="tWindow.htm#HEAD001E">Conditionally Assembling the Windowing System
+</A><BR>
+<A HREF="tWindow.htm#HEAD001F">Sample Code
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit provides a complete system of functions for text mode layered windowing. It consists of functions which do the following: create, remove, open, close, and move windows; specify, modify, display, move, and draw window borders and shadows; determine or set the level or characteristics of a window; select the active window and the active display region within that window; specify backdrop screens or characters; and control whether or not window changes are immediately updated on the screen. Functions are also provided which update the appearance of a single window, the entire screen, or any portion of the screen.
+
+<P>
+Windowing System Assumptions and Limitations
+
+<P>
+The Spontaneous Assembly windowing system is designed from the ground up to be high-speed and highly flexible. The windowing system is not designed to be compatible with windowing or console I/O systems available through other software manufacturers.
+
+<P>
+<A HREF="rwindow.htm#_win_init">_win_init</A> must be called to initialize the windowing system before windowing functions may be used. This restriction is documented in the reference section.
+
+<P>
+Note that <A HREF="rconsole.htm#_console_init">_console_init</A> must also be called before <A HREF="rwindow.htm#_win_init">_win_init</A> is called. This allows <A HREF="rconsole.htm#_console_init">_console_init</A> to determine the state of the screen for <A HREF="rwindow.htm#_win_init">_win_init</A>.
+
+<H2><A NAME="HEAD0001">What Are Windows?
+</A></H2>
+
+Windows are logical display regions to which screen output may be directed. Windows may reside entirely on the screen, partly off the screen, or completely off the screen. They may also include borders or shadows, they may be an arbitrary size and shape, and they may be open (visible) or closed (invisible). Each window occupies its own level (relative stacking order).
+
+<P>
+Each window is like a logical screen. Every window supports its own cursor position, cursor shape, clipping region, attribute table, current and default attributes, etc. Characters and attributes are displayed to a window using the standard console I/O functions. Output which does not fall within the boundaries of the window is clipped and lost.
+
+<P>
+Windows must be created before they can be manipulated. When a window is created it is assigned a handle. This handle is used to identify the window when a windowing function is performed (i.e., opening, closing, removing, changing the shadow, or selecting the window as the active window). Up to 4095 window handles may be in use at one time.
+
+<P>
+Each window is assigned a distinct buffer when it is created. This buffer is used to maintain all the information about the window, including the cursor position, cursor shape, border appearance, shadow information, etc. In addition, all of the characters and attributes which are displayed to the window are maintained in the buffer. These buffers must be allocated by the application and passedto the <A HREF="rwindow.htm#_win_create">_win_create</A> function when the window is created. This allows the programmer to select the window buffer memory allocation scheme.
+
+<H2><A NAME="HEAD0002">The Window Plane
+</A></H2>
+
+Windows may be positioned anywhere within a 64K by 64K coordinate grid known as the window plane. At the center of this grid (0,0) is the upper left-hand corner of the screen. Positive X and Y coordinate values position a window below and to the right of the 0,0 coordinate; negative values position a window above and to the left of the 0,0 coordinate. Only the portion of the window which appears on the screen is visible.
+
+<P>
+           (-32K,-32K) ⁄ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¬ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒø (32K,-32K)
+<P>
+                       ≥               ≥                ≥
+<P>
+                       ≥               ≥                ≥
+<P>
+                       ≥               ≥                ≥
+<P>
+                       ≥               ≥                ≥
+<P>
+                       ≥               ≥                ≥
+<P>
+                       ≥          (0,0)≥                ≥
+<P>
+                       √ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ≈ƒƒƒƒƒƒƒƒ¬ƒƒƒƒƒƒƒ¥
+<P>
+                       ≥               ≥ Screen ≥       ≥
+<P>
+                       ≥               ≥        ≥       ≥
+<P>
+                       ≥               √ƒƒƒƒƒƒƒƒŸ       ≥
+<P>
+                       ≥               ≥                ≥
+<P>
+                       ≥               ≥                ≥
+<P>
+                       ≥               ≥                ≥
+<P>
+            (-32K,32K) ¿ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¡ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒŸ (32K,32K)
+
+<P>
+                               The Window Plane
+
+<H2><A NAME="HEAD0003">The Active Window
+</A></H2>
+
+The active window is the window to which all console I/O output is directed. Any window may be the active window, even if it is closed, off the screen, or obscured. The active window is selected by calling <A HREF="rwindow.htm#_win_select">_win_select</A>.
+
+<H2><A NAME="HEAD0004">Window Levels
+</A></H2>
+
+Every window in the system (except STDWIN) occupies a distinct level (see The Default Window (STDWIN), below). Levels are numbered from 1 to n, where level 1 is the top level and n is the number of windows in the system. Levels are also numbered in the opposite direction from -1 (the bottom level) to -n. Zero denotes the active window, regardless of the level it occupies.
+
+<P>
+Windows may be moved from one level to another by calling <A HREF="rwindow.htm#_set_wlevel">_set_wlevel</A>. An attempt to move a window to a nonexistent level results in an error.
+
+<H2><A NAME="HEAD0005">Window Handles
+</A></H2>
+
+Windows are assigned handles when they are created. These handles are used to identify windows when they are manipulated using the windowing functions. Handles are always the first parameter when a windowing function expects a handle.
+
+<P>
+In most cases, handles and level numbers are interchangeable. This means that functions which require a window handle will generally accept a level number instead. This makes it easy to manipulate windows on the basis of their relative order. For example, the current top window may be closed simply by calling <A HREF="rwindow.htm#_win_close">_win_close</A> with 1, and the bottom window may be closed by performing the same operation with -1.
+
+<H2><A NAME="HEAD0006">The Default Window (STDWIN)
+</A></H2>
+
+The windowing system includes support for a full screen window called STDWIN. Information written to STDWIN is temporary and exists only on the screen. Since output to STDWIN is not independently buffered, windowing functions which write to STDWIN overwrite other windows that are currently displayed on the screen. When STDWIN is specified as the active window, screen I/O may be performed anywhere on the screen without permanently disturbing the contents of the other windows in the system. Using any windowing function which updates the screen will erasethe temporary STDWIN screen data and restore the original screen contents in the updated area. STDWIN cannot be opened, closed, deleted, or moved, and its level cannot be changed. Its sole purpose is to provide temporary full screen access while windowing is being performed.
+
+<P>
+STDWIN is the default window. This means that it becomes the active window when the windowing system is initialized or when the active window is deleted and there are no remaining open windows in the system.
+
+<P>
+The word "STDWIN" is a symbolic constant that may be used as a handle for STDWIN. It is defined in WINDOW.INC.
+
+<P>
+Because STDWIN is temporary and resides on the top level (above all other windows), it CANNOT be used as a background or backdrop window. See The Backdrop, below, for a discussion of different methods of creating a background or backdrop for the windowing system.
+
+<H2><A NAME="HEAD0007">The Backdrop
+</A></H2>
+
+The characters and attributes which appear on the screen beneath the window plane are referred to collectively as the backdrop. The backdrop is visible only where it is not obscured by an open window. If all windows are closed or none are defined, only the backdrop is visible.
+
+<P>
+Two types of backdrops are supported. The first kind of backdrop is made up of a fill character and attribute. This creates a uniform background. The second type of backdrop is a full screen "snapshot" which defines a character and attribute for every position on the screen. This allows windowing to take place on top of a predefined background screen. The data structure which defines the appearance of the screen for this second type of backdrop is called a backdrop buffer. Information is maintained in the backdrop buffer in the same format as the buffer returned by the <A HREF="rconsole.htm#_save_screen">_save_screen</A> function. This allows windowing to be performed on top of an existing screen simply by calling save_screen to take a "snapshot" of the screen and then installing the snapshot as the backdrop.
+
+<P>
+When the windowing system is initialized, <A HREF="rwindow.htm#_win_init">_win_init</A> establishes a default character/attribute backdrop using the space character (0x20) and the console I/O system default attribute. A different character/attribute pair may be specified for the backdrop by calling <A HREF="rwindow.htm#_set_backdrop">_set_backdrop</A>, or a backdrop buffer may be installed by calling <A HREF="rwindow.htm#_set_backdropbuf">_set_backdropbuf</A>. The background character and attribute are not used as long as a background buffer is installed. <A HREF="rwindow.htm#_set_backdropbuf">_set_backdropbuf</A> may be used to remove the currently installed background buffer at any time, in which case the backdrop is again defined by the backdrop character and attribute.
+
+<P>
+An alternate method of creating a background effect is to create a full-screen window which is always kept at the lowest window level. Such a window is technically not a "backdrop" as defined above since its level can change, it can obscure other windows in the system, and it can even be written to, but this can be advantageous in some applications. To establish a full-screen window as a backdrop, following these steps:
+<OL>
+<LI>    Create a window with the desired characteristics which has the same dimensions as the screen. See Creating Windows, below.
+<LI>    Set the window to the lowest level. (This step is necessary only if this window is not the first window created.) See Setting the Level of a Window, below.
+<LI>    Open the window. See Manipulating Windows, below.
+</OL>
+This window may then be accessed and manipulated using the handle that was returned when the window was created.
+
+<H2><A NAME="HEAD0008">The Top Open Window and Hardware Cursor
+</A></H2>
+
+The top open window is the highest level window that is open. This window may be on or off the screen, but because it resides at the highest level of all the open windows it is not obscured by any other open window.
+
+<P>
+The top open window has particular significance because it is the window which defines the position and shape of the hardware cursor. If the cursor is at the home position in the top openwindow, the hardware cursor appears at the screen position which corresponds to the upper left corner of the top open window. If a block cursor is specified for the top open window, the screen cursor appears as a block cursor. If the cursor has been turned off in the top open window, the hardware cursor does not appear on the screen. If the top open window has been moved off the screen, the hardware cursor is not visible. In short, the top open window "owns" the hardware cursor.
+
+<P>
+If no windows are open or if there are no windows in the system, STDWIN acts as the default top open window.
+
+<H2><A NAME="HEAD0009">The Active Region and the Border Region
+</A></H2>
+
+Every window is divided into two separate regions. The border region is the region around the outside of the window which is dedicated to the border. It consists of one or more columns (on either side) and/or one or more rows (on the top and/or bottom) which are not normally accessible using the console I/O functions. The active region is the area which lies entirely inside the border region. This is the area which is normally manipulated using the console I/O functions. <A HREF="rwindow.htm#_wborder_on">_wborder_on</A> may be called to temporarily expand the active region to include the border region, making it possible to write text into the border region. The active region may then be restored to its original size by calling <A HREF="rwindow.htm#_wborder_off">_wborder_off</A> (see Accessing the Border Region, below).
+
+<P>
+Each of the windows below have different border regions and active regions. In each case, the active region is shown in gray and the border region is the remainder of the window. Window #1 has a border region of one column or row per side. Window #2 has a border region of 2 columns on each side and one row on the top and bottom. Window #3 has a border region of two rows on the top, two columns on the right side, one row on the bottom, and four columns on the left side. Window #4 has no borders. Note that the border region may be more than one column or row wide, even though the border is only drawn around the outside edge of the window. The border region must be explicitly reserved by specifying the width of each border edge when the window is created.
+
+<P>
+          ’ÕÕÕÕÕÕÕÕÕ∏            ⁄ƒƒƒƒƒƒƒƒƒø            ÷ƒƒƒƒƒƒƒƒƒ∑         ±±±±±±±±±±±
+<P>
+          ≥±±±±±±±±±≥            ≥ ±±±±±±± ≥            ∫         ∫         ±±±±±±±±±±±
+<P>
+          ≥±±±±±±±±±≥            ≥ ±±±±±±± ≥            ∫   ±±±±± ∫         ±±±±±±±±±±±
+<P>
+          ≥±±±±±±±±±≥            ≥ ±±±±±±± ≥            ∫   ±±±±± ∫         ±±±±±±±±±±±
+<P>
+          ≥±±±±±±±±±≥            ≥ ±±±±±±± ≥            ∫   ±±±±± ∫         ±±±±±±±±±±±
+<P>
+          ‘ÕÕÕÕÕÕÕÕÕæ            ¿ƒƒƒƒƒƒƒƒƒŸ            ”ƒƒƒƒƒƒƒƒƒΩ         ±±±±±±±±±±±
+
+<P>
+           WINDOW #1              WINDOW #2              WINDOW #3           WINDOW #4
+<H2><A NAME="HEAD000A">Window Borders
+</A></H2>
+
+Window border definitions consist of three distinct elements:
+<OL>
+<LI>     The border descriptor.
+<LI>     The border attribute.
+<LI>     The border size parameters (top, bottom, left, and right).
+</OL>
+These elements control whether or not a border exists, what the border characters are, what the border color is, and how much window area is dedicated to each side of the border.
+
+<P>
+The border descriptor defines the eight characters used to create the window border. The border structure is defined in WINDOW.H as follows:
+<PRE><CODE>
+typedef struct {            /* example border descriptor */
+   char upper_left;         /* upper left corner border character */
+   char top;                /* top row border character */
+   char upper_right;    /* upper right corner border character */
+   char right;              /* right side border character */
+   char bottom_right;   /* bottom right corner border character */
+   char bottom;             /* bottom row border character */
+   char bottom_left;    /* bottom left corner border character */
+   char left;               /* left side border character */
+} border;
+</CODE></PRE>
+The border attribute specifies the foreground and background colors of the border characters. This attribute applies to all eight border characters. If an attribute table has been assigned to the window, the border attribute is interpreted as a table index and the corresponding attribute table entry is used as the border color. Blinking borders are supported.
+
+<P>
+The four border size parameters determine the number of rows or columns in the border region on each side of the window. If any of these parameters is zero, the corresponding side of the window will not have a border. Setting all of these parameters to zero results in a window without a border. A value larger than zero reserves the specified number of rows or columns as border region on the specified side of the window.
+
+<H2><A NAME="HEAD000B">Predefined Borders
+</A></H2>
+
+Several predefined border styles are supported. These borders may be specified by using one of the following symbolic constants in place of a border descriptor address:
+<DL COMPACT>
+<DT>BORDER_SINGLE<DD>  (-2) Single line border
+<DT>BORDER_DOUBLE<DD>  (-3) Double line border
+<DT>BORDER_SNGLDBL<DD> (-4) Single horizontal, double vertical line border
+<DT>BORDER_DBLSNGL<DD> (-5) Double horizontal, single vertical line border
+<DT>BORDER_FULLBLK<DD> (-6) Full block border
+<DT>BORDER_HALFBLK<DD> (-7) Half block border
+</DL>
+These constants are defined in WINDOW.H.
+
+<H2><A NAME="HEAD000C">Window Shadows
+</A></H2>
+
+Window shadow definitions consist of four distinct elements:
+<OL>
+<LI>    The shadow descriptor.
+<LI>    The shadow attribute.
+<LI>    The shadow offset.
+<LI>    The shadow type.
+</OL>
+These elements control whether or not a shadow exists, what the shadow characters are, what the shadow color is, where the shadow is positioned relative to the window, and whether or not the shadow is transparent.
+
+<P>
+The shadow descriptor defines the nine characters used to create the window shadow. A shadow descriptor must be structured as follows:
+<PRE><CODE>
+typedef struct {            /* example shadow descriptor */
+   char upper_left;         /* upper left corner shadow character */
+   char top;                /* top row shadow character */
+   char upper_right;    /* upper right corner shadow character */
+   char right;              /* right side shadow character */
+   char bottom_right;   /* bottom right corner shadow character */
+   char bottom;             /* bottom row shadow character */
+   char bottom_left;    /* bottom left corner shadow character */
+   char left;               /* left side shadow character */
+   char fill;               /* shadow fill character */
+} shadow;
+</CODE></PRE>
+If -1 is specified as a shadow character, the corresponding shadow position is transparent. This is most commonly used to create a "see through" shadow (all positions set to -1) or a shadow with a transparent center region (fill character set to -1).
+
+<P>
+The shadow attribute specifies the foreground and background colors of the shadow characters. This attribute applies to all nine shadow characters. If an attribute table has been assigned to the window, the shadow attribute is interpreted as a table index and the corresponding attribute tableentry is used as the shadow attribute. Special attribute values may be specified to designate attributes which are transparent (-2) and attributes which have a transparent background and a specified foreground color (0xF0 through 0xFF). (See Transparent Shadows, below, for more information.) Blinking shadows are not supported.
+
+<P>
+The shadow offset controls the position of the shadow relative to the window position. The shadow position is specified using signed horizontal and vertical offsets. This allows the shadow to be positioned an arbitrary distance in an arbitrary direction from the window.
+
+<P>
+The shadow type defines the type and state of a shadow. It is specified using the following symbolic constants:
+<DL COMPACT>
+<DT>S_NORMAL<DD>       (0x00) Normal shadow
+<DT>S_HALFHGHT<DD>     (0x01) Half-height shadow
+<DT>S_HALFWIDTH<DD>    (0x02) Half-width shadow
+<DT>S_HALFHW<DD>       (0x03) Half-height and half-width shadow
+<DT>S_OFF<DD>  (0x80) Off, shadow not visible
+</DL>
+S_NORMAL produces a shadow which is the same height and width as the window. Most shadows are normal shadows.
+
+<P>
+S_HALFHGHT produces a shadow which is the same width as the window and one row longer than the window. This shadow type should be specified when creating a shadow using half-height top and bottom characters such as the half-height block characters '‹' (0xDC) and 'ﬂ' (0xDF) or the single horizontal line character 'ƒ' (0xC4).
+
+<P>
+S_HALFWIDTH produces a shadow which is the same height as the window and one column wider than the window. This shadow type should be specified when creating a shadow using half-width side characters such as the half-width block characters '›' (0xDD) and 'ﬁ' (0xDE) or the single vertical line character '≥' (0xB3).
+
+<P>
+S_HALFHW is a combination of the S_HALFHGHT and S_HALFWIDTH constants. It produces a shadow which is one row and one column larger than the window. This shadow type may be used to produce shadows suitable for both monochrome and color monitors. (The window below demonstrates this type of shadow. The shadow consists of single horizontal and vertical line characters.)
+
+<P>
+                                                                €ﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂ€ƒø
+<P>
+                                                                €          € ≥
+<P>
+                                                                €          € ≥
+<P>
+                                                                €          € ≥
+<P>
+                                                                €          € ≥
+<P>
+                                                                €‹‹‹‹‹‹‹‹‹‹€ ≥
+<P>
+                                                                 ¿ƒƒƒƒƒƒƒƒƒƒƒŸ
+
+<P>
+S_OFF turns the shadow off. It may be logically ORed with any of the other shadow type constants.
+
+<P>
+The symbolic constants described above are defined in WINDOW.H.
+
+<H2><A NAME="HEAD000D">Transparent Shadows
+</A></H2>
+
+The windowing system supports "see through" or transparent shadows. Several kinds of transparent shadows are supported:
+<OL>
+<LI>    The shadow may change the attributes of the characters below the window without overwriting the characters. This is done by specifying S_TRNSPRNT as the shadow character in the shadow descriptor. This gives the shadow the appearance of being "see through". The SHADOW_TRNSPRNT shadow style defines all nine shadow characters as transparent. This is the most common type of transparent shadow.
+<LI>    The shadow may project a foreground color onto the characters below the window without overwriting the characters or affecting the background color. This is done by specifying BK_TRNSPRNT (0x0F) as the background color of the shadow attribute and specifying S_TRNSPRNT as the shadow character in the shadow descriptor.
+<LI>    The shadow may project a character and foreground color onto the screen below the window without changing the background color. This is done by specifying BK_TRNSPRNT (0x0F) as the background color of the shadow attribute and defining specific shadow characters in the shadow descriptor. This technique may be used to project a shadow of graphic shade characters '±' (0B1h) which inherit the background color beneath them. It may also be used to create a vertical half-height shadow using the '‹' (0xDC) and 'ﬂ' (0xDF) block graphic characters. The SHADOW_HALFHGHT shadow style automatically specifies background color transparency.
+<LI>    The shadow may project characters onto the screen below the window without changing the attributes at those locations. This is done by specifying S_TRNSPRNT as the shadow attribute and specifying specific shadow characters in the shadow descriptor.
+</OL>
+The ..._TRNSPRNT symbolic constants are defined in WINDOW.H.
+
+<H2><A NAME="HEAD000E">Predefined Shadows
+</A></H2>
+
+Two predefined shadow styles are supported. These styles may be specified using one of the following symbolic constants:
+<DL COMPACT>
+<DT>SHADOW_TRNSPRNT<DD>(-2) Transparent shadow
+<DT>SHADOW_HALFHGHT<DD>(-3) Half-height shadow
+</DL>
+These constants may be used in place of a shadow descriptor address. They are defined in WINDOW.H.
+
+<P>
+The SHADOW_TRNSPRNT shadow style specifies transparent characters as the nine shadow characters. This causes the characters beneath the shadow to remain visible while inheriting the shadow attribute. This gives the shadow the appearance of being "see through."
+
+<P>
+The SHADOW_HALFHGHT shadow style specifies the '‹' (0xDC) and 'ﬂ' (0xDF) half block graphic characters for the top and bottom shadow characters and the '€' (0xDB) block graphic character for all other shadow characters. This style also specifies S_HALFHGHT as the shadow type, and it forces the background color of the shadow attribute to be BK_TRNSPRNT. This style creates the narrowest possible shadow. This type of shadow is suitable for creating "buttons" like the one shown below:
+
+<P>
+                                           ±±±‹
+<P>
+                                            ﬂﬂﬂﬂﬂﬂﬂﬂﬂ
+
+<H2><A NAME="HEAD000F">Auto Update
+</A></H2>
+
+The auto update feature controls whether or not window operations (including console I/O output) are immediately reflected on the screen. When auto update is on, window operations are immediately reflected on the screen. When auto update is off, windowing operations do not affect the screen in any way. Auto update is enabled by default. It may be turned on and off by calling <A HREF="rwindow.htm#_update_on">_update_on</A> and <A HREF="rwindow.htm#_update_off">_update_off</A>.
+
+<P>
+Using Attribute Tables in Windows
+
+<P>
+Each window maintains its own attribute table address. If an attribute table is specified for the active window, all console I/O is performed using the attributes defined in that table. (See Using Attribute Tables in the Console I/O technical notes for more information about using attribute tables with console I/O functions.)
+
+<P>
+Attribute tables are also supported by the windowing functions. If an attribute has been specified for a window, the window, border, or shadow attributes for the window are interpreted as attribute table codes. (The STDWIN attribute table is used when the backdrop attribute is specified.) The attribute in the table which corresponds to the attribute code is then used as the actual display attribute. This makes it possible for different windows to be displayed using different colors simply by specifying different attribute tables for each window. This also makes hardware independent windowingpossible. (See Using Attribute Tables in the Console I/O technical notes for more information about hardware independence.)
+
+<H2><A NAME="HEAD0010">Initializing the Windowing System
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rwindow.htm#_win_init">_win_init</A><DD>      Initializes the windowing system.
+</DL>
+This function initializes the windowing system. <A HREF="rwindow.htm#_win_init">_win_init</A> must be passed the address of an externally allocated work buffer which may be used by the windowing system. The required size of this buffer is specified by the WWORKBUF_SIZE symbolic constant in WINDOW.H. When the windowing system is initialized, STDWIN is established as the active window. <A HREF="rconsole.htm#_console_init">_console_init</A> must be called before <A HREF="rwindow.htm#_win_init">_win_init</A> may be called. Initializing the windowing system does not affect the screen in any way.
+
+<H2><A NAME="HEAD0011">Creating Windows
+</A></H2>
+
+<A HREF="rwindow.htm#_win_create">_win_create</A>     Creates a window.
+<A HREF="rwindow.htm#_win_bufsize">_win_bufsize</A>    Returns the size of the buffer required by a window.
+
+These functions create a window and specify the size of the window buffer which must be passed to <A HREF="rwindow.htm#_win_create">_win_create</A> when the window is created. <A HREF="rwindow.htm#_win_create">_win_create</A> expects a pointer to a window descriptor which specifies the characteristics of the window. <A HREF="rwindow.htm#_win_bufsize">_win_bufsize</A> also examines this descriptor to determine the memory requirements of the window.
+
+<P>
+Window descriptors may be created using the sawin structure defined in WINDOW.H. This structure is organized as follows:
+<PRE><CODE>
+typedef struct {
+   int left;                              /* left margin of window */
+   int top;                               /* top row of window */
+   unsigned char width;                   /* width of window (in columns) */
+   unsigned char height;                  /* height of window (in rows) */
+   unsigned char dattr;                   /* window default attribute */
+   unsigned char tprows;                  /* number of top border rows */
+   unsigned char rtcols;                  /* number of right border columns */
+   unsigned char bmrows;                  /* number of bottom border rows */
+   unsigned char ltcols;                  /* number of left border columns */
+   void * border;                         /* pointer to the border descriptor */
+   unsigned char battr;                   /* border attribute */
+   char horz;                             /* shadow horizontal offset */
+   char vert;                             /* shadow vertical offset */
+   unsigned char stype;                   /* shadow type flags */
+   void * shadow;                         /* pointer to shadow descriptor */
+   unsigned char sattr;                   /* shadow attribute (the shadowed area's color) */
+   void * attrtbl;                        /* pointer to the window attribute table */
+   unsigned char curstate;        /* cursor on/off state */
+   unsigned int curshape;         /* cursor shape */
+} sawin;
+</CODE></PRE>
+See Sample Code, below, for an example which demonstrates the use of the sawin structure.
+
+<P>
+Each field of the sawin structure specifies one of the characteristics of the window. sawin structure fields are defined as follows:
+<DL COMPACT>
+<DT>w_left<DD> Signed location of the left window margin in the window plane.
+<DT>w_top<DD>  Signed location of the top window margin in the window plane.
+<DT>w_width<DD>Width of the window, in columns, including left and right border regions.
+<DT>w_height<DD>       Height of the window, in rows, including top and bottom border regions.
+<DT>w_dattr<DD>Default attribute. If an attribute table is specified, this value is interpreted as an attribute code. The current attribute is also initialized with this value. If the W_INHERIT flag is used as the attribute, the new window inherits the current and default attributes of the active window. The default is W_INHERIT.
+<DT>w_tprows<DD>       Number of rows at the top of the window to be reserved as border region. The default is one row.
+<DT>w_rtcols<DD>       Number of columns on the right side of the window to be reserved as border region. The default is one column.
+<DT>w_bmrows<DD>       Number of rows at the bottom of the window to be reserved as border region. The default is one row.
+<DT>w_ltcols<DD>       Number of columns on the left side of the window to be reserved as border region. The default is one column.
+<DT>w_border<DD>       Pointer to a border descriptor. The border descriptor is eight bytes in length. Each byte specifies the character to be used to draw a corner or edge of the border starting at the upper left corner and continuing clockwise around the border. Optionally, one of the predefined border descriptors may be specified using the following symbolic constants:
+</DL>
+<DL COMPACT>
+<DT>        BORDER_SINGLE<DD>   (-2) Single line border
+<DT>        BORDER_DOUBLE<DD>   (-3) Double line border
+<DT>        BORDER_SNGLDBL<DD>  (-4) Single horizontal, double vertical
+<DT>        BORDER_DBLSNGL<DD>  (-5) Double horizontal, single vertical
+<DT>        BORDER_FULLBLK<DD>  (-6) Full block border
+<DT>        BORDER_HALFBLK<DD>  (-7) Half block border
+</DL>
+<DL COMPACT>
+<DT>w_battr<DD>Border attribute. If an attribute table is specified, this value is interpreted as an attribute code. If the W_INHERIT flag is used as the attribute, the border attribute is set to the default attribute specified in the w_dattr field.
+<DT>w_horz<DD> Horizontal shadow offset. This is a signed number which specifies the horizontal position of the shadow relative to the position of the window. This offset is specified in columns. Positive values denote offsets to the right of the window; negative values denote offsets to the left of the window. The default is two columns to the right.
+<DT>w_vert<DD> Vertical shadow offset. This is a signed number which specifies the vertical position of the shadow relative to the position of the window. This offset is specified in rows. Positive values denote offsets below the window; negative values denote offsets above the window. The default is one row down.
+<DT>w_stype<DD>Shadow type and state. The type and state may be specified using the following symbolic constants:
+</DL>
+<DL COMPACT>
+<DT>        S_NORMAL<DD>           (0x00) Normal size shadow
+<DT>        S_HALFHGHT<DD>         (0x01) Half-height shadow
+<DT>        S_HALFWIDTH<DD>        (0x02) Half-width shadow
+<DT>        S_HALFHW<DD>           (0x03) Half-height and width shadow
+<DT>        S_OFF<DD>              (0x80) Off, shadow not visible
+</DL>
+        These flags may be combined by logically ORing them together. The default is S_NORMAL.
+<DL COMPACT>
+<DT>w_shadow<DD>       Pointer to a shadow descriptor.  The shadow descriptor is nine bytes in length. The first eight bytes specify the characters to be used to draw corners or edges of the shadow starting at the upper left corner and continuing clockwise around the edge of the shadow. The ninth byte specifies the fill character to be used in the interior of the shadow. Optionally, one of the predefined shadow descriptors may be specified using the following symbolic constants:
+</DL>
+<DL COMPACT>
+<DT>                  SHADOW_TRNSPRNT<DD> (-2) Transparent shadow
+<DT>                  SHADOW_HALFHGHT<DD>      (-3) Half-height shadow
+</DL>
+        The default is SHADOW_TRNSPRNT. If SHADOW_HALFHGHT is specified, S_HALFHGHT is automatically set in w_stype and the background color of w_sattr is automatically set to BK_TRNSPRNT.
+<P>
+w_sattr Shadow attribute. If an attribute table is specified, this value is interpreted as an attribute code. If the W_INHERIT flag is used as the attribute, each shadow character inherits the attribute of the character beneath it. If the BK_TRNSPRNT flag is used as the background color, each shadow character uses the specified foreground attribute while inheriting the background color of the character beneath it. The default is DARKGRAY on BLACK.
+<DL COMPACT>
+<DT>w_attrtbl<DD>      Attribute table address.  If the W_INHERITPTR value is used, the new window inherits the attribute table of the active window, if any.
+<DT>w_curstate<DD>     Cursor state. The cursor state may be specified using one of the following symbolic constants:
+</DL>
+<DL COMPACT>
+<DT>        WCURSOR_ON<DD>         (0x00) Window cursor on
+<DT>        WCURSOR_OFF<DD>        (0x01) Window cursor off
+</DL>
+        If the W_INHERIT flag is used, the new window inherits the cursor state of the active window. The default is W_INHERIT.
+<DL COMPACT>
+<DT>w_curshape<DD>     Cursor shape. The cursor shape is specified using the same format expected by the <A HREF="rconsole.htm#_set_cursor">_set_cursor</A> function. If the W_INHERIT flag is used, the new window inherits the cursor shape of the active window.
+</DL>
+Selecting the Active Window
+<DL COMPACT>
+<DT><A HREF="rwindow.htm#_win_select">_win_select</A><DD>    Selects the active window.
+</DL>
+This function selects a new active window. The active window is the window to which all console I/O output is directed. Any window may be specified as the active window. If STDWIN is selected, full screen console I/O access is enabled.
+
+<H2><A NAME="HEAD0012">Manipulating Windows
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rwindow.htm#_win_open">_win_open</A><DD>      Opens a window.
+<DT><A HREF="rwindow.htm#_win_close">_win_close</A><DD>     Closes a window.
+<DT><A HREF="rwindow.htm#_win_remove">_win_remove</A><DD>             Removes a window.
+<DT><A HREF="rwindow.htm#_win_move">_win_move</A><DD>      Moves a window.
+<DT><A HREF="rwindow.htm#_set_wpos">_set_wpos</A><DD>      Sets the position of a window.
+</DL>
+These functions open, close, move, and delete windows.
+
+<P>
+<A HREF="rwindow.htm#_win_open">_win_open</A> and <A HREF="rwindow.htm#_win_close">_win_close</A> open and close a window. Opening a window makes it visible; closing a window makes it invisible. Both of these functions only affect the screen if auto update is on. If auto update is off, the window is flagged as open or closed, but the screen is not affected until one of the _update_... functions is called. Opening an already open window or closing an already closed window has no effect.
+
+<P>
+<A HREF="rwindow.htm#_win_remove">_win_remove</A> is the inverse of the <A HREF="rwindow.htm#_win_create">_win_create</A> function. It deletes a window from the windowing system and returns the address of the buffer originally assigned to the window. It is the programmer's responsibility to properly dispose of the window buffer. Window buffers are commonly allocated on a heap and may be freed when a window is deleted. Deleted windows are automatically closed.
+
+<P>
+<A HREF="rwindow.htm#_win_move">_win_move</A> and <A HREF="rwindow.htm#_set_wpos">_set_wpos</A> move a window to a new position in the window plane. <A HREF="rwindow.htm#_win_move">_win_move</A> moves a window relative to its current position. <A HREF="rwindow.htm#_set_wpos">_set_wpos</A> moves a window to a new absolute position. The new coordinates specify the position of the upper left-hand corner of the window.
+
+<P>
+Accessing the Border Region
+<DL COMPACT>
+<DT><A HREF="rwindow.htm#_wborder_on">_wborder_on</A><DD>    Enables border access within the active window.
+<DT><A HREF="rwindow.htm#_wborder_off">_wborder_off</A><DD>   Disables border access within the active window.
+</DL>
+These functions turn border access on and off. This allows the console I/O functions to write to the border region. When border access is on, the active region fills the entire window, including the border region, and the home position (0,0) is the upper left-hand corner of the window. Anyclipping region in effect when border access is enabled is temporarily disabled until <A HREF="rwindow.htm#_wborder_off">_wborder_off</A> is called. A new, temporary clipping region may be established while border access is on. This clipping region is discarded and the original clipping region is restored when <A HREF="rwindow.htm#_wborder_off">_wborder_off</A> is called.
+
+<H2><A NAME="HEAD0013">Changing the Border
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rwindow.htm#_draw_wborder">_draw_wborder</A><DD>  Draws a border within the active window.
+<DT><A HREF="rwindow.htm#_set_wborder">_set_wborder</A><DD>   Defines the border attribute and characters for a window.
+</DL>
+These functions update or modify the window border.
+
+<P>
+<A HREF="rwindow.htm#_draw_wborder">_draw_wborder</A> redraws the border of the active window by overwriting the outermost rows and columns of the window. If the border size for any of the sides is zero, that side remains unchanged. Only the outermost rows and columns of the window are redrawn, even if more rows or columns have been reserved for the border.
+
+<P>
+<A HREF="rwindow.htm#_set_wborder">_set_wborder</A> installs a new border descriptor and/or border attribute in any window. If auto update is on and the window is open, the border is immediately redrawn on the screen using the new border definition.
+
+<H2><A NAME="HEAD0014">Changing a Shadow
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rwindow.htm#_set_wshadow">_set_wshadow</A><DD>   Sets the shadow characters and attributes of a window.
+</DL>
+This function installs a new shadow descriptor, shadow style, shadow attribute, and/or shadow type in any window. If auto update is on and the window is open, the shadow is immediately redrawn on the screen using the new shadow definition. This function may be used to change the color of a shadow, or to change a shadow from solid to transparent.
+
+<H2><A NAME="HEAD0015">Moving a Shadow
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rwindow.htm#_set_spos">_set_spos</A><DD>      Sets a window shadow position.
+</DL>
+This function moves a shadow to a new horizontal and vertical offset relative to the current window position. The new coordinates are specified as char s. This makes it possible to move the shadow anywhere within a 127 row/column radius of the window.
+
+<H2><A NAME="HEAD0016">Setting the Level of a Window
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rwindow.htm#_set_wlevel">_set_wlevel</A><DD>    Sets the level of a window.
+</DL>
+This function promotes or demotes any window to any level. Window levels may be positive or negative. Positive values identify window levels from the top down (the top window is at level one, the second window is at level two, etc.). Negative values identify window levels from the bottom up (the bottom window is at level -1, the next window higher is at level -2, etc.). Level zero refers to the active window and is not valid for specifying the new window level. STDWIN does not occupy a level.
+
+<P>
+If auto update is on, the screen is immediately updated to reflect changes in the window hierarchy.
+
+<H2><A NAME="HEAD0017">Determining Miscellaneous Window Information
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rwindow.htm#_get_wlevel">_get_wlevel</A><DD>    Returns the level of a window.
+<DT><A HREF="rwindow.htm#_get_whandle">_get_whandle</A><DD>   Returns the handle of a window at a specified level.
+<DT><A HREF="rwindow.htm#_get_wpos">_get_wpos</A><DD>      Returns the position of a window.
+<DT><A HREF="rwindow.htm#_get_wspec">_get_wspec</A><DD>     Returns the specifications of a window.
+</DL>
+These functions return miscellaneous information about windows.
+
+<P>
+<A HREF="rwindow.htm#_get_wlevel">_get_wlevel</A> and <A HREF="rwindow.htm#_get_whandle">_get_whandle</A> are inverses of each other. <A HREF="rwindow.htm#_get_wlevel">_get_wlevel</A> returns the level of the window associated with a specified handle. <A HREF="rwindow.htm#_get_whandle">_get_whandle</A> returns the handle of a window at the specified level.
+
+<P>
+<A HREF="rwindow.htm#_get_wpos">_get_wpos</A> returns the current position of the upper left-hand corner of a window in the window plane.
+<P>
+<A HREF="rwindow.htm#_get_wspec">_get_wspec</A> returns a window descriptor for a given window (see Creating Windows, above, for a detailed description of window descriptors). This specifies all current information about a window, including its shadow offset, border style, border descriptor address, etc. This information is frequently used to resize a window (see Resizing Windows, below).
+
+<H2><A NAME="HEAD0018">Specifying Backdrops
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rwindow.htm#_set_backdropbuf">_set_backdropbuf</A><DD>       Installs a windowing backdrop buffer.
+<DT><A HREF="rwindow.htm#_get_backdropbuf">_get_backdropbuf</A><DD>       Returns the address of the current windowing backdrop buffer.
+<DT><A HREF="rwindow.htm#_set_backdrop">_set_backdrop</A><DD>  Sets the windowing backdrop character and attribute.
+<DT><A HREF="rwindow.htm#_get_backdrop">_get_backdrop</A><DD>  Returns the windowing backdrop character and attribute.
+</DL>
+These functions install return information about backdrop characters and backdrop buffers. (See The Backdrop, above, for a detailed description of backdrops.)
+
+<P>
+<A HREF="rwindow.htm#_set_backdrop">_set_backdrop</A> and <A HREF="rwindow.htm#_get_backdrop">_get_backdrop</A> set and return the current backdrop character and attribute. The backdrop attribute is interpreted using STDWIN's attribute table if one is installed. This character/attribute pair is only used as the backdrop if a backdrop buffer has not been installed. If auto update is on, the entire screen is automatically updated with the new backdrop character and attribute when <A HREF="rwindow.htm#_set_backdrop">_set_backdrop</A> is called.
+
+<P>
+<A HREF="rwindow.htm#_set_backdropbuf">_set_backdropbuf</A> and <A HREF="rwindow.htm#_get_backdropbuf">_get_backdropbuf</A> set and return the current backdrop buffer address. Any buffer in <A HREF="rconsole.htm#_save_screen">_save_screen</A> format may be used as a backdrop buffer. If a backdrop buffer is installed, its contents are used as the backdrop. If auto update is on, the entire screen is automatically updated using the new backdrop buffer when <A HREF="rwindow.htm#_set_backdropbuf">_set_backdropbuf</A> is called. Setting the backdrop buffer address to -1 using <A HREF="rwindow.htm#_set_backdropbuf">_set_backdropbuf</A> function removes any backdrop buffer which is currently installed. This causes the backdrop character/attribute to specify the appearance of the backdrop.
+
+<H2><A NAME="HEAD0019">Controlling the Auto Update State
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rwindow.htm#_update_on">_update_on</A><DD>     Turns auto update on.
+<DT><A HREF="rwindow.htm#_update_off">_update_off</A><DD>    Turns auto update off.
+</DL>
+These functions enable and disable the auto update feature. When auto update is on, any operation performed on an open window is immediately reflected on the screen. When auto update is off, any number of windowing operations may take place without affecting the screen. When auto update is turned on after having been turned off, the entire screen is automatically updated.
+
+<H2><A NAME="HEAD001A">Updating the Screen
+</A></H2>
+
+<DL COMPACT>
+<DT><A HREF="rwindow.htm#_update_screen">_update_screen</A><DD> Updates the entire screen.
+<DT><A HREF="rwindow.htm#_update_rect">_update_rect</A><DD>   Updates a rectangular region of the screen.
+<DT><A HREF="rwindow.htm#_update_window">_update_window</A><DD> Updates a window.
+<DT><A HREF="rwindow.htm#_update_cursor">_update_cursor</A><DD> Updates the hardware cursor position within the windowing system.
+</DL>
+These functions redisplay all or part of the screen, including the current cursor position, using the information contained in the windowing system buffers. These functions are primarily used to control how and when updating takes place after auto update has been turned off. A noticeable performance gain may be realized in some applications by turning auto update off and selectively updating the screen.
+
+<P>
+<A HREF="rwindow.htm#_update_rect">_update_rect</A> redisplays a specified rectangular region of the screen with the current backdrop and all open windows. <A HREF="rwindow.htm#_update_screen">_update_screen</A> updates the entire screen. These updates take place whether or not auto update is on. <A HREF="rwindow.htm#_update_screen">_update_screen</A> forces the cursor to the screen position and state specified by the top open window. <A HREF="rwindow.htm#_update_rect">_update_rect</A> has no effect on the hardware cursor.
+
+<P>
+<A HREF="rwindow.htm#_update_window">_update_window</A> redisplays a specified window. If the window is open, the window and shadow are completely redisplayed. If the window is closed, the region beneath the window and shadow is redisplayed, effectively erasing the window from the screen if it was previously visible. If the window is positioned completely off the screen, this function has no effect. This update takes place whether or not auto update is on.
+
+<P>
+<A HREF="rwindow.htm#_update_cursor">_update_cursor</A> forces the hardware cursor to the cursor position and state specified by the top open window. STDWIN is the default top open window if no other window is open.
+
+<H2><A NAME="HEAD001B">Suspending and Resuming Windowing
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rwindow.htm#_win_suspend">_win_suspend</A><DD>   Temporarily suspends windowing.
+<DT><A HREF="rwindow.htm#_win_resume">_win_resume</A><DD>    Resumes windowing.
+</DL>
+These functions save and restore the state of the windowing system. They are intended for use when windowing must be temporarily suspended to change video modes or to perform some other activity which may affect the state of the console I/O system. <A HREF="rwindow.htm#_win_suspend">_win_suspend</A> is called to save the state of the windowing system and to suspend windowing. After the necessary operations have been performed and the state of the console I/O system has been restored, <A HREF="rwindow.htm#_win_resume">_win_resume</A> may be called to resume windowing where it left off.
+
+<H2><A NAME="HEAD001C">Resizing Windows (without preserving the window contents)
+</A></H2>
+
+The windowing system cannot automatically resize windows. This limitation is due to the fact that the windowing system allows the programmer to determine the window buffer memory allocation scheme. Since the programmer allocates the buffer, the programmer must also resize and dispose of allocated buffers. Window resizing requires a resizing of the window buffer, so some programmer intervention is required.
+
+<P>
+Fortunately, resizing a window is a straightforward task. The following steps outline how a window may be resized:
+<OL>
+<LI>    Call <A HREF="rwindow.htm#_update_off">_update_off</A> to disable auto update.
+<LI>    Call <A HREF="rwindow.htm#_get_wlevel">_get_wlevel</A> and save the current level of the window.
+<LI>    Call <A HREF="rwindow.htm#_get_wspec">_get_wspec</A> to obtain the current window information. Adjust the height and width fields to indicate the new window size.
+<LI>    Call <A HREF="rwindow.htm#_win_remove">_win_remove</A> to delete the old version of the window.
+<LI>    Call <A HREF="rwindow.htm#_win_bufsize">_win_bufsize</A> with the adjusted window descriptor to determine the buffer requirements for the new window.
+<LI>    Resize the window buffer (i.e., <A HREF="rmemanig.htm#_near_realloc">_near_realloc</A>).
+<LI>    Call <A HREF="rwindow.htm#_win_create">_win_create</A> and save the new handle of the resized window.
+<LI>    Redisplay the contents of the new window using the console I/O functions.
+<LI>    Retrieve the saved window level and call <A HREF="rwindow.htm#_set_wlevel">_set_wlevel</A> to restore the resized window to its original level.
+</OL>
+The window is now resized and ready to be updated. After any other windows have been resized, auto update should be turned back on. This will automatically update the screen to reflect the new size of the window. The screen may also be manually updated by calling <A HREF="rwindow.htm#_update_screen">_update_screen</A>.
+
+<H2><A NAME="HEAD001D">Steps for Initializing and Using the Windowing System
+</A></H2>
+
+Initialize The Windowing System
+<UL>
+<LI>    Call <A HREF="rconsole.htm#_console_init">_console_init</A> to initialize the console I/O system.
+<LI>    Allocate a buffer the size of WWORKBUF_SIZE.
+<LI>    Call <A HREF="rwindow.htm#_win_init">_win_init</A> with that buffer.
+<LI>    If the screen is going to be saved:<BR>
+        Call <A HREF="rconsole.htm#_screen_bufsize">_screen_bufsize</A> to find the size of the buffer required to save the screen.<BR>
+		Allocate a buffer of that size.<BR>
+		Call <A HREF="rconsole.htm#_save_screen">_save_screen</A> with that buffer to save the screen.
+<LI>    If a custom backdrop is going to be used:<BR>
+        Call <A HREF="rwindow.htm#_set_backdropbuf">_set_backdropbuf</A> with the buffer that contains the backdrop to be used (this may be the buffer used with <A HREF="rconsole.htm#_save_screen">_save_screen</A>).
+<LI>   	If no backdrop buffer is specified and you would like to specify a backdrop:<BR>
+  		Call <A HREF="rwindow.htm#_set_backdrop">_set_backdrop</A> with the desired character and attribute.
+</UL>
+Create A Window
+<UL>
+<LI>    Call <A HREF="rwindow.htm#_win_bufsize">_win_bufsize</A> with the sawin structure that will be used to create the window to determine the size of the buffer.
+<LI>    Allocate a buffer of that size.
+<LI>    Call <A HREF="rwindow.htm#_win_create">_win_create</A> with the sawin structure to be used and the buffer allocated for that window.
+<LI>    Use the window handle that is returned to access this window from now on.
+</UL>
+Remove A Window
+<UL>
+<LI>    Call <A HREF="rwindow.htm#_win_remove">_win_remove</A> with the handle of the window to be removed.
+<LI>    Free the memory returned by <A HREF="rwindow.htm#_win_remove">_win_remove</A> (the memory that was being used for that window).
+</UL>
+<H2><A NAME="HEAD001E">Conditionally Assembling the Windowing System
+</A></H2>
+
+Like the console I/O functions, some of the windowing system functions include code for BIOS video access and direct video access with "snow" control. This makes the windowing system more flexible, but it represents unnecessary overhead for applications which do not require BIOS and/or snow control.
+
+<P>
+For information on how to reassemble the underlying assembly functions to exclude selected portions of the Windowing system, refer to the Windowing technical notes in the Spontaneous Assembly 3.0 manual.
+
+<H2><A NAME="HEAD001F">Sample Code
+</A></H2>
+
+The following sample program demonstrates several of the windowing functions. This program pops up a window on the current screen, displays a message string in the window, and accepts keyboard input (arrow keys). The window is moved in the direction specified by the arrow keys until a non-arrow key is pressed. The screen is then restored and the program terminates.
+<PRE><CODE>
+#include "console.h"
+#include "window.h"
+#include "alloc.h"
+
+#define U_ARRO 72
+#define D_ARRO 80
+#define R_ARRO 77
+#define L_ARRO 75
+
+sawin win = {31,8,18,6,0x47,2,2,1,2,BORDER_SINGLE,
+					W_INHERIT,2,1,S_NORMAL,SHADOW_TRNSPRNT,
+                    8,W_INHERITPTR,W_INHERIT,W_INHERIT};
+
+void main (void)
+{
+   void *pointer, *screen;
+   int bufsize, winhandle, flag = 1;
+   char chr;
+   <A HREF="rconsole.htm#_console_init">_console_init</A> ();
+   pointer = malloc (WWORKBUF_SIZE);
+   if (pointer == NULL)
+      return;
+   <A HREF="rwindow.htm#_win_init">_win_init</A> (pointer);
+   screen = malloc (_screen_bufsize());
+   if (screen == NULL)
+      return;
+   <A HREF="rconsole.htm#_save_screen">_save_screen</A> (screen);
+   <A HREF="rwindow.htm#_set_backdropbuf">_set_backdropbuf</A> (screen);
+   bufsize = <A HREF="rwindow.htm#_win_bufsize">_win_bufsize</A> (&win);
+   if (bufsize == 0)
+      return;
+   pointer = malloc (bufsize);
+   if (pointer == NULL)
+      return;
+   winhandle = <A HREF="rwindow.htm#_win_create">_win_create</A> (&win, pointer);
+   if (winhandle == -1)
+      return;
+   <A HREF="rconsole.htm#_cput_str">_cput_str</A> ("Use arrow keys\r\nto move window");
+   while (flag)
+   {
+      if (_cget_chra (&chr) == -1) /* if it's an extended keystroke */
+      switch (chr)
+            {
+               case U_ARRO: <A HREF="rwindow.htm#_win_move">_win_move</A> (winhandle, 0, -1); break;
+               case D_ARRO: <A HREF="rwindow.htm#_win_move">_win_move</A> (winhandle, 0, 1); break;
+               case R_ARRO: <A HREF="rwindow.htm#_win_move">_win_move</A> (winhandle, 1, 0); break;
+               case L_ARRO: <A HREF="rwindow.htm#_win_move">_win_move</A> (winhandle, -1, 0); break;
+               default: flag = 0;
+            }
+      else
+            flag = 0;
+   }
+<A HREF="rconsole.htm#_restore_screen">_restore_screen</A> (screen);
+}
+</CODE></PRE>
+The sample program shown above (WIN.C) is provided on the distribution diskettes and may be compiled and linked using the following Microsoft C and Borland C command lines:
+
+<P>
+Microsoft C:
+<PRE><CODE>
+cl /c /I\msc\include /I\sa\include win.c
+link win,win,,\sa\lib\_sas \msc\lib\slibce
+</CODE></PRE>
+Borland C:
+<PRE><CODE>
+bcc /c /ms /I\bc\include /I\sa\include win.c
+tlink \bc\lib\c0s win,win,,\sa\lib\_sas \bc\lib\cs
+</CODE></PRE>
+</BOBY>
+</HTML>

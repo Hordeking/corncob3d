@@ -1,0 +1,459 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: Memory Management</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Memory Management</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tMemanig.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tMemanig.htm#HEAD0001">Terminology
+</A><BR>
+<A HREF="tMemanig.htm#HEAD0002">Resolving "Duplicate Symbol" Errors
+</A><BR>
+<A HREF="tMemanig.htm#HEAD0003">Basic Rules of Heap Operation
+</A><BR>
+<A HREF="tMemanig.htm#HEAD0004">Near Heap Characteristics
+</A><BR>
+<A HREF="tMemanig.htm#HEAD0005">Far Heap Characteristics
+</A><BR>
+<A HREF="tMemanig.htm#HEAD0006">Automatic Near Heap Initialization
+</A><BR>
+<A HREF="tMemanig.htm#HEAD0007">Managing the Near Heap
+</A><BR>
+<A HREF="tMemanig.htm#HEAD0008">Automatic Far Heap Initialization
+</A><BR>
+<A HREF="tMemanig.htm#HEAD0009">Managing the Far Heap
+</A><BR>
+<A HREF="tMemanig.htm#HEAD000A">Initializing and Managing the Relative Heap
+</A><BR>
+<A HREF="tMemanig.htm#HEAD000B">Location of Near and Far Heaps
+</A><BR>
+<A HREF="tMemanig.htm#HEAD000C">Location of Relative Heaps
+</A><BR>
+<A HREF="tMemanig.htm#HEAD000D">Using and Relocating Relative Heaps
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit consists of functions which manage near, far, and relative heaps. Heaps are simply program or system memory areas which have been reserved for dynamic memory allocation. Relative heaps are similar to near heaps but they may reside anywhere in memory and are fully relocatable. One near heap, one far heap, and any number of relative heaps may be defined and used simultaneously, regardless of the memory model.
+
+<P>
+The near and far heap management systems in this unit are provided as replacements for the standard C near and far heaps. In addition, the relative heap management system may be used as a standalone heap management system or as a supplement to the Spontaneous Assembly or standard C near and far heaps.
+
+<H2><A NAME="HEAD0001">Terminology
+</A></H2>
+
+In keeping with traditional heap terminology, blocks of memory are described as being on a heap when they are allocated. Although the same terminology is used to describe stacks, heaps do not operate like stacks. Stack memory must be allocated and deallocated on a last-in, first-out basis; heap memory may be allocated and deallocated at random.
+
+<P>
+Advantages of Using Spontaneous Assembly Heap Management
+
+<P>
+With the Spontaneous Assembly heap management system, the memory for the heap is only allocated once-at heap initialization time-as opposed to the C philosophy of heap management which allocates more heap memory each time space is needed for a new heap block. The price of more efficient heap management is that the programmer must plan ahead when allocating heap space. Especially in C++, where the new and delete functions place heavy demands on the heap, the added efficiency can be well worth the required forethought in determining the heap size.
+
+<P>
+By following the easy steps listed below, the Spontaneous Assembly heap management functions will be called internally by the C/C++ startup code and library functions (including new and delete) instead of malloc, calloc and free.
+
+<P>
+The present version of Spontaneous Assembly does not include heap management support for Windows or OS/2.
+
+<P>
+Installing Spontaneous Assembly Heap Management
+
+<P>
+While the Spontaneous Assembly heaps are similar to the heaps provided in most standard C libraries, the two systems may not be used in the same program to manage the same block of memory. For example if Spontaneous Assembly heap management functions are being used and the malloc function from the compiler library is called (either internally or externally), memory blocks allocated by the Spontaneous Assembly heaps could be overwritten. Since a substantial number ofstandard C functions use malloc and free internally and some C compiler startup codes use malloc and free, a macro must be used to ensure the use of only one heap management system.
+
+<P>
+The macro that must be used depends on the startup code that is being linked into the program. If the startup code of the compiler will be linked into the program, the HEAP macro should be used. If the Spontaneous Assembly startup code for C will be used, the HEAP_SA macro should be used. The HEAP_TSR macro should be used for TSRs written with Spontaneous Assembly (malloc, calloc, and free are only available as resident functions). If only the default heap will be used (a near heap in small data models and a far heap in large data models), the above macros can be substituted with NHEAP, NHEAP_SA, or NHEAP_TSR to reduce the amount of heap initialization code linked into the final program.
+<PRE><CODE>
+#include <memalloc.h>
+...
+HEAP        /* macro dtermines compiler and init functions to use for initializing
+               Spontaneous Assembly Heap management. */
+           ...
+           void main(void)
+           {
+           ...
+           }
+</CODE></PRE>
+Once the proper macro is used, malloc, calloc, free, <A HREF="rmemanig.htm#_near_malloc">_near_malloc</A>, <A HREF="rmemanig.htm#_near_calloc">_near_calloc</A>, <A HREF="rmemanig.htm#_near_free">_near_free</A>, <A HREF="rmemanig.htm#_far_malloc">_far_malloc</A>, <A HREF="rmemanig.htm#_far_calloc">_far_calloc</A>, and <A HREF="rmemanig.htm#_far_free">_far_free</A> will all use the Spontaneous Assembly memory management system instead of the C heap management system; no further initialization is required.
+
+<P>
+Note that because all calls to malloc or calloc (both direct and internal) use the Spontaneous Assembly memory management functions, it is NOT necessary to change calls to malloc, calloc, or free to use the standard Spontaneous Assembly heap management functions. In the TINY, SMALL, and MEDIUM models, the Spontaneous Assembly near heap functions are used if malloc or calloc is called. If malloc or calloc is called in COMPACT or LARGE, the Spontaneous Assembly far heap functions are used. This mimics the behavior of malloc and calloc in most standard C libraries.
+
+<P>
+The following table summarizes how and when the C default heap management system is replaced by the Spontaneous Assembly heap management system:
+<PRE>
+HEAP TYPE   SMALL DATA MODELS           LARGE DATA MODELS
+
+Near
+Heap        Replaces C's default heap   (Not available)
+            management system:
+            malloc = <A HREF="rmemanig.htm#_near_malloc">_near_malloc</A>
+            calloc = <A HREF="rmemanig.htm#_near_calloc">_near_calloc</A>
+            free   = <A HREF="rmemanig.htm#_near_free">_near_free</A>
+
+            Initialized on first call
+            to malloc,
+            calloc, <A HREF="rmemanig.htm#_near_malloc">_near_malloc</A>,
+            <A HREF="rmemanig.htm#_near_calloc">_near_calloc</A>,
+            <A HREF="rmemanig.htm#_far_malloc">_far_malloc</A>, or
+            <A HREF="rmemanig.htm#_far_calloc">_far_calloc</A>.
+
+
+
+Far         Initialized on first call   Replaces C's default heap
+Heap        to <A HREF="rmemanig.htm#_far_malloc">_far_malloc</A>              management
+            or <A HREF="rmemanig.htm#_far_calloc">_far_calloc</A>.             system:
+                                        malloc  = <A HREF="rmemanig.htm#_far_malloc">_far_malloc</A>
+            The near heap is            calloc  = <A HREF="rmemanig.htm#_far_calloc">_far_calloc</A>
+            automatically               free    = <A HREF="rmemanig.htm#_far_free">_far_free</A>
+            initialized (if it is not
+            already                     Initialized on first call to
+            initialized) prior to       malloc, calloc,
+            initializing the far        <A HREF="rmemanig.htm#_far_malloc">_far_malloc</A>, or <A HREF="rmemanig.htm#_far_calloc">_far_calloc</A>.
+            heap.
+
+
+
+Relative    Always available. May be    Always available. May be used
+Heaps       used in                     in
+            addition to any other heap. addition to any other heap.
+            Must be                     Must be
+            initialized with <A HREF="rmemanig.htm#_rel_init">_rel_init</A>. initialized with <A HREF="rmemanig.htm#_rel_init">_rel_init</A>.
+            (Libraries                  (Libraries do
+            do not need to be           not need to be modified.)
+            modified.)
+</PRE>
+<H2><A NAME="HEAD0002">Resolving "Duplicate Symbol" Errors
+</A></H2>
+
+Since the _SA? libraries contain symbols which may be duplicates of symbols in standard C libraries (malloc, calloc, etc.), some linkers may generate a "duplicate symbol..." error when the Spontaneous Assembly heap management functions are used. This error message can usually be prevented by specifying a command line option which limits how the linker searches for external symbols (for example, /NOE for Microsoft's LINK.EXE). If the error message persists, extract/remove the malloc, calloc, and free .OBJ files from the standard C libraries which are generating duplicate symbol errors. This can be accomplished with the following command lines:
+
+<P>
+Microsoft C 6.0A/7.0, Quick C:
+<PRE><CODE>
+lib slibce *-malloc *-calloc *-free;
+</CODE></PRE>
+Borland C:
+<PRE><CODE>
+tlib cs *-nearheap *-farheap
+</CODE></PRE>
+Zortech C:
+<PRE><CODE>
+zorlib zls *-alloc *-far
+</CODE></PRE>
+It is important to modify the libraries for each memory model in which the Spontaneous Assembly heaps may be used.
+
+<H2><A NAME="HEAD0003">Basic Rules of Heap Operation
+</A></H2>
+
+The fundamental rules of operation are the same for all three types of heaps:
+<UL>
+<LI>        Heaps must be initialized before they may be used. (This is automatically performed for the near and far heaps.)
+<LI>        Once a heap has been initialized, heap space may be allocated by calling the allocation functions for that heap.
+<LI>        Heap memory is allocated in blocks. Block sizes are arbitrary and are specified when each block is allocated.
+<LI>        Blocks are allocated on the heap using a first fit algorithm.
+<LI>        Allocated blocks remain fixed in size and position until they are resized or released.
+<LI>        Allocated blocks cannot be moved within the heap.
+<LI>        Blocks may be released in any order.
+<LI>        Total free space on a heap and the size of the largest available block on a heap may be determined at any time.
+<LI>        Blocks are managed internally using singly-linked lists.
+<LI>        Released blocks are automatically coalesced when the first allocation request is made after any blocks have been released.
+<LI>        DOS memory allocation calls are NOT used for heap management except when the near and far heaps are initialized. Heap initialization may be performed without using DOS memory management calls by using the custom heap initialization functions.
+</UL>
+A singly-linked heap block management methodology is used because it provides maximum speed and memory efficiency. However, this scheme also makes the heap susceptible to corruption. Caution must be exercised to never write beyond the boundaries of a heap block or the entire heap may become corrupted. Limited block address validation is performed within many of the heap management functions to help prevent heap corruption.
+
+<P>
+Although near, far, and relative heaps are very similar, they differ in initialization methods, allowed initialization locations, maximum allowed heap sizes, maximum block size, block allocation granularity, etc. These characteristics are described below.
+
+<H2><A NAME="HEAD0004">Near Heap Characteristics
+</A></H2>
+
+Initialization  Automatic initialization on first call to an allocation function. Heap size defaults to all remaining data segment memory. The default heap size may be specified using the <A HREF="rmemanig.htm#nheap_len">nheap_len</A> and <A HREF="rmemanig.htm#nheap_comlen">nheap_comlen</A> variables (see Automatic Near Heap Initialization, below).
+
+<P>
+Number of heaps supported:       One.
+
+<P>
+Heap location:   At the end of static data in DGROUP.
+
+<P>
+Assumptions:     Initialization assumes DOS segment ordering (DOSSEG) (except for Turbo C and Borland C; see Location of Near and Far Heaps below). In the TINY model, the stack is assumed to be at the high end of the data segment.
+
+<P>
+Maximum heap size:       All unused space in the default data segment (up to 64K including heap control variables).
+
+<P>
+Maximum block size:      32,764 bytes.
+
+<P>
+Minimum block size:      0 bytes.
+
+<P>
+Overhead per block:      2 bytes.
+
+<P>
+Granularity:     2 bytes.
+
+<P>
+Block alignment: Word.
+
+<P>
+Access method:   Block pointers are offsets within DGROUP (near pointers).
+
+<P>
+Heap control variables:  Stored in the default data segment (DGROUP).
+
+<H2><A NAME="HEAD0005">Far Heap Characteristics
+</A></H2>
+
+Initialization  Automatic initialization on first call to a far allocation function. Heap size defaults to all remaining contiguous far memory. The default heap size may be specified using the <A HREF="rmemanig.htm#fheap_len">fheap_len</A> and <A HREF="rmemanig.htm#fheap_dosmin">fheap_dosmin</A> variables (see Automatic Far Heap Initialization, below).
+
+<P>
+Number of heaps supported:       One.
+
+<P>
+Heap location:   At the end of static data in DGROUP, or at the end of the near heap if it is initialized, whichever is higher in memory.
+
+<P>
+Assumptions:     DOS segment ordering (DOSSEG) (except Turbo C and Borland C; see Location of Near and Far Heaps, below).
+
+<P>
+Maximum heap size:       All unused contiguous conventional system memory.
+
+<P>
+Maximum block size:      524,270 bytes.
+
+<P>
+Minimum block size:      14 bytes.
+
+<P>
+Overhead per block:      2 bytes.
+
+<P>
+Granularity:     16 bytes.
+
+<P>
+Block alignment: Paragraph.
+
+<P>
+Access method:   Block pointers are absolute segment addresses; far pointers have a zero offset.
+
+<P>
+Heap control variables:  Stored in the default data segment (DGROUP).
+
+<P>
+Relative Heap Characteristics
+
+<P>
+Initialization:  Custom initialization only. Heap size and starting segment is user-specified.
+
+<P>
+Number of heaps supported:       Unlimited.
+
+<P>
+Heap location:   Anywhere in conventional memory. May be relocated at any time.
+
+<P>
+Assumptions:     Heap memory must be allocated for use by the heap before the heap is initialized.
+
+<P>
+Maximum heap size:       Up to 64K including heap control variables.
+
+<P>
+Maximum block size:      32,764 bytes.
+
+<P>
+Minimum block size:      0 bytes.
+
+<P>
+Overhead per block:      2 bytes.
+
+<P>
+Granularity:     2 bytes.
+
+<P>
+Block alignment: Word.
+
+<P>
+Access method:   Block pointers can be anywhere in memory (far pointers).
+
+<P>
+Heap control variables:  Stored in the first 16 bytes of the heap segment.
+
+<H2><A NAME="HEAD0006">Automatic Near Heap Initialization
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmemanig.htm#nheap_len">nheap_len</A><DD>      (Variable) Contains the requested size of the near heap (SMALL data models only).
+<DT><A HREF="rmemanig.htm#nheap_comlen">nheap_comlen</A><DD>   (Variable) Contains the minimum number of bytes to leave available for the .COM stack when the near heap is initialized (TINY model only).
+<DT><A HREF="rmemanig.htm#nheap_start">nheap_start</A><DD>    (Variable) Contains the starting offset of the near heap.
+<DT><A HREF="rmemanig.htm#nheap_size">nheap_size</A><DD>     (Variable) Contains the current size of the near heap.
+</DL>
+The near heap is only available if the heap management system has been installed as described earlier in this chapter (see Installing Spontaneous Assembly Heap Management, above). In small data models the Spontaneous Assembly near heap replaces the C heap management system so that calls to malloc, calloc, or free automatically call their Spontaneous Assembly near heap counterparts. In large data models the Spontaneous Assembly far heap functions are not available.
+
+<P>
+The near heap is automatically initialized on the first call to a near or far memory allocation function. This usually occurs in the C startup code. A specific near heap initialization function is not necessary.
+
+<P>
+<A HREF="rmemanig.htm#nheap_len">nheap_len</A> and <A HREF="rmemanig.htm#nheap_comlen">nheap_comlen</A> are global near heap variables which determine the size of the near heap when it is initialized. The <A HREF="rmemanig.htm#nheap_len">nheap_len</A> variable specifies the maximum size of the near heap, in bytes (it is ignored in the TINY model). The default <A HREF="rmemanig.htm#nheap_len">nheap_len</A> value is -1, which specifies that the maximum available near data space is to be allocated to the near heap. The <A HREF="rmemanig.htm#nheap_comlen">nheap_comlen</A> variable is used in TINY models to specify the number of bytes to leave for the .COM stack. The default <A HREF="rmemanig.htm#nheap_comlen">nheap_comlen</A> value is 1000 bytes. Setting <A HREF="rmemanig.htm#nheap_len">nheap_len</A> to zero prevents the near heap from being initialized. The values of these variables may be modified by declaring them in the same module as main, as follows:
+<PRE><CODE>
+...
+unsigned <A HREF="rmemanig.htm#nheap_len">nheap_len</A> = 5000;        /* init near heap to 5000 bytes */
+#if __TINY__
+unsigned <A HREF="rmemanig.htm#nheap_comlen">nheap_comlen</A> = 2000;     /* leave the .COM stack 2000 bytes */
+#endif
+...
+</CODE></PRE>
+If the amount of memory specified in <A HREF="rmemanig.htm#nheap_len">nheap_len</A> is not available, all available near data space is allocated to the near heap. In the TINY model, the near heap is not initialized if the amount of stack space specified in <A HREF="rmemanig.htm#nheap_comlen">nheap_comlen</A> is not available.
+<P>
+<A HREF="rmemanig.htm#nheap_start">nheap_start</A> and <A HREF="rmemanig.htm#nheap_size">nheap_size</A> are global near heap variables which indicate the starting near address (offset within DGROUP) and total size of the near heap, in bytes. A value of zero in <A HREF="rmemanig.htm#nheap_size">nheap_size</A> indicates that the near heap is not initialized. Any of the near heap functions may access and/or modify these variables at any time. In addition, the internal far heap initialization functions access these variables to ensure that the far heap does not overlap an existing near heap.
+
+<H2><A NAME="HEAD0007">Managing the Near Heap
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmemanig.htm#_near_malloc">_near_malloc</A><DD>   Allocates a specified number of bytes on the near heap.
+<DT><A HREF="rmemanig.htm#_near_calloc">_near_calloc</A><DD>   Allocates space for a specified number of objects on the near heap and sets all allocated bytes to zero.
+<DT><A HREF="rmemanig.htm#_near_realloc">_near_realloc</A><DD>  Alters the size of a near heap memory block.
+<DT><A HREF="rmemanig.htm#_near_free">_near_free</A><DD>     Frees a block on the near heap.
+<DT><A HREF="rmemanig.htm#_near_avail">_near_avail</A><DD>    Returns the number of available bytes on the near heap.
+<DT><A HREF="rmemanig.htm#_near_max">_near_max</A><DD>      Returns the size of the largest available block on the near heap.
+</DL>
+These functions manage and return information about the near heap.
+
+<P>
+<A HREF="rmemanig.htm#_near_malloc">_near_malloc</A> and <A HREF="rmemanig.htm#_near_calloc">_near_calloc</A> allocate near heap memory. Both of these functions accept a size and return a pointer to the newly allocated block.
+
+<P>
+<A HREF="rmemanig.htm#_near_free">_near_free</A> and <A HREF="rmemanig.htm#_near_realloc">_near_realloc</A> may be used to deallocate and resize blocks on the near heap. <A HREF="rmemanig.htm#_near_realloc">_near_realloc</A> may need to move a block when it is resized. Therefore, a new block pointer may be returned.
+
+<P>
+<A HREF="rmemanig.htm#_near_avail">_near_avail</A> and <A HREF="rmemanig.htm#_near_max">_near_max</A> returns the total available space on the near heap and the size of the largest available block on the heap. Sizes are reported in bytes.
+
+<P>
+Note that the standard C function names (e.g., malloc and calloc) may also be used to access the Spontaneous Assembly heap management system once it has been properly installed. The near heap is not available in large data models.
+
+<H2><A NAME="HEAD0008">Automatic Far Heap Initialization
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmemanig.htm#fheap_len">fheap_len</A><DD>      (Variable) Contains the desired size for far heap initialization.
+<DT><A HREF="rmemanig.htm#fheap_dosmin">fheap_dosmin</A><DD>   (Variable) Contains the minimum number of bytes to leave available for DOS when the far heap is initialized.
+<DT><A HREF="rmemanig.htm#fheap_start">fheap_start</A><DD>    (Variable) Contains the starting segment of the far heap.
+<DT><A HREF="rmemanig.htm#fheap_size">fheap_size</A><DD>     (Variable) Contains the current size of the far heap.
+</DL>
+The Spontaneous Assembly far heap is available in all memory models if the heap management system has been installed as described earlier in this chapter (see Installing Spontaneous Assembly Heap Management, above). In large data models the Spontaneous Assembly far heap replaces the C heap management system so that calls to malloc, calloc, or free automatically call their Spontaneous Assembly far heap counterparts. In small data models, however, the Spontaneous Assembly far heap functions must be called directly since the C heap management system is replaced by the Spontaneous Assembly near heap management system.
+
+<P>
+The far heap is automatically initialized on the first call to a far memory allocation function. For most C compilers, this occurs in the startup code. A specific far heap initialization function is not necessary.
+
+<P>
+<A HREF="rmemanig.htm#fheap_len">fheap_len</A> and <A HREF="rmemanig.htm#fheap_dosmin">fheap_dosmin</A> are global far heap variables which determine the size of the far heap when it is initialized. The <A HREF="rmemanig.htm#fheap_len">fheap_len</A> variable specifies the maximum size of the far heap, in paragraphs. The nheap_dosmin variable specifies the number of paragraphs to leave available to DOS when the far heap is initialized. By default, <A HREF="rmemanig.htm#fheap_len">fheap_len</A> is -1 (which specifies that all available far data space is to be allocated to the far heap). The default value of <A HREF="rmemanig.htm#fheap_dosmin">fheap_dosmin</A> is 0. Setting <A HREF="rmemanig.htm#fheap_len">fheap_len</A> to zero prevents the far heap from being initialized. The default values of these variables may be modified by declaring them in the same module as main, as follows:
+<PRE><CODE>
+   ...
+   unsigned <A HREF="rmemanig.htm#fheap_len">fheap_len</A> = 1000;                   /* init far heap to 1000 paragraphs (64K) */
+   #if __TINY__
+   unsigned <A HREF="rmemanig.htm#fheap_dosmin">fheap_dosmin</A> = 1000;                /* leave DOS 1000 paragraphs (64K) */
+   #endif
+   ...
+</CODE></PRE>
+If fewer than <A HREF="rmemanig.htm#fheap_len">fheap_len</A> minus <A HREF="rmemanig.htm#fheap_dosmin">fheap_dosmin</A> paragraphs of far data space are available, the maximum available far heap memory minus <A HREF="rmemanig.htm#fheap_dosmin">fheap_dosmin</A> paragraphs is allocated to the far heap.
+
+<P>
+<A HREF="rmemanig.htm#fheap_start">fheap_start</A> and <A HREF="rmemanig.htm#fheap_size">fheap_size</A> are global far heap variables which indicate the starting address (offset within DGROUP) and total size of the far heap, in paragraphs. A value of zero in <A HREF="rmemanig.htm#fheap_size">fheap_size</A> indicates that the far heap is not initialized. Any of the far heap functions may access and/or modify these variables at any time. In addition, the internal near heap initialization functions access these variables to ensure that the near heap does not overlap an existing far heap.
+
+<H2><A NAME="HEAD0009">Managing the Far Heap
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmemanig.htm#_far_malloc">_far_malloc</A><DD>    Allocates a specified number of bytes on the far heap.
+<DT><A HREF="rmemanig.htm#_far_calloc">_far_calloc</A><DD>    Allocates space for a specified number of objects on the far heap and sets all allocated bytes to zero.
+<DT><A HREF="rmemanig.htm#_far_realloc">_far_realloc</A><DD>   Alters the size of a far heap memory block.
+<DT><A HREF="rmemanig.htm#_far_free">_far_free</A><DD>      Frees a block on the far heap.
+<DT><A HREF="rmemanig.htm#_far_avail">_far_avail</A><DD>     Returns the number of available bytes on the far heap.
+<DT><A HREF="rmemanig.htm#_far_max">_far_max</A><DD>       Returns the size of the largest available block on the far heap.
+</DL>
+These functions manage and return information about the far heap.
+
+<P>
+<A HREF="rmemanig.htm#_far_malloc">_far_malloc</A> and <A HREF="rmemanig.htm#_far_calloc">_far_calloc</A> allocate far heap memory. Both of these functions accept a size in bytes and return a pointer to the newly allocated block.
+
+<P>
+<A HREF="rmemanig.htm#_far_free">_far_free</A> and <A HREF="rmemanig.htm#_far_realloc">_far_realloc</A> may be used to deallocate and resize blocks on the far heap. <A HREF="rmemanig.htm#_far_realloc">_far_realloc</A> may need to move a block when it is resized. Therefore, a new block pointer may be returned.
+
+<P>
+<A HREF="rmemanig.htm#_far_avail">_far_avail</A> and <A HREF="rmemanig.htm#_far_max">_far_max</A> return the total available space on the far heap and the size of the largest available block on the heap. Sizes are reported in bytes.
+
+<P>
+Note that the standard C function names (e.g., malloc and calloc) may also be used to access the Spontaneous Assembly far heap management system in large data models once it has been properly installed. In small data models, however, the Spontaneous Assembly far heap functions must be called directly (using the names shown in the table above) since the C heap management system is replaced by the Spontaneous Assembly near heap management system.
+
+<H2><A NAME="HEAD000A">Initializing and Managing the Relative Heap
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmemanig.htm#_rel_init">_rel_init</A><DD>      Initializes a relative heap.
+<DT><A HREF="rmemanig.htm#_rel_malloc">_rel_malloc</A><DD>    Allocates a specified number of bytes on a relative heap.
+<DT><A HREF="rmemanig.htm#_rel_calloc">_rel_calloc</A><DD>    Allocates space for a specified number of objects on a relative heap and sets all allocated bytes to zero.
+<DT><A HREF="rmemanig.htm#_rel_realloc">_rel_realloc</A><DD>   Alters the size of a relative heap memory block.
+<DT><A HREF="rmemanig.htm#_rel_free">_rel_free</A><DD>      Frees a block on a relative heap.
+<DT><A HREF="rmemanig.htm#_rel_avail">_rel_avail</A><DD>     Returns the number of available bytes on a relative heap.
+<DT><A HREF="rmemanig.htm#_rel_max">_rel_max</A><DD>       Returns the size of the largest available block on a relative heap.
+</DL>
+These functions manage and return information about relative heaps.
+
+<P>
+<A HREF="rmemanig.htm#_rel_init">_rel_init</A> initializes a previously allocated region of memory for use as a relative heap. Any number of relative heaps may be initialized and used simultaneously. The address and size of the heap must be specified when any relative heap is initialized. Relative heap sizes are specified in bytes, and they must begin at segment boundaries.
+
+<P>
+<A HREF="rmemanig.htm#_rel_malloc">_rel_malloc</A> and <A HREF="rmemanig.htm#_rel_calloc">_rel_calloc</A> allocate relative heap memory. Both of these functions accept a size and return a pointer to the newly allocated block.
+
+<P>
+<A HREF="rmemanig.htm#_rel_free">_rel_free</A> and <A HREF="rmemanig.htm#_rel_realloc">_rel_realloc</A> may be used to deallocate and resize blocks on a relative heap. <A HREF="rmemanig.htm#_rel_realloc">_rel_realloc</A> may need to move a block when it is resized. Therefore, a new block pointer may be returned.
+
+<P>
+<A HREF="rmemanig.htm#_rel_avail">_rel_avail</A> and <A HREF="rmemanig.htm#_rel_max">_rel_max</A> return the total available space on a relative heap and the size of the largest available block on a relative heap. Sizes are reported in bytes.
+
+<H2><A NAME="HEAD000B">Location of Near and Far Heaps
+</A></H2>
+
+The near heap starts at the end of static data in DGROUP and the far heap starts just after the near heap. (In the TINY model the far heap starts after the .COM stack, which follows the near heap; this is also true in the SMALL and MEDIUM models for Turbo and Borland C compilers.) Note that the near heap is part of DGROUP once it is initialized.
+
+<P>
+The internal near and far heap initialization functions use public variables and/or labels found in each compiler's startup code to identify the default starting address of each heap. The addresses found in the <A HREF="rmemanig.htm#nheap_start">nheap_start</A> and <A HREF="rmemanig.htm#fheap_start">fheap_start</A> variables are the same (or very close to the same) as the starting locations used by the standard C heap management routines.
+
+<P>
+The following memory maps show the locations of the near and far heaps after they are initialized. (Note the difference for Turbo and Borland C compilers in the SMALL and MEDIUM models.)
+<UL>
+<LI>                Near and Far Heap Locations in the TINY Model
+
+<LI>                Near and Far Heap Locations in the SMALL Model<BR>
+                        (All Compilers Except Borland)
+
+<LI>                Near and Far Heap Locations in the SMALL Model<BR>
+                          (Using a Borland Compiler)
+
+<LI>               Near and Far Heap Locations in the MEDIUM Model<BR>
+                        (All Compilers Except Borland)
+
+<LI>               Near and Far Heap Locations in the MEDIUM Model<BR>
+                          (Using a Borland Compiler)
+
+<LI>                    Far Heap Location in the COMPACT Model
+
+<LI>                Far Heap Location in the LARGE and HUGE Models
+
+<H2><A NAME="HEAD000C">Location of Relative Heaps
+</A></H2>
+
+Relative heaps have no default starting location. Instead, when a relative heap is initialized, a starting segment and size must always be specified. Relative heaps may be located anywhere in memory; any number of relative heaps may be defined.
+
+<H2><A NAME="HEAD000D">Using and Relocating Relative Heaps
+</A></H2>
+
+Relative heaps are ideal for efficient management of large blocks of far heap space. For example, a 64K block of far heap space could be allocated and initialized as a relative heap. Sub-blocks of the 64K far heap block could then be allocated using the relative heap management functions. This allows sub-blocks of far heap space to be allocated with finer granularity (2 bytes rather than 16 bytes).
+
+<P>
+Relative heaps may be relocated at will since all information about each relative heap is maintained within the heap itself. For example, relative heaps may be moved from one memory location to another, swapped to and from disk, swapped to and from expanded memory, overlaid in the same buffer, etc. The 64K relative heap described in the previous paragraph could be swapped to disk if its 64K far heap block was needed for other purposes; it could then be read back in from disk into any memory location at any time.
+
+<P>
+Note that the total size of a relative heap is the size originally passed to <A HREF="rmemanig.htm#_rel_init">_rel_init</A>.
+</BOBY>
+</HTML>

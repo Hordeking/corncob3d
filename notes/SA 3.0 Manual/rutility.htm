@@ -1,0 +1,121 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Utility Reference</TITLE>
+</HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Utility</H1>
+<P ALIGN=CENTER>Reference Section </P>
+<UL>
+<LI><A HREF="TOC.htm">Table of Contents</A>
+<LI><A HREF="index.htm">Function Index</A>
+<LI><A HREF="gindex.htm">Group Index
+</UL>
+<A HREF="rutility.htm#c_code">c_code</A><BR>
+<A HREF="rutility.htm#_ptr_to_seg">_ptr_to_seg</A><BR>
+<H2><A NAME="c_code">c_code</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Variable) Contains the status of the most recent conversion.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;util.h&gt
+<BR>	extern int c_code;
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This int variable is updated by the data conversion and date/time conversion functions to contain the status of each conversion. Possible values for this variable are 1, 0, and -1 and have the following meanings:
+<BR>
+<BR>	C_OFLOW  (0) Overflow occurred
+<BR>	C_SUCCESS(1) Conversion was successful
+<BR>	C_UFLOW  (-1) Underflow was detected (no digits were encountered)
+<BR>
+<BR>	Possible values for c_code vary for each function and are noted in the reference section.
+<BR>
+<BR>	c_code is initialized to 0.
+<BR>
+<BR>	UTIL.H is automatically included by DATACONV.H and DATETIME.H.
+<BR>
+<BR></DL>
+<B>Source file</B>	_UTCCODE.ASM
+<B>ASM equiv</B>â
+<BR><DL>
+<DT><B>See also</B>
+<DD>_asc_to_..., _dec_to_..., _hex_to_...
+
+<BR></DL>
+<H2><A NAME="_ptr_to_seg">_ptr_to_seg</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts a far pointer to a segment address (unsigned int).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;util.h&gt
+<BR>	segaddr _ptr_to_seg(void far *addr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The calculated segment address of the buffer pointed to by addr if the resulting segment is in the first 1MB of addressable RAM.
+<BR>
+<BR>	0 if the resulting segment is in the high memory area (segment at 0xFFFF).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function converts addr into a segment address. A valid segment address is returned if addr points to a location in the first megabyte of memory (between 0:0 and 0xFFFF:0). The returned segment address is always aligned at the next segment boundary beyond addr. 0 is returned if addr points to a location in the high memory area (approximately first 64K above the 1MB boundary).
+<BR>
+<BR>	Memory locations in the high memory area must be referenced from a segment in the first megabyte of memory (usually 0xFFFF).
+<BR>
+<BR>WARNING! Since 0 is a valid (but unlikely) segment address, the programmer must evaluate whether or not a return value of 0 is an error.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char rel_heap_buf[0x4010];
+	   ...
+	   if(_ptr_to_seg(rel_heap_buf) != 0);
+	   _rel_init(0x4010);/* initialize relative heap */
+	   _rel_malloc(0x2000);/* allocate block on rel heap*/
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char rel_heap_buf[0x4010];
+	   ...
+	   lea     ax,rel_heap_buf
+	   mov     dx,ss	/* DX:AX -&gt rel_heap_buf */
+	   ptr_to_seg	/* DX = 1st seg boundary */
+	   	  	 	/*   in rel_heap_buf */
+	    jc     handle_error/* if error, go handle it
+	   mov     es,dx	/* ES = starting segment */
+	   	  	 	/*   of relative heap */
+	 mov     ax,0x4010
+	    rel_init();	 /* initialize a 0x4010 byte */
+	    	   	  	 /*   relative heap */
+	    mov     ax,0x2000
+	    rel_malloc();	 /* allocate a 0x2000 byte */
+	    	   	  	 /*   block from heap */
+	     jc     handle_error/* if error, go handle it */
+	    ... 	  	 /* ES:DI -&gt mem block on */
+	    	   	  	 /*   relative heap */
+	handle_error:
+	    ... 	  	 /* handle errors here */
+	    }
+
+</CODE></PRE>
+<B>Source file</B>	_UTPTOS.ASM		  <B>ASM equiv</B>	PTR_TO_SEG
+
+<BR>
+<BR></BODY>
+<BR></HTML><BR>

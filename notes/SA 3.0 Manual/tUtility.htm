@@ -1,0 +1,42 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: Utility</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Utility</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tUtility.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tUtility.htm#HEAD0001">Converting Pointers to Segments
+</A><BR>
+<A HREF="tUtility.htm#HEAD0002">Determining Conversion Status
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit consists of miscellaneous functions and variables which are provided to support the Spontaneous Assembly library source code and C binder interface.
+
+<H2><A NAME="HEAD0001">Converting Pointers to Segments
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rutility.htm#_ptr_to_seg">_ptr_to_seg</A><DD>             Converts a far pointer to a segment address (segaddr).
+</DL>
+<A HREF="rutility.htm#_ptr_to_seg">_ptr_to_seg</A> converts a segment:offset far pointer into an equivalent segment address. If the far pointer does not point to an exact segment boundary, the returned segment address is always rounded up to the next higher segment boundary. If the far pointer points to a location in the high memory area (approximately the first 64 KB above the one megabyte boundary), an error condition is returned. The return value is of type segaddr (which denotes a segment address and is equivalent to unsigned int).
+
+<H2><A NAME="HEAD0002">Determining Conversion Status
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rutility.htm#c_code">c_code</A><DD>                  Contains the status of the most recent conversion.
+</DL>
+The data conversion and date/time conversion functions return the status of the conversion through the global variable <A HREF="rutility.htm#c_code">c_code</A>. The status code is returned in a variable to maintain a smaller function profile; it also allows the status to be ignored or dealt with at a later time. The following symbolic constants (defined in UTIL.H) identify the possible values of <A HREF="rutility.htm#c_code">c_code</A>:
+<DL COMPACT>
+<DT>C_OFLOW<DD>                 (0) Overflow occurred
+<DT>C_SUCCESS<DD>                       (1) Conversion was successful
+<DT>C_UFLOW<DD>                 (-1) Underflow was detected (no digits were encountered)
+</DL>
+Specific return values for each function are specified in the reference section entry for each function which uses <A HREF="rutility.htm#c_code">c_code</A>.
+
+<P>
+UTIL.H is automatically included by DATACONV.H and DATETIME.H.
+</BOBY>
+</HTML>

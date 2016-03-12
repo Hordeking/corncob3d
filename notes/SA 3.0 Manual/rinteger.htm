@@ -1,0 +1,2937 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Integer Math Reference</TITLE>
+</HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Integer Math</H1>
+<P ALIGN=CENTER>Reference Section </P>
+<UL>
+<LI><A HREF="TOC.htm">Table of Contents</A>
+<LI><A HREF="index.htm">Function Index</A>
+<LI><A HREF="gindex.htm">Group Index
+</UL>
+<A HREF="rinteger.htm#_abs_q">_abs_q</A><BR>
+<A HREF="rinteger.htm#_add_qi">_add_qi</A><BR>
+<A HREF="rinteger.htm#_add_ql">_add_ql</A><BR>
+<A HREF="rinteger.htm#_add_qq">_add_qq</A><BR>
+<A HREF="rinteger.htm#_add_uqi">_add_uqi</A><BR>
+<A HREF="rinteger.htm#_add_uql">_add_uql</A><BR>
+<A HREF="rinteger.htm#_add_uqq">_add_uqq</A><BR>
+<A HREF="rinteger.htm#_cmp_qi">_cmp_qi</A><BR>
+<A HREF="rinteger.htm#_cmp_ql">_cmp_ql</A><BR>
+<A HREF="rinteger.htm#_cmp_qq">_cmp_qq</A><BR>
+<A HREF="rinteger.htm#_cmp_uqi">_cmp_uqi</A><BR>
+<A HREF="rinteger.htm#_cmp_uql">_cmp_uql</A><BR>
+<A HREF="rinteger.htm#_cmp_uqq">_cmp_uqq</A><BR>
+<A HREF="rinteger.htm#_dec_q">_dec_q</A><BR>
+<A HREF="rinteger.htm#_div_qi">_div_qi</A><BR>
+<A HREF="rinteger.htm#_div_ql">_div_ql</A><BR>
+<A HREF="rinteger.htm#_div_qq">_div_qq</A><BR>
+<A HREF="rinteger.htm#_divr_qi">_divr_qi</A><BR>
+<A HREF="rinteger.htm#_divr_ql">_divr_ql</A><BR>
+<A HREF="rinteger.htm#_divr_qq">_divr_qq</A><BR>
+<A HREF="rinteger.htm#_divr_uqi">_divr_uqi</A><BR>
+<A HREF="rinteger.htm#_divr_uql">_divr_uql</A><BR>
+<A HREF="rinteger.htm#_divr_uqq">_divr_uqq</A><BR>
+<A HREF="rinteger.htm#_div_uqi">_div_uqi</A><BR>
+<A HREF="rinteger.htm#_div_uql">_div_uql</A><BR>
+<A HREF="rinteger.htm#_div_uqq">_div_uqq</A><BR>
+<A HREF="rinteger.htm#_inc_q">_inc_q</A><BR>
+<A HREF="rinteger.htm#_mov_qi">_mov_qi</A><BR>
+<A HREF="rinteger.htm#_mov_ql">_mov_ql</A><BR>
+<A HREF="rinteger.htm#_mov_qq">_mov_qq</A><BR>
+<A HREF="rinteger.htm#_mov_uqi">_mov_uqi</A><BR>
+<A HREF="rinteger.htm#_mov_uql">_mov_uql</A><BR>
+<A HREF="rinteger.htm#_mov_uqq">_mov_uqq</A><BR>
+<A HREF="rinteger.htm#_mul_qi">_mul_qi</A><BR>
+<A HREF="rinteger.htm#_mul_ql">_mul_ql</A><BR>
+<A HREF="rinteger.htm#_mul_qq">_mul_qq</A><BR>
+<A HREF="rinteger.htm#_mul_uqi">_mul_uqi</A><BR>
+<A HREF="rinteger.htm#_mul_uql">_mul_uql</A><BR>
+<A HREF="rinteger.htm#_mul_uqq">_mul_uqq</A><BR>
+<A HREF="rinteger.htm#_neg_q">_neg_q</A><BR>
+<A HREF="rinteger.htm#_rand_init">_rand_init</A><BR>
+<A HREF="rinteger.htm#_randr_w">_randr_w</A><BR>
+<A HREF="rinteger.htm#rand_seed">rand_seed</A><BR>
+<A HREF="rinteger.htm#_rand_w">_rand_w</A><BR>
+<A HREF="rinteger.htm#_sgn_q">_sgn_q</A><BR>
+<A HREF="rinteger.htm#_sub_qi">_sub_qi</A><BR>
+<A HREF="rinteger.htm#_sub_ql">_sub_ql</A><BR>
+<A HREF="rinteger.htm#_sub_qq">_sub_qq</A><BR>
+<A HREF="rinteger.htm#_sub_uqi">_sub_uqi</A><BR>
+<A HREF="rinteger.htm#_sub_uql">_sub_uql</A><BR>
+<A HREF="rinteger.htm#_sub_uqq">_sub_uqq</A><BR>
+<H2><A NAME="_abs_q">_abs_q</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts a quad to its absolute value.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _abs_q(quad num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num.
+<BR>	num	absolute value quad result
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function converts the quad value in num to its absolute value. A pointer to num is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   quad num;
+	   _abs_q(_mov_ql(num, 0xFFFFFFFF));/* num1 = 1 */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   quad num;
+	   ...
+	   lea di,num	/* DI = offset of num */
+	   mov ax,0xFFFF
+	   mov dx,0xFFFF/* DX:AX = 0xFFFFFFFF */
+	   mov_ql();	/* num = 0xFFFFFFFF */
+	   abs_q();	/* num = 1 */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMABSQ.ASM		  <B>ASM equiv</B>	ABS_Q
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rinteger.htm#_neg_q">_neg_q</A>
+<BR></DL>
+<H2><A NAME="_add_qi">_add_qi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Adds an int into a quad.    
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _add_qi(quad num1, int num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	quad result (num1 + num2)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function adds the int value in num2 into the quad value in num1. A pointer is returned to num1.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   quad num1;
+	   ...
+	   _mov_qi(num1,65000);
+	   _add_qi(num1,65000);    /* num1 += num2 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	{
+	   quad num1;
+	   ...
+	   mov ax,65000
+	   lea di,num1	    /* DI = offset of num1 */
+	   mov_qi();	/* set num1 value /
+	   add_qi();	/* num1 += num2 */
+	    jnooverflow/* jump to label if overflow */
+	   ...
+	overflow:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMADSQI.ASM		  <B>ASM equiv</B>	ADDS_QW
+
+<BR><H2><A NAME="_add_ql">_add_ql</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Adds a long into a quad.    
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _add_ql(quad num1, long num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	quad result (num1 + num2)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function adds the long value in num2 into the quad value in num1. A pointer to the quad result in num1 is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   long num2 = 1000;
+	   quad num1;
+	   quadptr num3;
+	   _mov_ql(num1, 4000000000);/* set quad value */
+	   num3 = _add_ql(num1, num2);/* quad + long */
+	...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   long num2 = 2000000000;
+	   quad num1;
+	   ... 
+	   lea di,num1	      /* DI = offset of num1 */
+	   mov dx,word ptr num2+2
+	   mov ax,word ptr num2  /* DX;AX = num2 */
+	   mov_ql();	  /* set quad value */
+	   add_ql();	  /* num1++ */
+	    jno       a_ql_100  /* jump to label if overflow */
+	   ... 
+	a_ql_100:
+	   ... 
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMADSQL.ASM		  <B>ASM equiv</B>	ADDS_QD
+
+<BR><H2><A NAME="_add_qq">_add_qq</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Adds two quad values.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _add_qq(quad num1, quad num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	quad result (num1 + num2)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function adds the quad value in num2 to num1. A pointer is returned to num1.
+<BR>
+<BR>	This function works on both quad and uquad values. Therefore, it may be used interchangeably with _add_uqq (_add_uqq and _add_qq are two different names for the same function). 
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   quad num1, num2;
+	   _mov_ql(num1, 1999999999);
+	   _mov_ql(num2, 1234567890);
+	   _add_qq(num1, num2);/* num1 += num2 */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   quad num1, num2;
+	   long num_a = 1999999999, num_b = 1234567890;
+	   ...
+	         leadi,num1	    	  /* DI = offset of num1 */
+	   lea si,num2	    	  /* SI = offset of num2 */
+	   mov ax,word ptr num_a
+	   mov dx,word ptr num_a+2/* DX;AX = 1999999999 */
+	   mov_ql();	    /* set num1 value */
+	   mov ax,word ptr num_b
+	   mov ax,word ptr num_b+2/* DX;AX = 1234567890 */
+	   xchgdi,si	    /* DI = offset of num2 */
+	   mov_ql();	    /* set num2 value */
+	   xchgdi,si	    /* DI = offset of num1 */
+	   add_qq();	    /* num1 += num2 */
+	    jnca_qq_100                       
+	   ... 	 	    /* overflow occurred */
+	a_qq_100:
+	   ... 
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMADDQQ.ASM		  <B>ASM equiv</B>	ADDS_QQ
+<H2><A NAME="_add_uqi">_add_uqi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Adds an unsigned int into a uquad.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _add_uqi(uquad num1, unsigned int num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	uquad result (num1 + num2)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function adds the unsigned int num2 into the uquad num1. A pointer to num1 is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   unsigned int num2;
+	   uquad num1;
+	   _add_uqi(num1,num2);/* num1 += num2 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   unsigned int num2;
+	   uquad num1;
+	   ... 
+	   lea di,num1	    /* DI = offset of num1 */
+	   mov ax,num2	    /* AX = num2 */
+	   add_uqi();	/* num1 += num2 */
+	    jnca_uqi_100/* check for overflow */
+	   ... 	 	/* unsigned overflow occurred */
+	a_uqi_100:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMADDQI.ASM		  <B>ASM equiv</B>	ADD_QW
+
+<BR><H2><A NAME="_add_uql">_add_uql</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Adds an unsigned long into a uquad.	 
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _add_uql(uquad num1, unsigned long num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	uquad result (num1 + num2)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function adds the unsigned long value in num2 into the uquad value in num1. A pointer to num1 is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   unsigned long num2;
+	   uquad num1;
+	   _add_uql(num1,num2);/* num1 += num2 */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   unsigned long num2;
+	   uquad num1;
+	   ...
+	   lea di,num1	    	  /* DI = offset of num1 */
+	   mov ax,word ptr num2	  	 
+	   mov dx,word ptr num2+2/* DX:AX = num2 */
+	   add_uql();	    /* num += num2 */
+	    jnca_uql_100
+	   ... 	 	/* unsigned overflow occurred */
+	a_uql_100:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMADDQL.ASM		  <B>ASM equiv</B>	ADD_QD
+
+<BR><H2><A NAME="_add_uqq">_add_uqq</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Adds two uquad values.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _add_uqq(uquad num1, uquad num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	uquad result (num1 + num2)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function adds num2 to num1. A pointer is returned to num1.
+<BR>
+<BR>	This function works on both quad and uquad values. Therefore, it may be used interchangeably with _add_qq (_add_uqq and _add_qq are two different names for the same function). 
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   uquad num1, num2;
+	 
+	   _mov_uqi(num1,1000);
+	   _mov_uqi(num2,10000);
+	   _add_uqq(num1, num2);/* num1 += num2 */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   uquad num1, num2;
+	   ...
+	   lea di,num1	    /* DI = offset of num1 */
+	   lea si,num2	    /* SI = offset of num2 */
+	   xor ax,ax
+	   mov dx,0xFFFF/* DX;AX = 0xFFFF0000 */
+	   mov_uql();	/* set num1 value */
+	   xchgdi,si	/* DI = offset of num2 */
+	   mov_uql();	/* set num2 value */
+	   xchgdi,si	/* DI = offset of num1 */
+	   add_uqq();	/* num1 = num1 + num2 */
+	    jnca_uqq_100/* if overflow jump to label */
+	   ... 	 	    	  
+	a_uqq_100:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMADDQQ.ASM		  <B>ASM equiv</B>	ADD_QQ
+
+<BR><H2><A NAME="_cmp_qi">_cmp_qi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compares a quad against an int.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	int _cmp_qi(quad num1, int num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	-1 if num1 is less than num2.
+<BR>
+<BR>	0 if num1 is equal to num2.
+<BR>
+<BR>	1 if num1 is greater than num2.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function compares the quad value in num1 against the int value in num2. The return value reflects the result of the comparison.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int num2 = 65535;
+	   quad num1;
+
+	   _mov_qi(num1, 65536);/* set num1 value */
+	   _dec_q(num1);	/* num1 -- */
+	   if (_cmp_qi(num1,num2) != 0)/* is num1 == num2 */
+	      _put_str("Values are not equal!");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   quad num1;
+	   ...
+	   xor ax,ax	    
+	   mov dx,1	/* DX;AX = 65536 */
+	   lea di,num1	    /* DI = offset num1 */
+	   mov_qi();	/* set num1 value */
+	   dec_q();	/* num1-- */
+	   mov ax,0xFFFF/* AX = 65535 */
+	   cmp_qi();	/* is num1 = 65535 */
+	    jl main_100/* if less jump to main_100 */
+	    jg main_200/* if greater jump to main_200 */
+	   _put_str("Values are equal.");
+	main_100:
+	   ...
+	main_200:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMCMSQI.ASM		  <B>ASM equiv</B>	CMPS_QW
+
+<BR><H2><A NAME="_cmp_ql">_cmp_ql</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compares a quad against a long.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	int _cmp_ql(quad num1, long num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	-1 if num1 is less than num2.
+<BR>
+<BR>	0 if num1 is equal to num2.
+<BR>
+<BR>	1 if num1 is greater than num2.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function compares the quad value in num1 against the long value in num2.  The return value indicates the result of the comparison.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   long num2 = 4294967295;
+	   quad num1;
+
+	   _mov_ql(num1, 4294967294);/* set num1 value */
+	   _inc_q(num1);	/* num1++ */
+	   if (_cmp_ql(num1,num2) != 0)/* is num1 == num2 */
+	      _put_str("Values are not equal!");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   quad num1;
+	   ...
+	   mov ax,0xFFFE
+	   mov dx,0xFFFF/* DX;AX = 4294967294 */
+	   lea di,num1	    /* DI = offset num1 */
+	   mov_ql();	/* set num1 value */
+	   inc_q();	/* num1++ */
+	   inc ax	 	/* DX;AX = 4294967295 */
+	   cmp_ql();	/* quad == long? */
+	    jl inc_q_010 /* jump if less than to label */
+	    jg inc_q_020 /* jump if greater to label */
+	   _put_str("Values are equal.");
+	   ...
+	inc_q_010:
+	   ...
+	inc_q_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMCMSQL.ASM		  <B>ASM equiv</B>	CMPS_QD
+
+<BR><H2><A NAME="_cmp_qq">_cmp_qq</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compares two quad values.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	int _cmp_qq(quad num1, quad num2);
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	-1 if num1 is less than num2.
+<BR>
+<BR>	0 if num1 is equal to num2.
+<BR>
+<BR>	1 if num1 is greater than num2.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function compares the quad value in num1 against the quad value in num2. The return value reflects the result of the comparison.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   quad num1, num2;
+
+	   _mov_ql(num1, 0xFFFFFFFF);/* set num1 value */
+	   _mov_ql(num2, 0xFFFFFFFF);/* set num2 value */
+	   if (_cmp_qq(num1,num2) != 0)/* is num1 == num2 */
+	      _put_str("Values are not equal!");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   quad num1, num2;
+	   ...
+	   mov ax,0x1111
+	   mov dx,0xFFFF/* DX;AX = 0xFFFF1111 */
+	   lea di,num1	    /* DI = offset of num1 */
+	   lea si,num2	    /* SI = offset of num2 */
+	   mov_ql();
+	   xchgdi,si	/* DI = offset of num2 */
+	   mov_ql();
+	   xchgdi,si	/* DI = offset of num1 */
+	   cmp_qq();	/* quad == quad? */
+	   
+	    jl cmp_q_010 /* jump if less to label */
+	    jg cmp_q_020 /* jump if greater to label */
+	   _put_str("Values are equal.");
+	   ...
+	cmp_q_010:
+	   ...
+	cmp_q_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMCMSQQ.ASM		  <B>ASM equiv</B>	CMPS_QQ
+
+<BR><H2><A NAME="_cmp_uqi">_cmp_uqi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compares a uquad against an unsigned int.
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	int _cmp_uqi(uquad num1, unsigned int num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	-1 if num1 is less than num2.
+<BR>
+<BR>	0 if num1 is equal to num2.
+<BR>
+<BR>	1 if num2 is greater than num2.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function compares the uquad value in num1 against the unsigned int value in num2. The return value reflects the result of the comparison.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   uquad num1;
+
+	   _mov_uqi(num1, 65000);    /* set num1 value */
+	   if (_cmp_uqi(num1, 65001) != 0)/* num1 == num2 */
+	      _cput_str("Values are not equal");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   uquad num1;
+	   ...
+	   mov ax,65000
+	   lea di,num1	    /* DI = offset of num1 */
+	   mov_uqi();	/* set num1 value */
+	   cmp_uqi();	/* num1 == num2? */
+	    jnecmp_q_010 /* jump if not equal to label */
+	   ...
+	cmp_q_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMCMPQI.ASM		  <B>ASM equiv</B>	CMP_QW
+
+<BR><H2><A NAME="_cmp_uql">_cmp_uql</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compares a uquad against an unsigned long.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	int _cmp_uql(uquad num1, unsigned long num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	-1 if num1 is less than num2.
+<BR>
+<BR>	0 if num1 is equal to num2.
+<BR>
+<BR>	1 if num1 is greater than num2.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function compares the uquad value in num1 against the unsigned long value num2. The return value reflects the result of the comparison. 
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   unsigned long num2 = 0x10000000;
+	   uquad num1;
+
+	   _mov_uql(num1, 0x10000000);
+	   if(_cmp_uql(num1,num2) != 0)/* is num1 == num2 */
+	      _put_str("Values are not equal!");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   unsigned long num2 = 0xFFFF1112;
+	   uquad num1;
+	   ...
+	   mov ax,word ptr num2
+	   mov dx,word ptr num2+2
+	   lea di,num1	    /* DI = offset of num1 */
+	   mov_uql();	/* set num1 value */
+	   cmp_uql();	/* is num1 == num2 */
+	    jnecmp_q_010 /* jump to label if not equal */
+	   ...
+	cmp_q_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMCMPQL.ASM		  <B>ASM equiv</B>	CMP_QD
+
+<BR><H2><A NAME="_cmp_uqq">_cmp_uqq</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compares two uquad values.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	int _cmp_uqq(uquad num1, uquad num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	-1 if num1 is less than num2.
+<BR>
+<BR>	0 if num1 is equal to num2.
+<BR>
+<BR>	1 if num1 is greater than num2.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function compares the uquad value in num1 against the uquad value in num2. The return value reflects the result of the comparison.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   uquad num1, num2;
+
+	   _mov_uql(num1, 4000000001);	  /* set num1 value */
+	   _mov_uql(num2, 4000000002);	  /* set num2 value */
+	   _inc_q(num1);	    /* num1 ++ */
+	   if (_cmp_uqq(num1, num2) != 0)/* is num1 == num2 */
+	      _put_str("Values are not equal!");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   uquad num1, num2;
+	   ...
+	   lea di,num1	    /* DI = offset of num1 */
+	   lea si,num2	    /* SI = offset of num2 */
+	   mov ax,0x2801
+	   mov dx,0xEE6B/* DX;AX = 4000000001 */
+	   mov_ql();	/* set num1 value */
+	   xchgsi,di	/* DI = offset of num2 */
+	   inc ax	 	/* DX;AX = 4000000002 */
+	   mov_ql();	/* set num2 value */
+	   xchgsi,di	/* DI = offset of num1 */
+	   inc_q();	/* num1 ++ */
+	   cmp_uqq();	/* is num1 == num2 */
+	    jnecmp_q_010:/* jump if not equal to label */
+	   ...
+	cmp_q_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMCMPQQ.ASM		  <B>ASM equiv</B>	CMP_QQ
+
+<BR><H2><A NAME="_dec_q">_dec_q</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Decrements a quad or uquad.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _dec_q(uquad num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num.
+<BR>	num	 decremented quad value
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function decrements the quad value in num. A pointer to num is returned.
+<BR>
+<BR>	This function works on both quad and uquad values.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   quad num;
+	   _mov_ql(num,0xFFFFFFFF);
+	   _dec_q (num);	/* num = 0xFFFFFFFE */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   quad num;
+	   ...
+	   mov ax,0xFFFE
+	   mov dx,0xFFFF/* DX;AX = 0xFFFFFFFE */
+	   lea di,num	/* DI = offset of num */
+	   mov_ql();	/* set num value */
+	   dec_q();	/* num = 0xFFFFFFFD */
+	    jc d_q_100	    	  
+	   ... 	 	/* handle unsigned overflow */
+	d_q_100:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMDECQ.ASM		  <B>ASM equiv</B>	DEC_Q
+
+<BR><H2><A NAME="_div_qi">_div_qi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Divides a quad by an int, returning a quad result.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _div_qi(quad num, int divisor, int *remainder);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num.
+<BR>	num	 	   quad quotient
+<BR>	remainder	int remainder
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function divides the quad value in num by the int value in divisor. A pointer is returned to the quotient in num. The resulting int remainder is returned in remainder.
+<BR>	The remainder is positive if num is positive; otherwise, it is negative. The quotient is positive if num and divisor are both positive or both negative; otherwise, it is negative.
+<BR>
+<BR>	This function will not produce divide overflow interrupts (INT 0). The results are undefined if divisor = 0.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int divisor, remainder;   
+	   quad num;
+	   _mov_qi(num, 65535);
+	   divisor = 2;
+	   _div_qi(num, divisor, &ampremainder);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   int remainder;
+	   quad dividend;
+	   ...
+	   lea di,dividend /* DI = offset of dividend */
+	   mov ax,65535    
+	   mov_qi();	/* dividend = 65535 */
+	   inc_q();	/* dividend++ */
+	   mov ax,2	/* AX = divisor = 2*/
+	   remainder = div_qi();/* num = num/65535 */
+	   	  	 	/* (remainder = 0) */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMDVSQI.ASM		  <B>ASM equiv</B>	DIVS_QW
+
+<BR><H2><A NAME="_div_ql">_div_ql</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Divides a quad by a long, returning a quad result.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _div_ql(quad num, long divisor, long *remainder);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num.
+<BR>	num	 	   quad quotient
+<BR>	remainder	long remainder
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function divides num by divisor. A pointer is returned to the quotient in num. The resulting long remainder is returned in remainder.
+<BR>
+<BR>	The remainder is positive if num is positive; otherwise, it is negative. The quotient is positive if num and divisor are both positive or both negative; otherwise, it is negative.
+<BR>
+<BR>	This function will not produce divide overflow interrupts (INT 0). The results are undefined if divisor = 0.
+<BR>
+<BR>	Because this function performs bitwise long division (a relatively slow operation), it is advisable to call _div_qi instead if the divisor is an integer or less in size. This function is faster than _div_qq.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char outstr[40];
+	   long remainder;
+	   quad num;
+	   _mov_ql(num, 0xFFFFFFFF);/* set num value */
+	   _inc_q(num);	 	/* num++ */
+	   _put_str(_q_to_dec(div_ql(num, 2, &ampremainder), outstr));
+		   	 /* display divide result */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char outstr[40];
+	   quad dividend;
+	   ...
+	   lea di,dividend /* DI = offset of dividend */
+	   mov ax,0xFFFF
+	   mov dx,0xFFFF/* DX;AX = 0xFFFFFFFF */
+	   mov_ql();	/* set dividend value */
+	   inc_q();	/* increment dividend */
+	   mov ax,2
+	   xor dx,dx	/* DX;AX = 2 (divisor) */
+	   div_ql();	/* num = num/2 */
+	   lea si,outstr/* SI = offset of outstr */
+	   q_to_dec();	/* quotient -&gt "string" */
+	   put_str();	/* display divide result */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMDVSQL.ASM		  <B>ASM equiv</B>	DIVS_QD
+
+<BR><H2><A NAME="_div_qq">_div_qq</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Divides one quad by another, returning a quad result.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _div_qq(quad num, quad divisor, quad remainder);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num.
+<BR>	num	 	   quad quotient
+<BR>	remainder	quad remainder
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function divides the quad dividend by the quad divisor. A pointer is returned to the quotient in num. The resulting quad remainder is returned in remainder.
+<BR>
+<BR>	divisor and remainder may be the same quad, in which case the divisor is overwritten by the remainder when the function returns.
+<BR>
+<BR>	This function will not produce divide overflow interrupts (INT 0). The results are undefined if divisor = 0.
+<BR>
+<BR>	Because this function performs bitwise long division (a relatively slow operation), it is advisable to call _div_qi instead if the divisor is an integer or less in size. This function is slower than _div_ql.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   quad num, divisor, remainder;
+	   _mov_ql(num, 0xFFFFFFFF);
+	   _add_ql(num, 0xFFFFFFFF);	/* num = 1FFFFFFFE */
+	   _mov_qi(num, 2);	 	/* divisor = 2 */
+	   _div_qq(num, divisor, remainder);/* num = num/2 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   quad num, divisor, remainder;
+	   ...
+	   lea di,num	/* DS:DI -&gt dividend */
+	   mov ax,0xFFFF
+	   mov dx,0xFFFF/* DX;AX = 0xFFFFFFFF */
+	   mov_ql();	/* set dividend value */
+	   add_ql();	/* dividend = 1FFFFFFFE */
+	   lea bx,divisor/* BX = offset of divisor */
+	   lea si,remainder/* SI = offset of remainder */
+	   xchgbx,di	/* DI = offset of divisor */
+	   mov ax,2	/* AX = divisor value */
+	   mov_ql();	/* divisor = 2 */
+	   xchgbx,di	/* DI = offset of dividend, 
+	   div_qq();	/* num = num/2 */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMDVSQQ.ASM		  <B>ASM equiv</B>	DIVS_QQ
+<H2><A NAME="_divr_qi">_divr_qi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Divides a quad by an int, returning a rounded quad result.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _divr_qi(quad num, int divisor);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num.
+<BR>	num	 rounded quad quotient
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function divides num by divisor. The resulting quad quotient is rounded up (incremented) if the absolute value of the remainder is greater than or equal to half the absolute value of the divisor. A pointer is returned to the quotient in num.
+<BR>
+<BR>	The quotient is positive if num and divisor are both positive or both negative; otherwise, it is negative.
+<BR>
+<BR>	This function does not generate divide overflow interrupts (INT 0). The result is undefined if divisor = 0 or if the quotient is the largest possible signed number before rounding is performed.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int divisor = 2;   
+	   quad num;
+	   _mov_ql(num, 0x80000000);/* set num value */
+	   _divr_qi(num, divisor);  /* num = num/divisor = 0x40000000 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   quad num;
+	   ...
+	   xor ax,ax
+	   mov dx,0x8000/* DX;AX = 0x80000000 */
+	   lea di,num	/* DI = offset of dividend */
+	   mov_ql();	/* set dividend value */
+	   mov bx,2	/* BX = 2 (divisor) */
+	   divr_qi();	/* num = num/2 = 0x40000000 */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMDRSQI.ASM		  <B>ASM equiv</B>	DIVRS_QW
+
+<BR><H2><A NAME="_divr_ql">_divr_ql</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Divides a quad by a long, returning a rounded quad result.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _divr_ql(quad num, long divisor) 
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num.
+<BR>	num	 rounded quad quotient
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function divides num by divisor. The resulting quad quotient is rounded (incremented if positive, decremented if negative) if the absolute value of the remainder is greater than or equal to half the absolute value of the divisor. A pointer is returned to the rounded quotient in num.
+<BR>
+<BR>	The quotient is positive if num and divisor are both positive or both negative; otherwise, it is negative. The results are undefined if divisor = 0.
+<BR>
+<BR>	This function will not generate divide overflow interrupts (INT 0). The results are undefined if divisor = 0.
+<BR>
+<BR>	Because this function performs bitwise long division (a relatively slow operation) it is advisable to call _divr_qi instead if the divisor is an integer or less in size. This function is faster than _divr_qq.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   long divisor = 5;   
+	   quad num;
+	   _mov_ql(num, 0x80000001);/* set num value */
+	   _divr_ql(num, divisor); /* num /= divisor = 0x19999999 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   quad num;
+	   ...
+	   mov ax,1
+	mov dx,0x8000/* DX;AX = 0x80000001 */
+	lea di,num	 /* DI = offset of dividend */
+	mov_ql();	 /* set dividend value */
+	mov cx,5
+	xor bx,bx	 /* CX;BX = 5 (divisor) */
+	divr_ql();	 /* num = num/5 */
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMDRSQL.ASM		  <B>ASM equiv</B>	DIVRS_QD
+
+<BR><H2><A NAME="_divr_qq">_divr_qq</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Divides one quad by another, returning a rounded quad result.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _divr_qq(quad num, quad divisor);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num.
+<BR>	num	 rounded quad quotient
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function divides num by divisor. The resulting quad quotient is rounded (incremented if positive, decremented if negative) if the absolute value of the remainder is greater than or equal to half the absolute value of the divisor. A pointer is returned to the rounded quotient in num.
+<BR>
+<BR>	The quotient is positive if num and divisor are both positive or both negative; otherwise, it is negative.
+<BR>
+<BR>	This function will not generate divide overflow interrupts (INT 0). The results are undefined if divisor = 0.
+<BR>
+<BR>	Because this function performs bitwise long division (a relatively slow operation), it is advisable to call _divr_qi instead if the divisor is an integer or less in size. This function is slower than _divr_ql.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   uquad num, divisor;
+	   _mov_uql(num, 0xFFFFFFFF);/* set num value */
+	   _inc_q(num);	    /* num = 0x100000000 */
+	   _mov_uqi(num, 2);	/* set divisor value */
+	   _divr_uqq(num, divisor); /* num = num/divisor = 0x80000000 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   uquad num, divisor;
+	   ...
+	   mov ax,0xFFFF
+	   mov dx,0xFFFF/* DX;AX = 0XFFFFFFFF */
+	   lea di,num	/* DI = offset of dividend */
+	   lea bx,divisor/* BX = offset of divisor */
+	   mov_uql();	/* set dividend value */
+	   inc_q(num);	/* dividend = 0x100000000 */
+	   mov ax,2
+	   xchgdi,bx	/* DI = offset of divisor */
+	   mov_qi();	/* divisor = 2 */
+	xchgdi,bx	 /* DI = offset of dividend */
+	divr_uqq();	 /* num = num/divisor */
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMDRSQQ.ASM		  <B>ASM equiv</B>	DIVRS_QQ
+
+<BR><H2><A NAME="_divr_uqi">_divr_uqi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Divides a uquad by an unsigned int, returning a rounded uquad result.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _divr_uqi(uquad num, unsigned int divisor);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num.
+<BR>	num	 rounded uquad quotient
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function divides num by divisor. The resulting uquad quotient is rounded up (incremented) if the remainder is greater than or equal to half the divisor. A pointer is returned to the rounded quotient in num.
+<BR>
+<BR>	This function does not generate divide overflow interrupts (INT 0). The result is undefined if divisor = 0 or if the quotient is the largest possible unsigned number before rounding is performed.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char outstr[40];   
+	   uquad num;
+	   _mov_uqi(num,65535);    /* set dividend (num) */
+	   _inc_uq(num);	/* dividend = 65536 */
+	   _divr_uqi(num,2);	/* num = num/2 = 0x8000 */
+	   _put_str(_uq_to_dec(num, outstr));
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char outstr[40];
+	   uquad dividend;
+	   ...
+	   mov ax,FFFF	    /* AX = 65535 */
+	   lea di,dividend/* DI = offset of dividend */
+	   mov_uqi()	/* set dividend value */
+	   inc_q();	/* dividend++ */
+	   mov bx,2	/* BX = divisor */
+	   divr_uqi();	/* num = num/2 = 0x8000 */
+	   lea si,outstr/* SI = offset of outstr */
+	   uq_to_dec();	/* quad -&gt "string" */
+	   put_str();	/* display quotient result */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMDVRQI.ASM		  <B>ASM equiv</B>	DIVR_QW
+
+<BR><H2><A NAME="_divr_uql">_divr_uql</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Divides a uquad by an unsigned long, returning a rounded uquad result.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _divr_uql(uquad num, unsigned long divisor)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num.
+<BR>	num	 rounded uquad quotient
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function divides num by divisor. The resulting uquad quotient is rounded up (incremented) if the remainder is greater than or equal to half the divisor. A pointer is returned to the rounded quotient in num.
+<BR>
+<BR>	This function does not generate divide overflow interrupts (INT 0). The result is undefined if divisor = 0 or if the quotient is the largest possible unsigned number before rounding is performed.
+<BR>
+<BR>	Because this function performs bitwise long division (a relatively slow operation), it is advisable to call _divr_qi instead if divisor is an integer or less in size. This function is faster than _divr_uqq.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   unsigned long divisor = 2;
+	   uquad num;
+	   _mov_uql(num, 0xFFFFFFFF);
+	   _inc_q(num);	    /* num = 0x100000000 */
+	   _divr_uql(num, divisor);/* num = num/divisor */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   uquad num;
+	   ...
+	   mov ax,0xFFFF
+	   mov dx,0xFFFF/* DX;AX = 0xFFFFFFFF */
+	   lea di,num	/* DI = offset of dividend */
+	   mov_uql();	/* set dividend value */
+	   inc_q(num);	/* dividend = 0x100000000 */
+	   mov bx,2
+	   xor cx,cx	/* CX;BX = 2 (divisor) */
+	   divr_uql();	/* num = num/2 */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMDVRQL.ASM		  <B>ASM equiv</B>	DIVR_QD
+
+<BR><H2><A NAME="_divr_uqq">_divr_uqq</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Divides one uquad by another, returning a rounded uquad result.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _divr_uqq(uquad num, uquad divisor);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num.
+<BR>	num	 rounded uquad quotient
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function divides num by divisor. The resulting uquad quotient is rounded up (incremented) if the remainder is greater than or equal to half the divisor. A pointer is returned to the rounded quotient in num.
+<BR>	This function does not generate divide overflow interrupts (INT 0). The result is undefined if divisor = 0 or if the quotient is the largest possible unsigned number before rounding is performed.
+<BR>
+<BR>	Because this function performs bitwise long division (a relatively slow operation), it is advisable to call _divr_uqi instead if divisor is an integer or less in size. This function is slower than _divr_uql.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char outstr[40];
+	   uquad num, divisor;
+	   _mov_uql(num, 0xFFFFFFFF);
+	   _add_uql(num, 0xFFFFFFFF);/* num = 1FFFFFFFE */
+	   _mov_uql(num, 2);
+	   _uq_to_dec(_divr_uqq(num, divisor), outstr);
+	   	  	 	/* num = num/divisor */
+	   _put_str(outstr);	/* display quotient result */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char outstr[40];
+	   uquad num, divisor = 2;
+	   ...
+	   lea di,num	/* DI = offset of dividend */
+	   xor dx,dx
+	   mov ax,0xFFFFFFFF/* DX;AX = unsigned long */
+	   mov_uql();	/* set dividend value */
+	   add_uql();	/* dividend += dividend */
+	   lea bx,divisor/* BX = offset of divisor */
+	   divr_uql();	/* dividend/divisor */
+	   lea si,outstr/* SI = offset of outstr */
+	   uq_to_dec();	/* convert result to "string" */
+	   put_str();	/* display result */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMDVRQQ.ASM		  <B>ASM equiv</B>	DIVR_QQ
+<H2><A NAME="_div_uqi">_div_uqi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Divides a uquad by an unsigned int, returning a uquad result.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _div_uqi(uquad num, unsigned int divisor, unsigned int *remainder);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num.
+<BR>	num	 	   uquad quotient
+<BR>	remainderunsigned int remainder
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function divides the uquad value in num by the unsigned int value in divisor. A pointer is returned to the resulting quotient in num. The resulting unsigned int remainder is returned in remainder.
+<BR>
+<BR>	This function will not generate divide overflow interrupts (INT 0). The results are undefined if divisor = 0.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   unsigned int divisor, remainder;   
+	   uquad num;
+	   _mov_uqi(num,65535);
+	   divisor = 2;
+	   _div_uqi(num,divisor,&ampremainder);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   unsigned int divisor, remainder;
+	   uquad num;
+	   ...
+	   mov ax,65534
+	   lea di,num	/* DI = offset of dividend */
+	   mov_uqi();	/* set dividend value */
+	   divisor = 2;
+	   mov ax,divisor/* AX = 2 */
+	   remainder = div_uqi();
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMDVQI.ASM		  <B>ASM equiv</B>	DIV_QW
+
+<BR><H2><A NAME="_div_uql">_div_uql</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Divides a uquad by an unsigned long, returning a uquad result.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _div_uql(uquad num, signed long divisor, unsigned long *remainder);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num.
+<BR>	num	 	   uquad quotient
+<BR>	remainderunsigned long remainder
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function divides the uquad value in num by the unsigned long value in divisor. A pointer is returned to the resulting quotient in num. The resulting unsigned long remainder is returned in remainder.
+<BR>
+<BR>	This function will not generate divide overflow interrupts (INT 0). The results are undefined if divisor = 0.
+<BR>
+<BR>	Because this function performs bitwise long division (a relatively slow operation), it is advisable to call _div_uqi instead if divisor is an integer or less in size. This function is faster than _div_uqq.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char outstr[40];
+	   unsigned long divisor, remainder;
+	   uquad num;
+	   _mov_uql(num,4000000000);
+	   divisor = 3;
+	   _div_uql(num,divisor,&ampremainder);
+	   _put_str(_ul_to_dec(remainder, outstr));
+	   	  	 	/* display remainder */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char outstr[40];
+	   unsigned long divisor, remainder;
+	   uquad num;
+	   ...
+	   _mov_uql(dividend,4000000000);
+	   divisor=2;
+	   lea di,num	/* DI = offset of dividend */
+	   mov bx,word ptr divisor
+	   xor cx,cx	/* CX;BX = divisor */
+	   remainder = div_uql();
+	   lea si,outstr/* SI = offset of outstr */
+	   mov ax,word ptr remainder
+	   mov dx,word ptr remainder+2
+	   ul_to_dec();	/* long -&gt "string" */
+	   put_str();	/* display remainder value */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMDVQL.ASM		  <B>ASM equiv</B>	DIV_QD
+
+<BR><H2><A NAME="_div_uqq">_div_uqq</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Divides a uquad by a uquad, returning a uquad result.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _div_uqq(uquad num, uquad divisor, uquad remainder);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num.
+<BR>	num	 	   uquad quotient
+<BR>	remainder	uquad remainder
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function divides the uquad value in num by the uquad value in divisor. A pointer is returned to the resulting quotient in num. The resulting uquad remainder is returned in remainder.
+<BR>
+<BR>	This function will not generate divide overflow interrupts (INT 0). The results are undefined if divisor = 0.
+<BR>
+<BR>	divisor and remainder may be the same uquad, in which case the divisor is overwritten by the remainder when the function returns.
+<BR>
+<BR>	Because this function performs bitwise long division (a relatively slow operation), it is advisable to call _div_uqi instead if the divisor is an integer or less in size. This function is slower than _div_uql.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char outstr[22];
+	   uquad num, divisor, remainder;
+	   _mov_uql(num, 0xFFFFFFFF);
+	   _mov_uql(divisor, 0xFFFFFFFE);
+	   _div_uqq(num, divisor, remainder); /* num = num / divisor */
+	   _uq_to_dec(num, outstr);
+	   _put_str(outstr);/* display resulting quotient */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char outstr;
+	   uquad dividend, divisor, remainder;
+	   ...
+	   _mov_uql(dividend, 0xFFFFFFFF);/* set dividend value */
+	   _mov_uql(divisor, 0xFFFFFFFE);/* set divisor value */
+	   lea di,dividend/* DI = offset of dividend */
+	   lea bx,divisor/* BX = offset of divisor */
+	   lea si,remainder/* SI = offset of remainder */
+	   div_uqq();	/* divide quads */
+	   lea si,outstr
+	   uq_to_dec();	/* quad -&gt "string" */
+	   put_str();	/* display resulting quotient */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMDVQQ.ASM		  <B>ASM equiv</B>	DIV_QQ
+
+<BR><H2><A NAME="_inc_q">_inc_q</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Increments a quad or uquad.	  
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _inc_q(uquad num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num.
+<BR>	num	 incremented quad value
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function increments the quad value in num. A pointer to the quad result is returned.
+<BR>
+<BR>	This function works on both quad and uquad values.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   uquad num;
+	   _mov_ql(num,0xFFFFFFFF);
+	   _inc_q(num);	/* num = 0x100000000 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   quad num;
+	...
+	lea di,num	 /* DI = offset of num */
+	mov ax,0xFFFF
+	mov dx,0xFFFF/* DX;AX = 0xFFFFFFFF */
+	mov_ql();	 /* set num value */
+	inc_q();	 /* num = 0x100000000 */
+	 jo i_q_100
+	...    	 /* handle signed overflow */
+	i_q_100:
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMINCQ.ASM		  <B>ASM equiv</B>	INC_Q
+
+<BR><H2><A NAME="_mov_qi">_mov_qi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Moves the value of an int into a quad.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _mov_qi(quad num1, int num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	 quad result (value of num2)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sign-extends the int value in num2 and moves it into num1. A pointer to num1 is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ...
+	   quad num1;
+	   _inc_q(_mov_qi(num1, 65535)); /* num1 = 65536 */
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   quad num1;
+	   ...
+	   mov ax,65535/* AX = int to move to num1 */
+	   lea di,num1	    /* DI = offset of num1 */
+	   mov_qi();	/* load num1 w/int value */
+	   inc_q();	/* num1 = 65536 */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMMVSQI.ASM		  <B>ASM equiv</B>	MOVS_QW
+
+<BR><H2><A NAME="_mov_ql">_mov_ql</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Moves the value of a long into a quad.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _mov_ql(quad num1, long num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	 quad result (value of num2)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sign-extends the long value in num2 and moves it into num1. A pointer to num1 is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ...
+	   quad num1;
+	   _dec_q(_mov_ql (num1, 0x80000000)); /* num1 = 0x7FFFFFFF */
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   quad num1;
+	   ...
+	   xor ax,ax
+	   mov dx,0x8000/* DX;AX = num2 */
+	   lea di,num1	    /* DI = offset of num1 */
+	   mov_ql();	/* set num1 value */
+	   dec_q();	/* num1 = 0x7FFFFFFF */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMMVSQL.ASM		  <B>ASM equiv</B>	MOVS_QD
+
+<BR><H2><A NAME="_mov_qq">_mov_qq</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Moves the value of a quad into another quad.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _mov_qq(quad num1, quad num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	 quad result (value of num2)
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function moves the quad value in num2 into num1. A pointer to num1 is returned.
+<BR>
+<BR>	This function may be used interchangeably with _mov_uqq (_mov_uqq and _mov_qq are two different names for the same function).
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char *strindx;
+	   quad num1, num2;
+	   ...
+	   _dec_to_q("10000000000000000000", num1, &ampstrindx);
+	   if ((strindx[0] == NULL) &amp&amp (c_code == 0))
+	      _mov_qq (num2, num1);
+	   /* num2 = num1 = 10,000,000,000,000,000,000 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   quad num1, num2;
+	   char instr[] = "10000000000000000000";
+	   ...
+	   lea si,instr/* SI = offset of instr */
+	   lea di,num2	    /* ES:DI = offset of num2 */
+	   dec_to_q();/* num2 = 10,000,000,000,000,000,000 */
+	    jnem_qq_100/* jump to label if underflow */
+	   lea si,num1	    /* SI = offset of num1 */
+	   xchgdi,si	/* DI = offset of num1 */
+	   mov_qq();/* num2 = 10,000,000,000,000,000,000 */
+	m_qq_100:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMMOVQQ.ASM		  <B>ASM equiv</B>	MOVS_QQ
+
+<BR><H2><A NAME="_mov_uqi">_mov_uqi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Moves the value of an unsigned int into a uquad.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _mov_uqi(uquad num1, unsigned int num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	 uquad result (value of num2)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This macro moves the unsigned int value in num2 into num1. A pointer to num1 is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   uquad num1;
+	   _inc_q(_mov_uqi(num1, 65535)); /* num1 = 65535++ */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   uquad num1;
+	   ...
+	   mov ax,65535
+	   lea di,num1	    /* DI = offset of num1 */
+	   mov_uqi();	/* load quad w/int value */
+	   inc_q();	/* num1 = 0x10000 */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMMOVQI.ASM		  <B>ASM equiv</B>	MOV_QW
+
+<BR><H2><A NAME="_mov_uql">_mov_uql</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Moves the value of an unsigned long into a uquad.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _mov_uql(uquad num1, unsigned long num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	 uquad result (value of num2)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function moves the unsigned long value in num2 into num1. A pointer to num1 is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   uquad num1;
+	   _inc_q(_mov_uql (num1, 4000000000)); /* num1 = 4000000001 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   uquad num1;
+	   ...
+	   lea di,num1	    /* DI = offset of num1 */
+	   mov ax,0x2800
+	   mov dx,0xEE6B/* DX;AX = 0xEE6B2800 */
+	   mov_uql();	/* num1 = 0xEE6B2800 */
+	   inc_q();	/* num1 = 4000000001 */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMMOVQL.ASM		  <B>ASM equiv</B>	MOV_QD
+
+<BR><H2><A NAME="_mov_uqq">_mov_uqq</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Moves the value of a uquad into another uquad.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _mov_uqq(uquad num1, uquad num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	 uquad result (value of num2)
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function moves the uquad value in num2 into num1. A pointer to num1 is returned.
+<BR>
+<BR>	This function may be used interchangeably with _mov_qq (_mov_uqq and _mov_qq are two different names for the same function).
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char *strindx;
+	   uquad num1, num2;
+	   ...
+	   _dec_to_uq("1000000000000000000", num1, &ampstrindx);
+	   if ((strindx[0] == NULL) &amp&amp (c_code == 0))
+	      _mov_uqq (num2, num1);
+	      /* num2 = num1 = 1,000,000,000,000,000,000 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   uquad num1, num2;
+	   char instr[] = "1000000000000000000";
+	   ...
+	   lea si,instr/* SI = offset of instr */
+	   lea di,num2	    /* ES:DI = offset of num2 */
+	   dec_to_uq();/* num2 = 1,000,000,000,000,000,000 */
+	    jnelabel_100/* underflow */
+	   lea si,num1	    /* SI = offset of num1 */
+	   xchgdi,si	/* DI = offset of num1 */
+	   mov_uqq();/* num2 = 1,000,000,000,000,000,000 */
+	label_100:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMMOVQQ.ASM		  <B>ASM equiv</B>	MOV_QQ
+
+<BR><H2><A NAME="_mul_qi">_mul_qi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Multiplies a quad by an int, returning a quad result.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _mul_qi(quad num1, int num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	 quad result (num1þnum2)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function multiplies the quad value in num1 by the int value in num2. A pointer is returned to num1, which contains the quad result.
+<BR>
+<BR>	The result is undefined if arithmetic overflow occurs.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   quad num1;
+	   _mov_qi(num1, 65535); /* num1 = 65535 */
+	   _mul_qi(num1, 2);/* num1 = num1 * 2 = (131070) */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   quad num1;
+	   ...
+	   lea di,num1	    /* DI = offset of num1 */
+	   mov ax,65535
+	   mov_qi();	/* num1 = 65535 */
+	   mov ax,2
+	   mul_qi();	/* num1 = num1*2 = (131070) */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMMLSQI.ASM		  <B>ASM equiv</B>	MULS_QW
+
+<BR><H2><A NAME="_mul_ql">_mul_ql</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Multiplies a quad by a long, returning a quad result.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _mul_ql(quad num1, long num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	 quad result (num1þnum2)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function multiplies the quad value in num1 by the long value in num2. A pointer is returned to num1, which contains the long result.
+<BR>
+<BR>	The result is undefined if arithmetic overflow occurs.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char outstr[22];
+	   quad num1;
+	   _mov_ql(num1, 0xFFFFFFFF);
+	   _q_to_dec(_mul_ql(num1, 2), outstr);
+	   /* num1 = num1 * 2 (1FFFFFFFE) */
+	   _put_str(outstr);/* display product */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char outstr[22];
+	   quad num1;
+	   ...
+	   mov ax,0xFFFF
+	   mov dx,0xFFFF/* DX;AX = 0xFFFFFFFF ) */
+	     lea di,num1 	/* DI = offset of num1 */
+	    mov_ql();	 /* num1 = 0xFFFFFFFF ) */
+	    mov bx,2
+	    xor cx,cx	 /* CX;BX = 2 */
+	    mul_ql();	 /* num1 = num1*2 (1FFFFFFFE) */
+	    lea si,outstr/* SI = offset of outstr */
+	    q_to_dec();	 /* product -&gt "string" */
+	    put_str();	 /* display result */
+	    ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMMLSQL.ASM		  <B>ASM equiv</B>	MULS_QD
+
+<BR><H2><A NAME="_mul_qq">_mul_qq</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Multiplies one quad by another, returning a quad result.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _mul_qq(quad num1, quad num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	 quad result (num1þnum2)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function multiplies the quad value in num1 by the quad value in num2. A pointer is returned to num1, which contains the quad result.
+<BR>
+<BR>	The result is undefined if arithmetic overflow occurs.
+<BR>
+<BR>	This function is slower than _mul_qi and _mul_ql. If speed is the primary concern and the multiplier is only an int or long in size, _mul_qi or _mul_ql should be used instead of this function.
+<BR>
+<BR>	This function may be used interchangeably with _mul_uqq (_mul_uqq and _mul_qq are two different names for the same function).
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   quad num1, num2;
+	   _mov_ql(num1,0x7FFFFFFF);
+	   _mov_qq(num2,num1);
+	   _mul_qq(num1,num2);/* num1 = num1 * num2 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   quad num1, num2;
+	   ...
+	   mov ax,0xFFFF
+	   mov dx,0x7FFF/* DX;AX = 0x7FFFFFFF */
+	   lea di,num1	    /* DI = offset of num1 */
+	   mov_ql();	/* num1 = 0x7FFFFFFF */
+	   lea bx,num2	    /* BX = offset of num2 */
+	   xchgdi,bx	/* DI = offset of num2 */
+	   mov_qq();	/* num2 = num1 */ 
+	   xchgdi,bx	/* DI = offset of num1 */
+	   mul_qq();	/* num1 = num1 * num2 */
+	    ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMMULQQ.ASM		  <B>ASM equiv</B>	MULS_QQ
+
+<BR><H2><A NAME="_mul_uqi">_mul_uqi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Multiplies a uquad by an unsigned int, returning a uquad result.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _mul_uqi(uquad num1, unsigned int num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	 uquad result (num1þnum2)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function multiplies the uquad value in num1 by the unsigned int value in num2. A pointer is returned to num1, which contains the uquad result.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   quad num1;
+	   _mov_uqi(num1,0xFFFF);
+	   _mul_uqi(num1,0xFFFF); /* num1 = 0xFFFF * 0xFFFF = 0xFFFE0001*/
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char instr[] = "17204400";
+	   quad num1;
+	   ...
+	   lea di,num1	    /* DI = offset of num1 */
+	   lea si,instr/* SI = offset of instr */
+	   mov bl,8	/* use octal radix */
+	   asc_to_uq();	/* set num1 value */
+	   mov bx,10	/* num1 = num1 * 10 */
+	   mul_uqi();	/* num1 = 40000000 */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMMULQI.ASM		  <B>ASM equiv</B>	MUL_QW
+
+<BR><H2><A NAME="_mul_uql">_mul_uql</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Multiplies a uquad by an unsigned long, returning a uquad result.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _mul_uql(uquad num1, unsigned long num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	 uquad result (num1þnum2)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function multiplies the uquad value in num1 by the unsigned long value in num2. A pointer is returned to num1, which contains the uquad result.
+<BR>
+<BR>	This function is two to three times slower than _mul_uqi. If speed is the primary concern and the multiplier is an integer or less in size, _mul_uqi should be used instead of this function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   uquad num1;
+	   _mov_uql(num1, 0xFFFFFFFF);
+	   _mul_uql(num1, 0xFFFFFFFF); /* num1 = 0xFFFFFFFE00000001 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   uquad num1;
+	   ...
+	   mov dx,0xFFFF
+	   mov ax,0xFFFF/* DX;AX = 0xFFFFFFFF */
+	   lea di,num1	    /* DI = offset of num1 */
+	   mov_uql();	/* num1 = 0xFFFFFFFF */
+	   mov cx,dx	    
+	   mov bx,ax	/* CX;BX = 0xFFFFFFFF */
+	   mul_uql();	/* num1 = 0xFFFFFFFE00000001 */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMMULQL.ASM		  <B>ASM equiv</B>	MUL_QD
+
+<BR><H2><A NAME="_mul_uqq">_mul_uqq</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Multiplies one uquad by another, returning a uquad result.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _mul_uqq(uquad num1, uquad num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	 uquad result (num1þnum2)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function multiplies the uquad value in num1 by the uquad value in num2. A pointer is returned to num1, which contains the uquad result.
+<BR>
+<BR>	This function is slower than _mul_uqi and _mul_uql. If speed is the primary concern and the multiplier is only an unsigned int or unsigned long in size, _mul_uqi or _mul_uql should be used instead of this function.
+<BR>
+<BR>	This function may be used interchangeably with _mul_qq (_mul_uqq and _mul_qq are two different names for the same function).
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   uquad num1, num2;
+	   _mov_uql(num1,0xFFFFFFFF);
+	   _mov_uqq(num2,num1);
+	   _mul_uqq(num1,num2);/* num1 = num1 * num2 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   uquad num1, num2;
+	   ...
+	   mov ax,0xFFFF
+	   mov dx,0xFFFF/* DX;AX = 0xFFFFFFFF */
+	   lea di,num1	    /* DI = offset of num1 */
+	   mov_uql();	/* num1 = 0xFFFFFFFF */
+	   lea bx,num2	    /* BX = offset of num2 */
+	   xchgdi,bx	/* DI = offset of num2 */
+	   mov_uqq();	/* num2 = num1 */ 
+	   xchgdi,bx	/* DI = offset of num1 */
+	   mul_uqq();	/* num1 = num1 * num2 */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMMULQQ.ASM		  <B>ASM equiv</B>	MUL_QQ
+
+<BR><H2><A NAME="_neg_q">_neg_q</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Negates a quad.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _neg_q(quad num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num.
+<BR>	num	 negated quad result
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function negates the quad value in num. A pointer to num is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   ...
+	   quad num;
+	   _mov_ql(num,0xFFFFFFFF);
+	   if(!_sgn_q(num));/* if not negative */
+	      _neg_q(num);/*   negate... */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   quad num;
+	   ...
+	   lea di,num	/* DI = offset of num */
+	   mov ax,0xFFFF
+	   mov dx,0x7FFF/* DX:AX = 0xFFFFFFFF */
+	   mov_ql();	/* num = 0xFFFFFFFF */
+	   sgn_q();	/* is num negative? */
+	    js neg_q_100/*   n: make negative */
+	   neg_q();	/* negate... */
+	neg_q_100:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMNEGQ.ASM		  <B>ASM equiv</B>	NEG_Q
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rinteger.htm#_abs_q">_abs_q</A>
+<BR></DL>
+<H2><A NAME="_rand_init">_rand_init</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Initializes the random number generator.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	void _rand_init(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	No return value
+<BR>	rand_seed	   randomly initialized
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function initializes the random number generator by placing the current system timer count (slightly modified) into rand_seed.
+<BR>
+<BR>	The random number generator must be initialized (using this function or a similar method) or an identical sequence of numbers will be generated each time the calling program is run.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	 
+	{
+	   unsigned num;
+	   ...
+	   _rand_init();
+	   num = _rand_w();
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   unsigned num;
+	   ...
+	   rand_init();
+	   num = rand_w();
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	IMRNDI.ASM		  <B>ASM equiv</B>	RAND_INIT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rinteger.htm#_randr_w">_randr_w</A>, <A HREF="rinteger.htm#rand_seed">rand_seed</A>, <A HREF="rinteger.htm#_rand_w">_rand_w</A>
+<BR></DL>
+<H2><A NAME="_randr_w">_randr_w</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Generates a random number within a specific range.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	unsigned int _randr_w(unsigned int limit);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	An unsigned random number in the range 0 to limit-1.
+<BR>	rand_seed	   modified for subsequent call
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function generates a pseudo-random number which has a value between zero and limit-1, inclusive. The random number is the return value.
+<BR>
+<BR>	If limit is zero, an unsigned int result is generated (0 through 65535).
+<BR>
+<BR>	rand_seed may be initialized to prevent the random number generator from generating an identical sequence of numbers each time the calling program is run. The _rand_init function is provided for this purpose.
+<BR>
+<BR>	The random number sequences generated by this function have a period of 230.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   ...
+	   unsigned int num;
+	   _rand_init();/* initialize random number generator */
+	   num = _randr_w(1000); /* num = random number from 0 to 999 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   unsigned int num;
+	   ...
+	   mov bx,1000	/* BX = limit */
+	   num = randr_w();/* num = random num (0 to 999) */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMRNDRI.ASM		  <B>ASM equiv</B>	RANDR_W
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rinteger.htm#_rand_init">_rand_init</A>, <A HREF="rinteger.htm#rand_seed">rand_seed</A>, <A HREF="rinteger.htm#_rand_w">_rand_w</A>
+<BR></DL>
+<H2><A NAME="rand_seed">rand_seed</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Holds the seed value for the random number generator.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	extern unsigned long rand_seed;
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This unsigned long variable is used and modified each time _rand_w or randr_w is called.
+<BR>
+<BR>	rand_seed should be initialized to prevent the random number generator from generating an identical sequence of numbers each time the calling program is run. The rand_init functions is provided for this purpose.
+<BR>
+<BR>	rand_seed may be set to any unsigned long value. If it is initialized to zero, a degenerate random number sequence will result (all zeros).
+<BR>
+<BR>	The same sequence of random numbers may be generated repeatedly by setting rand_seed to a known value each time the sequence is to be restarted.
+<BR>
+<BR></DL>
+<B>Source file</B>	IMRNSD.ASM
+<B>ASM equiv</B>â
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rinteger.htm#_rand_init">_rand_init</A>, <A HREF="rinteger.htm#_randr_w">_randr_w</A>, <A HREF="rinteger.htm#_rand_w">_rand_w</A>
+<BR></DL>
+<H2><A NAME="_rand_w">_rand_w</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Generates a random number.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	unsigned int _rand_w(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A random number.
+<BR>	rand_seed	   modified for subsequent call 
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function generates a pseudo-random number using the seed value in rand_seed. The random number is returned, and saved in rand_seed for use in generating the next random number.
+<BR>
+<BR>	rand_seed may be initialized to prevent the random number generator from generating an identical sequence of numbers each time the calling program is run. The _rand_init function is provided for this purpose.
+<BR>
+<BR>	The random number sequences generated by this function have a period of 230.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   unsigned num;
+	   ...
+	   _rand_init();
+	   num = _rand_w();
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   unsigned num;
+	   ...
+	   rand_init();
+	   num = rand_w();
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	IMRNDW.ASM		  <B>ASM equiv</B>	RAND_W
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rinteger.htm#_rand_init">_rand_init</A>, <A HREF="rinteger.htm#_randr_w">_randr_w</A>, <A HREF="rinteger.htm#rand_seed">rand_seed</A>
+<BR></DL>
+<H2><A NAME="_sgn_q">_sgn_q</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines the sign of a quad.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	int _sgn_q(quad num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if num is negative.
+<BR>
+<BR>	0 if num is positive.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function determines the sign of the quad value in num. 1 is returned if num is negative. 0 is returned if num is positive.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   quad num;
+	   _mov_ql(num,0xFFFFFFFF);
+	   if(_sgn_q(num));/* is num negative? */
+	      _abs_q(num);/*   y: make positive */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	quad num;
+	   ...
+	   lea di,num	/* DI = offset of num */
+	   mov ax,0xFFFF
+	   mov dx,0x7FFF/* DX:AX = 0xFFFFFFFF */
+	   mov_ql();	/* num = 0xFFFFFFFF */
+	   sgn_q();	/* is num negative? */
+	    jnssgn_q_100/*   y: make positive */
+	   abs_q();
+	sgn_q_100:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMSGNQ.ASM		  <B>ASM equiv</B>	SGN_Q
+
+<BR><H2><A NAME="_sub_qi">_sub_qi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Subtracts an int from a quad.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _sub_qi(quad num1, int num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	 the quad result (num1 - num2)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function subtracts the int value in num2 from the quad value in num1. A pointer is returned to num1, which contains the quad result.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   quad num1;
+	   _mov_qi(num1, 65535);
+	   _sub_qi(num1, 65530);  /* num1 -= 65530 = 5 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   quad num1;
+	...
+	mov ax,65535
+	lea di,num1	/* DI = offset of num */
+	mov_qi();	 /* set num1 value */
+	mov ax,65530
+	sub_qi();	 /* num1 -= 65530 */
+	 jnos_qi_100
+	...    	 /* handle overflow */
+	s_qi_100:
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMSBSQI.ASM		  <B>ASM equiv</B>	SUBS_QW
+
+<BR><H2><A NAME="_sub_ql">_sub_ql</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Subtracts a long from a quad.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _sub_ql(quad num1, long num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	 the quad result (num1 - num2)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function subtracts the long value in num2 from the quad value in num1. A pointer is returned to num1, which contains the quad result.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   quad num1;
+	   _mov_ql(num1,4000000000);/* set num1 value */
+	   _sub_ql(num1,3999999999);/* num1 -= 3999999999 = 1 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   quad num1;
+	   ...
+	   mov ax,0x2800
+	   mov dx,0xEE6B/* DX;AX = 4000000000 */
+	   lea di,num1	    /* DI = offset of num1 */
+	   mov_ql();
+	   dec ax	 	/* AX = 0x27FF */
+	   sub_ql();	/* num1 -= 4000000000 = 1 */
+	    jno s_ql_100
+	...    	 /* handle overflow */
+	s_ql_100:
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMSBSQL.ASM		  <B>ASM equiv</B>	SUBS_QD
+
+<BR><H2><A NAME="_sub_qq">_sub_qq</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Subtracts a quad from another quad.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr *_sub_qq(quad num1, quad num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	 the quad result (num1 - num2)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function subtracts the quad value in num2 from the quad value in num1. A pointer is returned to num1, which contains the quad result.
+<BR>
+<BR>	This function may be used interchangeably with _sub_uqq (_sub_uqq and _sub_qq are two different names for the same function).
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   quad num1, num2;
+	   _mov_ql(num1,1999999999);
+	   _mov_ql(num2,1234567890);
+	   _sub_qq(num1,num2);    /* num1 -= num2 = 765432109 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   quad num1, num2;
+	   ... 
+	   lea di,num1	    /* DI = offset of num1 */
+	   lea si,num2	    /* SI = offset of num2 */
+	   mov dx,0x7735
+	   mov ax,0x93FF/* DX;AX = 1999999999 */
+	   mov_ql();	/* set num1 value */
+	   mov dx,0x4996
+	   mov ax,0x02D2/* DX;AX = 1234567890 */
+	   xchgdi,si	/* DI = offset of num2 */
+	   mov_ql();	/* set num2 value */
+	   xchgdi,si	/* DI = offset of num1 */
+	   sub_qq();	/* num1 -= num2 = 765432109 */
+	    jnos_qq_100
+	   ... 	 	/* handle overflow */
+	s_qq_100:
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMSUBQQ.ASM		  <B>ASM equiv</B>	SUBS_QQ
+
+<BR><H2><A NAME="_sub_uqi">_sub_uqi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Subtracts an unsigned int from a uquad.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _sub_uqi(uquad num1, unsigned int num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	 the uquad result (num1 - num2)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function subtracts the unsigned int value in num2 from the uquad value in num1. A pointer is returned to num1, which contains the uquad result.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   uquad num1;
+	   _mov_qi(num1,0);
+	   _sub_qi(num1,1);/* num1 = 0xFFFFFFFFFFFFFFFF */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   uquad num1;
+	   ...
+	   mov ax,12345
+	   lea di,num1	    /* DI = offset of num1 */
+	   mov_qi();	/* num1 = 12345 */
+	   mov ax,12335/* AX = AX - 10 */
+	   sub_qi();	/* num1 -= 12335 = 10 */
+	    jncs_qi_100    
+	   ... 	 	/* handle overflow */
+	s_qi_100:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMSUBQI.ASM		  <B>ASM equiv</B>	SUB_QW
+
+<BR><H2><A NAME="_sub_uql">_sub_uql</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Subtracts an unsigned long from a uquad.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _sub_uql(uquad num1, unsigned long num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	 the uquad result (num1 - num2)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function subtracts the unsigned long value in num2 from the uquad value in num1. A pointer is returned to num1, which contains the uquad result.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   uquad num1;
+	   _mov_uql(num1,1234567890);
+	   _sub_uql(num1,1234567880);/* num1 = 10 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   uquad num1;
+	   ...
+	   mov ax,0x02D2
+	   mov dx,0x4992/* DX;AX = num2 = 0x499202D2 */
+	   lea di,num1	    /* DI = offset of num1 */
+	   mov_uql();
+	   mov ax,0x02C8/* AX = AX - 10 */
+	   sub_uql();	/* num = 10 */
+	    jncs_uql_100    
+	   ... 	 	/* handle overflow */
+	s_uql_100:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMSUBQL.ASM		  <B>ASM equiv</B>	SUB_QD
+
+<BR><H2><A NAME="_sub_uqq">_sub_uqq</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Subtracts one uquad from another uquad.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;imath.h&gt
+<BR>	quadptr _sub_uqq(uquad num1, uquad num2);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to num1.
+<BR>	num1	 the uquad result (num1 - num2)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function subtracts the uquad value in num2 from the uquad value in num1. A pointer is returned to num1, which contains the uquad result.
+<BR>
+<BR>	This function may be used interchangeably with _sub_qq (_sub_uqq and _sub_qq are two different names for the same function).
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   uquad num1, num2;
+	   _mov_uql(num1,1999999999);
+	   _mov_uql(num2,1234567890);
+	   _sub_uqq(num1,num2);    /* num1 = 765432109 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   uquad num1, num2;
+	   unsigned long num_a = 1999999999, num_b = 1234567890;
+	... 
+	lea di,num1	   /* DI = offset of num1 */
+	lea si,num2	   /* SI = offset of num2 */
+	mov ax,word ptr num_a
+	mov dx,word ptr num_a+2/* DX;AX = 1999999999 */
+	mov_uql();	 	/* set num1 value */
+	mov ax,word ptr num_b
+	mov ax,word ptr num_b+2/* DX;AX = 1234567890 */
+	xchgdi,si	 	/* DI = offset of num2 */
+	mov_uql();	 	/* set num2 value */
+	xchgdi,si	 	/* DI = offset of num1 */
+	sub_uqq();	 	/* num1 = 765432109 */
+	 jncs_uqq_100
+	...    	 	/* handle overflow */
+	s_uqq_100:
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_IMSUBQQ.ASM		  <B>ASM equiv</B>	SUB_QQ
+
+<BR>
+<BR></BODY>
+<BR></HTML><BR>

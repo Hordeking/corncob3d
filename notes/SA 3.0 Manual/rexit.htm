@@ -1,0 +1,418 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Start/Exit Reference</TITLE>
+</HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Start/Exit</H1>
+<P ALIGN=CENTER>Reference Section </P>
+<UL>
+<LI><A HREF="TOC.htm">Table of Contents</A>
+<LI><A HREF="index.htm">Function Index</A>
+<LI><A HREF="gindex.htm">Group Index
+</UL>
+<A HREF="rexit.htm#_exit">_exit</A><BR>
+<A HREF="rexit.htm#_exit_cleanup">_exit_cleanup</A><BR>
+<A HREF="rexit.htm#_exit_ok">_exit_ok</A><BR>
+<A HREF="rexit.htm#_on_exit">_on_exit</A><BR>
+<A HREF="rexit.htm#STACK_1K">STACK_1K</A><BR>
+<A HREF="rexit.htm#STACK_2K">STACK_2K</A><BR>
+<A HREF="rexit.htm#STACK_4K">STACK_4K</A><BR>
+<A HREF="rexit.htm#STACK_8K">STACK_8K</A><BR>
+<A HREF="rexit.htm#STACK_16K">STACK_16K</A><BR>
+<A HREF="rexit.htm#STACK_32K">STACK_32K</A><BR>
+<A HREF="rexit.htm#start">start</A><BR>
+<H2><A NAME="_exit">_exit</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Exits to DOS with a specified ERRORLEVEL.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;exit.h&gt
+<BR>	void _exit(int errlevel);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	DOES NOT RETURN (exits to DOS).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sets the DOS ERRORLEVEL to errlevel and terminates the program. This function is in the Spontaneous Assembly startup code, not in the library.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   ...
+	   _exit(1);/* error return code */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	(Not applicable)
+
+</CODE></PRE>
+<B>Source file</B>	START.ASM			  <B>ASM equiv</B>	EXIT_CLEANUP
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rexit.htm#_exit">_exit</A>, <A HREF="rexit.htm#_exit">_exit</A>
+<BR></DL>
+<H2><A NAME="_exit_cleanup">_exit_cleanup</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Exits to DOS with a specified ERRORLEVEL after executing all functions in the _on_exit list.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;exit.h&gt
+<BR>	void _exit_cleanup(int errlevel);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	DOES NOT RETURN (exits to DOS).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function executes up to 16 functions which have been added to the _on_exit list. The functions are executed on a last-in, first-out basis. After the cleanup functions have been executed, this function exits to DOS with the errorlevel set equal to errlevel.
+<BR>
+<BR>WARNING! TSRs should not call this function after going resident. The _tsr_remove or _tsr_hremove function should be called instead.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ...
+	   _exit_cleanup(1);/* exit with ERRORLEVEL = 1 */
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   mov al,1	/* exit with ERRORLEVEL = 1 */
+	   exit_cleanup();    /* call cleanup routines 
+	   	  	 	   before exiting */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_SEONEXT.ASM		  <B>ASM equiv</B>	EXIT_CLEANUP
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rexit.htm#_exit">_exit</A>, <A HREF="rexit.htm#_exit">_exit</A>, <A HREF="rexit.htm#_on_exit">_on_exit</A>
+<BR></DL>
+<H2><A NAME="_exit_ok">_exit_ok</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Exits to DOS with an ERRORLEVEL of zero.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;exit.h&gt
+<BR>	void _exit_ok(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	DOES NOT RETURN
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sets the DOS ERRORLEVEL to zero and terminates the program. This function is in the Spontaneous Assembly startup code, not in the library.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   
+	{
+	   _exit_ok ();/* exit with no error */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	(Not applicable)
+
+</CODE></PRE>
+<B>Source file</B>	START.ASM			  <B>ASM equiv</B>	EXIT_OK
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rexit.htm#_exit">_exit</A>, <A HREF="rexit.htm#_exit">_exit</A>, <A HREF="rexit.htm#_on_exit">_on_exit</A>
+<BR></DL>
+<H2><A NAME="_on_exit">_on_exit</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Adds a cleanup function to the list of exit cleanup functions.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;exit.h&gt
+<BR>	int _on_exit(void far (near/far *func)(void));
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if func was successfully added to the exit list.
+<BR>
+<BR>	-1 if the list is already full.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function adds func to a list of functions which are executed 	before returning to DOS. These functions are executed when any of the following functions are called to return control to DOS: _exit_cleanup, _progid_hremtsr, _progid_remtsr, _tsr_hremove, or _tsr_remove. The functions are executed in last-in, first-out (LIFO) order.
+<BR>
+<BR>	Each call to _on_exit adds another exit function. Up to 16 functions can be added to the _on_exit list. Functions installed with _on_exit must be far functions.
+<BR>
+<BR>	In TINY models, func is a near pointer to allow the program to be converted to a .COM.
+<BR>
+<BR>	Exit cleanup functions should be declared as follows:
+<BR>
+<BR>	void far exit_func(void);
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   ...
+	   if (_on_exit(clear_scr) == -1)
+	   {
+	      /* list is full */
+	   }
+	   ...
+	   _exit_cleanup(1);/* call cleanup routine(s), 
+	   	  	    exit ERRORLEVEL 1 */
+	}
+
+	void far clear_scr()
+	{
+	   _clr_region();
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	#if __TINY__
+	   mov dx,cs	/* DX = CS */
+	#else
+	   mov dx,seg clear_scr
+	#endif
+	   mov ax,offset clear_scr
+	   on_exit();
+	    jncexit_100/* if successful */
+	   ... 	 	/* exit list is full */
+	exit_100:
+	   ...
+	   xor al,al
+	   exit_cleanup();    /* call cleanup routine(s), exit */
+	   ...
+	}
+
+	void far clear_scr()
+	{
+	   clr_region();
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_SEONEXT.ASM		  <B>ASM equiv</B>	ON_EXIT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rexit.htm#_exit">_exit</A>, <A HREF="rexit.htm#_exit">_exit</A>
+<BR></DL>
+<H2><A NAME="STACK_1K">STACK_1K</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Causes a 1K stack to be linked into the program.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	STACK_1K
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	(Macro) Using this macro causes a 1K stack to be linked into the executable program. The following example causes a 7K stack to be linked into the program:
+<BR>
+<BR>	STACK_1K
+<BR>	STACK_2K
+<BR>	STACK_4K
+<BR>
+<BR>	In the TINY memory model, no stack space is linked into the program.
+<BR>
+<BR>	When using the STACK_1K, STACK_2K, STACK_4K, STACK_8K, STACK_16K, and STACK_32K macros, one of the SA header files (other than those that make code/data transient, or EMS-relocatable) must be included.
+<BR>
+<BR></DL>
+<B>Source file</B>	_SESTK1.ASM
+<B>ASM equiv</B>â
+<BR><H2><A NAME="STACK_2K">STACK_2K</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Causes a 2k stack to be linked into the program.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	STACK_2K
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	(Macro) Using this macro causes a 2K stack to be linked into the executable program. The following example causes a 3K stack to be linked into the program:
+<BR>
+<BR>	STACK_1K
+<BR>	STACK_2K
+<BR>
+<BR>	In the TINY memory model, no stack space is linked into the program.
+<BR>
+<BR>	When using the STACK_1K, STACK_2K, STACK_4K, STACK_8K, STACK_16K, and STACK_32K macros, one of the SA header files (other than those that make code/data transient, or EMS-relocatable) must be included.
+<BR>
+<BR></DL>
+<B>Source file</B>	_SESTK2.ASM
+<B>ASM equiv</B>â
+<BR><H2><A NAME="STACK_4K">STACK_4K</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Causes a 4K stack to be linked into the program.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	STACK_4K
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	(Macro) Using this macro causes a 4K stack to be linked into the executable program. The following example causes a 12K stack to be linked into the program:
+<BR>
+<BR>	STACK_4K
+<BR>	STACK_8K
+<BR>
+<BR>	In the TINY memory model, no stack space is linked into the program.
+<BR>
+<BR>	When using the STACK_1K, STACK_2K, STACK_4K, STACK_8K, STACK_16K, and STACK_32K macros, one of the SA header files (other than those that make code/data transient, or EMS-relocatable) must be included.
+<BR>
+<BR></DL>
+<B>Source file</B>	_SESTK4.ASM
+<B>ASM equiv</B>â
+<BR><H2><A NAME="STACK_8K">STACK_8K</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Causes a 8K stack to be linked into the program.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	STACK_8K
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	(Macro) Using this macro causes an 8K stack to be linked into the executable program. The following example causes a 9K stack to be linked into the program:
+<BR>
+<BR>	STACK_1K
+<BR>	STACK_8K
+<BR>
+<BR>	In the TINY memory model, no stack space is linked into the program.
+<BR>
+<BR>	When using the STACK_1K, STACK_2K, STACK_4K, STACK_8K, STACK_16K, and STACK_32K macros, one of the SA header files (other than those that make code/data transient, or EMS-relocatable) must be included.
+<BR>
+<BR></DL>
+<B>Source file</B>	_SESTK8.ASM
+<B>ASM equiv</B>â
+<BR><H2><A NAME="STACK_16K">STACK_16K</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Causes a 16K stack to be linked into the program.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	STACK_16K
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	(Macro) Using this macro causes a 16K stack to be linked into the executable program.  The following example causes a 16K stack to be linked into the program:
+<BR>
+<BR>	STACK_16K
+<BR>
+<BR>	In the TINY memory model, no stack space is linked into the program.
+<BR>
+<BR>	When using the STACK_1K, STACK_2K, STACK_4K, STACK_8K, STACK_16K, and STACK_32K macros, one of the SA header files (other than those that make code/data transient, or EMS-relocatable) must be included.
+<BR>
+<BR>Syntax
+<BR>	_SESTK16.ASM
+<BR>
+<BR><H2><A NAME="STACK_32K">STACK_32K</A></H2>
+<BR>
+<BR>Descrip
+<BR>	Causes a 32K stack to be linked into the program.
+<BR>
+<BR>Syntax
+<BR>	STACK_32K
+<BR>
+<BR>Notes
+<BR>	(Macro) Using this macro causes a 32K stack to be linked into the executable program. The following example causes a 36K stack to be linked into the program:
+<BR>
+<BR>	STACK_4K
+<BR>	STACK_32K
+<BR>
+<BR>	In the TINY memory model, no stack space is linked into the program.
+<BR>
+<BR>	When using the STACK_1K, STACK_2K, STACK_4K, STACK_8K, STACK_16K, and STACK_32K macros, one of the SA header files (other than those that make code/data transient, or EMS-relocatable) must be included.
+<BR>
+<BR></DL>
+<B>Source file</B>	_SESTK32.ASM
+<B>ASM equiv</B>â
+<BR><H2><A NAME="start">start</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Accepts control from DOS, passes control to main, and returns control to DOS when main terminates.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None (see Notes)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function contains very compact startup code that can be used in place of the compiler's default startup code when the Spontaneous Assembly library is used instead of the compiler's library. This startup code establishes the segment ordering scheme, initializes the global _psp variable, normalizes the stack, and calls main. If main returns a value via a return statement, the DOS ERRORLEVEL is set to that value as the program terminates.
+<BR>
+<BR>	After finishing its work, main may terminate the program by returning normally or by passing control to an exit function directly.
+<BR>
+<BR>	start is not included in any of the libraries. Instead, it must be linked in manually by listing the name of the appropriate .OBJ file on the LINK command line. For example:
+<BR>
+<BR>		link starts.obj+main.obj, progname.exe, progname.map, sas.lib
+<BR>
+<BR>	start must be the first .OBJ file linked. This allows it to set up the starting program address in the TINY model and to establish the segment ordering scheme. The start object files follow a naming convention of _START?.OBJ, _NSTART?.OBJ, _TSTART?.OBJ, and _DSTARTT.OBJ, where ? is T, S, M, C or L to denote TINY, SMALL, MEDIUM, COMPACT or LARGE.
+<BR>
+<BR>	See the Start/Exit technical notes for more information on using the Spontaneous Assembly startup code instead of compiler startup code.
+<BR>
+<BR></DL>
+<B>Source file</B>	START.ASM
+<B>ASM equiv</B>â
+<BR></BODY>
+<BR></HTML><BR>

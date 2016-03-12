@@ -1,0 +1,235 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: Array Management</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Array Management</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tArray.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tArray.htm#HEAD0001">Structured and Unstructured Arrays
+</A><BR>
+<A HREF="tArray.htm#HEAD0002">Array Elements
+</A><BR>
+<A HREF="tArray.htm#HEAD0003">The Comparison Function Used by the Sort/Search Functions
+</A><BR>
+<A HREF="tArray.htm#HEAD0004">Defining and Initializing Structured Arrays
+</A><BR>
+<A HREF="tArray.htm#HEAD0005">Manipulating Array Elements
+</A><BR>
+<A HREF="tArray.htm#HEAD0006">Locating Array Elements
+</A><BR>
+<A HREF="tArray.htm#HEAD0007">Determining the Status of a Structured Array
+</A><BR>
+<A HREF="tArray.htm#HEAD0008">Sample Program
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit consists of functions and macros which define and initialize arrays, locate array elements, manipulate array elements, and determine the status of an array. Two sets of functions are provided: one for structured arrays and one for standard (unstructured) arrays.
+
+<H2><A NAME="HEAD0001">Structured and Unstructured Arrays
+</A></H2>
+
+Both structured and unstructured arrays are supported by the functions in this unit. Unstructured arrays are contiguous sequences of identically sized and structured elements (this is the traditional definition of an array). Structured arrays are identical to unstructured arrays except they are preceded by an array header. This header maintains the following information about the array: the maximum number of elements, the current number of elements, the size of each element, and the address of the comparison function to be used with the array. The content and organization of the information in structured array headers is documented and defined in ARRAY.H as well as in the documentation for the <A HREF="rarray.htm#_array_init">_array_init</A> function in the Reference Section.
+
+<P>
+Structured array headers allow advanced operations to be performed on structured arrays while minimizing the argument profile of the array functions. Both types of arrays, structured and unstructured, are accessed by passing the address of the first array element to the appropriate array management function. However, unstructured array operations require all additional array information (number of elements, comparison function address, etc.) to be specified in the function's argument list.
+
+<P>
+Since structured array headers precede the first element of the array, unstructured array functions may be used on structured arrays. Functions beginning with _array_... are only for use with structured arrays; all other array management functions may be used on either type of array.
+
+<P>
+The total size of an array cannot exceed 64K bytes. Any number of arrays may be simultaneously managed by the functions in this unit.
+
+<H2><A NAME="HEAD0002">Array Elements
+</A></H2>
+
+Each array element may be 1 byte to 64K bytes in size. All array elements in a given array must be identical in size and structure. Elements are origin zero indexed (the index of the first array element is 0; the index of the nth array element is n-1).
+
+<H2><A NAME="HEAD0003">The Comparison Function Used by the Sort/Search Functions
+</A></H2>
+
+Array management functions make no assumptions about the structure or content of array entries. Instead, a programmer-supplied comparison function is called by the array management functions every time two array elements must be compared. The comparison function is the sole indicator of the relative order of array elements. This allows the sorting order of an array to be changed (ascending, descending, etc.) simply by changing the comparison function and resorting the array.
+
+<P>
+The speed of each comparison function directly impacts the performance of array sort/search functions. To maintain the advantage of the sort/search functions' assembly language structure, these functions were designed with an assembly language interface to the comparison function. The comparison function must meet the following requirements:
+<PRE>
+1.      Preserve all registers.
+
+2.      Support the following inputs.
+
+        DS:SI   address of the element to compare against (key)
+        ES:DI   address of the element to compare (element)
+
+3.      Provide the following outputs.
+
+        JA if key would appear after element in the array (key is greater than element).
+        JE if key would appear at the same location as element in the array
+         (key is equal to element).
+        JB if key would appear before element in the array (key is less than element).
+</PRE>
+Note that the return conditions for the comparison functions only indicate whether key should appear before, at, or after (i.e., JB, JE, or JA) the position of element in the array. If each array element is a single ASCIIZ string, then str_cmp or str_cmpi (no leading underscore) may be used as the comparison function.
+
+<H2><A NAME="HEAD0004">Defining and Initializing Structured Arrays
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rarray.htm#ARRAY_ALLOC">ARRAY_ALLOC</A><DD>    (Macro) Allocates and initializes a structured array.
+<DT><A HREF="rarray.htm#_array_init">_array_init</A><DD>    Initializes a structured array.
+</DL>
+The <A HREF="rarray.htm#ARRAY_ALLOC">ARRAY_ALLOC</A> macro statically declares a structured array. <A HREF="rarray.htm#ARRAY_ALLOC">ARRAY_ALLOC</A> is used to allocate space for an empty structured array and to create and initialize the array header. <A HREF="rarray.htm#ARRAY_ALLOC">ARRAY_ALLOC</A> does not initialize the array elements. The array elements may be initialized to 0x00 by using the static directive with <A HREF="rarray.htm#ARRAY_ALLOC">ARRAY_ALLOC</A>.
+
+<P>
+The <A HREF="rarray.htm#_array_init">_array_init</A> function dynamically defines and initializes an empty structured array. This function allows an array to be created in a buffer or on a heap at run time.
+
+<P>
+Structured arrays are declared in the following structure format (where MAX denotes the maximum number of elements allowed in the structured array and SIZE denotes the size of each array element, in bytes):
+<PRE><CODE>
+struct {
+   void(*cmpf)(void);             /* assembly comparison function */
+   unsigned int size;             /* size of each element */
+   unsigned int max;              /* maximum number of elements */
+   unsigned int cnt;              /* number of current elements */
+   char array[MAX][SIZE];         /* <--- the actual array starts here */
+};                                /* the array is referenced using ARRAYNAME.array */
+</CODE></PRE>
+WARNING!        All functions that operate on structured arrays expect the address of the first element of the array (e.g., the array field in the structure above), NOT the beginning of the structure.
+
+<P>
+WARNING!        Structured arrays should always be created using <A HREF="rarray.htm#ARRAY_ALLOC">ARRAY_ALLOC</A>, <A HREF="rarray.htm#_array_init">_array_init</A>, or structures. This ensures that the array header data is always in the proper format for the structured array functions. Some compilers reserve the right to rearrange data that is not encapsulated in structures.
+
+<P>
+Since the array header precedes the first element in the array and structured arrays are referenced by the first element in the array, array header information may be accessed using the following macros (where array denotes the address of the first element in the array):
+<DL COMPACT>
+<DT><A HREF="rarray.htm#ARRAY_COUNT">ARRAY_COUNT</A><DD>array)      (array ptr -2) Current number of array elements.
+<DT><A HREF="rarray.htm#ARRAY_MAX">ARRAY_MAX</A><DD>array)         (array ptr -2) Maximum number of array elements.
+<DT><A HREF="rarray.htm#ARRAY_ESIZE">ARRAY_ESIZE</A><DD>array)       (array ptr -6) Size of each array element, in bytes.
+<DT><A HREF="rarray.htm#ARRAY_CMPF">ARRAY_CMPF</A><DD>array)       (array ptr -8 in small code models and -10 in large code models) User comparison function address.
+</DL>
+In addition, HEADER_SIZE is defined in ARRAY.H to indicate the exact size of the array header in the current memory model. To ensure compatibility with future releases, HEADER_SIZE should be used any time the size of the header needs to be known. This equate may be used to determine the required size of a structured array buffer, as follows:
+
+<P>
+Size of buffer = (size * max) + HEADER_SIZE
+
+<P>
+where size is the size, in bytes, of each array element and max denotes the maximum number of array elements in the structured array.
+
+<H2><A NAME="HEAD0005">Manipulating Array Elements
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rarray.htm#_array_append">_array_append</A><DD>  Appends an element to the end of a structured array.
+<DT><A HREF="rarray.htm#_array_insert">_array_insert</A><DD>  Inserts an element into a structured array.
+<DT><A HREF="rarray.htm#_array_delete">_array_delete</A><DD>  Removes an element from a structured array.
+<DT><A HREF="rarray.htm#_array_qsort">_array_qsort</A><DD>   Sorts the elements in a structured array.
+<DT><A HREF="rarray.htm#_quick_sort">_quick_sort</A><DD>    Sorts the elements in an array.
+</DL>
+These functions add, remove, and sort array elements.
+
+<P>
+<A HREF="rarray.htm#_array_append">_array_append</A> appends an element to the end of a structured array. <A HREF="rarray.htm#_array_insert">_array_insert</A> inserts an element at a particular position in a structured array without overwriting the previous element. <A HREF="rarray.htm#_array_insert">_array_insert</A> may be used on a sorted array in conjunction with <A HREF="rarray.htm#_array_bfind">_array_bfind</A> to add new elements in sorted order. The <A HREF="rarray.htm#_array_delete">_array_delete</A> function removes an element from a structured array.
+
+<P>
+The <A HREF="rarray.htm#_array_qsort">_array_qsort</A> and <A HREF="rarray.htm#_quick_sort">_quick_sort</A> functions sort arrays using a "median of three" recursive quicksort algorithm. <A HREF="rarray.htm#_array_qsort">_array_qsort</A> is used for structured arrays and <A HREF="rarray.htm#_quick_sort">_quick_sort</A> is used for unstructured arrays. These sorting functions perform non-stable sorts, meaning that the relative order of identical elements is not preserved.
+
+<H2><A NAME="HEAD0006">Locating Array Elements
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rarray.htm#_array_next">_array_next</A><DD>    Returns a pointer to the next element in a structured array.
+<DT><A HREF="rarray.htm#_array_prev">_array_prev</A><DD>    Returns a pointer to the previous element in a structured array.
+<DT><A HREF="rarray.htm#_array_nth">_array_nth</A><DD>     Returns a pointer to a specified structured array element when given its index.
+<DT><A HREF="rarray.htm#_array_curn">_array_curn</A><DD>    Returns the index of a specified element in a structured array.
+<DT><A HREF="rarray.htm#_array_bfind">_array_bfind</A><DD>   Searches for an element in a structured array using a binary search.
+<DT><A HREF="rarray.htm#_array_lfind">_array_lfind</A><DD>   Searches for an element in a structured array using a forward linear search.
+<DT><A HREF="rarray.htm#_array_lfindr">_array_lfindr</A><DD>  Searches for an element in a structured array using a reverse linear search.
+<DT><A HREF="rarray.htm#_bin_search">_bin_search</A><DD>    Searches for an element in an array using a binary search.
+<DT><A HREF="rarray.htm#_lin_search">_lin_search</A><DD>    Searches for an element in an array using a forward linear search.
+<DT><A HREF="rarray.htm#_lin_rsearch">_lin_rsearch</A><DD>   Searches for an element in an array using a reverse linear search.
+</DL>
+These functions locate specified elements in structured and unstructured arrays using linear, binary, and indexed searches.
+
+<P>
+Given a pointer to the current element, the <A HREF="rarray.htm#_array_next">_array_next</A> and <A HREF="rarray.htm#_array_prev">_array_prev</A> functions locate the next or previous array element in a structured array. Given its origin zero index (element number), <A HREF="rarray.htm#_array_nth">_array_nth</A> returns a pointer to an element in a structured array. Given its pointer, <A HREF="rarray.htm#_array_curn">_array_curn</A> returns the index of the current element.
+<P>
+<A HREF="rarray.htm#_array_bfind">_array_bfind</A> locates an element in a sorted structured array by using a non-recursive binary search algorithm. If a matching element is found, the address of the element is returned; otherwise, an address is returned at which the element may be inserted (using <A HREF="rarray.htm#_array_insert">_array_insert</A>) to maintain the array in sorted order.
+
+<P>
+<A HREF="rarray.htm#_array_lfind">_array_lfind</A> and <A HREF="rarray.htm#_array_lfindr">_array_lfindr</A> linearly search a structured array in the forward and reverse directions for a particular element. (An array need not be sorted to use these search functions.) Linear searches are typically much slower than binary searches using <A HREF="rarray.htm#_array_bfind">_array_bfind</A>, but binary searches require the array to be in sorted order.
+
+<P>
+<A HREF="rarray.htm#_bin_search">_bin_search</A>, <A HREF="rarray.htm#_lin_search">_lin_search</A>, and <A HREF="rarray.htm#_lin_rsearch">_lin_rsearch</A> operate on unstructured arrays and perform the same functions as the <A HREF="rarray.htm#_array_bfind">_array_bfind</A>, <A HREF="rarray.htm#_array_lfind">_array_lfind</A>, and <A HREF="rarray.htm#_array_lfindr">_array_lfindr</A> functions.
+
+<H2><A NAME="HEAD0007">Determining the Status of a Structured Array
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rarray.htm#_array_full">_array_full</A><DD>    Indicates whether or not a structured array is full.
+<DT><A HREF="rarray.htm#ARRAY_CMPF">ARRAY_CMPF</A><DD>     (Macro) Returns the address of the comparison function.
+<DT><A HREF="rarray.htm#ARRAY_CLEAR">ARRAY_CLEAR</A><DD>    (Macro) Clears a structured array.
+<DT><A HREF="rarray.htm#ARRAY_COUNT">ARRAY_COUNT</A><DD>    (Macro) Returns the number of elements in a structured array.
+<DT><A HREF="rarray.htm#ARRAY_EMPTY">ARRAY_EMPTY</A><DD>    (Macro) Indicates whether or not a structured array is empty.
+<DT><A HREF="rarray.htm#ARRAY_ESIZE">ARRAY_ESIZE</A><DD>    (Macro) Returns the size of each element in a structured array.
+<DT><A HREF="rarray.htm#ARRAY_FULL">ARRAY_FULL</A><DD>     (Macro) Returns a 1 if the array is full, 0 a if it is not full.
+<DT><A HREF="rarray.htm#ARRAY_MAX">ARRAY_MAX</A><DD>      (Macro) Returns the maximum number of elements allowed in array.
+</DL>
+These functions and macros indicate the status of a structured array. <A HREF="rarray.htm#_array_full">_array_full</A> indicates whether or not a structured array contains the maximum number of allowed elements. <A HREF="rarray.htm#ARRAY_CMPF">ARRAY_CMPF</A> returns the address of the assembly comparison function to be used for searches and finds on the array.  <A HREF="rarray.htm#ARRAY_EMPTY">ARRAY_EMPTY</A> indicates whether or not the array contains any elements. <A HREF="rarray.htm#ARRAY_FULL">ARRAY_FULL</A> indicates whether the array is full, or the maximum number of allowed elements is reached. <A HREF="rarray.htm#ARRAY_CLEAR">ARRAY_CLEAR</A> clears a structured array by setting the current element count to zero. <A HREF="rarray.htm#ARRAY_COUNT">ARRAY_COUNT</A> and <A HREF="rarray.htm#ARRAY_ESIZE">ARRAY_ESIZE</A> return the current number and size of the elements in an array. <A HREF="rarray.htm#ARRAY_MAX">ARRAY_MAX</A> returns the maximum number of elements to be allowed in the array.
+
+<H2><A NAME="HEAD0008">Sample Program
+</A></H2>
+
+The sample program shown below uses of a number of array functions and demonstrates inserting elements into a structured array as well as sorting and searching the array using functions for structured and unstructured arrays. The program is listed in its entirety.
+<PRE><CODE>
+#include <sa_array.h>
+#include <sastring.h>
+<A HREF="rarray.htm#ARRAY_ALLOC">ARRAY_ALLOC</A> (test1, 5, 4, str_cmp);                /* name, max, size, (ASM) cmpf */
+char test2[5][4];                                  /* max, size */
+void main()
+{
+  void * location;
+  int i, num;
+
+           <A HREF="rarray.htm#_array_insert">_array_insert</A>(test1.array, "eee", test1.array[0]);  /* insert first element */
+           <A HREF="rarray.htm#_array_append">_array_append</A>(test1.array, "ddd");                  /* append the rest */
+           <A HREF="rarray.htm#_array_append">_array_append</A>(test1.array, "aaa");
+           <A HREF="rarray.htm#_array_append">_array_append</A>(test1.array, "ccc");
+           <A HREF="rarray.htm#_array_append">_array_append</A>(test1.array, "bbb");
+/* ------ <A HREF="rarray.htm#_array_qsort">_array_qsort</A> ------ */
+           <A HREF="rarray.htm#_array_qsort">_array_qsort</A>(test1.array);                          /* sort the array */
+           num = <A HREF="rarray.htm#ARRAY_COUNT">ARRAY_COUNT</A>(test1.array);
+           for (i = 0; i  num; i++)
+             { <A HREF="rdosio.htm#_put_str">_put_str</A>(test1.array[i]);  <A HREF="rdosio.htm#_put_chr">_put_chr</A>(' '); }     /* display elements */
+/* ------ <A HREF="rarray.htm#_array_bfind">_array_bfind</A> ------ */
+           if(_array_bfind("111", test1.array, &location) == 0)
+              <A HREF="rdosio.htm#_put_str">_put_str</A>("\n\r \"111\" found in array. \n\r");
+           else
+              <A HREF="rdosio.htm#_put_str">_put_str</A>("\n\r \"111\" not found in array.\n\r");
+           <A HREF="rstring.htm#_str_cpy">_str_cpy</A> (test2[0],"eee");                          /* load C defined array */
+           <A HREF="rstring.htm#_str_cpy">_str_cpy</A> (test2[1],"ddd");
+           <A HREF="rstring.htm#_str_cpy">_str_cpy</A> (test2[2],"aaa");
+           <A HREF="rstring.htm#_str_cpy">_str_cpy</A> (test2[3],"ccc");
+           <A HREF="rstring.htm#_str_cpy">_str_cpy</A> (test2[4],"bbb");
+/* ------ <A HREF="rarray.htm#_quick_sort">_quick_sort</A> ------ */
+           <A HREF="rarray.htm#_quick_sort">_quick_sort</A>((void *)test2, 5, sizeof(test2[0]), str_cmp);
+           for (i = 0; i  5; i++)
+             { <A HREF="rdosio.htm#_put_str">_put_str</A>(test2[i]);  <A HREF="rdosio.htm#_put_chr">_put_chr</A>(' '); }           /* display elements */
+/* ------ <A HREF="rarray.htm#_bin_search">_bin_search</A> ------ */
+           if(_bin_search("bbb",(void *)test2, 5, sizeof(test2[0]),
+                                    str_cmp, &location) == 0)
+             <A HREF="rdosio.htm#_put_str">_put_str</A>("\n\r \"bbb\" found in array.");
+           else
+             <A HREF="rdosio.htm#_put_str">_put_str</A>("\n\r \"bbb\" not found in array.");
+}
+</CODE></PRE>
+The sample program shown above (ARRAY.C) is provided on the distribution diskettes and may be compiled and linked using the following Microsoft C and Borland C command lines:
+
+<P>
+Microsoft C:
+<PRE><CODE>
+cl /c /I\msc\include /I\sa\include array.c
+link array,array,,\sa\lib\_sas \msc\lib\slibce
+</CODE></PRE>
+Borland C:
+<PRE><CODE>
+bcc /c /ms /I\bc\include /I\sa\include array.c
+tlink \bc\lib\c0s array,array,,\sa\lib\_sas \bc\lib\cs
+</CODE></PRE>
+</BOBY>
+</HTML>

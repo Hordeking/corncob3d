@@ -1,0 +1,535 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Virtual Screen Reference</TITLE>
+</HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Virtual Screen</H1>
+<P ALIGN=CENTER>Reference Section </P>
+<UL>
+<LI><A HREF="TOC.htm">Table of Contents</A>
+<LI><A HREF="index.htm">Function Index</A>
+<LI><A HREF="gindex.htm">Group Index
+</UL>
+<A HREF="rvirtual.htm#_set_vsworkbuf">_set_vsworkbuf</A><BR>
+<A HREF="rvirtual.htm#_vscreen_bufsize">_vscreen_bufsize</A><BR>
+<A HREF="rvirtual.htm#_vscreen_create">_vscreen_create</A><BR>
+<A HREF="rvirtual.htm#_vscreen_init">_vscreen_init</A><BR>
+<A HREF="rvirtual.htm#_vscreen_open">_vscreen_open</A><BR>
+<A HREF="rvirtual.htm#_vscreen_remove">_vscreen_remove</A><BR>
+<A HREF="rvirtual.htm#_vscreen_resume">_vscreen_resume</A><BR>
+<A HREF="rvirtual.htm#_vscreen_select">_vscreen_select</A><BR>
+<A HREF="rvirtual.htm#_vscreen_suspend">_vscreen_suspend</A><BR>
+<H2><A NAME="_set_vsworkbuf">_set_vsworkbuf</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Specifies the location and size of the virtual screen work buffer for disk buffering.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;vscreen.h&gt
+<BR>	void _set_vsworkbuf(void *workbuf, unsigned int wsize);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function enables disk buffering of virtual screens by specifying the location and size of the work buffer which is used to swap virtual screens to disk. This function must be called before a virtual screen may be created which specifies a disk buffer. It should not be called unless disk buffering will be performed by the virtual screen system. If the virtual screen system will use disk buffering from resident or EMS-relocatable code, the resident or EMS-relocatable version of _set_vsworkbuf must be called after going resident.
+<BR>
+<BR>	wsize should equal at least twice the number of screen columns in any expected text video mode on any screen which is buffered to disk. _vscreen_create returns an error if wsize is insufficient for the initial screen dimensions specified in any new screen descriptor. This condition may be resolved by calling _set_vsworkbuf again to specify a larger workbuf.
+<BR>
+<BR>	The recommended minimum value for wsize is 264 bytes. This supports the 132-column extended screen modes which are common on many EGA and VGA adapters. Larger buffers provide increased performance.
+<BR>
+<BR>WARNING! Using _set_dimens or _set_vmode, it is possible to increase the dimensions of a screen after it has been created. If the specified wsize becomes insufficient for a screen which is buffered to disk, the virtual screen system will treat that screen as an unbuffered screen. This will cause the screen to appear blank whenever it is obscured and reopened.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char *workbuf;
+	   unsigned wsize = 264;
+	   ...
+	   workbuf = (char *)malloc(wsize);
+	   _set_vsworkbuf(workbuf, wsize);  /* set up work buffer */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   	  ...
+	   	  malloc(264);
+	   	  mov si,ax
+	   	  mov cx,264
+		set_vsworkbuf();/* set up work buffer */
+		...
+
+</CODE></PRE>
+<B>Source file</B>	_VSWBUF.ASM		  <B>ASM equiv</B>	SET_VSWORKBUF
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rvirtual.htm#_vscreen_bufsize">_vscreen_bufsize</A>, <A HREF="rvirtual.htm#_vscreen_create">_vscreen_create</A>
+<BR></DL>
+<H2><A NAME="_vscreen_bufsize">_vscreen_bufsize</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the required buffer size for a specified virtual screen.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;vscreen.h&gt
+<BR>	unsigned int _vscreen_bufsize(const vscrn *vdescrip);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The required buffer size, in bytes, for the specified virtual screen.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function determines the size of the memory or disk buffer required to buffer the virtual screen defined by vdescrip. The result is calculated using the initial screen dimensions specified in the dimens field of the specified descriptor. If -1 is specified for dimens, then the current dimensions are assumed on the adapter specified by the adapter field in vdescrip. The size of the required buffer is returned.
+<BR>
+<BR>	The returned value should be used to allocate screen buffers only for screens which will not be resized by the application. If a screen may be resized, then a fixed buffer size of 16K is recommended since text screens commonly support resolutions as high as 132x60 (132x60x2=15840 bytes).
+<BR>
+<BR>WARNING! This function only determines the buffer size based on the initial screen and adapter information provided in vdescrip. The calculated buffer size is NOT based on the current screen size. This means that the returned size will not reflect the actual needs of the screen if the screen has already been created and resized.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   vscrn scr1;
+	   unsigned scr1_size;
+	   .../* initialize scr1 descriptor */
+	   scr1_size = _vscreen_bufsize(&ampscr1);
+	   .../* determine necessary bufsize */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   vscrn scr1;
+	   ...
+	   lea si,scr1	    /* SI -&gt scr1 descriptor */
+	   vscreen_bufsize();/* AX = required buffer size */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_VSBUFSZ.ASM		  <B>ASM equiv</B>	VSCREEN_BUFSIZE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rconsole.htm#_screen_bufsize">_screen_bufsize</A>, <A HREF="rvirtual.htm#_vscreen_create">_vscreen_create</A>
+<BR></DL>
+<H2><A NAME="_vscreen_create">_vscreen_create</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Creates and initializes a virtual screen.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;vscreen.h&gt
+<BR>	int _vscreen_create(const vscrn *vdescrip)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the virtual screen was successfully created.
+<BR>	-1 if the screen could not be created.
+<BR>	 e_code	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function creates a new virtual screen. The screen is established and initialized to reside on the adapter and video page specified in vdescrip, with the initial screen dimensions, video mode, and video refresh characteristics also specified in vdescrip. 0 is returned if the function is successful. -1 is returned and an error code is returned in  e_code if the screen could not be created.
+<BR>
+<BR>	The new screen always inherits the remainder of its video state (cursor type, text attributes, bkbold mode, etc.) from the currently-open screen on the specified adapter or from the current hardware state of that adapter if it has no open screen. In addition, the new screen inherits the text and attributes on its video page, including current and default text attributes, if: 1) the inherit flag is set in vdescrip; and 2) the display adapter is currently programmed for the specified video mode and screen dimensions. Otherwise, the new screen is blanked. _console_init does NOT need to be called on the newly-created screen.
+<BR>
+<BR>	If the open flag is set, the new screen is automatically opened when it is created. However, the new screen is NOT automatically selected as the active screen unless the open flag is set and the new screen supersedes STDSCR when it is opened.
+<BR>
+<BR>	vdescrip is a screen descriptor of type vscrn (defined in VSCREEN.H) which defines the initial state of the screen, as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   char adapter;	/* display adapter (-1=primary) */
+<BR>	   char vmode;		/* video mode (-1=current) */
+<BR>	   char vpage; 		/* video page (-1=current) */
+<BR>	   char refresh; 	/* refresh state (1=on,0=off,-1=current) */
+<BR>	   int  dimens; 	/* screen dimensions (-1=current) */
+<BR>	   char inherit;	/* inherit contents (1=inherit,0=blank) */
+<BR>	   char open;		/* auto-open flag (1=open,0=do not open) */
+<BR>	   int handle;		/* DOS file handle (-1=not disk buffered) */
+<BR>	   void far * buffer;	/* buffer address */
+<BR>	   unsigned int bufsize;/* buffer size (0=unbuffered) */
+<BR>	   char reserved[?];	/* console I/O and windowing data */
+<BR>	} vscrn;
+<BR>
+<BR>WARNING! The vscrn structure shown above is a simplified representation and is provided only to identify structure elements which are required for _vscreen_create. The actual structure definition in VSCREEN.H should be used any time screen descriptors must be allocated or defined.
+<BR>
+<BR>	See the Virtual Screen technical notes for a detailed description of each screen descriptor field.
+<BR>
+<BR>	If handle is set to a value other than -1, then a disk buffer is used by the virtual screen system to preserve the screen contents. The buffer resides in the file associated with handle at the file offset specified by buffer. If handle is -1, then buffer is treated as an address (in segment:offset form, offset first) of a screen buffer in memory.
+<BR>
+<BR>	To avoid disk full errors, disk buffer files should be created and sized before they are used. It is recommended that 16K be allocated within the file for each screen which may be buffered, since text screens commonly support resolutions as high as 132x60 (132x60x2=15840 bytes). The exact size of the required buffer may be obtained by calling _vscreen_bufsize. -1 is returned and  e_code returns E_INSMEM if the specified buffer size is inadequate for the initial screen dimensions. _set_vsworkbuf must be called before _vscreen_create is used to create a disk buffered screen.
+<BR>
+<BR>	If inherit is set and open is clear, the new screen must either be buffered or it must be the first screen assigned to its video page. Otherwise, a blank screen will be inherited.
+<BR>
+<BR>WARNING! Using _set_dimens or _set_vmode, it is possible to increase the dimensions of a screen after it has been created. If the specified bufsize becomes insufficient for a virtual screen, the virtual screen system will treat that screen as if it were unbuffered. This will cause the screen to appear blank whenever it is obscured and reopened.
+<BR>
+<BR>	_vscreen_init must be called before this function may be used. In addition, _adapter_init must be called before a virtual screen may be created on the secondary adapter.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   vscrn scr1;
+	   unsigned bufsize = 15840;
+	   ...
+	   scr1.adapter = -1;
+	   scr1.vmode = -1;
+	   scr1.vpage = -1;
+	   scr1.refresh = -1;
+	   scr1.dimens = -1;
+	   scr1.inherit = 1;
+	   scr1.open = 0;
+	   scr1.handle = -1;
+	   scr1.buffer = (char *)malloc(bufsize);
+	   scr1.bufsize = bufsize;
+	   _vscreen_create(&ampscr1);/* create a virtual screen */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   vscrn scr1;
+	   unsigned bufsize = 15840;
+	   ...
+	   scr1.adapter = -1;
+	        scr1.vmode = -1;
+	   scr1.vpage = -1;
+	   scr1.refresh = -1;
+	   scr1.dimens = -1;
+	   scr1.inherit = 1;
+	   scr1.open = 0;
+	   scr1.handle = -1;
+	   scr1.buffer = (char *)malloc(bufsize);
+	   scr1.bufsize = bufsize;
+	   lea si,scr1	    /* SI -&gt scr1 descriptor */
+	   vscreen_create();/* create a virtual screen */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_VSCREAT.ASM		  <B>ASM equiv</B>	VSCREEN_CREATE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rvirtual.htm#_set_vsworkbuf">_set_vsworkbuf</A>, <A HREF="rvirtual.htm#_vscreen_bufsize">_vscreen_bufsize</A>, <A HREF="rvirtual.htm#_vscreen_init">_vscreen_init</A>, <A HREF="rvirtual.htm#_vscreen_remove">_vscreen_remove</A>
+<BR></DL>
+<H2><A NAME="_vscreen_init">_vscreen_init</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Initializes the virtual screen system.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;vscreen.h&gt
+<BR>	void _vscreen_init(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function initializes the virtual screen system, creates STDSCR on the active video page of the active display adapter, and selects STDSCR as the active screen. _console_init is automatically called to initialize STDSCR.
+<BR>
+<BR>	If _vscreen_init is called when the virtual screen system is active, all virtual screens are removed as if _vscreen_remove had been called, and the virtual screen system is re-initialized to support STDSCR. The new STDSCR inherits the state and contents of the previously-open screen on the display adapter of the previously-active screen.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ...
+	   _vscreen_init(); /* initialize virtual screen system */
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   	  ...
+	   	  vscreen_init();
+	   	  	 /* initialize virtual screen system */
+	   	  ...
+
+</CODE></PRE>
+<B>Source file</B>	VSINIT.ASM		  <B>ASM equiv</B>	VSCREEN_INIT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rconsole.htm#_adapter_init">_adapter_init</A>, <A HREF="rvirtual.htm#_vscreen_create">_vscreen_create</A>, <A HREF="rvirtual.htm#_vscreen_resume">_vscreen_resume</A>, <A HREF="rvirtual.htm#_vscreen_suspend">_vscreen_suspend</A>
+<BR></DL>
+<H2><A NAME="_vscreen_open">_vscreen_open</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Opens a virtual screen.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;vscreen.h&gt
+<BR>	void _vscreen_open(const vscrn *vdescrip);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function opens the screen associated with vdescrip. This makes the specified screen visible on its adapter. The screen is displayed in its current console I/O and windowing state, including its current video mode, video page, and screen dimensions. The current contents of the screen are displayed if the screen is buffered; the screen is blanked in its default text attribute if the screen is unbuffered and is not already open or physically present on its assigned video page. The newly-opened screen is automatically selected as the active screen ONLY if the previously-open screen on the same display adapter was STDSCR. _vscreen_select must be called before console I/O and windowing may be performed on the specified screen if the screen is not already active.
+<BR>
+<BR>	If another buffered screen is already open on the specified adapter and video page, then that screen is flushed to its buffer to preserve its state before the new screen is opened.
+<BR>
+<BR>WARNING! This function assumes that vdescrip is a valid screen descriptor for a screen which has already been created by calling _vscreen_create and which has not been removed by calling _vscreen_remove. Use of an invalid screen descriptor will produce undefined results.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   vscrn scr1;
+	   .../* initialize scr1 descriptor */
+	   _vscreen_open(&ampscr1); /* display scr1 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   vscrn scr1;
+	   ... 	 	/* initialize scr1 descriptor */
+	   lea si,scr1
+	   vscreen_open();    /* display scr1 */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_VSOPEN.ASM		  <B>ASM equiv</B>	VSCREEN_OPEN
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rvirtual.htm#_vscreen_create">_vscreen_create</A>, <A HREF="rvirtual.htm#_vscreen_init">_vscreen_init</A>, <A HREF="rvirtual.htm#_vscreen_remove">_vscreen_remove</A>, <A HREF="rvirtual.htm#_vscreen_select">_vscreen_select</A>
+<BR></DL>
+<H2><A NAME="_vscreen_remove">_vscreen_remove</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Removes a virtual screen.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;vscreen.h&gt
+<BR>	void _vscreen_remove(const vscrn *vdescrip);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function removes the screen associated with vdescrip from the virtual screen system. If the screen is active when it is removed, STDSCR is automatically selected as the new active screen on the same adapter as the removed screen. The appearance of the physical screen attached to the display adapter remains unchanged.
+<BR>
+<BR>WARNING! This function assumes that vdescrip is a valid screen descriptor for a screen which has already been created by calling _vscreen_create and which has not been removed by calling _vscreen_remove. Use of an invalid screen descriptor will produce undefined results.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   vscrn scr1;
+	   .../* initialize scr1 descriptor */
+	   _vscreen_create(&ampscr1); /* add scr1 to virtual screen system */
+	   ...
+	   _vscreen_remove(&ampscr1); /* display scr1 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   vscrn scr1;
+	   ... 	 	/* initialize scr1 descriptor */
+	   lea si,scr1	    /* SI -&gt scr1 descriptor */
+	   vscreen_create();/* add scr1 to vscreen system */
+	   ... 	 	/* manipulate screens */
+	   lea si,scr1	    /* reset SI -&gt descriptor */
+	   vscreen_remove();/* remove scr1 */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_VSREMOV.ASM		  <B>ASM equiv</B>	VSCREEN_REMOVE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rvirtual.htm#_vscreen_create">_vscreen_create</A>
+<BR></DL>
+<H2><A NAME="_vscreen_resume">_vscreen_resume</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Resumes virtual screen support.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;vscreen.h&gt
+<BR>	void _vscreen_resume(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function resumes virtual screen support after it has been suspended by calling _vscreen_suspend. Specifically, this function re-selects the originally-active and originally-open screens. Text and attributes are only restored on buffered screens or screens with active windowing systems. All unbuffered screens without active windowing systems are blanked in the default text attribute.
+<BR>
+<BR>	This function has no effect if _vscreen_suspend was not previously called.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ...
+	   _vscreen_restore(); /* restore virtual screen system */
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   vscreen_restore(); /* restore virtual screen system */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	VSRESUM.ASM		  <B>ASM equiv</B>	VSCREEN_RESUME
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rvirtual.htm#_vscreen_suspend">_vscreen_suspend</A>
+<BR></DL>
+<H2><A NAME="_vscreen_select">_vscreen_select</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Selects the active virtual screen.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;vscreen.h&gt
+<BR>	void _vscreen_select(const vscrn *vdescrip);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function selects the virtual screen associated with vdescrip as the new active screen. The active screen is the screen to which all console I/O and windowing is directed and is the only screen affected by these functions. The selected screen is NOT automatically opened (made visible) unless it is disk buffered and it is assigned to a video page or mode which conflicts with the currently-open screen. The active screen may be accessed using console I/O and windowing functions whether or not it is open.
+<BR>
+<BR>	This function may be used to select STDSCR ("standard screen") by passing -1 (STDSCR) in vdescrip. STDSCR is a temporary, unbuffered screen which is automatically re-created and opened each time it is selected. STDSCR is always open and inherits the state and contents of the previously-open screen on the display adapter of the previously-active screen each time it is selected. (See the Virtual Screen technical notes for more information about STDSCR.)
+<BR>
+<BR>WARNING! This function assumes that vdescrip is a valid screen descriptor for a screen which has already been created by calling _vscreen_create and which has not been removed by calling _vscreen_remove. Use of an invalid screen descriptor will produce undefined results.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   vscrn scr1;
+	   ...	  /* initialize scr1 descriptor */
+	   _vscreen_select(&ampscr1);/* select scr1 for active scr */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   vscrn scr1;
+	   ... 	 	/* initialize scr1 descriptor */
+	   lea si,scr1
+	   vscreen_select();/* select scr1 for active scr */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_VSSELEC.ASM		  <B>ASM equiv</B>	VSCREEN_SELECT
+<DL>
+<DT><B>See also</B>
+<DD><A HREF="rconsole.htm#_set_adapter">_set_adapter</A>, <A HREF="rvirtual.htm#_vscreen_create">_vscreen_create</A>, <A HREF="rvirtual.htm#_vscreen_open">_vscreen_open</A>
+<BR></DL>
+<H2><A NAME="_vscreen_suspend">_vscreen_suspend</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Temporarily suspends the virtual screen system.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;vscreen.h&gt
+<BR>	void _vscreen_suspend(void):
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function temporarily suspends the virtual screen system. Specifically, this function flushes all screens to their buffers, places the virtual screen system into single-screen mode, and initializes the console I/O system to inherit the state and contents of the previously-open screen on the display adapter of the previously-active screen. The appearance of the system screens are unaffected. This function is normally used prior to executing another application which could reprogram a display adapter or disturb the contents of any video page.
+<BR>
+<BR>	This function does NOT restore the video state to the state which was active when _vscreen_init was called. _save_vstate and _restore_vstate (or their equivalents) must be used for this purpose if this is required.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ...
+	   _vscreen_suspend();  /* suspend virtual screen system */
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   vscreen_suspend();  /* suspend virtual screen system */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	VSSUSP.ASM		  <B>ASM equiv</B>	VSCREEN_SUSPEND
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rvirtual.htm#_vscreen_resume">_vscreen_resume</A>
+<BR>
+<BR></BODY>
+<BR></HTML><BR>

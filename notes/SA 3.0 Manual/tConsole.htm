@@ -1,0 +1,1076 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: Console I/O</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Console I/O</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tConsole.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tConsole.htm#HEAD0001">Integration with the Windowing System
+</A><BR>
+<A HREF="tConsole.htm#HEAD0002">Assumptions and Limitations
+</A><BR>
+<A HREF="tConsole.htm#HEAD0003">The Cursor Coordinate System
+</A><BR>
+<A HREF="tConsole.htm#HEAD0004">Current and Default Attributes
+</A><BR>
+<A HREF="tConsole.htm#HEAD0005">Clipping and Clipping Regions
+</A><BR>
+<A HREF="tConsole.htm#HEAD0006">Display Modes
+</A><BR>
+<A HREF="tConsole.htm#HEAD0007">Hardware Independence
+</A><BR>
+<A HREF="tConsole.htm#HEAD0008">Using Attribute Tables
+</A><BR>
+<A HREF="tConsole.htm#HEAD0009">Enhanced Keyboard Support
+</A><BR>
+<A HREF="tConsole.htm#HEAD000A">Initializing the Console I/O System
+</A><BR>
+<A HREF="tConsole.htm#HEAD000B">Read-Only Console I/O Variables
+</A><BR>
+<A HREF="tConsole.htm#HEAD000C">Specifying the Cursor Advance Direction
+</A><BR>
+<A HREF="tConsole.htm#HEAD000D">Read/Write Console I/O Variables
+</A><BR>
+<A HREF="tConsole.htm#HEAD000E">Reading Characters, Strings, and Keyboard Status
+</A><BR>
+<A HREF="tConsole.htm#HEAD000F">Displaying Characters and Strings
+</A><BR>
+<A HREF="tConsole.htm#HEAD0010">Clearing and Filling Lines and Regions
+</A><BR>
+<A HREF="tConsole.htm#HEAD0011">Scrolling, Inserting, and Deleting Lines
+</A><BR>
+<A HREF="tConsole.htm#HEAD0012">Specifying Display Attributes
+</A><BR>
+<A HREF="tConsole.htm#HEAD0013">Writing and Moving On-Screen Text and Attributes
+</A><BR>
+<A HREF="tConsole.htm#HEAD0014">Reading and Writing Screen Text and Attributes via Disk
+</A><BR>
+<A HREF="tConsole.htm#HEAD0015">Selecting the Video Access Method
+</A><BR>
+<A HREF="tConsole.htm#HEAD0016">Moving and Setting the Cursor Position
+</A><BR>
+<A HREF="tConsole.htm#HEAD0017">Controlling Cursor Appearance
+</A><BR>
+<A HREF="tConsole.htm#HEAD0018">Managing the Clipping Region
+</A><BR>
+<A HREF="tConsole.htm#HEAD0019">Controlling the Video Border (Overscan) Color
+</A><BR>
+<A HREF="tConsole.htm#HEAD001A">Determining and Setting the Video Mode
+</A><BR>
+<A HREF="tConsole.htm#HEAD001B">Determining and Setting the Attribute Display Mode
+</A><BR>
+<A HREF="tConsole.htm#HEAD001C">Checking for Non-Graphics Video Modes
+</A><BR>
+<A HREF="tConsole.htm#HEAD001D">Enabling and Disabling Video Refresh
+</A><BR>
+<A HREF="tConsole.htm#HEAD001E">Multiple Adapter Support
+</A><BR>
+<A HREF="tConsole.htm#HEAD001F">Monitor Types
+</A><BR>
+<A HREF="tConsole.htm#HEAD0020">Determining the Active Monitor Type
+</A><BR>
+<A HREF="tConsole.htm#HEAD0021">Determining and Setting the Active Video Display Page
+</A><BR>
+<A HREF="tConsole.htm#HEAD0022">Determining and Setting Screen Dimensions
+</A><BR>
+<A HREF="tConsole.htm#HEAD0023">Supporting Nonstandard Screen Dimensions
+</A><BR>
+<A HREF="tConsole.htm#HEAD0024">Saving and Restoring the Video State
+</A><BR>
+<A HREF="tConsole.htm#HEAD0025">Saving and Restoring the Screen
+</A><BR>
+<A HREF="tConsole.htm#HEAD0026">Determining Active Console I/O Hardware
+</A><BR>
+<A HREF="tConsole.htm#HEAD0027">Colors and Color Attributes
+</A><BR>
+<A HREF="tConsole.htm#HEAD0028">Monochrome Attributes
+</A><BR>
+<A HREF="tConsole.htm#HEAD0029">Black and White Attributes
+</A><BR>
+<A HREF="tConsole.htm#HEAD002A">Gray Scale Attributes
+</A><BR>
+<A HREF="tConsole.htm#HEAD002B">Conditionally Assembling the Console I/O System
+</A><BR>
+<A HREF="tConsole.htm#HEAD002C">Console I/O Considerations in TSRs
+</A><BR>
+<A HREF="tConsole.htm#HEAD002D">Virtual Screen Considerations
+</A><BR>
+<A HREF="tConsole.htm#HEAD002E">Sample Program
+</A><BR>
+<A HREF="tConsole.htm#HEAD002F">Console I/O vs. Scripted I/O
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+The console I/O unit provides a complete system of functions for keyboard input and screen output. These functions include the following: echoed and unechoed character input; echoed string input; character, attribute, and string output with and without interpretation of special characters (CR, LF, BS, and BEL); centered and justified string output; moving, reading, writing, clearing, scrolling, and filling of regions; and clearing, filling, inserting, and deleting lines within regions. This unit also provides functions which: select the output method (BIOS or direct video access); select attributes and colors used to display characters; specify the cursor position, cursor state (on/off), cursor shape, and cursor advance direction; specify a clipping region; control the video border color; set and get the video mode; set and get the attribute display mode; save and restore the video state and screen contents; and determine the active display adapter.
+
+<P>
+The Spontaneous Assembly 3.0 console I/O system includes all-new support for dual-adapter systems, extended screen dimensions, multiple video pages, disk-based screen saving and restoring, and TSRs. New functions are included to identify display adapters, return information about an adapter, change active adapters, determine monitor types, determine the number of supported video pages for an adapter, get and set the current video page, determine supported screen dimensions, set EGA/MCGA/VGA adapters to 12/ 14/ 21/ 25/ 28/ 43/ 50-line modes (if supported by the adapter and monitor), read and write screen text and attributes using a disk buffer, save and restore screen contents using a disk buffer, and enable and disable video refresh. In addition, screen saving and restoring has been enhanced to save and restore all newly-supported console I/O options.
+
+<P>
+The Spontaneous Assembly 3.0 console I/O system is also fully compatible with the new virtual screen system, allowing console I/O functions to be used to manipulate any virtual screen at any time.
+
+<H2><A NAME="HEAD0001">Integration with the Windowing System
+</A></H2>
+
+All console I/O system functions are Spontaneous Assembly windowing system aware. When windowing is being performed (i.e., <A HREF="rwindow.htm#_win_init">_win_init</A> has been called), all console I/O output is sent to the active window and all output is clipped to the window as it would be clipped to the screen if windowing were not being performed. As explained in the Windowing technical notes, any window may be designated as the active window, even if it is closed, obscured, or off the screen. The console I/O functions handle all of these conditions automatically.
+
+<P>
+Even though the console I/O functions work in harmony with the windowing functions, no windowing functions are linked in by the console I/O system unless <A HREF="rwindow.htm#_win_init">_win_init</A> is called.
+
+<H2><A NAME="HEAD0002">Assumptions and Limitations
+</A></H2>
+
+Most of the console I/O functions require <A HREF="rconsole.htm#_console_init">_console_init</A> to be called before they may be used. This restriction is imposed (and documented) whenever a function depends on or modifies any of the global variables which are initialized by <A HREF="rconsole.htm#_console_init">_console_init</A>. These global variables include all of the public console I/O variables described in the technical notes.
+
+<P>
+The console I/O system supports MDA, CGA, EGA, MCGA, and VGA compatible adapters in text display modes only. All output takes place on the active display page. If the active adapter, video mode, display page, or other similar display characteristics are changed, <A HREF="rconsole.htm#_console_init">_console_init</A> must be called to re-initialize the console I/O system.
+
+<H2><A NAME="HEAD0003">The Cursor Coordinate System
+</A></H2>
+
+Cursor positions are relative to the upper left-hand corner of the screen (unless a clipping region has been enabled as discussed below). The coordinate position of the upper left-hand corner of the screen is (0,0); vertical coordinates increase in the downward direction and horizontal coordinates increase to the right. Note that the coordinate position of the lower right-hand corner of the screen is ((screen width-1), (screen height-1)).
+
+<P>
+Cursor positions are always treated as unsigned char values. Horizontal positions which exceed 255 wrap to the left-most column in the current row; vertical positions which exceed 255 wrap to the top-most row in the current column.
+
+<H2><A NAME="HEAD0004">Current and Default Attributes
+</A></H2>
+
+All of the _cput_... and echoed _cget_... functions display text in the current attribute. This attribute is specified using the <A HREF="rconsole.htm#_set_attr">_set_attr</A> function; it may be adjusted using <A HREF="rconsole.htm#_bold_on">_bold_on</A>, <A HREF="rconsole.htm#_bold_off">_bold_off</A>, <A HREF="rconsole.htm#_blink_on">_blink_on</A>, <A HREF="rconsole.htm#_blink_off">_blink_off</A>, <A HREF="rconsole.htm#_set_fgcolor">_set_fgcolor</A>, etc. To display text using different attributes, it is necessary to change the current attribute each time a new attribute is required.
+
+<P>
+The default attribute is used for clearing and inserting new lines of text when scrolling, inserting, and deleting is performed. This attribute may be specified using the <A HREF="rconsole.htm#_set_dattr">_set_dattr</A> function. The <A HREF="rconsole.htm#_reset_attr">_reset_attr</A> function sets the current attribute to the default attribute.
+
+<H2><A NAME="HEAD0005">Clipping and Clipping Regions
+</A></H2>
+
+Output from console I/O functions is clipped to the boundaries of the screen as well as the boundaries of the current clipping region. Clipping regions may be specified using the <A HREF="rconsole.htm#_set_region">_set_region</A> function. Anything which is displayed outside of these boundaries is lost.
+
+<P>
+Clipping regions are similar to the "text windows" supported by Turbo C and Quick C. When a clipping region is enabled, the cursor is relocated to the upper left-hand corner of the region, all output is restricted to the clipping region, and all cursor positioning is relative to the upper left-hand corner of the region. If the cursor is positioned outside of the clipping region, it becomes invisible. When the clipping region is disabled, the cursor returns to the position it occupied before the clipping region was enabled, and cursor positions are again relative to the upper left-hand corner of the screen. Console I/O functions which scroll, clear, insert, or delete lines are all aware of the clipping region and restrict their actions to the region if it is active; otherwise, their scope is limited to the entire screen.
+
+<H2><A NAME="HEAD0006">Display Modes
+</A></H2>
+
+The concept of display modes is unique to the console I/O system. The display mode identifies the exact method used by the active display adapter and monitor to interpret text attributes. For this reason, the current display mode may be used to select an attribute table which is best suited for the active display hardware (see Using Attribute Tables, below). The following symbolic constants (defined in CONSOLE.H) identify the various display modes:
+<DL COMPACT>
+<DT>MONO2<DD>                   (0x00) Monochrome, 2 background attributes, blink
+<DT>MONO4<DD>                   (0x01) Monochrome, 4 background attributes, no blink
+<DT>BW2<DD>                             (0x02) Black and white, 2 background attributes, blink
+<DT>BW4<DD>                             (0x03) Black and white, 4 background attributes, no blink
+<DT>COLOR8<DD>                  (0x04) Color, 8 background colors, blink
+<DT>COLOR16<DD>                 (0x05) Color, 16 background colors, no blink
+<DT>GRAY8<DD>                   (0x06) Gray scale, 8 background shades, blink
+<DT>GRAY16<DD>                  (0x07) Gray scale, 16 background shades, no blink
+</DL>
+Note that the black and white, monochrome, and gray scale display modes are all distinct. Monochrome refers to displays which support normal, bold, underline, bold underline, blink, and reverse video attributes. Black and white refers to displays which support only normal, bold, blink, and reverse video attributes. Gray scale refers to displays which support all of the color attributes but display them as various shades of gray.
+
+<P>
+The active display mode may be determined by calling <A HREF="rconsole.htm#_get_dmode">_get_dmode</A>.
+
+<H2><A NAME="HEAD0007">Hardware Independence
+</A></H2>
+
+The functions in the console I/O unit are hardware independent except where noted. This allows applications which use console I/O functions to run unmodified on any supported system. For example, <A HREF="rconsole.htm#_set_cursor">_set_cursor</A> and <A HREF="rconsole.htm#_get_cursor">_get_cursor</A> read and write the shape of the display cursor in a normalized format. This allows complete control over cursor shape but eliminates the need to set the shape using starting and ending scan lines.
+
+<P>
+Functions which accept attributes and colors are not inherently hardware independent since different display adapters and monitors interpret attributes differently. Instead, they may be made hardware independent through the use of attribute tables (see Using Attribute Tables, below).
+
+<H2><A NAME="HEAD0008">Using Attribute Tables
+</A></H2>
+
+Attribute tables are indexed lists of attributes and colors used by the console I/O functions when text is displayed. Attribute tables are interchangeable, making it possible to write hardware independent applications (i.e., applications in which screen output always appears correct, regardless of the active adapter and monitor). Attribute tables also make it easy to write applications which support customizable display colors.
+
+<P>
+The use of attribute tables is optional. When no attribute table is installed, all console I/O functions expect input attributes and colors to be actual attribute or color values. When an attribute table is installed, input attributes and colors are expected to be table indices, and the corresponding table attributes are used as the display attributes.
+
+<P>
+Each application usually defines a number of different attribute tables for different purposes and then installs specific tables according to the circumstances. For example, hardware independent output may be achieved by defining one attribute table for each display mode (i.e., monochrome, color, black-and-white, etc.) and then selecting the appropriate table at run time (see Sample Program below). The <A HREF="rconsole.htm#_get_dmode">_get_dmode</A> function returns a code which may be used to select an attribute table based on the display mode (see Display Mode, above).
+
+<P>
+Attribute tables always contain char values. The starting index for an attribute table is always zero.
+
+<H2><A NAME="HEAD0009">Enhanced Keyboard Support
+</A></H2>
+
+All of the console I/O keyboard input functions work with both standard and enhanced keyboards. Support for special enhanced keyboard key codes is optional. If <A HREF="rconsole.htm#_kbd_init">_kbd_init</A> is called and an enhanced keyboard is present, then all of the input functions support these codes; otherwise, these functions only support standard keyboard codes.
+
+<H2><A NAME="HEAD000A">Initializing the Console I/O System
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_console_init">_console_init</A><DD>  Initializes the console I/O system.
+<DT><A HREF="rconsole.htm#_kbd_init">_kbd_init</A><DD>      Initializes the console I/O system for enhanced keyboard support if an enhanced keyboard is present.
+</DL>
+These functions initialize the console I/O system. The <A HREF="rconsole.htm#_console_init">_console_init</A> function initializes the console I/O system by determining the current display state and setting a number of global variables toreflect that state. This function must be called before many of the console I/O functions may be used. Calling <A HREF="rconsole.htm#_console_init">_console_init</A> has no effect on the current video state or screen contents.
+
+<P>
+The <A HREF="rconsole.htm#_kbd_init">_kbd_init</A> function initializes the console I/O system to support enhanced keyboard key codes if an enhanced keyboard is present. This function is optional; if it is not called, the console I/O keyboard functions support only standard key codes. It may be called whether or not an enhanced keyboard is actually present in the system.
+
+<H2><A NAME="HEAD000B">Read-Only Console I/O Variables
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#adapter_type">adapter_type</A><DD>   (Variable) Indicates the active display adapter type.
+<DT><A HREF="rconsole.htm#screen_cols">screen_cols</A><DD>    (Variable) Indicates the number of columns on the screen.
+<DT><A HREF="rconsole.htm#screen_dimens">screen_dimens</A><DD>  (Variable) Indicates the number of rows and columns on the screen.
+<DT><A HREF="rconsole.htm#screen_rows">screen_rows</A><DD>    (Variable) Indicates the number of rows on the screen.
+<DT><A HREF="rconsole.htm#video_mode">video_mode</A><DD>     (Variable) Indicates the current video mode.
+</DL>
+These read-only variables indicate the active adapter type, keyboard type, screen dimensions, and video mode. They are initialized when <A HREF="rconsole.htm#_console_init">_console_init</A> is called and may be referenced or modified without warning by any console I/O function which depends on or calls <A HREF="rconsole.htm#_console_init">_console_init</A>. These variables must not be modified directly.
+
+<H2><A NAME="HEAD000C">Specifying the Cursor Advance Direction
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_direc_left">_direc_left</A><DD>    Sets the cursor advance direction to be ADV_LEFT (left).
+<DT><A HREF="rconsole.htm#_direc_down">_direc_down</A><DD>    Sets the cursor advance direction to ADV_DOWN (down).
+<DT><A HREF="rconsole.htm#_direc_right">_direc_right</A><DD>   Sets the cursor advance direction to ADV_RIGHT (right).
+<DT><A HREF="rconsole.htm#_direc_up">_direc_up</A><DD>      Sets the cursor advance direction to ADV_UP (up).
+<DT><A HREF="rconsole.htm#_get_direction">_get_direction</A><DD> Returns the current cursor advance direction.
+<DT><A HREF="rconsole.htm#_set_direction">_set_direction</A><DD> Sets the cursor advance direction.
+</DL>
+These functions allow the cursor advance direction to be specified or determined. The cursor advance direction is the direction in which the cursor is moved after the _cput_... and echoed _cget_... functions display each character. These functions make it possible to draw boxes, diagonal lines, and other complex shapes on the screen with a minimal amount of effort.
+
+<P>
+Note that <A HREF="rconsole.htm#_set_direction">_set_direction</A> allows arbitrary directions to be specified as a signed number of rows and columns. Since any number of rows and/or columns can be specified, any direction is possible, including diagonal directions and directions which move to non-adjoining character cells (for example, every other cell on the same line).
+
+<H2><A NAME="HEAD000D">Read/Write Console I/O Variables
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#direct_video">direct_video</A><DD>   (Variable) Indicates the current console I/O output method.
+<DT><A HREF="rconsole.htm#kbd_type">kbd_type</A><DD>       (Variable) Indicates the type of keyboard detected by <A HREF="rconsole.htm#_kbd_init">_kbd_init</A>.
+<DT><A HREF="rconsole.htm#video_snow">video_snow</A><DD>     (Variable) Indicates whether or not direct video output should compensate for "snow".
+</DL>
+These read/write variables determine screen and keyboard access methods. <A HREF="rconsole.htm#direct_video">direct_video</A> indicates whether BIOS or direct screen access is performed by the screen output functions. <A HREF="rconsole.htm#kbd_type">kbd_type</A> determines whether standard or enhanced keyboard BIOS calls are issued when accessing the keyboard. <A HREF="rconsole.htm#video_snow">video_snow</A> determines whether or not the screen output functions compensate for video "snow" when directly accessing video memory.
+
+<P>
+These variables may be modified directly. They may also be manipulated by calling <A HREF="rconsole.htm#_set_directvideo">_set_directvideo</A>, _get_directvideo, and <A HREF="rconsole.htm#_kbd_init">_kbd_init</A>.
+
+<H2><A NAME="HEAD000E">Reading Characters, Strings, and Keyboard Status
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_cget_chr">_cget_chr</A><DD>      Gets a character from the keyboard.
+<DT><A HREF="rconsole.htm#_cget_chre">_cget_chre</A><DD>     Gets a character from the keyboard and echoes it to the display.
+<DT><A HREF="rconsole.htm#_cget_chra">_cget_chra</A><DD>     Gets a character and type (normal, ALT-keypad, or extended) from the keyboard.
+<DT><A HREF="rconsole.htm#_cget_chrae">_cget_chrae</A><DD>    Gets a character and type (normal, ALT-keypad, or extended) from the keyboard and echoes the character to the display.
+<DT><A HREF="rconsole.htm#_cget_s">_cget_s</A><DD>Gets a string from the keyboard and returns number of characters entered.
+<DT><A HREF="rconsole.htm#_cget_str">_cget_str</A><DD>      Gets a string from the keyboard.
+<DT><A HREF="rconsole.htm#_ccheck_key">_ccheck_key</A><DD>    Determines if a keystroke is waiting to be read.
+<DT><A HREF="rconsole.htm#_cflush_keys">_cflush_keys</A><DD>   Flushes pending keystrokes from the keyboard buffer.
+<DT><A HREF="rconsole.htm#_get_keyflags">_get_keyflags</A><DD>  Returns the current keyboard shift status flags.
+</DL>
+These functions read characters and strings from the keyboard, check for pending keystrokes, flush pending keystrokes from the system keyboard buffer, and return the current keyboard shift status flags. All of these functions are enhanced keyboard aware. However, special enhanced keyboard key codes are only returned if <A HREF="rconsole.htm#_kbd_init">_kbd_init</A> has been called and an enhanced keyboard is present in the system. This allows applications to ignore nonstandard keystrokes where appropriate.
+
+<P>
+The <A HREF="rconsole.htm#_cget_chra">_cget_chra</A> and <A HREF="rconsole.htm#_cget_chrae">_cget_chrae</A> keyboard input functions return conditions (-1/0/1) along with a corresponding parameter which indicates the type of keystroke which was processed. If 0 is returned, the keystroke code represents a normal ASCII character (i.e., A-Z, space, Ctrl-C, etc.); -1 indicates that the keystroke code represents an "extended" ASCII keystroke (i.e., F1, Alt-Enter, Ctrl-@, etc.); if 1 is returned, the code represents an IBM-ASCII character from 1 to 255 (entered by holding the Alt key down while typing the character code on the numeric keypad).
+
+<P>
+The <A HREF="rconsole.htm#_cget_chr">_cget_chr</A> and <A HREF="rconsole.htm#_cget_chre">_cget_chre</A> keyboard input functions return values similar to C's getch, where an extended character value will first return 0 and the character code can be retrieved by a subsequent call to the same function, this is not as efficient code as the <A HREF="rconsole.htm#_cget_chra">_cget_chra</A>... functions, but are provided for similarity to the C getch interface.
+
+<P>
+Complete tables of the keystrokes and codes supported by these functions are provided in Appendices B, C, and D.
+
+<P>
+Most of these functions may be called without calling <A HREF="rconsole.htm#_console_init">_console_init</A>. <A HREF="rconsole.htm#_cget_str">_cget_str</A>, <A HREF="rconsole.htm#_cget_s">_cget_s</A>, <A HREF="rconsole.htm#_cget_chre">_cget_chre</A> and <A HREF="rconsole.htm#_cget_chrae">_cget_chrae</A> are exceptions since they echo selected keystrokes to the screen. When keystrokes are echoed, the cursor is moved in the current cursor advance direction.
+
+<P>
+Keyboard I/O is always performed using BIOS calls. This provides the highest degree of compatibility with resident utilities. In addition, these functions issue an INT 0x28 and yield to the multitasking system (if present) while waiting for a keystroke. This scheme allows background processes (e.g., PRINT.COM or other TSRs) and tasks in the multitasking system to execute while the calling program is idle. If the multitasking system is not initialized, the yield to the multitasking system has no effect. If <A HREF="rtsr.htm#_tsr_enable">_tsr_enable</A>, <A HREF="rtsr.htm#_tsr_resident">_tsr_resident</A>, or <A HREF="rtsr.htm#_device_resident">_device_resident</A> has been called, INT 0x28 is only issued when it is safe to do so.
+
+<H2><A NAME="HEAD000F">Displaying Characters and Strings
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_cput_attr">_cput_attr</A><DD>     Puts an attribute to the display.
+<DT><A HREF="rconsole.htm#_cput_nattr">_cput_nattr</A><DD>    Puts an attribute to the display a specified number of times.
+<DT><A HREF="rconsole.htm#_cput_chr">_cput_chr</A><DD>      Puts a character to the display.
+<DT><A HREF="rconsole.htm#_cput_chri">_cput_chri</A><DD>     Puts a character to the display without interpreting it.
+<DT><A HREF="rconsole.htm#_cput_nchr">_cput_nchr</A><DD>     Puts a character to the display a specified number of times.
+<DT><A HREF="rconsole.htm#_cput_nchri">_cput_nchri</A><DD>    Puts a character to the display a specified number of times without interpreting it.
+<DT><A HREF="rconsole.htm#_cput_str">_cput_str</A><DD>      Puts a string to the display.
+<DT><A HREF="rconsole.htm#_cput_stri">_cput_stri</A><DD>     Puts a string to the display without interpreting it.
+<DT><A HREF="rconsole.htm#_cput_strci">_cput_strci</A><DD>    Puts a centered string to the display without interpreting it.
+<DT><A HREF="rconsole.htm#_cput_strji">_cput_strji</A><DD>    Puts a justified string to the display without interpreting it.
+<DT><A HREF="rconsole.htm#_cput_beep">_cput_beep</A><DD>     Sounds a tone on the system speaker.
+<DT><A HREF="rconsole.htm#_cput_linefeed">_cput_linefeed</A><DD> Performs the equivalent of a linefeed in the current clipping region.
+<DT><A HREF="rconsole.htm#_cput_newline">_cput_newline</A><DD>  Performs the equivalent of a carriage return and linefeed in the current clipping region.
+<DT><A HREF="rconsole.htm#_cput_return">_cput_return</A><DD>   Performs the equivalent of a carriage return in the current clipping region.
+</DL>
+These functions display attributes, characters, and strings. Functions are provided for: single and repeated character and attribute output; character and string output with and without interpretation of special characters (CR, LF, BS, and BEL); justified and centered string output; and interpreted output of the special characters CR, LF, and CR/LF (newline).
+
+<P>
+These functions advance the cursor in the current cursor advance direction after each character is displayed. If the cursor moves outside the boundaries of the screen or clipping region (or active window if windowing is in effect), it becomes invisible and any text which is displayed at that position is lost.
+
+<P>
+Note that <A HREF="rconsole.htm#_cput_strci">_cput_strci</A> and <A HREF="rconsole.htm#_cput_strji">_cput_strji</A> are affected by the cursor advance direction as well. See the Reference Section for details on how this works.
+
+<H2><A NAME="HEAD0010">Clearing and Filling Lines and Regions
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_afill_eol">_afill_eol</A><DD>     Sets all attributes from the cursor to the end of the current line to a specified attribute.
+<DT><A HREF="rconsole.htm#_afill_line">_afill_line</A><DD>    Sets all attributes on the current line to a specified attribute.
+<DT><A HREF="rconsole.htm#_afill_n">_afill_n</A><DD>       Sets a specified number of attributes on the current line to a specified attribute.
+<DT><A HREF="rconsole.htm#_afill_region">_afill_region</A><DD>  Sets all attributes in the current clipping region to a specified attribute.
+<DT><A HREF="rconsole.htm#_clr_eol">_clr_eol</A><DD>       Clears to the end of the current line.
+<DT><A HREF="rconsole.htm#_clr_line">_clr_line</A><DD>      Clears the current line.
+<DT><A HREF="rconsole.htm#_clr_n">_clr_n</A><DD> Clears a specified number of columns on the current line.
+<DT><A HREF="rconsole.htm#_clr_region">_clr_region</A><DD>    Clears the current clipping region.
+<DT><A HREF="rconsole.htm#_fill_eol">_fill_eol</A><DD>      Sets all characters and attributes from the cursor to the end of the current line to a specified character and attribute.
+<DT><A HREF="rconsole.htm#_fill_line">_fill_line</A><DD>     Sets all characters and attributes on the current line to a specified character and attribute.
+<DT><A HREF="rconsole.htm#_fill_n">_fill_n</A><DD>Sets a specified number of characters and attributes on the current line to a specified character and attribute.
+<DT><A HREF="rconsole.htm#_fill_region">_fill_region</A><DD>   Sets all characters and attributes in the current clipping region to a specified character and attribute.
+</DL>
+These functions fill regions, lines and portions of lines with attributes or character/attribute pairs. The _clr_... functions always fill a specified area with space characters in the default text attribute. The _afill_... functions fill a specified area with an attribute without disturbing the corresponding characters in those positions. The _fill_... functions fill a specified area with a character/attribute pair. All output is restricted to the current clipping region and screen (or active window if windowing is in effect).
+
+<P>
+These functions do not move the cursor, so they are not affected by the current cursor advance direction. Line-oriented operations take place on the current screen row in a left-to-right direction. Functions which are performed to the "end of the line" begin at the current cursor position and continue along the current screen row to the right-most column of the clipping region or screen (or active window if windowing is in effect).
+
+<P>
+The _afill_... and _fill_... functions are attribute table aware and accept attribute table codes instead of attribute values if a table has been installed.
+
+<H2><A NAME="HEAD0011">Scrolling, Inserting, and Deleting Lines
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_scroll_down">_scroll_down</A><DD>   Scrolls the current clipping region down a specified number of lines.
+<DT><A HREF="rconsole.htm#_scroll_up">_scroll_up</A><DD>     Scrolls up a specified number of lines.
+<DT><A HREF="rconsole.htm#_ins_line">_ins_line</A><DD>      Inserts a blank line in the current clipping region.
+<DT><A HREF="rconsole.htm#_del_line">_del_line</A><DD>      Removes a line from the current clipping region.
+</DL>
+These functions scroll, insert, and delete lines of text within the current clipping region. If no clipping region is active, then the operation takes place on the entire screen (or active window if windowing is in effect).
+
+<P>
+When the region is scrolled up (or down), the top-most (or bottom-most) lines are scrolled out of the region and disappear. Blank lines in the default text attribute are then scrolled in at the bottom (or top) of the region. When a line is inserted, the current line and all lines below it are scrolled down and a blank line in the default attribute is inserted at the current cursor position. When a line is deleted, all lines below the current line are scrolled up one row, overwriting the current row, and a blank line in the default attribute is scrolled in at the bottom of the region.
+
+<H2><A NAME="HEAD0012">Specifying Display Attributes
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#attr_tbl">attr_tbl</A><DD>                        (Variable) Contains the address of the currently-installed attribute table.
+<DT><A HREF="rconsole.htm#_get_attr">_get_attr</A><DD>      Returns the current text attribute code or value.
+<DT><A HREF="rconsole.htm#_set_attr">_set_attr</A><DD>      Sets the current text attribute.
+<DT><A HREF="rconsole.htm#_get_dattr">_get_dattr</A><DD>     Returns the default text attribute code or value.
+<DT><A HREF="rconsole.htm#_set_dattr">_set_dattr</A><DD>     Sets the default text attribute.
+<DT><A HREF="rconsole.htm#_set_fgcolor">_set_fgcolor</A><DD>   Sets the foreground color for the current text attribute.
+<DT><A HREF="rconsole.htm#_set_bkcolor">_set_bkcolor</A><DD>   Sets the background color for the current text attribute.
+<DT><A HREF="rconsole.htm#_set_attrtbl">_set_attrtbl</A><DD>   Sets the attribute table address.
+<DT><A HREF="rconsole.htm#_reset_attr">_reset_attr</A><DD>    Resets the current text attribute and attribute flags.
+<DT><A HREF="rconsole.htm#_get_tblattr">_get_tblattr</A><DD>   Returns an attribute from the current attribute table.
+<DT><A HREF="rconsole.htm#_bold_on">_bold_on</A><DD>       Turns bold on.
+<DT><A HREF="rconsole.htm#_bold_off">_bold_off</A><DD>      Turns bold off.
+<DT><A HREF="rconsole.htm#_blink_on">_blink_on</A><DD>      Turns blink on.
+<DT><A HREF="rconsole.htm#_blink_off">_blink_off</A><DD>     Turns blink off.
+<DT><A HREF="rconsole.htm#_bkbold_on">_bkbold_on</A><DD>     Turns high intensity background on.
+<DT><A HREF="rconsole.htm#_bkbold_off">_bkbold_off</A><DD>    Turns high intensity background off.
+<DT><A HREF="rconsole.htm#_get_attrflags">_get_attrflags</A><DD> Returns the current text attribute flags.
+<DT><A HREF="rconsole.htm#_set_attrflags">_set_attrflags</A><DD> Sets the current text attribute flags.
+</DL>
+These functions allow the current and default text display attributes to be determined and manipulated.
+
+<P>
+<A HREF="rconsole.htm#_set_attr">_set_attr</A> and <A HREF="rconsole.htm#_set_dattr">_set_dattr</A> specify the current and default text attributes. The current attribute is the attribute used by the _cput_... and echoed _cget_... functions to display text. The default attribute is the attribute used by the console I/O system when clearing or inserting new lines but not when displaying text. <A HREF="rconsole.htm#_reset_attr">_reset_attr</A> sets the current attribute to the default attribute.
+
+<P>
+A number of these functions control the attribute flags which temporarily modify the current attribute. These flags, if set, force their respective attribute bits to be set in the current attribute when it is used to display text. <A HREF="rconsole.htm#_bold_on">_bold_on</A> and <A HREF="rconsole.htm#_bold_off">_bold_off</A> control the BOLD attribute bit, <A HREF="rconsole.htm#_blink_on">_blink_on</A> and <A HREF="rconsole.htm#_blink_off">_blink_off</A> control the BLINK attribute bit, and <A HREF="rconsole.htm#_bkbold_on">_bkbold_on</A> and <A HREF="rconsole.htm#_bkbold_off">_bkbold_off</A> control the BKBOLD (high intensity background) attribute bit. In addition, <A HREF="rconsole.htm#_get_attrflags">_get_attrflags</A> and <A HREF="rconsole.htm#_set_attrflags">_set_attrflags</A> may be used to read and write all of these attribute bits at once. <A HREF="rconsole.htm#_reset_attr">_reset_attr</A> clears all of the attribute bits when it resets the current attribute to the default attribute.
+
+<P>
+<A HREF="rconsole.htm#_set_attrtbl">_set_attrtbl</A> is provided for installing or removing attribute tables. <A HREF="rconsole.htm#attr_tbl">attr_tbl</A> is a pointer to the attribute table currently in use and is modified by <A HREF="rconsole.htm#_set_attrtbl">_set_attrtbl</A>. <A HREF="rconsole.htm#_set_attr">_set_attr</A>, <A HREF="rconsole.htm#_set_dattr">_set_dattr</A>, <A HREF="rconsole.htm#_set_fgcolor">_set_fgcolor</A>, and <A HREF="rconsole.htm#_set_bkcolor">_set_bkcolor</A> are attribute table aware and accept attribute table codes instead of attribute/color values if a table has been installed. <A HREF="rconsole.htm#_get_attr">_get_attr</A> and <A HREF="rconsole.htm#_get_dattr">_get_dattr</A> return attribute table codes instead of attribute values if a table is installed. <A HREF="rconsole.htm#_get_tblattr">_get_tblattr</A> may be used to convert attribute table codes to table values; this function has no effect if no attribute table is installed.
+
+<H2><A NAME="HEAD0013">Writing and Moving On-Screen Text and Attributes
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_move_textattr">_move_textattr</A><DD> Moves text and attributes from one display region to another display region
+<DT><A HREF="rconsole.htm#_read_textattr">_read_textattr</A><DD> copies text and attributes from a specified display region to a specified buffer.
+<DT><A HREF="rconsole.htm#_write_textattr">_write_textattr</A><DD>Copies text and attributes from a specified buffer to a specified display region.
+</DL>
+These functions read, write and move specified regions of the current screen. The region of interest is specified using screen-relative coordinates (window-relative if windowing is in effect). If a clipping region is currently defined, it is ignored. These functions are the only console I/O functions which do not restrict their actions to the current clipping region.
+
+<P>
+<A HREF="rconsole.htm#_read_textattr">_read_textattr</A> and <A HREF="rconsole.htm#_write_textattr">_write_textattr</A> read and write a specified portion of the screen to and from a buffer in memory. <A HREF="rconsole.htm#_move_textattr">_move_textattr</A> copies a specified portion of the screen from one screen position to another.
+
+<P>
+All of these functions manipulate characters and attributes as character/attribute pairs, with the character in the low byte and the attribute in the high byte.
+
+<H2><A NAME="HEAD0014">Reading and Writing Screen Text and Attributes via Disk
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_hread_textattr">_hread_textattr</A><DD>Copies text and attributes from a specified display region to a disk buffer.
+<DT><A HREF="rconsole.htm#_hwrite_textattr">_hwrite_textattr</A><DD>       Copies text and attributes to a specified display region from a disk buffer.
+</DL>
+These functions read and write specified regions of the current screen. The region of interest is specified using screen-relative coordinates (window-relative if windowing is in effect). If a clipping region is defined, it is ignored. If the virtual screen system is active, then text and attributes are read or written on the active screen. These functions are functionally equivalent to <A HREF="rconsole.htm#_read_textattr">_read_textattr</A>     and <A HREF="rconsole.htm#_write_textattr">_write_textattr</A>,    but they allow screen text and attributes to be saved and restored at arbitrary offsets within disk files. <A HREF="rconsole.htm#_console_init">_console_init</A>        must be called before these functions may be used.
+
+<H2><A NAME="HEAD0015">Selecting the Video Access Method
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_set_directvideo">_set_directvideo</A><DD>       Selects direct video output for the console I/O system.
+<DT><A HREF="rconsole.htm#_set_biosvideo">_set_biosvideo</A><DD> Selects BIOS output for the console I/O system.
+</DL>
+These functions allow the video access method to be specified at run time. Two kinds of access methods are supported: direct and BIOS. BIOS access is relatively slow, but it provides a high degree of compatibility with nonstandard systems; direct video memory access is very fast, but it is hardware dependent.
+
+<P>
+Normally, <A HREF="rconsole.htm#_console_init">_console_init</A> initializes the console I/O system for direct video access. However, under rare circumstances, the active operating environment may not support direct screen access. If <A HREF="rconsole.htm#_console_init">_console_init</A> detects this condition, it sets the <A HREF="rconsole.htm#direct_video">direct_video</A> variable to a state which indicates that BIOS video access is being performed and direct video access is not allowed. In this case, calling <A HREF="rconsole.htm#_set_directvideo">_set_directvideo</A> will result in an error return.
+
+<P>
+The video access method may also be set by directly manipulating the <A HREF="rconsole.htm#direct_video">direct_video</A> variable.
+
+<H2><A NAME="HEAD0016">Moving and Setting the Cursor Position
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_goto_x">_goto_x</A><DD>Moves the cursor to a specified column.
+<DT><A HREF="rconsole.htm#_goto_y">_goto_y</A><DD>Moves the cursor to a specified row.
+<DT><A HREF="rconsole.htm#_goto_xy">_goto_xy</A><DD>       Moves the cursor to a specified column and row.
+<DT><A HREF="rconsole.htm#_goto_home">_goto_home</A><DD>     Moves the cursor to the upper left-hand corner of the current clipping region.
+<DT><A HREF="rconsole.htm#_goto_end">_goto_end</A><DD>      Moves the cursor to the lower right-hand corner of the current clipping region.
+<DT><A HREF="rconsole.htm#_goto_right">_goto_right</A><DD>    Moves the cursor to the right-most column of the current clipping region.
+<DT><A HREF="rconsole.htm#_goto_left">_goto_left</A><DD>     Moves the cursor to the left-most column of the current clipping region.
+<DT><A HREF="rconsole.htm#_goto_top">_goto_top</A><DD>      Moves the cursor to the top row of the current clipping region.
+<DT><A HREF="rconsole.htm#_goto_bottom">_goto_bottom</A><DD>   Moves the cursor to the bottom row of the current clipping region.
+<DT><A HREF="rconsole.htm#_move_right">_move_right</A><DD>    Moves the cursor right one column.
+<DT><A HREF="rconsole.htm#_move_left">_move_left</A><DD>     Moves the cursor left one column.
+<DT><A HREF="rconsole.htm#_move_up">_move_up</A><DD>       Moves the cursor up one row.
+<DT><A HREF="rconsole.htm#_move_down">_move_down</A><DD>     Moves the cursor down one row.
+<DT><A HREF="rconsole.htm#_move_next">_move_next</A><DD>     Moves the cursor once in the current cursor advance direction.
+<DT><A HREF="rconsole.htm#_move_back">_move_back</A><DD>     Moves the cursor once in the direction opposite the current cursor advance direction.
+<DT><A HREF="rconsole.htm#_rel_xy">_rel_xy</A><DD>Moves the cursor a specified distance relative to its current position.
+<DT><A HREF="rconsole.htm#_where_x">_where_x</A><DD>       Returns the current (column) coordinate.
+<DT><A HREF="rconsole.htm#_where_y">_where_y</A><DD>       Returns the current (row) coordinate.
+<DT><A HREF="rconsole.htm#_where_xy">_where_xy</A><DD>      Returns the current cursor coordinates.
+</DL>
+These functions set and get the current cursor position. This is the position where characters and strings are always displayed by the _cput_... and echoed _cget_... functions. The display (hardware) cursor always appears at the current cursor position unless the cursor has been moved out of bounds or turned off.
+
+<P>
+The _goto_... functions move the cursor to new absolute positions. <A HREF="rconsole.htm#_goto_x">_goto_x</A>, <A HREF="rconsole.htm#_goto_left">_goto_left</A>, and <A HREF="rconsole.htm#_goto_right">_goto_right</A> change the cursor column position without changing the row. <A HREF="rconsole.htm#_goto_y">_goto_y</A>, <A HREF="rconsole.htm#_goto_top">_goto_top</A>, and <A HREF="rconsole.htm#_goto_bottom">_goto_bottom</A> change the cursor row position without changing the column. <A HREF="rconsole.htm#_goto_xy">_goto_xy</A>, <A HREF="rconsole.htm#_goto_home">_goto_home</A>, and <A HREF="rconsole.htm#_goto_end">_goto_end</A> change both the row and column positions at the same time.
+
+<P>
+The _move_... and _rel_... functions perform cursor motion relative to the current cursor position. <A HREF="rconsole.htm#_move_up">_move_up</A>, <A HREF="rconsole.htm#_move_down">_move_down</A>, <A HREF="rconsole.htm#_move_left">_move_left</A>, and <A HREF="rconsole.htm#_move_right">_move_right</A> move the cursor one row or column in the specified direction. <A HREF="rconsole.htm#_move_next">_move_next</A> and <A HREF="rconsole.htm#_move_back">_move_back</A> move the cursor in the current cursor advance direction or in the opposite direction. <A HREF="rconsole.htm#_rel_xy">_rel_xy</A> moves the cursor any number of rows and columns from the current position. This relative motion is specified as a signed number of rows and columns to move, with positive values representing right and downward motion and negative values representing left and upward motion.
+
+<P>
+The _where_... functions return the current cursor row and column position. It is usually used to save a cursor position for later restoration using the _goto_... functions.
+
+<H2><A NAME="HEAD0017">Controlling Cursor Appearance
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_cursor_on">_cursor_on</A><DD>     Turns the hardware cursor on.
+<DT><A HREF="rconsole.htm#_cursor_off">_cursor_off</A><DD>    Turns the hardware cursor off.
+<DT><A HREF="rconsole.htm#_get_cursor">_get_cursor</A><DD>    Gets the shape and state of the display cursor.
+<DT><A HREF="rconsole.htm#_set_cursor">_set_cursor</A><DD>    Sets the shape of the display cursor.
+</DL>
+These functions allow the shape and state of the display cursor to be determined and modified. None of these functions affect the cursor position.
+
+<P>
+<A HREF="rconsole.htm#_set_cursor">_set_cursor</A> allows the cursor shape (starting and ending scan lines) to be specified in a hardware independent manner. <A HREF="rconsole.htm#_get_cursor">_get_cursor</A> returns the current cursor shape in the same format and indicates whether the cursor is on or off.
+
+<P>
+<A HREF="rconsole.htm#_cursor_on">_cursor_on</A> and <A HREF="rconsole.htm#_cursor_off">_cursor_off</A> make the hardware cursor visible and invisible. They work reliably on all display adapters, including EGAs.
+
+<H2><A NAME="HEAD0018">Managing the Clipping Region
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_region_on">_region_on</A><DD>     Enables the current clipping region.
+<DT><A HREF="rconsole.htm#_region_off">_region_off</A><DD>    Disables the current clipping region.
+<DT><A HREF="rconsole.htm#_get_region">_get_region</A><DD>    Returns the current clipping region position and dimensions.
+<DT><A HREF="rconsole.htm#_set_region">_set_region</A><DD>    Sets new clipping region coordinates.
+</DL>
+These functions allow the clipping region to be set, read, enabled, and disabled. When the clipping region is enabled, all console I/O output is restricted to this region and all cursor motion is relative to the upper left-hand corner of the region. Character output which takes place outside of this region is lost. If the cursor is moved beyond the boundaries of the clipping region, it becomes invisible. If no clipping region has been defined or the clipping region is disabled, then output is clipped to the screen (or the active window if windowing is in effect).
+
+<P>
+<A HREF="rconsole.htm#_region_on">_region_on</A> turns the currently-defined clipping region on, moving the cursor to the home position in the process. <A HREF="rconsole.htm#_region_off">_region_off</A> disables the current clipping region, returning the cursor to the positionwhich it occupied before <A HREF="rconsole.htm#_region_on">_region_on</A> was called. <A HREF="rconsole.htm#_set_region">_set_region</A> specifies a new clipping region; this new region only takes effect immediately if <A HREF="rconsole.htm#_region_on">_region_on</A> has already been called. <A HREF="rconsole.htm#_get_region">_get_region</A> returns the clipping region position and dimensions and indicates whether or not the region is currently enabled.
+
+<H2><A NAME="HEAD0019">Controlling the Video Border (Overscan) Color
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_get_vborder">_get_vborder</A><DD>   Gets the current video border color and state.
+<DT><A HREF="rconsole.htm#_set_vborder">_set_vborder</A><DD>   Sets the video border color.
+<DT><A HREF="rconsole.htm#_set_vbordattr">_set_vbordattr</A><DD> Sets the video border color to match the background color of a given text attribute.
+<DT><A HREF="rconsole.htm#_vborder_on">_vborder_on</A><DD>    Turns the video border on.
+<DT><A HREF="rconsole.htm#_vborder_off">_vborder_off</A><DD>   Turns the video border off.
+</DL>
+These functions control the color of the video border (or overscan) region. They also allow the video border to be enabled or disabled (_vborder_on and <A HREF="rconsole.htm#_vborder_off">_vborder_off</A>) independently of the border color. All of these functions accept and return attribute table codes if an attribute table has been specified.
+
+<P>
+The color values which are used to specify video border colors are usually not the same as the text attribute values supported by the same monitor. This can make it difficult to set border colors to match background attributes, especially since border color values vary from one display adapter and monitor to another. <A HREF="rconsole.htm#_set_vbordattr">_set_vbordattr</A> solves this problem by setting the video border color to the hardware-specific value which best matches the background color of a specified text attribute. <A HREF="rconsole.htm#_set_vborder">_set_vborder</A> takes the other approach, allowing the video border color to be specified in a hardware dependent manner. <A HREF="rconsole.htm#_get_vborder">_get_vborder</A> returns the value which was used to set the border color.
+
+<H2><A NAME="HEAD001A">Determining and Setting the Video Mode
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_get_vmode">_get_vmode</A><DD>     Returns the current video mode.
+<DT><A HREF="rconsole.htm#_set_vmode">_set_vmode</A><DD>     Sets the video mode.
+<DT><A HREF="rconsole.htm#_set_80cols">_set_80cols</A><DD>    Ensures that the display is in an 80+ column text video mode.
+</DL>
+These functions determine and set the current video mode. The video mode indicates the active adapter and monitor and indicates, in general, how text attributes are to be interpreted when they are displayed.
+
+<P>
+<A HREF="rconsole.htm#_get_vmode">_get_vmode</A> returns the current video mode. <A HREF="rconsole.htm#_set_vmode">_set_vmode</A> forces the current video mode to the specified mode, clears the screen, and calls <A HREF="rconsole.htm#_console_init">_console_init</A> to re-initialize the console I/O system. <A HREF="rconsole.htm#_set_80cols">_set_80cols</A> ensures that the display is in an 80-column (or better) text mode; if it is not currently in an 80+ column mode, then it selects the 80-column mode which is most like the current display mode and calls <A HREF="rconsole.htm#_console_init">_console_init</A>.
+
+<H2><A NAME="HEAD001B">Determining and Setting the Attribute Display Mode
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_get_dmode">_get_dmode</A><DD>     Returns the active display mode.
+<DT><A HREF="rconsole.htm#_set_blinkmode">_set_blinkmode</A><DD> Reprograms the active video display adapter to support blinking characters.
+<DT><A HREF="rconsole.htm#_set_bkboldmode">_set_bkboldmode</A><DD>Reprograms the active display adapter to support high intensity background attributes.
+</DL>
+These functions identify and adjust the current display mode. The display mode indicates exactly how attributes are interpreted by the active display adapter and monitor (see Display Mode, above, for a detailed explanation of display modes).
+
+<P>
+<A HREF="rconsole.htm#_get_dmode">_get_dmode</A> determines the current display mode. It is most often used to select an attribute table which makes the application look as attractive as possible on the active display adapter and monitor.
+
+<P>
+<A HREF="rconsole.htm#_set_blinkmode">_set_blinkmode</A> and <A HREF="rconsole.htm#_set_bkboldmode">_set_bkboldmode</A> are complimentary functions which can be used to adjust the active display mode. <A HREF="rconsole.htm#_set_blinkmode">_set_blinkmode</A> reprograms the active display adapter to interpret the BLINK/BKBOLD attribute bit (bit 7) as a blinking text bit. This reduces the number of availablebackground attributes. <A HREF="rconsole.htm#_set_bkboldmode">_set_bkboldmode</A> reprograms the active display adapter to interpret the BLINK/BKBOLD attribute bit as a high intensity background bit. This precludes the use of blinking text, but it doubles the number of background attributes. These functions work on all display adapters supported by the console I/O system.
+
+<P>
+Note that if <A HREF="rconsole.htm#_set_blinkmode">_set_blinkmode</A> (or <A HREF="rconsole.htm#_set_bkboldmode">_set_bkboldmode</A>) is called, the display mode returned by <A HREF="rconsole.htm#_get_dmode">_get_dmode</A> will reflect the change. Most applications call one function or the other at program startup time and leave the system in that state until the program terminates. This limits the number of attribute tables which need to be defined for the application.
+
+<H2><A NAME="HEAD001C">Checking for Non-Graphics Video Modes
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_is_textmode">_is_textmode</A><DD>   Determines if the current video mode is a text (non-graphics) mode.
+</DL>
+This function determines if the current system video display mode is a alphanumeric text mode. <A HREF="rconsole.htm#_is_textmode">_is_textmode</A>     successfully differentiates text and graphics modes on most display adapters, including nonstandard text and graphics modes. This function DOES NOT depend on <A HREF="rconsole.htm#_console_init">_console_init</A>     and is intended primarily for use within TSRs to determine if the console I/O system is safe to use (see Console I/O Considerations in TSRs in this chapter). This function may also be used to detect nonstandard video text modes (see Supporting Nonstandard Screen Dimensions in this chapter).
+
+<H2><A NAME="HEAD001D">Enabling and Disabling Video Refresh
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_video_off">_video_off</A><DD>     Disables video refresh on the current display adapter.
+<DT><A HREF="rconsole.htm#_video_on">_video_on</A><DD>      Enables video refresh on the current display adapter.
+</DL>
+These functions may be used to temporarily disable and enable video refresh on the current display adapter. The screen is blanked when video refresh is disabled, and it remains blanked until refresh is re-enabled. Multiple screen state changes can be performed with minimal screen flickering while video refresh is disabled, including changes to the video mode, video page, video border, and/or screen dimensions as well as copying, moving, restoring, blanking, or rewriting the screen. These functions affect only the active screen if the virtual screen system is in use; the video refresh state (on or off) is remembered separately for each virtual screen in the system. <A HREF="rconsole.htm#_console_init">_console_init</A>  must be called before using these functions.
+
+<H2><A NAME="HEAD001E">Multiple Adapter Support
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_adapter_init">_adapter_init</A><DD>  Initializes the console I/O system for multiple adapter support.
+<DT><A HREF="rconsole.htm#_get_adapters">_get_adapters</A><DD>  Returns the active display adapter type(s) and monitor type(s).
+<DT><A HREF="rconsole.htm#_get_adaptinfo">_get_adaptinfo</A><DD> Returns information about a specified display adapter.
+<DT><A HREF="rconsole.htm#_set_adapter">_set_adapter</A><DD>   Selects the active display adapter.
+</DL>
+These functions provide low-level support for one or two display adapters within the console I/O unit. More advanced support for text mode screen and display adapter switching is provided in the virtual screen unit (see the Virtual Screen technical notes for details).
+
+<P>
+<A HREF="rconsole.htm#_adapter_init">_adapter_init</A> initializes the console I/O system to support multiple adapters. This function determines which adapters are present in the system and saves all essential information about those adapters for later use by the console I/O and virtual screen systems. <A HREF="rconsole.htm#_adapter_init">_adapter_init</A> must be called before <A HREF="rconsole.htm#_get_adaptinfo">_get_adaptinfo</A> or <A HREF="rconsole.htm#_set_adapter">_set_adapter</A> may be used and before virtual screens may be created on the secondary adapter.
+
+<P>
+<A HREF="rconsole.htm#_get_adapters">_get_adapters</A> and <A HREF="rconsole.htm#_get_adaptinfo">_get_adaptinfo</A> return essential information about the adapters and monitors which are installed in the system. These functions are often used to determine available display resources at program startup. The source code example at the end of the Virtual Screen technical notes demonstrates the use of <A HREF="rconsole.htm#_get_adaptinfo">_get_adaptinfo</A> for this purpose.
+
+<P>
+<A HREF="rconsole.htm#_get_adapters">_get_adapters</A> returns the adapter type and attached monitor type for the primary display adapter and (if present) the secondary display adapter. This low-level function does not depend on <A HREF="rconsole.htm#_adapter_init">_adapter_init</A>. See Monitor Types, below, for a list of the possible monitor types and display adapter types which may be returned by this function. Also, see the source code example at the end of the Virtual Screen technical notes for sample code which uses this function.
+<P>
+<A HREF="rconsole.htm#_get_adaptinfo">_get_adaptinfo</A> returns information about the state and capabilities of a specified adapter. Returned information includes the current video mode, active page, current screen dimensions, all supported screen dimensions, and the number of supported video display pages. This information is also available via the <A HREF="rconsole.htm#_chk_dimens">_chk_dimens</A>, <A HREF="rconsole.htm#_get_vpagecnt">_get_vpagecnt</A>, and <A HREF="rconsole.htm#_get_dimens">_get_dimens</A> functions, but these functions apply to the active adapter only, and <A HREF="rconsole.htm#_get_dimens">_get_dimens</A> returns the dimensions of the active, logical screen instead of the physical adapter. <A HREF="rconsole.htm#_get_adaptinfo">_get_adaptinfo</A> returns this information, all at once, whether or not the specified adapter is the active adapter.
+
+<P>
+<A HREF="rconsole.htm#_set_adapter">_set_adapter</A> manually switches active display adapters. This function accepts absolute adapter types (i.e., MDA, CGA, EGA, MCGA, or VGA) as well as a generic "secondary adapter" indicator on input. If the requested adapter is present, this function selects the new adapter as the active adapter, sets the video page to page zero, and calls <A HREF="rconsole.htm#_console_init">_console_init</A> to re-initialize the console I/O system on that adapter and page. Where possible, adapter switching is performed without using BIOS calls to eliminate unnecessary screen blanking, reprogramming of color palettes, cursor emulation, etc. An error is returned if the requested adapter is not present. If <A HREF="rconsole.htm#_set_adapter">_set_adapter</A> is called when the virtual screen system is in use, then the active screen is re-initialized to reside on page zero of the new adapter, text and attributes are not transferred to the new adapter, and the new screen will not be visible on the new adapter until it is opened by calling <A HREF="rvirtual.htm#_vscreen_open">_vscreen_open</A>.
+
+<P>
+Due to BIOS limitations, the video mode of the second display adapter cannot always be determined by <A HREF="rconsole.htm#_adapter_init">_adapter_init</A>. In this case a "best guess" is made as to the text mode state of the second adapter. This guess is enforced via a BIOS video mode change the first time the secondary adapter is physically selected by <A HREF="rconsole.htm#_set_adapter">_set_adapter</A> or by the virtual screen system. Thereafter, text mode adapter switching is performed directly, without issuing BIOS calls. The virtual screen system allows this extra mode change to be circumvented since it allows the video mode and screen dimensions of a virtual screen to be specified when that screen is created. For this reason, <A HREF="rconsole.htm#_set_adapter">_set_adapter</A> is rarely used to switch adapters manually when the virtual screen system is in use.
+
+<P>
+WARNING!        Adapter switching of any kind is not recommended within TSRs because the state of the second adapter cannot be reliably determined by <A HREF="rconsole.htm#_adapter_init">_adapter_init</A> (see preceding explanation).
+
+<H2><A NAME="HEAD001F">Monitor Types
+</A></H2>
+
+As used in this documentation, monitor type denotes the type of physical display attached to the active display adapter. The following symbolic constants identify the possible monitor types. These equates are defined in CONSOLE.H:
+<DL COMPACT>
+<DT>MONO<DD>                            (0x00) Digital monochrome display
+<DT>RGB<DD>                             (0x01) RGB color display (200 scan lines)
+<DT>ECD_LO<DD>                  (0x02) Enhanced color display (200 scan lines)
+<DT>ECD_HI<DD>                  (0x03) Enhanced color display (350 scan lines)
+<DT>ACOLOR<DD>                  (0x04) Analog color display (variable scan lines)
+<DT>AMONO<DD>                   (0x05) Analog monochrome display
+</DL>
+The following table indicates the possible adapter/monitor combinations. These are the only combinations which may be returned by the <A HREF="rconsole.htm#_get_adapters">_get_adapters</A> function:
+<PRE>
+          MDA             CGA             EGA            MCGA            VGA
+
+MONO      Yes              -              Yes             -               -
+RGB        -              Yes             Yes             -               -
+ECD_LO     -               -              Yes             -               -
+ECD_HI     -               -              Yes             -               -
+ACOLOR     -               -               -             Yes             Yes
+AMONO      -               -               -             Yes             Yes
+</PRE>
+The monitor type and the display mode are related but independent values. Specifically, the active display mode is determined from the active monitor type, video mode, and blink/bkbold mode. See the documentation for the <A HREF="rconsole.htm#_get_dmode">_get_dmode</A> function for more information about display modes.
+
+<H2><A NAME="HEAD0020">Determining the Active Monitor Type
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#monitor_type">monitor_type</A><DD>   (Variable) Indicates the type of monitor attached to the active display adapter.
+</DL>
+The <A HREF="rconsole.htm#monitor_type">monitor_type</A> variable indicates the type of physical display attached to the active display adapter. The value maintained in this variable is the same as the value returned by <A HREF="rconsole.htm#_get_adapters">_get_adapters</A>. If the virtual screen system is in use, this variable indicates the type of monitor attached to the display adapter of the active screen. This variable is initialized by <A HREF="rconsole.htm#_console_init">_console_init</A> and <A HREF="rconsole.htm#_get_adapters">_get_adapters</A>.
+
+<H2><A NAME="HEAD0021">Determining and Setting the Active Video Display Page
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_get_vpage">_get_vpage</A><DD>     Returns the active video display page.
+<DT><A HREF="rconsole.htm#_set_vpage">_set_vpage</A><DD>     Sets the active video display page.
+<DT><A HREF="rconsole.htm#_get_vpagecnt">_get_vpagecnt</A><DD>  Returns the number of available video display pages on the active display adapter.
+</DL>
+These functions provide fundamental text mode support for video display page switching using the console I/O system. More advanced video display page support is provided in the virtual screen unit (see the Virtual Screen technical notes).
+
+<P>
+<A HREF="rconsole.htm#_get_vpage">_get_vpage</A> returns the page number of the active display page as an origin 0 number. <A HREF="rconsole.htm#_set_vpage">_set_vpage</A> changes active video pages on the active display adapter to a specified page and calls <A HREF="rconsole.htm#_console_init">_console_init</A> to re-initialize the console I/O system. These functions return or set the information associated with the active screen if the virtual screen system is active. <A HREF="rconsole.htm#_console_init">_console_init</A> must be called before these functions may be used.
+
+<P>
+<A HREF="rconsole.htm#_get_vpagecnt">_get_vpagecnt</A> returns the number of available video display pages in the current text video display mode on the active adapter. A "best guess" page count is returned if the number of available video pages cannot be determined due to BIOS limitations. <A HREF="rconsole.htm#_console_init">_console_init</A> must be called before this function may be used.
+
+<P>
+<A HREF="rconsole.htm#_get_vpagecnt">_get_vpagecnt</A> returns information for the active adapter only. <A HREF="rconsole.htm#_get_adaptinfo">_get_adaptinfo</A> returns the same information, and more, for either adapter. For this reason, <A HREF="rconsole.htm#_get_adaptinfo">_get_adaptinfo</A> is normally used instead of <A HREF="rconsole.htm#_get_vpagecnt">_get_vpagecnt</A> to determine available display resources at program startup.
+
+<P>
+The <A HREF="rconsole.htm#_set_vpage">_set_vpage</A> function is rarely used to switch between screens on different video display pages when the virtual screen system is in use. Instead, the virtual screen unit is usually relied on to switch video pages transparently whenever a new screen is opened.  If <A HREF="rconsole.htm#_set_vpage">_set_vpage</A> is used on a buffered virtual screen, the contents of that screen are physically reassigned to the new video page. If it is used on an unbuffered screen, the screen is blanked in the default text attribute when it is reassigned to the new video page. See Virtual Screen Considerations in this section as well as the Virtual Screen technical notes for related information.
+
+<H2><A NAME="HEAD0022">Determining and Setting Screen Dimensions
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_get_dimens">_get_dimens</A><DD>    Returns the current screen dimensions of the active display adapter.
+<DT><A HREF="rconsole.htm#_set_dimens">_set_dimens</A><DD>    Sets the screen dimensions of the active display adapter.
+<DT><A HREF="rconsole.htm#_chk_dimens">_chk_dimens</A><DD>    Determines if specified screen dimensions are supported by the active display adapter.
+</DL>
+These functions provide support for extended text mode screen dimensions on EGA, MCGA, and VGA display adapters.
+
+<P>
+<A HREF="rconsole.htm#_get_dimens">_get_dimens</A> returns the current screen dimensions of the active display adapter in rows and columns. <A HREF="rconsole.htm#_chk_dimens">_chk_dimens</A> determines if a requested screen dimension is supported on the active display adapter. <A HREF="rconsole.htm#_set_dimens">_set_dimens</A> reprograms the active display adapter to specified dimensions, blanks the screen, selects page zero as the new video display page, and calls <A HREF="rconsole.htm#_console_init">_console_init</A> to re-initialize the console I/O system for the new screen dimensions and video page. <A HREF="rconsole.htm#_console_init">_console_init</A> must be called before these functions may be used.
+
+<P>
+The adapter type and monitor type of the active display adapter determine which screen dimensions are supported by <A HREF="rconsole.htm#_set_dimens">_set_dimens</A>, as follows:
+<PRE>
+<B>
+         MDA/EGA  CGA/EGA      EGA          EGA        MCGA            VGA
+          MONO      RGB       ECD_LO       ECD_HI      Any             Any
+</B>
+40x12      -         -          Yes          -          -              Yes
+<P>
+80x12      -         -          Yes          -          -              Yes
+<P>
+                                                        
+<P>
+40x14      -         -          Yes          -          -              Yes
+<P>
+80x14      -         -          Yes          -          -              Yes
+
+<P>
+40x21      -         -           -          Yes         -               -
+<P>
+80x21      -         -           -          Yes         -               -
+
+<P>
+40x25     Yes       Yes         Yes         Yes        Yes             Yes
+<P>
+80x25     Yes       Yes         Yes         Yes        Yes             Yes
+
+<P>
+40x28      -         -           -           -          -              Yes     
+<P>
+80x28      -         -           -           -          -              Yes     
+<P>
+                                                                          
+<P>
+40x43      -         -           -          Yes         -               -      
+<P>
+80x43      -         -           -          Yes         -               -      
+<P>
+                                                                          
+<P>
+40x50      -         -           -           -         Yes             Yes     
+<P>
+80x50      -         -           -           -         Yes             Yes     
+</PRE>
+Only the active screen is affected by <A HREF="rconsole.htm#_set_dimens">_set_dimens</A> if the virtual screen system is active; all other virtual screens on the same display adapter are unaffected.
+
+<P>
+WARNING!        Use of <A HREF="rconsole.htm#_set_dimens">_set_dimens</A>      is not recommended in TSRs because custom screen fonts in use by a foreground application will be lost when the adapter is reprogrammed.
+
+<H2><A NAME="HEAD0023">Supporting Nonstandard Screen Dimensions
+</A></H2>
+
+Besides the dimensions supported by <A HREF="rconsole.htm#_set_dimens">_set_dimens</A>, other nonstandard text mode screen dimensions are available on many display adapters. These modes are usually selected by changing the current video display mode to an extended value. For example, calling <A HREF="rconsole.htm#_set_vmode">_set_vmode</A>        with a mode of 0x54 usually selects a 132-column text mode on Paradise VGA display adapters. These extended text modes are properly supported by the console I/O system once they have been selected. However, nonstandard text modes cannot be directly selected by <A HREF="rconsole.htm#_set_dimens">_set_dimens</A>        because video mode values vary from manufacturer to manufacturer.
+
+<P>
+Fortunately, with the help of Spontaneous Assembly 3.0 it is easy to determine which extended modes are available on the target system at run time. The following code performs this task:
+<PRE><CODE>
+{
+   int scrfbuf;
+   char row, col;
+   char vmode = 0xB+NOCLEAR;
+   char *workbuf;
+   int wsize;
+   wsize = <A HREF="rconsole.htm#_screen_bufsize">_screen_bufsize</A>();
+   workbuf = (char *)malloc(wsize);
+   <A HREF="rfileio.htm#_lseekbof_h">_lseekbof_h</A>(fhandle);                                /* fhandle = handle for screen */
+   if(_hsave_screen(h_scrbuf, workbuf, wsize) == -1);
+      return(1);                                /* unable to save screen state */
+   <A HREF="rconsole.htm#_video_off">_video_off</A>();                                /* disable video */
+   do {                                         
+      <A HREF="rconsole.htm#_set_vmode">_set_vmode</A>(vmode);                        /* <A HREF="rexit.htm#start">start</A> with first reserved mode */
+      if(!_is_textmode())                       /* is it in text mode? */
+         <A HREF="rconsole.htm#_get_dimens">_get_dimens</A>(&srow, &col);              /*  n: don't remember it */
+      ...                                       /* save dimens in array */
+      vmode++;
+   } while (vmode < 0xFF);
+   <A HREF="rfileio.htm#_lseekbof_h">_lseekbof_h</A>(fhandle);
+   <A HREF="rconsole.htm#_hrestore_screen">_hrestore_screen</A>(h_scrbuf, workbuf, wsize);
+   ...                                          /* display list of extended modes */
+}
+</CODE></PRE>
+This procedure takes a noticeable length of time to execute. For this reason, it is best used as a program setup feature which is executed only when the user wishes to determine what their extended display options are.
+
+<P>
+WARNING!        Although this video mode example does locate the nonstandard video modes on many adapters, some adapters do not appropriately validate extended video mode requests. These adapters may hang the system if the wrong video mode is selected. They may also, in some remote cases, even damage the monitor. PowerQuest/Base Two Development assumes no responsibility for your use of this example code.
+
+<H2><A NAME="HEAD0024">Saving and Restoring the Video State
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_save_vstate">_save_vstate</A><DD>   Saves the current video state for later restoration by <A HREF="rconsole.htm#_restore_vstate">_restore_vstate</A>.
+<DT><A HREF="rconsole.htm#_restore_vstate">_restore_vstate</A><DD>Restores the video state previously saved by <A HREF="rconsole.htm#_save_vstate">_save_vstate</A>.
+<DT><A HREF="rconsole.htm#_get_vstate">_get_vstate</A><DD>    Returns the current video state.
+<DT><A HREF="rconsole.htm#_set_vstate">_set_vstate</A><DD>    Sets the video state to a specified state.
+</DL>
+These functions get and set the current video state (and, optionally, the contents of the current screen). The current video state includes the current display adapter, video refresh state, video mode, active video page, screen dimensions, cursor shape and state, cursor position, blink/high-intensity mode, border color and state, and current and default text attributes. These functions assume that the video system is in a non-graphics video mode when they are called. If the virtual screen system is active, then the information is saved or restored for the active screen only.
+
+<P>
+<A HREF="rconsole.htm#_save_vstate">_save_vstate</A>    and <A HREF="rconsole.htm#_restore_vstate">_restore_vstate</A>     save and restore the video state without saving the contents of the screen. The state is saved in an internal buffer which only maintains the last state saved. These functions are normally used to save and restore the state of the video system when an application begins and ends execution. <A HREF="rconsole.htm#_restore_vstate">_restore_vstate</A>      blanks the screen in the default attribute and leaves the cursor at the upper left corner of the screen when it restores the saved video state.
+
+<P>
+<A HREF="rconsole.htm#_get_vstate">_get_vstate</A>     and <A HREF="rconsole.htm#_set_vstate">_set_vstate</A>         are functionally equivalent to <A HREF="rconsole.htm#_save_vstate">_save_vstate</A>     and <A HREF="rconsole.htm#_restore_vstate">_restore_vstate</A>, but they allow video state information to be saved and restored from arbitrary buffers of type vstat. Therefore, these functions may be used to save and restore any number of video states. The vstat structure is defined in CONSOLE.H as follows:
+<PRE><CODE>
+typedef struct {
+   char vst_adapter;                      /* active display adapter */
+   char vst_vmode;                        /* active video display mode */
+   char vst_vpage;                        /* active video display page */
+   char vst_refresh;                      /* refresh state (1=on,0=off) */
+   unsigned int vst_dimens;       /* screen dimensions (cols,rows) */
+   char vst_attr;                         /* current text attribute */
+   char vst_dattr;                        /* default text attribute */
+   char vst_vbon;                         /* video border state (1=on,0=off) */
+   char vst_vbcolor;                      /* video border color */
+   char vst_bkbold;                       /* bkbold/blink mode (1=bkbold,0=blink) */
+   char vst_curon;                        /* cursor state (1=on,0=off) */
+   unsigned int vst_curtype;      /* cursor type (0-255,0-255) */
+   unsigned int vst_curpos;       /* cursor position (col,row) */
+} vstat;
+</CODE></PRE>
+Like <A HREF="rconsole.htm#_restore_vstate">_restore_vstate</A>, <A HREF="rconsole.htm#_set_vstate">_set_vstate</A> blanks the screen in the default text attribute when it restores the video state. However, <A HREF="rconsole.htm#_set_vstate">_set_vstate</A> does not force the cursor to the upper left corner of the screen. Instead, <A HREF="rconsole.htm#_get_vstate">_get_vstate</A> returns the upper left corner (0,0) as the cursor position and <A HREF="rconsole.htm#_set_vstate">_set_vstate</A>      restores the cursor to the position specified in the vstat structure. The actual cursor position may be saved and restored, if required, by calling <A HREF="rconsole.htm#_where_xy">_where_xy</A>   immediately after <A HREF="rconsole.htm#_get_vstate">_get_vstate</A>   and then storing the returned value in the vst_curpos field, as follows:
+<PRE><CODE>
+   ...
+   int xy_pos;
+   ...
+   <A HREF="rconsole.htm#_get_vstate">_get_vstate</A>(vbuf);                                   /* get video state */
+   vstat.vst_curpos = <A HREF="rconsole.htm#_where_xy">_where_xy</A>();              /* get cursor position, save in VSTAT buffer */
+   <A HREF="rconsole.htm#_set_vstate">_set_vstate</A>(vbuf);                                   /* restore vstate+curpos */
+   ...
+</CODE></PRE>
+To minimize undesirable side effects, only essential reprogramming of the display adapter takes place when the video state is restored by <A HREF="rconsole.htm#_restore_vstate">_restore_vstate</A>       or <A HREF="rconsole.htm#_set_vstate">_set_vstate</A>. This means, for example, that no video mode change is performed if the adapter is already in the required video mode.
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_console_init">_console_init</A><DD>  must be called before these functions may be used. In addition, <A HREF="rconsole.htm#_adapter_init">_adapter_init</A>   must be called first if adapter switching may be required when a video state is restored. <A HREF="rconsole.htm#_restore_vstate">_restore_vstate</A>       and <A HREF="rconsole.htm#_set_vstate">_set_vstate</A>         call <A HREF="rconsole.htm#_console_init">_console_init</A>      to re-initialize the console I/O system.
+</DL>
+<H2><A NAME="HEAD0025">Saving and Restoring the Screen
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_save_screen">_save_screen</A><DD>   Saves the current screen and video state.
+<DT><A HREF="rconsole.htm#_restore_screen">_restore_screen</A><DD>Restores a previously saved screen and video state.
+<DT><A HREF="rconsole.htm#_hsave_screen">_hsave_screen</A><DD>  Saves the current screen and video state to a specified disk buffer.
+<DT><A HREF="rconsole.htm#_hrestore_screen">_hrestore_screen</A><DD>       Restores a previously saved screen and video state from a specified disk buffer._screen_bufsize  Returns the size of the buffer required by <A HREF="rconsole.htm#_save_screen">_save_screen</A>.
+</DL>
+These functions save and restore all text and attributes on the current screen as well as the current video state. The saved video state includes the current display adapter, video refresh state, video mode, active video page, screen dimensions, cursor shape and state, cursor position, blink/high-intensity mode, border color and state, and current and default text attributes. These functions assume that the video system is in a non-graphics video mode when they are called. If the virtual screen system is active, then the information is saved or restored for the active screen only.
+
+<P>
+<A HREF="rconsole.htm#_save_screen">_save_screen</A>    and <A HREF="rconsole.htm#_restore_screen">_restore_screen</A>     save the video state and the active screen to a buffer in memory. The video state is saved at the beginning of the buffer in a structure of type VSTAT. The screen information follows (character, attribute pairs) at the first even offset in the buffer after the VSTAT structure.
+
+<P>
+<A HREF="rconsole.htm#_hsave_screen">_hsave_screen</A>   and <A HREF="rconsole.htm#_hrestore_screen">_hrestore_screen</A>    are functionally equivalent to <A HREF="rconsole.htm#_save_screen">_save_screen</A>     and <A HREF="rconsole.htm#_restore_screen">_restore_screen</A>, but they save and restore the screen contents and video state information using buffers at arbitrary offsets within disk files.
+
+<P>
+The <A HREF="rconsole.htm#_screen_bufsize">_screen_bufsize</A>     function calculates the size of the required screen/video state buffer (which depends on the screen dimensions). This allows screen buffers to be allocated dynamically. Although the calculated size applies to disk buffers as well as memory buffers, disk buffers are usually allocated at a fixed size of 16K to accommodate 132-column text video modes (132x60x2=15840 bytes, plus the VSTAT structure). Standard 80x25 screens can be easily saved in 4K buffers. Disk buffers are normally allocated in increments of 512 bytes for maximum disk performance.
+
+<P>
+<A HREF="rconsole.htm#_console_init">_console_init</A>   must be called before these functions may be used. In addition, <A HREF="rconsole.htm#_adapter_init">_adapter_init</A>   must be called first if adapter switching may be required when a screen is restored. <A HREF="rconsole.htm#_restore_screen">_restore_screen</A>    and <A HREF="rconsole.htm#_hrestore_screen">_hrestore_screen</A>    call <A HREF="rconsole.htm#_console_init">_console_init</A>      to re-initialize the console I/O system.
+
+<H2><A NAME="HEAD0026">Determining Active Console I/O Hardware
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rconsole.htm#_is_cga">_is_cga</A><DD>Indicates whether or not the active display adapter is CGA compatible.
+<DT><A HREF="rconsole.htm#_is_ega">_is_ega</A><DD>Indicates whether or not the active display adapter is EGA compatible.
+<DT><A HREF="rconsole.htm#_is_mcga">_is_mcga</A><DD>       Indicates whether or not the active display adapter is MCGA compatible.
+<DT><A HREF="rconsole.htm#_is_mda">_is_mda</A><DD>Indicates whether or not the active display adapter is MDA compatible.
+<DT><A HREF="rconsole.htm#_is_vga">_is_vga</A><DD>Indicates whether or not the active display adapter is VGA compatible.
+<DT><A HREF="rconsole.htm#_is_enkbd">_is_enkbd</A><DD>      Determines whether or not the attached keyboard is an enhanced keyboard.
+<DT><A HREF="rconsole.htm#_get_adapter">_get_adapter</A><DD>   Returns the active display adapter type.
+</DL>
+These functions indicate the current display adapter and keyboard configuration.
+
+<P>
+<A HREF="rconsole.htm#_is_mda">_is_mda</A>, <A HREF="rconsole.htm#_is_cga">_is_cga</A>, <A HREF="rconsole.htm#_is_ega">_is_ega</A>, <A HREF="rconsole.htm#_is_mcga">_is_mcga</A>, and <A HREF="rconsole.htm#_is_vga">_is_vga</A> all indicate whether or not the active display adapter is with the specified adapter type. For example, <A HREF="rconsole.htm#_is_ega">_is_ega</A> returns TRUE if the active display adapter is either EGA or VGA compatible, since the VGA is fully EGA compatible. This makes these functions useful for branching around hardware-specific code (i.e., programming an EGA compatible adapter to support 43-line display mode).
+
+<P>
+<A HREF="rconsole.htm#_get_adapter">_get_adapter</A> indicates the exact type of the active display adapter (MDA, CGA, EGA, MCGA, VGA).
+
+<P>
+For efficiency, all of these functions, except <A HREF="rconsole.htm#_get_adapter">_get_adapter</A> and <A HREF="rconsole.htm#_is_enkbd">_is_enkbd</A>, depend on <A HREF="rconsole.htm#_console_init">_console_init</A>. Note that the <A HREF="rconsole.htm#adapter_type">adapter_type</A> variable (which is initialized by <A HREF="rconsole.htm#_console_init">_console_init</A>) contains the exact value returned by <A HREF="rconsole.htm#_get_adapter">_get_adapter</A>.
+
+<H2><A NAME="HEAD0027">Colors and Color Attributes
+</A></H2>
+
+Color attributes (text display attributes for color monitors) consist of a foreground color, a background color, and optional blink and/or intensity attribute bits. In an attribute byte, the foreground color occupies bits 0-2, the BOLD (foreground high intensity) bit occupies bit 3, the background color occupies bits 4-6, and the BLINK or BKBOLD (background high intensity) bit occupies bit 7. The following symbolic constants are defined in CONSOLE.H to simplify the process of defining complete color attributes:
+<PRE>
+Foreground and Background Colors:
+
+BLACK                    (0x00) Black
+BLUE                     (0x01) Blue
+GREEN                    (0x02) Green
+CYAN                     (0x03) Cyan
+RED                      (0x04) Red
+MAGENTA                  (0x05) Magenta
+BROWN                    (0x06) Brown (low intensity yellow)
+LTGRAY                   (0x07) Light gray (low intensity white)
+DARKGRAY                 (0x08) High intensity black
+LTBLUE                   (0x09) High intensity blue
+LTGREEN                  (0x0A) High intensity green
+LTCYAN                   (0x0B) High intensity cyan
+LTRED                    (0x0C) High intensity red
+LTMAGENTA                (0x0D) High intensity magenta
+YELLOW                   (0x0E) Yellow
+WHITE                    (0x0F) High intensity white
+
+Blink and Intensity Bits:
+
+BOLD                     (0x08) Bold foreground
+BLINK                    (0x80) Blinking text
+BKBOLD                   (0x80) Bold (high intensity) background
+</PRE>
+The constants above may be combined using the following formula:
+
+<P>
+Attribute = Foreground + (16*Background) + Blink or intensity bits
+
+<P>
+For example, the following code sample defines new current and default text attributes:
+<PRE><CODE>
+   ...
+   <A HREF="rconsole.htm#_set_dattr">_set_dattr</A>(LTGRAY+(16*BLUE);                 /* default = LTGRAY on BLUE */
+   <A HREF="rconsole.htm#_set_attr">_set_attr</A>(WHITE+(16*BLUE)+BLINK);    /* current = BLINK WHITE on BLUE */
+   ...
+</CODE></PRE>
+It is important to remember that the BLINK and BKBOLD bits are identical; their interpretation depends on the programmed state of the active display adapter. <A HREF="rconsole.htm#_set_blinkmode">_set_blinkmode</A> and <A HREF="rconsole.htm#_set_bkboldmode">_set_bkboldmode</A> may be used to change the interpretation of this bit by reprogramming the active display adapter. Note also that colors DARKGRAY through WHITE set the BOLD (high intensity) bit if they are used as foreground colors; these colors set the BKBOLD (high intensity background)bit if they are used as background colors. If any of these colors is used as a background color and background high intensity has not been enabled using <A HREF="rconsole.htm#_set_bkboldmode">_set_bkboldmode</A>, then the attribute is interpreted by the display adapter as blinking text (BLINK) on the corresponding low intensity background color.
+
+<H2><A NAME="HEAD0028">Monochrome Attributes
+</A></H2>
+
+Monochrome attributes (text display attributes for monochrome monitors) use the same format as color attributes (see Colors and Color Attributes, above). However, only a few of the possible foreground and background attribute combinations actually produce unique display attributes. For this reason, it is best to think of each of these foreground and background combinations as a complete attribute rather than dealing with foreground and background attributes separately. In addition, the BLINK and BKBOLD bits apply to monochrome attributes just as they apply to color attributes. These attributes and bits (defined in CONSOLE.H) are as follows:
+<PRE>
+Monochrome Attributes:
+
+M_NORMAL                 (0x07) Normal text
+M_BOLD                   (0x0F) Bold text
+M_UNDERLINE              (0x01) Underlined text
+M_BOLDUNDER              (0x09) Bold, underlined text
+M_REVERSE                (0x70) Reverse video
+M_BOLDREV                (0x78) Reverse video, bold text
+
+Blink and Intensity Bits:
+
+BLINK                    (0x80) Blinking text
+BKBOLD                   (0x80) Bold (high intensity) background
+</PRE>
+The attributes shown above may be used directly when specifying a monochrome attribute. In addition, the BLINK and BKBOLD bits may be combined with the monochrome attributes by bitwise ORing them together with an attribute as shown in the second line of this example:
+<PRE><CODE>
+   ...
+   <A HREF="rconsole.htm#_set_dattr">_set_dattr</A>(M_NORMAL)                   /* default= NORMAL */
+   <A HREF="rconsole.htm#_set_attr">_set_attr</A>(M_NORMAL+BLINK)      /* current= blinking NORMAL */
+   ...
+</CODE></PRE>
+As with color attributes, the monochrome BLINK and BKBOLD bits are identical; their interpretation depends on the way in which the active display adapter has been programmed. <A HREF="rconsole.htm#_set_blinkmode">_set_blinkmode</A> and <A HREF="rconsole.htm#_set_bkboldmode">_set_bkboldmode</A> may be used to change the interpretation of this bit.
+
+<P>
+It is important not to confuse the monochrome, black-and-white, and gray scale display modes. These display modes are explained thoroughly under Display Modes, above.
+
+<H2><A NAME="HEAD0029">Black and White Attributes
+</A></H2>
+
+Black and white attributes (text display attributes for black and white monitors) are identical to monochrome attributes, with one major difference: underlining is not supported. This means that the symbolic constants for monochrome attributes may be used for black and white attributes as long as M_UNDERLINE and M_BOLDUNDER are not used. Reverse video is usually substituted for underline in black and white display modes; this is most easily done using attribute tables (see Using Attribute Tables, above, and Sample Program, below).
+
+<P>
+It is important not to confuse the monochrome, black-and-white, and gray scale display modes. These modes are explained thoroughly under Display Modes, above.
+
+<H2><A NAME="HEAD002A">Gray Scale Attributes
+</A></H2>
+
+Gray scale attributes (text display attributes for gray scale monitors) are specified exactly like color attributes. The only difference between the two is that the display hardware displays the attributes as shades of gray instead of colors if the current display mode is a gray scale mode.
+
+<P>
+The exact method used to map gray scale attributes to shades of gray is not uniform for all adapters. For this reason, it is advisable to allow the end user to customize gray scale display attributes for their particular display hardware (see Using Attribute Tables, above).
+
+<P>
+It is important not to confuse the monochrome, black-and-white, and gray scale display modes. These modes are explained thoroughly under Display Modes, above.
+
+<H2><A NAME="HEAD002B">Conditionally Assembling the Console I/O System
+</A></H2>
+
+All of the console I/O screen output functions include code for BIOS video access, direct video access, and direct video access with "snow" control. This makes the console I/O system very flexible, but can result in unnecessary overhead if BIOS and/or snow control is not required by a particular application.
+
+<P>
+For information on how to reassemble the underlying assembly functions to exclude selected portions of the console I/O system, refer to the console I/O section in the Spontaneous Assembly 3.0 manual.
+
+<H2><A NAME="HEAD002C">Console I/O Considerations in TSRs
+</A></H2>
+
+The TSR system only checks for BIOS availability when an entry point is called which uses the _Con resource. The TSR system does NOT automatically save and restore the contents or state of the current screen, nor does it automatically initialize the console I/O system. This functionality must be performed each time the TSR receives control before the console I/O system can be used.
+
+<P>
+The following list outlines the steps which should be followed when writing a TSR entry point which utilizes the console I/O system:
+<OL>
+<LI>    The _Con resource must be specified as a required resource for any TSR entry point which intends to use the console I/O system. In addition, the _Dos resource must be specified if the _hsave_... or _hread_... functions are to be used to save the screen contents. These resources must be specified when the entry definition structure is defined.
+<LI>     <A HREF="rconsole.htm#_is_textmode">_is_textmode</A>    should be called as soon as the TSR entry point receives control. If <A HREF="rconsole.htm#_is_textmode">_is_textmode</A>       indicates that the video display adapter is in a non-text mode, then the entry point should return without calling <A HREF="rconsole.htm#_console_init">_console_init</A>. Before returning, the TSR entry point may sound a tone on the system speaker or add an entry request structure to the entry request queue to indicate that the TSR entry attempt failed.
+<LI>     <A HREF="rconsole.htm#_console_init">_console_init</A>   must be called to initialize the console I/O system.
+<LI>      The video state and contents of the current screen must be saved before console I/O is performed. This may be performed by calling <A HREF="rconsole.htm#_save_screen">_save_screen</A>         or <A HREF="rconsole.htm#_hsave_screen">_hsave_screen</A>. Alternatively, a smaller area of the screen may be saved and restored by calling <A HREF="rconsole.htm#_save_vstate">_save_vstate</A>         followed by <A HREF="rconsole.htm#_read_textattr">_read_textattr</A>      or <A HREF="rconsole.htm#_hread_textattr">_hread_textattr</A>.
+<LI>      After the TSR gains control, console I/O should only be performed on the active display adapter. Due to BIOS limitations, calling _adapter_switch       or creating virtual screens on the secondary adapter could corrupt the screen contents and video state of the secondary display adapter.
+<LI>      Video mode changes and screen dimension changes are not recommended, since they may change custom text mode fonts which are being used by the foreground application. This could change the appearance of the screen when the TSR returns control to the foreground application.
+<LI>      When the TSR has finished its work, the screen state and contents must be restored before control passes to the foreground application. This may be performed by calling <A HREF="rconsole.htm#_restore_screen">_restore_screen</A>        or <A HREF="rconsole.htm#_hrestore_screen">_hrestore_screen</A> (or <A HREF="rconsole.htm#_restore_vstate">_restore_vstate</A>         followed by <A HREF="rconsole.htm#_write_textattr">_write_textattr</A>     or <A HREF="rconsole.htm#_hwrite_textattr">_hwrite_textattr</A>     if a small portion of the screen was saved).
+</OL>
+<H2><A NAME="HEAD002D">Virtual Screen Considerations
+</A></H2>
+
+When screens are managed by the virtual screen system, console I/O functions only affect the active screen. If the active screen is visible on its adapter, then console I/O changes take effect immediately. If not, the changes are made internally and are not physically visible until that screen is opened. This rule applies to all console I/O functions, including <A HREF="rconsole.htm#_set_adapter">_set_adapter</A>, <A HREF="rconsole.htm#_set_vpage">_set_vpage</A>, <A HREF="rconsole.htm#_set_dimens">_set_dimens</A>, and <A HREF="rconsole.htm#_set_vmode">_set_vmode</A>.
+
+<P>
+This means that <A HREF="rconsole.htm#_set_adapter">_set_adapter</A>    cannot be counted on to physically switch adapters if the virtual screen system is in use. In fact, the virtual screen system may physically switch adapters any time a virtual screen system function is called, and the physically selected adapter may differ from the adapter of the active screen. This is necessary to allow console I/O to be directed to screens which may not be visible on their adapters. This is not an issue if the virtual screen system is not in use.
+
+<H2><A NAME="HEAD002E">Sample Program
+</A></H2>
+
+The sample program shown below uses of a number of console I/O functions and demonstrates the following console I/O system features: saving and restoring the video state, determining and adjusting the display mode, setting the video border color, installing and using attribute tables, hardware independent output using attribute tables, adjusting the cursor advance direction, displaying centered strings, attribute manipulation, setting the clipping region, reading keys from the keyboard, and more. The program is listed in its entirety.
+<PRE><CODE>
+#include <console.h>
+
+#define BACKGROUND          0                   /* screen background */
+#define NORMAL              1                   /* normal text */
+#define BOLDTEXT            2                   /* bold text */
+#define UNDERLINE           3                   /* underlined text */
+#define BOLDUNDER           4                   /* bold, underlined text */
+#define HIGHLIGHT           5                   /* highlighted text */
+#define BOLDHIGHLIGHT   6                       /* bold, highlighted text */
+#define BORDER              7                   /* box border */
+
+char mono_table[] = {                           /* monochrome attributes: */             
+               M_REVERSE,                       /* screen background */                  
+               M_NORMAL,                        /* normal text */                        
+               M_BOLD,                          /* bold text */                          
+               M_UNDERLINE,                     /* underlined text */                    
+               M_BOLDUNDER,                     /* bold and underlined text */           
+               M_REVERSE,                       /* highlighted text */                   
+               M_REVERSE+BKBOLD,                /* bold, highlighted text */             
+               M_BOLD                           /* box border color */                   
+             };                                                                  
+char bw_table[] = {                             /* black and white attributes: */        
+               M_REVERSE,                       /* screen background */                  
+               M_NORMAL,                        /* normal text */                        
+               M_BOLD,                          /* bold text */                          
+               M_REVERSE,                       /* underlined text */                    
+               M_BOLDREV,                       /* bold and underlined text */           
+               M_REVERSE,                       /* highlighted text */                   
+               M_REVERSE+BKBOLD,                /* highlighted text */                   
+               M_BOLD                           /* box border text */                    
+             };
+char color_table[] = {                          /* color attributes: */
+               LTGRAY+(16*DARKGRAY),            /* screen background */
+               LTGRAY+(16*BLUE),                /* normal text */
+               WHITE+(16*BLUE),                 /* bold text */
+               LTGRAY+(16*RED),                 /* underlined text */
+               WHITE+(16*RED),                  /* bold and underlined text */
+               BLACK+(16*CYAN),                 /* highlighted text */
+               BLACK+(16*LTCYAN),               /* highlighted text */
+               YELLOW+(16*BLUE)                 /* box border text */
+             };
+char gray_table[] = {                           /* gray scale attributes: */                  
+               0x87,                            /* screen background */                       
+               0x17,                            /* normal text */                             
+               0x1F,                            /* bold text */                               
+               0x47,                            /* underlined text */                         
+               0x4F,                            /* bold and underlined text */                
+               0x30,                            /* highlighted text */                        
+               0xB0,                            /* highlighted text */                        
+               0x1E,                            /* box border text */                         
+             };                                                                       
+char *atables[] = {                             /* table of attribute table offsets */        
+               mono_table,                      /* monochrome */                              
+               bw_table,                        /* black and white */                         
+               color_table,                     /* color */                                   
+               gray_table,                      /* gray scale */                              
+             };
+
+void main()
+{
+   unsigned char xpos, ypos, wdth, hght;
+   char mode;
+
+   <A HREF="rconsole.htm#_console_init">_console_init</A>();                             /* init console i/o system */                  
+   <A HREF="rconsole.htm#_save_vstate">_save_vstate</A>();                              /* save video state and screen color */        
+   <A HREF="rconsole.htm#_set_bkboldmode">_set_bkboldmode</A>();                           /* force background bold, no blink */          
+   mode = (_get_dmode() & 254);                 /* get current dmode and strip off low order bit */
+   mode = mode/2;                               /* mode = element in atables */
+   <A HREF="rconsole.htm#_set_attrtbl">_set_attrtbl</A>(atables[mode]);                 /* set attribute table address */
+   <A HREF="rconsole.htm#_set_dattr">_set_dattr</A>(BACKGROUND);                      /* set default text attribute */
+   <A HREF="rconsole.htm#_set_vbordattr">_set_vbordattr</A>(BACKGROUND);                  /* set video border color */
+   <A HREF="rconsole.htm#_vborder_on">_vborder_on</A>();                               /* make video border visible */                     
+   <A HREF="rconsole.htm#_clr_region">_clr_region</A>();                               /* clear screen in default attribute */             
+   <A HREF="rconsole.htm#_get_region">_get_region</A>(&ypos, &xpos, &hght, &wdth);                                                 
+   hght += 0x01;                                /* round up (width and height) */                   
+   wdth += 0x01;                                                                            
+   hght = hght/2;                               /* box size is half of screen size */               
+   wdth = wdth/2;                                                                           
+   ypos = hght;                                 /* center box on screen */                          
+   xpos = wdth;  xpos = wdth;                                                               
+   ypos = ypos/2;                               /* position 1/4 of way from (0,0) */                
+   xpos = xpos/2;                                                                           
+   <A HREF="rconsole.htm#_set_region">_set_region</A>(ypos, xpos, hght, wdth);                                                     
+   <A HREF="rconsole.htm#_region_on">_region_on</A>();                                /* specify and enable box as new region */          
+   wdth -= 0x02;                                /* wdth = box width, hght = box width */            
+   hght -= 0x02;                                /*   (excluding corners) */                         
+   <A HREF="rconsole.htm#_set_attr">_set_attr</A>(BORDER);                           /* the box attribute */                             
+   <A HREF="rconsole.htm#_cput_chri">_cput_chri</A>('');                              /* draw upper left hand corner */                   
+   <A HREF="rconsole.htm#_cput_nchri">_cput_nchri</A>('', wdth);                       /* draw top border */
+   <A HREF="rconsole.htm#_direc_down">_direc_down</A>();
+   <A HREF="rconsole.htm#_cput_chri">_cput_chri</A>('');                              /* draw upper right hand corner */
+   <A HREF="rconsole.htm#_cput_nchri">_cput_nchri</A>('',hght);                        /* draw right border */
+   <A HREF="rconsole.htm#_direc_left">_direc_left</A>();
+   <A HREF="rconsole.htm#_cput_chri">_cput_chri</A>('');                              /* draw lower right hand corner */
+   <A HREF="rconsole.htm#_cput_nchri">_cput_nchri</A>('', wdth);                       /* draw bottom border */
+   <A HREF="rconsole.htm#_direc_up">_direc_up</A>();
+   <A HREF="rconsole.htm#_cput_chri">_cput_chri</A>('');                              /* draw lower left hand corner */
+   <A HREF="rconsole.htm#_cput_nchri">_cput_nchri</A>('',hght);                        /* draw left border */
+   <A HREF="rconsole.htm#_direc_right">_direc_right</A>();
+   ypos += 0x01;
+   xpos += 0x01;                                /* new home position inside borders */
+   <A HREF="rconsole.htm#_set_region">_set_region</A>(ypos, xpos, hght, wdth);
+   <A HREF="rconsole.htm#_set_dattr">_set_dattr</A>(NORMAL);                          /* new default attribute inside box */
+   <A HREF="rconsole.htm#_clr_region">_clr_region</A>();                               /* clear region inside box */
+   <A HREF="rconsole.htm#_set_attr">_set_attr</A>(BOLDTEXT);                         /* display centered bold string */
+   <A HREF="rconsole.htm#_cput_strci">_cput_strci</A>("This is BOLD text\n\n\r", wdth);
+   <A HREF="rconsole.htm#_set_attr">_set_attr</A>(UNDERLINE);                        /* display centered underlined string */
+   <A HREF="rconsole.htm#_cput_strci">_cput_strci</A>("This is UNDERLINED text\n\n\r", wdth);
+   <A HREF="rconsole.htm#_set_attr">_set_attr</A>(BOLDUNDER);                        /* display centered bold+under string */
+   <A HREF="rconsole.htm#_cput_strci">_cput_strci</A>("This is BOLD and UNDERLINED text\n\n\r", wdth);
+   <A HREF="rconsole.htm#_set_attr">_set_attr</A>(HIGHLIGHT);                        /* display centered highlighted string */
+   <A HREF="rconsole.htm#_cput_strci">_cput_strci</A>("This is HIGHLIGHTED text\n\n\r", wdth);
+   <A HREF="rconsole.htm#_set_attr">_set_attr</A>(BOLDHIGHLIGHT);                    /* display centered boldhighlight string */
+   <A HREF="rconsole.htm#_cput_strci">_cput_strci</A>("This is BOLD and HIGHLIGHTED text\n\n\r", wdth);
+   <A HREF="rconsole.htm#_reset_attr">_reset_attr</A>();                               /* display centered normal string */
+   <A HREF="rconsole.htm#_cput_strci">_cput_strci</A>("Press any key to continue...", wdth);
+   <A HREF="rconsole.htm#_cget_chr">_cget_chr</A>();                                 /* wait for a key press */
+   <A HREF="rconsole.htm#_restore_vstate">_restore_vstate</A>();                           /* restore video state and screen color */
+}
+</CODE></PRE>
+The sample program shown above (CONIO.C) is provided on the distribution diskettes and may be compiled and linked using the following Microsoft C and Borland C command lines:
+
+<P>
+Microsoft C:
+<PRE><CODE>
+cl /c /I\msc\include /I\sa\include
+link conio,conio,,\sa\lib\_sas \msc\lib\slibce
+</CODE></PRE>
+Borland C:
+<PRE><CODE>
+bcc /c /ms /I\bc\include /I\sa\include cio_smpl.c
+tlink \bc\lib\c0s conio,conio,,\sa\lib\_sas \bc\lib\cs
+</CODE></PRE>
+<H2><A NAME="HEAD002F">Console I/O vs. Scripted I/O
+</A></H2>
+
+All of the console output performed in the example above could be condensed into a single function call to <A HREF="rscript.htm#_cput_script">_cput_script</A> instead of calling individual console I/O functions. For this reason, scripts are generally the preferred method of accessing console I/O functionality. See the Scripted I/O technical notes for a complete discussion of the capabilities of the scripted I/O system.
+</BOBY>
+</HTML>

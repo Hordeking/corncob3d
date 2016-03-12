@@ -1,0 +1,1598 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Multitasking Reference</TITLE>
+</HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Multitasking</H1>
+<P ALIGN=CENTER>Reference Section </P>
+<UL>
+<LI><A HREF="TOC.htm">Table of Contents</A>
+<LI><A HREF="index.htm">Function Index</A>
+<LI><A HREF="gindex.htm">Group Index
+</UL>
+<A HREF="rmulti.htm#_exit_overflow">_exit_overflow</A><BR>
+<A HREF="rmulti.htm#_get_numtasks">_get_numtasks</A><BR>
+<A HREF="rmulti.htm#_get_tpriority">_get_tpriority</A><BR>
+<A HREF="rmulti.htm#_get_tspec">_get_tspec</A><BR>
+<A HREF="rmulti.htm#_get_tstatus">_get_tstatus</A><BR>
+<A HREF="rmulti.htm#overflow_addr">overflow_addr</A><BR>
+<A HREF="rmulti.htm#_set_tpriority">_set_tpriority</A><BR>
+<A HREF="rmulti.htm#_task_add">_task_add</A><BR>
+<A HREF="rmulti.htm#_tasking_init">_tasking_init</A><BR>
+<A HREF="rmulti.htm#_task_remove">_task_remove</A><BR>
+<A HREF="rmulti.htm#_task_resume">_task_resume</A><BR>
+<A HREF="rmulti.htm#_task_sleep">_task_sleep</A><BR>
+<A HREF="rmulti.htm#_task_sleeptime">_task_sleeptime</A><BR>
+<A HREF="rmulti.htm#_task_suspend">_task_suspend</A><BR>
+<A HREF="rmulti.htm#_task_yield">_task_yield</A><BR>
+<A HREF="rmulti.htm#_task_yieldto">_task_yieldto</A><BR>
+<A HREF="rmulti.htm#_tstack_avail">_tstack_avail</A><BR>
+<A HREF="rmulti.htm#_tstack_free">_tstack_free</A><BR>
+<A HREF="rmulti.htm#_tstack_initc">_tstack_initc</A><BR>
+<A HREF="rmulti.htm#_tstack_malloc">_tstack_malloc</A><BR>
+<A HREF="rmulti.htm#_tstack_max">_tstack_max</A><BR>
+<A HREF="rmulti.htm#_yield_resume">_yield_resume</A><BR>
+<A HREF="rmulti.htm#_yield_suspend">_yield_suspend</A><BR>
+<H2><A NAME="_exit_overflow">_exit_overflow</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Displays a stack overflow message and exits to DOS with an ERRORLEVEL of 1.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mtask.h&gt
+<BR>	void _exit_overflow(void);
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	DOES NOT RETURN (exits to DOS with an ERRORLEVEL of 1).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function displays a DOS-like error message ("Stack overflow"), sets the ERRORLEVEL to 1, and terminates the program. This function is the default stack overflow handler. The overflow_addr variable is initialized with the address of this function.
+<BR>
+<BR>	If stack overflow is detected in the multitasking system, the stack overflow handler defined in the overflow_addr variable is called. To specify an alternate stack overflow handler, load the address of the new handler into the overflow_addr function pointer.
+<BR>
+<BR></DL>
+<B>Source file</B>	TKEXOVFL.ASM		   <B>ASM equiv</B>	EXIT_OVERFLOW
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmulti.htm#overflow_addr">overflow_addr</A>
+<BR></DL>
+<H2><A NAME="_get_numtasks">_get_numtasks</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the number of tasks currently in the task scheduler list.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mtask.h&gt
+<BR>	int _get_numtasks(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The number of tasks in the multitasking system.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the number of tasks in the task scheduler for the multitasking system. The return value includes all tasks, even if they are inactive. 
+<BR>
+<BR>	_tasking_init must be called before this function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[20];
+	   ...
+	   _put_str(_i_to_dec(_get_numtasks(), buffer));
+	   	  	 	/* display number of tasks */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[20];
+	   ...
+	   get_numtasks();/* get number of tasks being scheduled */
+	   lea   si,buffer    /* SI -&gt buffer */
+	   i_to_dec();	/* int -&gt "string" */
+	   put_str();	/* display number of tasks */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TKGNUMT.ASM		  <B>ASM equiv</B>.GET_NUMTASKS
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmulti.htm#_task_add">_task_add</A>, <A HREF="rmulti.htm#_task_remove">_task_remove</A>
+<BR></DL>
+<H2><A NAME="_get_tpriority">_get_tpriority</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the priority and current skip count of a task.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mtask.h&gt
+<BR>	int _get_tpriority(int handle, unsigned char *priority, unsigned char *skips);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the function was successful.
+<BR>	priority	priority of task
+<BR>	skips current skip count
+<BR>
+<BR>	-1 if handle is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the priority and remaining skip count for the task associated with handle. If handle is -1, then the priority and skip count for the active task are returned. If the return value is 0, priority contains the task's priority and skips contains the task's current skip count. -1 is returned if handle is not a valid task handle.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   unsigned char priority, skip;
+	   ...
+	   if(_get_tpriority(-1, &amppriority, &ampskip) != 0)
+	      _put_str("Error getting priority/skip of task 1");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   unsigned char priority, skip;
+	...
+	mov bx,-1	 /* BX = handle of active task */
+	get_tpriority();/* successful? */
+	 jc label_010/*   n: invalid handle */
+	mov priority,al/* set priority variable */
+	mov skip,ah	/* set skip variable */
+	... 
+	label_010:
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TKGPRTY.ASM		  <B>ASM equiv</B>	GET_TPRIORITY
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmulti.htm#_get_tspec">_get_tspec</A>, <A HREF="rmulti.htm#_set_tpriority">_set_tpriority</A>
+<BR></DL>
+<H2><A NAME="_get_tspec">_get_tspec</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns a copy of a specified task descriptor.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mtask.h&gt
+<BR>	int _get_tspec(int handle, void far * buffer);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the function was successful.
+<BR>	buffer	task descriptor for the task associated with handle
+<BR>
+<BR>	-1 if handle is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function makes a copy of the current task descriptor structure for the task associated with handle. If handle is -1, then the active task descriptor is copied. If the function was successful, the copy is placed in buffer in the form of a satask definition structure and 0 is returned. -1 is returned if handle is invalid.
+<BR>
+<BR>	The satask task descriptor structure is defined in MTASK.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned int t_handle;/* task handle (-1 to return next avail handle) */
+<BR>	   void(*t_addr)(void);	/* task address */
+<BR>	   unsigned int t_stksize;/* size task's stack (default 256 bytes) */
+<BR>	   void *t_stkaddr;	/* stack address */
+<BR>	   unsigned char t_priority;/* priority of task (0-255) */
+<BR>	   unsigned char t_numskips;/* skip count (initial priority) (0-255) */
+<BR>	   unsigned long t_waketime;/* time to wake up task */
+<BR>	   void *t_nextlink;	/* address of next task descriptor in task list */
+<BR>	   void *t_stksave;	/* preserve stack address when task yields */
+<BR>	   void near *t_dstack;	/* address of task stack relative to heap segment
+<BR>					   (small data models only) */
+<BR>	   unsigned char t_statbyte;/* status of task */
+<BR>	   char reserved;	/* (RESERVED) */
+<BR>	} satask;
+<BR>
+<BR>	See the Multitasking technical notes for a detailed explanation of task descriptors.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[sizeof(satask)];
+	   ...
+	   if(_get_tspec(-1, (char *)buffer) != 0)
+	      _put_str("Invalid handle.\n\r");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer [sizeof(satask)];
+	   char *str;
+	   ...
+	   lea si,buffer/* SI -&gt buffer */
+	   	  
+	   mov bx,-1	/* BX = handle of active task */
+	   get_tspec()	/* copy current task's specs */
+	    jnclabel_010
+	   str = "Invalid handle.\n\r";
+	   mov si,str	/* SI -&gt string */
+	   put_str();	/* display error message */
+	label_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TKGSPEC.ASM		  <B>ASM equiv</B>	GET_TSPEC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmulti.htm#_task_add">_task_add</A>
+<BR></DL>
+<H2><A NAME="_get_tstatus">_get_tstatus</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines if any of the specified task status flags are set.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mtask.h&gt
+<BR>	int _get_tstatus(int handle, unsigned char tstat);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if any condition specified in tstat is true.
+<BR>
+<BR>	0 if all conditions specified in tstat are false.
+<BR>
+<BR>	-1 if handle is invalid or the task has been removed.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function tests the status of the task associated with handle. If handle is -1, the status of the active task is tested. 1 is returned if any of the conditions specified in tstat are true (i.e., if any of the specified flags are set). 0 is returned if all specified conditions are false. -1 is returned if the specified handle is invalid or the task has been removed. This function is especially useful just prior to calling _task_yieldto, since yielding to a specified task bypasses all conditions (e.g., suspended, sleeping, and number-of-skips). 
+<BR>
+<BR>	The following symbolic constants (defined in MTASK.H) identify the task status flags which may be specified in tstat:
+<BR>
+<BR>	T_AUTOREMOVE(0x01) Automatically remove task on return
+<BR>	T_SUSPEND	   (0x02) Task is suspended
+<BR>	T_SLEEP  	   (0x04) Task is sleeping
+<BR>	T_STACKHEAP(0x10) Task stack is allocated on a stack heap
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	#include&lt;mtask.h&gt
+	{
+	   ...
+	   if(_get_tstatus(0, T_SUSPEND+T_SLEEP))
+	      _put_str("Unable to yield default task.\n\r");
+	   else
+	      _task_yieldto(0);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	...
+	mov bx,-1	 /* BX = handle of task to check 
+		   	    (default task) */
+	mov al,T_SUSPEND+T_SLEEP /* AL = status to check */
+	task_tstatus();	/* get status of default task */
+	 je label_010/*   y: don't yield to it */
+	task_yieldto();	/*   n: yield to it */
+	label_010:
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TKGSTAT.ASM		  <B>ASM equiv</B>	GET_TSTATUS
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmulti.htm#_get_tspec">_get_tspec</A>
+<BR></DL>
+<H2><A NAME="overflow_addr">overflow_addr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Variable) Contains the address of the current stack overflow handler.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mtask.h&gt
+<BR>	extern void *overflow_addr;
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This near/far pointer variable contains the address of the current stack overflow handler. In small code models this variable is near pointer; in large code models, this variable is a far pointer.
+<BR>
+<BR>	This variable is initialized with the address of _exit_overflow, the default stack overflow handler. If stack overflow is detected in the multitasking system, control is passed to the stack overflow handler pointed to by this variable. To specify an alternate stack overflow handler, load the address of the new handler into this variable.
+<BR>
+<BR></DL>
+<B>Source file</B>	TKOFLOW.ASM
+<B>ASM equiv</B>â
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rexit.htm#_exit">_exit</A>
+<BR></DL>
+<H2><A NAME="_set_tpriority">_set_tpriority</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets the priority and skip count of a task.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mtask.h&gt
+<BR>	int _set_tpriority(int handle, unsigned char priority, unsigned char skipcount);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if function was successful.
+<BR>
+<BR>	-1 if handle is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sets the priority and/or the skip count for the task associated with handle. If -1 is specified for handle, the changes are made to the active task. Otherwise, the changes are made to the task associated with handle. Valid values for priority and skipcount are in the range 0 to 254; if -1 is specified, the current value is used. 0 is returned if the function was successful. -1 is returned if handle is invalid.
+<BR>
+<BR>	Each task has a priority and skip count associated with it. The task scheduler uses these two values to determine how often each task will gain control ofthe CPU. The skip count is a "count down to zero" variable, and the priority is a reload value for the skip count. A non-suspended task's skip count is decremented each cycle through the task scheduler. The scheduler only passes control to a task if its skip count is zero when it is polled and if it is not suspended or sleeping. Each time a task is given control, its skip count is reloaded with its priority.
+<BR>
+<BR>	A task's priority and skip count do not need to be identical and may be modified dynamically by any task at any time.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ...
+	   if (_set_tpriority(-1, 10, 0) == -1) /* set priority = 10, */
+	   	  	     /* skip count = 0 for active task */
+	      _put_str("Invalid handle on set priority\n\r.");
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char *str;
+	   ...
+	   mov bx,-1	/* BX = active task handle */
+	   mov al,10	/* AL = priority of 10 */
+	   xor ah,ah	/* AH = skip count of zero */
+	   set_tpriority();/* set task priority */
+	    jnclabel_010
+	   str = "Invalid handle on set priority.\n\r";
+	   mov si,str	/* SI-&gt string */
+	   put_str();	/* display error message */
+	label_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TKSPRTY.ASM		  <B>ASM equiv</B>	SET_TPRIORITY
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmulti.htm#_get_tpriority">_get_tpriority</A>, <A HREF="rmulti.htm#_get_tstatus">_get_tstatus</A>
+<BR></DL>
+<H2><A NAME="_task_add">_task_add</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Adds a task to the scheduler task list.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mtask.h&gt
+<BR>	int _task_add(satask *tspec);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The task handle if the task was successfully added.
+<BR>
+<BR>	-1 if the task handle specified in tspec was not available.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function adds a task to the multitasking scheduler list. tspec defines the task to be added, the task handle to use, and the initial task settings. If the handle specified in tspec is available, the task is added to the list and the task handle is returned. If the handle is not available, -1 is returned and the task is not added.
+<BR>
+<BR>	tspec must be a task descriptor structure of type satask, which is defined in MTASK.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   int t_handle;	/* task handle (-1 to use next avail handle) */
+<BR>	   void(*t_addr)(void); 	/* task starting address */
+<BR>	   unsigned int t_stksize;  /* task stack size (default=256 bytes) */
+<BR>	   void *t_stkaddr;  	/* task stack address (default=inherit) */
+<BR>	   unsigned char t_priority; /* priority of task (0-255, default=0) */
+<BR>	   unsigned char t_numskips; /* skip count (initial priority) (0-255, def=0) */
+<BR>	   unsigned long t_waketime; /* time of day to wake up task */
+<BR>	   void *t_nextlink; 	/* address of next descriptor in task list */
+<BR>	   void *t_stksave;  	/* task stack address when task yields */
+<BR>	   void near *t_dstack;   /* offset of task stack relative to heap segment
+<BR>	   				   (small data models only) */
+<BR>	   unsigned char t_statbyte; /* current status of task */
+<BR>	   char reserved;	/* (RESERVED) */
+<BR>	} satask;
+<BR>
+<BR>	The t_handle field may be assigned a specific handle number or it may be set to -1 to allow it to default to the next available task handle. Handle values determine the order in which tasks are polled by the multitasking system (tasks are polled in increasing order of their handle values).
+<BR>
+<BR>	The t_addr field must indicate the starting address of the task. This address is also used whenever the multitasking system automatically restarts a task.
+<BR>
+<BR>	The task stack must be allocated and the t_stkaddr and t_stksize fields must indicate the address and size of the stack prior to calling this function. The task stack may be allocated manually (e.g., defined statically or on a heap) or it may be allocated on the stack heap by calling _tstack_malloc. The t_stkaddr and t_stksize fields are automatically initialized by _tstack_malloc if it is used to allocate the task stack.
+<BR>
+<BR>	t_priority and t_numskips specify the priority and initial skip count for the task. See _set_tpriority for an explanation of these fields.
+<BR>
+<BR>	A task has the option of returning when it is finished. The t_statbyte field indicates whether or not the task is automatically removed when this occurs. By default, the task remains in the task list and is automatically restarted at its starting address the next time the task is given control. However, the following symbolic constant (defined in MTASK.H) may be specified in the t_statbyte field to indicate that the task should automatically be removed from the task list when it returns:
+<BR>	T_AUTOREMOV
+<BR>	E	 (0x01) Automatically remove task on return
+<BR>
+<BR>	See the Multitasking technical notes for further information regarding task descriptors.
+<BR>
+<BR>	_tasking_init must be called before this function may be used.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   static char stack1[250];
+	   static satask task0 = TASK_DEFAULT;
+	   static satask task1 = TASK_DEFAULT;
+	   int handle;
+	   ...
+
+	   task0.t_addr = task_0;
+	   task1.t_statbyte = T_AUTO_REMOVE;
+	   task1.t_stkaddr = stack1;
+	   task1.t_addr = task_1;
+
+	   _tasking_init(&amptask0); /* initialize multitasking */
+	   if ((handle = _task_add(&amptask1)) == -1)
+	      _put_str("Error adding task 1.\n\r");
+	   else
+	      task_0();
+	   ...
+	}
+	void task_0(void)
+	{
+	   ...
+	   _task_yield();/* start multitasking */
+	   ...
+	}
+	void task_1(void)
+	{
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   static char stack1[250];
+	   static satask task0 = TASK_DEFAULT;
+	   static satask task1 = TASK_DEFAULT;
+	   task0.t_addr = task_0;
+	   task1.t_statbyte = T_AUTO_REMOVE;
+	   task1.t_stkaddr = stack1;
+	   task1.t_addr = task_1;
+	   ...
+	   mov si,offset task0
+	   	  /* SI = offset of default task descriptor */
+	   tasking_init();    /* initialize multitasking */
+	   mov si,offset task1/* SI = offset of task 1 desc */
+	   task_add();	/* add task 1 to tasking list */
+	    jc label_010/* if error, return */
+	   task_0();
+	label_010:
+	    ...
+	}
+	void task_0(void)
+	{
+	   ...
+	   _task_yield();/* start multitasking */
+	   ...
+	}
+	void task_1(void)
+	{
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TKADD.ASM		  <B>ASM equiv</B>	TASK_ADD
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmulti.htm#_tasking_init">_tasking_init</A>, <A HREF="rmulti.htm#_task_remove">_task_remove</A>, _tstack_remove
+
+<BR></DL>
+<H2><A NAME="_tasking_init">_tasking_init</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Initializes the multitasking system.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mtask.h&gt
+<BR>	void _tasking_init(satask *tspec);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function initializes the multitasking system. This activates the multitasking system and initializes the task list to contain the default task. The provided task descriptor (tspec) must specify the starting address and characteristics of the default task. Multitasking begins with the first call to _task_yield within the default task. If the multitasking system is already active, this call has no effect.
+<BR>
+<BR>	tspec must be a task descriptor structure of type satask, which is defined in MTASK.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   int t_handle;/* task handle (default task handle is always 0) */
+<BR>	   void(*t_addr)(void); 	/* task starting address (-1=next instruction) */
+<BR>	   unsigned int t_stksize;  /* task stack size (default=256 bytes) */
+<BR>	   void *t_stkaddr;  	/* task stack address (default=inherit) */
+<BR>	   unsigned char t_priority; /* priority of task (0-255, default=0) */
+<BR>	   unsigned char t_numskips; /* skip count (initial priority) (0-255, def=0) */
+<BR>	   unsigned long t_waketime; /* time of day to wake up task */
+<BR>	   void *t_nextlink; 	/* address of next descriptor in task list */
+<BR>	   void *t_stksave;  	/* task stack address when task yields */
+<BR>	   void near *t_dstack;   /* offset of task stack relative to heap segment
+<BR>	   				   (small data models only) */
+<BR>	   unsigned char t_statbyte; /* current status of task */
+<BR>	   char reserved;	/* (RESERVED) */
+<BR>	} satask;
+<BR>
+<BR>	The TASK_DEFAULT define (declared in MTASK.H) may be used to initialize a task descriptor with the default settings indicated in the comments above.
+<BR>
+<BR>	Because the default task handle is always 0, the initial value of the t_handle field is ignored by this function.
+<BR>
+<BR>	The t_addr field must indicate the starting address of the default task. If t_addr is set to -1, _tasking_init simply returns after initializing the multitasking system (i.e., the code immediately following the call the _tasking_init is the default task). If an explicit starting address is specified in t_addr, control is passed to the default task by calling it at the specified address.
+<BR>	The current stack is allocated to the default task, so the initial value of t_stkaddr is ignored by this function. t_stksize must indicate the amount of additional stack space to leave for the default task (beyond the current stack pointer).
+<BR>
+<BR>	t_priority and t_numskips specify the priority and initial skip count for the default task. See _set_tpriority for an explanation of these fields.
+<BR>
+<BR>	The default task has the option of returning when it is finished. When this happens, control is passed to the instruction immediately following the original call to _tasking_init if an explicit starting address was specified for the default task. Otherwise, the return is treated as a normal return from the procedure which contains the default task. Because the default task cannot be removed, the initial value of the t_statbyte field is ignored by this function.
+<BR>
+<BR>	See the Multitasking technical notes for further information regarding task descriptors and the default task.
+<BR>
+<BR>	The following examples demonstrate how the multitasking system is initialized to use the instruction following _tasking_init as the start of the default task.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	static satask task0 = TASK_DEFAULT;
+	   ...
+	   _tasking_init(&amptask0); /* turn on multitasking */
+	task_0:        /* since no task address has been
+	   	  	    specified for the default task,
+	   	  	    this label is the beginning address 
+	   	  	    of the default task */
+	   ...
+	   _task_yield()/* multitasking begins */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	static satask task0 = TASK_DEFAULT;
+	   ...
+	   mov si,offset task0
+	   	  /* SI = offset of default task descriptor */
+	   tasking_init();/* initialize multitasking */
+	task_0:       /* since no task address has been
+	   	  	    specified for the default task,
+	   	  	    this label is the beginning address 
+	   	  	    of the default task */
+	   ...
+	   task_yield();/* multitasking begins */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TKINIT.ASM		  <B>ASM equiv</B>	TASKING_INIT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmulti.htm#_task_add">_task_add</A>
+<BR></DL>
+<H2><A NAME="_task_remove">_task_remove</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Removes a task from the scheduler task list.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mtask.h&gt
+<BR>	void far *_task_remove(int handle);
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A far pointer to the stack buffer of the removed task.
+<BR>
+<BR>	NULL if handle is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function removes the task associated with handle from the task list. The active task is removed if handle is -1. If the function is successful, a far pointer to the stack buffer of the removed task is returned. NULL is returned if handle is invalid.
+<BR>
+<BR>	It is the responsibility of the programmer to properly dispose of the stack buffer. Typically, the buffer is freed immediately after this function is called. If the stack was allocated with _tstack_malloc, the buffer may be freed by calling _tstack_free.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char far *stkaddr;
+	   ...
+	   if ((stkaddr = (char far *)_task_remove(-1)) == NULL)
+	      _put_str("Error removing current task.\n\r"); 
+	   if (_tstack_free((char far *)stkaddr) != 0)
+	      _put_str("Error freeing task's stack space.");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char *str;
+	   ...
+	   mov bx,-1/* BX = handle of current task */
+	   task_remove();/* remove task, ES:DI -&gt stack blk */
+	    jc label_020 /*   if error, go give error message */
+	   tstack_free();/* free task's stack mem */
+	    jnclabel_020 /*   if error, give error message */
+	   str = "Error removing current task.\n\r";
+	   mov si,str
+	   put_str();/* display error message */
+	label_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TKRMOVE.ASM		  <B>ASM equiv</B>	TASK_REMOVE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmulti.htm#_task_add">_task_add</A>
+<BR></DL>
+<H2><A NAME="_task_resume">_task_resume</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Resumes a suspended task.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mtask.h&gt
+<BR>	int _task_resume(int handle);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the task was successfully resumed.
+<BR>
+<BR>	-1 if handle was invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function resumes the task associated with handle. This reactivates the task, allowing it to receive control from the task scheduler. If handle is -1, the active task is resumed. 0 is returned if the specified task was successfully resumed. -1 is returned if handle is invalid.
+<BR>
+<BR>	The resumed task does not receive control until the task scheduler passes control to it or until it is yielded to directly. If the task was not previously suspended, 0 is returned and this function has no effect.
+<BR>
+<BR>	A suspended task can only resume itself after it receives control from another task (via _task_yieldto).
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ...
+	   if (_task_resume(handle) != 0) /* resume task */
+	      _put_str("Invalid handle");
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char str[] = "Invalid handle";
+	   ...
+	   mov bx,-1/* BX = handle of active task */
+	   task_resume();/* resume task 1 */
+	    jnelabel_010
+	   lea str
+	   put_str();/* display error message */
+	label_010:
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_TKRSUME.ASM		  <B>ASM equiv</B>	TASK_RESUME
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmulti.htm#_task_sleep">_task_sleep</A>, <A HREF="rmulti.htm#_task_sleep">_task_sleep</A>, <A HREF="rmulti.htm#_task_suspend">_task_suspend</A>
+<BR></DL>
+<H2><A NAME="_task_sleep">_task_sleep</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Suspends a task for a specified period of time.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mtask.h&gt
+<BR>	int _task_sleep(int handle, const std_time *duration);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if function was successful.
+<BR>
+<BR>	-1 if handle is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function suspends the task associated with handle for a specified period of time. duration specifies the amount of time which must pass before the task is again selected for control by the task scheduler. If handle is -1, the active task is suspended. 0 is returned if the function was successful. -1 is returned if handle is invalid.
+<BR>
+<BR>	duration must be a structure of type std_time (defined in DATETIME.H) as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char hseconds;/* 0-99 */
+<BR>	   unsigned char seconds;/* 0-59 */
+<BR>	   unsigned char minutes;/* 0-59 */
+<BR>	   unsigned char hours;	/* 0-231 */
+<BR>	} std_time;
+<BR>
+<BR>	The actual precision of duration is limited by the system timer (about 18.2 ticks/second) as well as the interval between the wake-up time and the actual time the task scheduler passes control to the task.
+<BR>
+<BR>	If the task is already sleeping when this function is called, _task_sleep overwrites any previous settings established by _task_sleep or _task_sleeptime.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   std_time tskslp;
+	   ...
+	   tskslp.hours = 0;
+	   tskslp.minutes = 0;
+	   tskslp.seconds = 5;
+	   tskslp.hseconds = 0;
+	   _task_sleep(-1,&amptskslp);
+		   /* current task sleeping for 5 seconds */
+	   _task_yield();/* sleep assignment takes affect now */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   ...
+	   xor dx,dx
+	   mov al,dl
+	   mov ah,5	/* DX;AX = time (5 seconds) */
+	   mov bx,-1	/* BX = handle of current task */
+	   task_sleep();	/* sleep this task */
+	   task_yield();	/* yield, sleep takes effect */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TKSLP.ASM		  <B>ASM equiv</B>	TASK_SLEEP
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmulti.htm#_get_tstatus">_get_tstatus</A>, <A HREF="rmulti.htm#_task_sleep">_task_sleep</A>, <A HREF="rmulti.htm#_task_yield">_task_yield</A>
+<BR></DL>
+<H2><A NAME="_task_sleeptime">_task_sleeptime</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Suspends a task until a specified time of day.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mtask.h&gt
+<BR>	int _task_sleeptime(int handle, const std_time *waketime);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the function was successful.
+<BR>
+<BR>	-1 if handle is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function suspends the task associated with handle until the time of day specified in waketime. The wake-up time is assumed to refer to the next day if it is less than the current time of day. If handle is -1, the active task is suspended. 0 is returned if the function was successful. -1 is returned if handle is invalid.
+<BR>
+<BR>	waketime must be a structure of type std_time (defined in DATETIME.H) as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char hseconds;/* not used by this function */
+<BR>	   unsigned char seconds;/* not used by this function */
+<BR>	   unsigned char minutes;/* 0-59 */
+<BR>	   unsigned char hours;	/* 0-23 */
+<BR>	} std_time;
+<BR>
+<BR>	The accuracy of waketime is limited by the system timer (about 18.2 ticks/second) as well as the interval between the wake-up time and the actual time the task scheduler passes control to the task.
+<BR>
+<BR>	If the task is already sleeping when this function is called, _task_sleeptime overwrites any previous settings established by _task_sleep or _task_sleeptime.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   std_time tskslp;
+	   ...
+	   tskslp.hours = 5;
+	   tskslp.minutes = 30;
+	   _task_sleeptime(-1,&amptskslp);
+		   /* current task wake up a 5:30 am */
+	   _task_yield();/* sleep assignment takes effect */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   ...
+	   mov bx,-1/* BX = handle of current task */
+	   mov dh,5
+	   mov dl,30/* DX = hour:minute to wake up */
+	   task_sleeptime(); /* current task wake up at 5:30 am */
+	   task_yield();/* default task begins sleeping */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TKSLPTM.ASM		  <B>ASM equiv</B>	TASK_SLEEPTIME
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmulti.htm#_get_tstatus">_get_tstatus</A>, <A HREF="rmulti.htm#_task_sleep">_task_sleep</A>, <A HREF="rmulti.htm#_task_yield">_task_yield</A>
+<BR></DL>
+<H2><A NAME="_task_suspend">_task_suspend</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Suspends a task.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mtask.h&gt
+<BR>	int _task_suspend(int handle);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the task was suspended.
+<BR>
+<BR>	-1 if handle was invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function suspends the task associated with handle. The suspended task does not receive control from the task scheduler until it is resumed by _task_resume. 0 is returned if the function was successful. -1 is returned if handle is invalid.
+<BR>
+<BR>	If the task was previously suspended, 0 is returned and this function has no effect.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ...
+	   if (_task_suspend(-1) != 0)/* suspend active task */
+	   _put_str("Invalid handle.\n\r");
+	   _task_yield();	/* task becomes suspended now */
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   ...
+	   mov bx,-1	/* BX = handle of current task */
+	   task_suspend();    /* suspend active task */
+	   task_yield();	/* task becomes suspended now */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TKSPND.ASM		  <B>ASM equiv</B>	TASK_SUSPEND
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmulti.htm#_task_resume">_task_resume</A>, <A HREF="rmulti.htm#_task_sleep">_task_sleep</A>, <A HREF="rmulti.htm#_task_sleep">_task_sleep</A>
+<BR></DL>
+<H2><A NAME="_task_yield">_task_yield</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Saves the state of the active task and yields to the task scheduler.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mtask.h&gt
+<BR>	void _task_yield(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function saves the state of the current task and passes control to the task scheduler. The scheduler checks the current task for stack overflow and then determines the next available task based on the handle number, priority, and status of each task in the system. The selected task is then given control. If stack overflow is detected, control is passed to the stack overflow handler specified in overflow_addr. The default stack overflow handler is _exit_overflow. 
+<BR>
+<BR>	This function must be called to allow other tasks to gain control of the CPU. The strategic placement of calls to _task_yield and _task_yieldto allows the programmer to control when a task is interrupted and how much processing time elapses before control is passed to the other tasks in the system.
+<BR>
+<BR>	This function may be suspended with _yield_suspend and resumed with _yield_resume. If multitasking has been suspended with _yield_suspend, this function immediately returns without checking for stack overflow or determining the next available task.
+<BR>
+<BR>	This function does NOT modify the state of the CPU flags.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   
+	{
+	   static satask task0 = TASK_DEFAULT;
+	   ...
+	   task0.t_addr = task_0;
+	   _tasking_init(&amptask0); /* turn on multitasking on */
+	   ...	  /* add additional tasks */
+	   task_0();/* call default task */
+	   ...
+	}
+	void task_0(void)
+	{
+	   ...
+	   _task_yield();/* tasking begins */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   static satask task0 = TASK_DEFAULT;
+	   task0.t_addr = task_0;
+	   ...
+	   mov si,offset task0
+	   	  /* SI = offset of default task descriptor */
+	   tasking_init();/* initialize multitasking */
+	   ... 	 /* add additional tasks */
+	   task_0();/* call default task */
+	   ...
+	}
+	void task_0(void)
+	{
+	   ...
+	   _task_yield();/* tasking begins */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	TKYIELD.ASM		  <B>ASM equiv</B>	TASK_YIELD
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmulti.htm#overflow_addr">overflow_addr</A>, <A HREF="rmulti.htm#_task_add">_task_add</A>, <A HREF="rmulti.htm#_task_yield">_task_yield</A>
+<BR></DL>
+<H2><A NAME="_task_yieldto">_task_yieldto</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Saves the state of the active task and yields to a specific task.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mtask.h&gt
+<BR>	int _task_yieldto(int handle);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the function was successful.
+<BR>
+<BR>	-1 if handle is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function saves the state of the current task and passes control to the task associated with handle. The scheduler checks the current task for stack overflow and then passes control to the selected task (even if that task is suspended, sleeping, or its skip count is greater than zero). If stack overflow is detected, control is passed to the stack overflow handler specified in overflow_addr. The default stack overflow handler is _exit_overflow.
+<BR>
+<BR>	This function selectively allows other tasks to gain control of the CPU. The strategic placement of calls to _task_yield and _task_yieldto allows the programmer to control when a task is interrupted and how much processing time elapses before control is passed to the other tasks in the system.
+<BR>
+<BR>	This function may be suspended with _yield_suspend and resumed with _yield_resume. If multitasking has been suspended with _yield_suspend, this function immediately returns 0 without checking for stack overflow or determining the next available task.
+<BR>
+<BR>	If the task associated with handle calls _task_yield, the task scheduler determines the next available task as described for_task_yield. Return of control to the parent is not automatic.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ...
+	   if (!_get_tstatus(0, T_SUSPEND+T_SLEEP))
+	      _task_yieldto(0);
+	   else
+	      _put_str("Unable to yield default task.\n\r")
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   xor bx,bx	/* BX = task to yield to */
+	   mov al,T_SUSPEND+T_SLEEP
+	   get_tstatus();	/* get status of default task */
+	    je label_010/* if match, don't yield */
+	   task_yieldto();    /* yield to default task */
+	label_010:
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_TKYLDTO.ASM		  <B>ASM equiv</B>	TASK_YIELDTO
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmulti.htm#overflow_addr">overflow_addr</A>, <A HREF="rmulti.htm#_task_add">_task_add</A>, <A HREF="rmulti.htm#_task_yield">_task_yield</A>
+<BR></DL>
+<H2><A NAME="_tstack_avail">_tstack_avail</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the number of available bytes on the stack of the active task.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mtask.h&gt
+<BR>	int _tstack_avail(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The available stack space for the current task, in bytes.
+<BR>
+<BR>	-1 if the stack has already overflowed.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function calculates the total remaining space on the stack of the current task. The amount of remaining stack space is returned. -1 is returned if the stack pointer is beyond the end of the stack. This function does NOT call the stack overflow handler when stack overflow is detected. This function works with dynamically or statically allocated stacks.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	#include &lt;mtask.h&gt
+	{
+	   char buffer[40];
+	   ...
+	   _i_to_dec(_tstack_avail(), buffer);
+	   _put_str(buffer); /* display remaining stack space */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{  
+	   char buffer[40];
+	   ...
+	   lea si,buffer/* SI -&gt buffer */
+	   tstack_avail();    /* AX = remaining stack space */
+	   i_to_dec();	/* int -&gt "string" */
+	   put_str();	/* display result */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TKSAVL.ASM		  <B>ASM equiv</B>	TSTACK_AVAIL
+
+<BR><DL>
+<DT><B>See also</B>
+<DD>_tstack_init, <A HREF="rmulti.htm#_tstack_max">_tstack_max</A>
+<BR></DL>
+<H2><A NAME="_tstack_free">_tstack_free</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Frees a block on the stack heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memalloc.h&gt
+<BR>	int _tstack_free(void far *stkaddr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the block was successfully released.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function releases the stack block at stkaddr on the stack heap, making its memory available for future allocation. stkaddr must be a valid block address within the stack heap obtained by calling _tstack_malloc. stkaddr is returned by _task_remove to facilitate freeing of task stack blocks when a task is removed. -1 is returned if stkaddr is invalid.
+<BR>
+<BR>WARNING! Only limited checking is performed to detect an invalid stkaddr. If an attempt is made to free a block using an invalid stkaddr and -1 is not returned, system memory and/or the stack heap may be corrupted.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char far *stkaddr;
+	   ...
+	   if ((stkaddr = (char far *)_task_remove(-1)) == NULL)
+	      _put_str("Error removing current task.\n\r"); 
+	   if (_tstack_free((char far *)stkaddr) != 0)
+	      _put_str("Error freeing task's stack space.");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char *str;
+	   ...
+	   mov bx,-1	/* BX = handle of current task */
+	   task_remove();	/* remove task, ES:DI- stk blk */
+	    jc label_020/*   if error, go give message */
+	   tstack_free();	/* free task's stack mem */
+	    jc label_020/*   if error, go give message */
+	   ...
+	label_020:
+	   str = "Error removing current task.\n\r";
+	   mov si,str
+	   put_str();	/* display error message */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TKSFREE.ASM		  <B>ASM equiv</B>	TSTACK_FREE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmulti.htm#_tstack_initc">_tstack_initc</A>, <A HREF="rmulti.htm#_tstack_malloc">_tstack_malloc</A>
+<BR></DL>
+<H2><A NAME="_tstack_initc">_tstack_initc</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Initializes the stack heap to a custom size and location.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mtask.h&gt
+<BR>	void _tstack_initc(unsigned int stksize, segaddr stkseg);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function performs a custom stack heap initialization for the multitasking system. stkseg indicates the location of the stack heap, and stksize indicates the size of the heap (in bytes).
+<BR>
+<BR>	Memory for the task heap may be allocated statically or dynamically. The total memory requirements of the task heap (in bytes) may be calculated as follows:
+<BR>
+<BR>	Required stack heap size = (16 + 2*(number of tasks)) + (sum of task stack sizes)
+<BR>
+<BR>	The default task stack is independent and does not need to be considered in this calculation. (The default task uses the stack that is in use when _tasking_init is called.)
+<BR>
+<BR>WARNING! In small data models, the stack heap must reside within the 64K region beginning at the start of DGROUP (global or static non-far data). This condition is satisfied if the stack heap is allocated on the near heap. In large data models the stack heap may reside anywhere in conventional memory.
+<BR>
+<BR>	Because of the difficulty of locating a default task stack starting address in a C environment and because of variations between compilers, a default _tstack_init function has not been provided.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>
+	satask task0 = TASK_DEFAULT;
+	satask task1 = TASK_DEFAULT;
+	void main(void)
+	{
+	   segaddr tstkseg;
+	   tstkseg = _ptr_to_seg(malloc(1600));
+	   _tstack_initc(1600,tstkseg);
+	   ...
+	   task1.t_addr = task_1;
+	   _tasking_init(&amptask0);/* initialize multitasking */
+	   _tstack_malloc(&amptask1);/* alloc 256 byte stk for task 1*/
+	   _task_add(&amptask1);/* add task 1 to tasking list */
+	   _task_yield();
+	   ...
+	}
+	void task_1(void)
+	{
+	   _put_str("Task 1.\n\r");
+	   _task_yield();
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	satask task0 = TASK_DEFAULT;
+	satask task1 = TASK_DEFAULT;
+	void main ()
+	{
+	#if __SMALL_DATA__
+	   segaddr tstkseg;
+	   tstkseg = _ptr_to_seg(malloc(1600));
+	   mov dx,tstkseg
+	#else
+	   mov ax,100
+	   dos_malloc ();
+	#endif
+	   task1.t_addr = task_1;
+	   ...
+	   mov ax,1600	    /* AX = size of heap in bytes */
+	   tstack_initc();    /* initialize stack heap */
+	   mov si,offset task0
+	   	  /* SI = offset of default task descriptor */
+	   tasking_init();    /* initialize multitasking */
+	   mov si,offset task1
+	   	  /* SI = offset of task 1 descriptor */
+	   tstack_malloc();/* alloc 256 byte stack, task 1 */
+	   task_add();	/* add task 1 to tasking list */
+	         ...
+	}
+	void task_1(void)
+	{
+	   _put_str("Task 1.\n\r");
+	   _task_yield();
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TKSINTC.ASM		  <B>ASM equiv</B>	TSTACK_INITC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmulti.htm#_tstack_avail">_tstack_avail</A>, <A HREF="rmulti.htm#_tstack_malloc">_tstack_malloc</A>
+<BR></DL>
+<H2><A NAME="_tstack_malloc">_tstack_malloc</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Allocates space for a task stack on the stack heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mtask.h&gt
+<BR>	int _tstack_malloc(const satask *tspec);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the stack heap block specified in tspec was successfully allocated.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function allocates a block of memory on the stack heap for use as a task stack. The allocated task stack is assigned to the task associated with tspec. The size of the allocated block must be specified in tspec. -1 is returned if the task stack block could not be allocated or if the task descriptor belongs to the default task.
+<BR>
+<BR>	tspec must be a task descriptor structure of type satask, which is defined in MTASK.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   int t_handle;	/* task handle (-1 to use next avail handle) */
+<BR>	   void(*t_addr)(void); 	/* task starting address */
+<BR>	   unsigned int t_stksize;  /* task stack size (default=256 bytes) */
+<BR>	   void *t_stkaddr;  	/* task stack address (default=inherit) */
+<BR>	   unsigned char t_priority; /* priority of task (0-255, default=0) */
+<BR>	   unsigned char t_numskips; /* skip count (initial priority) (0-255, def=0) */
+<BR>	   unsigned long t_waketime; /* time of day to wake up task */
+<BR>	   void *t_nextlink; 	/* address of next descriptor in task list */
+<BR>	   void *t_stksave;  	/* task stack address when task yields */
+<BR>	   void near *t_dstack;   /* offset of task stack relative to heap segment
+<BR>	   				   (small data models only) */
+<BR>	   unsigned char t_statbyte; /* current status of task */
+<BR>	   char reserved;	/* (RESERVED) */
+<BR>	} satask;
+<BR>
+<BR>	The t_stksize field must indicate the required task stack size. The stack address is placed in tspec.t_stkaddr if the stack was successfully allocated. This function also sets the T_STACKHEAP bit of the t_statbyte field.
+<BR>
+<BR>	_tstack_initc must be called to initialize the stack heap prior to using this function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	satask task0 = TASK_DEFAULT;
+	satask task1 = TASK_DEFAULT;
+	void main(void)
+	{
+	   segaddr *tstkseg;
+	   ...
+	#if __SMALL_DATA__
+	   tstkseg = _ptr_to_seg(malloc(1600));
+	   _tstack_initc(1600,tstkseg);
+	#else
+	   tstkseg = _dos_malloc(100);
+	   _tstack_initc(1600, tstkseg);
+	#endif
+	   ...
+	   task1.t_addr = task_1;
+	   _tasking_init(&amptask0); /* initialize multitasking */
+	   
+	   _tstack_malloc(&amptask1);/* alloc 256 byte stack for task 1 */
+	   _task_add(&amptask1); /* add task 1 to task list */
+	   _task_yield();
+	   ...
+	}
+	void task_1(void)
+	{
+	   _put_str("Task 1.\n\r");
+	   _task_yield();
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	satask task0 = TASK_DEFAULT;
+	satask task1 = TASK_DEFAULT;
+	void main()
+	{
+	#if __SMALL_DATA__
+	   segaddr tstkseg;
+	   tstkseg = _ptr_to_seg(malloc(1600));
+	   mov dx,tstkseg
+	#else
+	   mov ax,100;
+	   dos_malloc();
+	#endif
+	   mov ax,1600	    /* AX = size of heap in bytes */
+	   tstack_initc();    /* initialize stack heap */
+	   task1.t_addr = task_1;
+	   mov si,offset task0
+	   	  /* SI = offset of default task descriptor */
+	   tasking_init();    /* initialize multitasking */
+	   mov si,offset task1/* SI = offset of task 1 desc */
+	   tstack_malloc();/* alloc 256 byte task 1 stack */
+	   task_add();	/* add task 1 to tasking list */
+	   ...
+	}
+	void task_1(void)
+	{
+	   _put_str("Task 1.\n\r");
+	   _task_yield();
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TKSMALC.ASM		  <B>ASM equiv</B>	TSTACK_MALLOC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmulti.htm#_tstack_free">_tstack_free</A>, <A HREF="rmulti.htm#_tstack_initc">_tstack_initc</A>, <A HREF="rmulti.htm#_tstack_max">_tstack_max</A>
+<BR></DL>
+<H2><A NAME="_tstack_max">_tstack_max</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the size of the largest available block on the stack heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mtask.h&gt
+<BR>	int _tstack_max(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The size, in bytes, of the largest available block on the stack heap.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the number of bytes in the largest available block on the stack heap. 0 is returned if no space is available on the stack heap.
+<BR>
+<BR>	_tstack_initc must be called before this function may be used. The return value is undefined otherwise.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   
+	{
+	   char buffer[40];
+	   ...
+	   _i_to_dec(_tstack_max(), buffer);
+	   _put_str(buffer); /* display largest available block size */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{  
+	   char buffer[40];
+	   ...
+	   lea si,buffer/* SI -&gt buffer */
+	   tstack_max();/* AX = largest available block size */
+	   i_to_dec();/* int -&gt "string" */
+	   put_str();/* display largest available blk size */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	TKSMAX.ASM		  <B>ASM equiv</B>	TSTACK_MAX
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmulti.htm#_tstack_avail">_tstack_avail</A>, <A HREF="rmulti.htm#_tstack_initc">_tstack_initc</A>
+<BR></DL>
+<H2><A NAME="_yield_resume">_yield_resume</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Resumes multitasking.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mtask.h&gt
+<BR>	void _yield_resume(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function resumes multitasking beginning with the next call to _task_yield or _task_yieldto. It only needs to be called after _yield_suspend has been called.
+<BR>
+<BR>	This function has no effect if multitasking is not initialized or if _yield_suspend has not been called.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char rset0 = 0;
+	   /* individual bits are set for resources in use */
+	   ...
+	   if (rset0 == 0)/* resources in set 0 available? */
+	      _yield_suspend();/*  y:suspend multitasking */
+	   ...
+	   _yield_resume();/* resume multitasking */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char rset0 = 0;
+	   /* individual bits are set for resources in use */
+	   ...
+	   testrset0,0	    /* set 0 resources available? */
+	    jnzlabel_010/*   n: keep multitasking on */
+	   yield_suspend();/*   y: suspend multitasking */
+	label_010:
+	   ...
+	   yield_resume();    /* resume multitasking */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TKYRSME.ASM		  <B>ASM equiv</B>.YIELD_RESUME
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmulti.htm#_task_yield">_task_yield</A>, <A HREF="rmulti.htm#_yield_suspend">_yield_suspend</A>
+<BR></DL>
+<H2><A NAME="_yield_suspend">_yield_suspend</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Temporarily suspends multitasking.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mtask.h&gt
+<BR>	void _yield_suspend(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function suspends multitasking until the end of the active task is reached (i.e., the task returns) or until _yield_resume is called.
+<BR>
+<BR>	This function has no effect if multitasking is not initialized.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char rset0 = 0;
+	   /* individual bits are set for resources in use */
+	   ...
+	   if (rset0 == 0)/* if all resources in set 0 available */
+	      _yield_suspend();/*   suspend multitasking */
+	   ...
+	   _yield_resume();/* resume multitasking */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char rset0 = 0;
+	   /* individual bits are set for resources in use */
+	   ...
+	   testrset0,0	    /* set 0 resources available? */
+	    jnzlabel_010/*   n: keep multitasking on */
+	   yield_suspend();/*   y: suspend multitasking */
+	label_010:...
+	   ...
+	   yield_resume();    /* resume multitasking */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_TKYSPND.ASM		  <B>ASM equiv</B>.YIELD_SUSPEND
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmulti.htm#_task_yield">_task_yield</A>, <A HREF="rmulti.htm#_yield_resume">_yield_resume</A>
+<BR>
+<BR>
+<BR></BODY>
+<BR></HTML><BR>

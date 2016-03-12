@@ -1,0 +1,300 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: Data Compression</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Data Compression</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tCompres.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tCompres.htm#HEAD0001">The Compression Engine
+</A><BR>
+<A HREF="tCompres.htm#HEAD0002">Compression System Variables
+</A><BR>
+<A HREF="tCompres.htm#HEAD0003">Compression System Assumptions and Limitations
+</A><BR>
+<A HREF="tCompres.htm#HEAD0004">Initializing the Compression System
+</A><BR>
+<A HREF="tCompres.htm#HEAD0005">The Compression Prefix
+</A><BR>
+<A HREF="tCompres.htm#HEAD0006">Compressing Data
+</A><BR>
+<A HREF="tCompres.htm#HEAD0007">Initializing the Decompression System
+</A><BR>
+<A HREF="tCompres.htm#HEAD0008">Decompressing Data
+</A><BR>
+<A HREF="tCompres.htm#HEAD0009">Getting the Compression/Decompression Status
+</A><BR>
+<A HREF="tCompres.htm#HEAD000A">Verifying the Integrity of the Compressed Data
+</A><BR>
+<A HREF="tCompres.htm#HEAD000B">Sample Program
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit consists of functions which calculate buffer size requirements for compression, calculate buffer size requirements for decompression, initialize the compression system, initialize the decompression system, compress data, decompress data, calculate a CCITT CRC, calculate the compression percentage, and calculate the completion percentage for both compression and decompression. The buffer size functions and the initialization functions both have a standard and custom version of each function.
+
+<H2><A NAME="HEAD0001">The Compression Engine
+</A></H2>
+
+The Spontaneous Assembly data compression system uses an efficient combination of dictionary-based compression and special Huffman encoding techniques. The compression engine is based on the public domain LZ77 sliding window compression algorithm. However, the engine uses a proprietary encoding scheme which allows an arbitrarily large sliding window and look-ahead buffer with no adverse effect on the compression ratio. A proprietary "hash-and-sift" algorithm is also used which locates the best match in the dictionary without requiring a sequential search of all matches in the dictionary.
+
+<H2><A NAME="HEAD0002">Compression System Variables
+</A></H2>
+
+The compression system is controlled by four primary variables: window length, look-ahead length, maximum Huffman tree weight, and the hash size. The settings of these variables may be determined automatically, or they can be set manually to fine-tune the performance of the compression system. The functions which determine these variables automatically use a speed/size specifier to indicate how much to favor speed or size. Only the custom version of the initialization function (_pack_startc) allows variables to be set manually.
+
+<P>
+The speed/size specifier determines the relative importance of speed and compression when initializing the compression system. A value of 0 gives the tightest compression and 255 gives the fastest compression; a value 127 gives a good balance between speed and size (usually about 60% of the maximum speed and about 90% of the maximum compression ratio, or about three times the minimum speed and about twice the minimum compression ratio).
+
+<P>
+The window length determines the quantity of data that is searched when matching patterns. The data within the sliding window is referred to as the dictionary. After each byte is processed, this window advances or "slides" one byte to include the next byte in the data stream while the byte at the other end of the sliding window is removed from the dictionary. Increasing the window length by one byte increases the memory requirements of the compression system by approximately five bytes. A larger window size almost always gives better compression at the expense of processing speed. However, extending the window length is only helpful when the window length is less than the total number of bytes to be compressed. Data that is mostly cyclic ("AAAAA", for example) can achieve near maximum compression at maximum speed. If the data that will be compressed isknown to be highly cyclic (many databases and .EXE's have very long strings of NULLs), the window length can be set to its minimum value (512) with a minimal impact on the compression ratio. Window lengths from 512 bytes to 32K are supported.
+
+<P>
+The look-ahead length specifies the maximum number of bytes which can be matched in the dictionary when data patterns are compared. Normally, an excessively large look-ahead buffer is not helpful since most data types do not have many matches longer than 1K or 2K. For example, a book is full of duplicate words occurring in different combinations, but duplicate sentences are much less frequent, duplicate paragraphs are very rare, duplicate pages are almost non-existent, and duplicate chapters do not exist. Extending the look-ahead length by one byte only increases the memory consumption of the compression system by one byte and has no adverse affect on the compression ratio. Look-ahead lengths from 256 bytes to 16K are supported.
+
+<P>
+The maximum weight determines how often the match frequencies should be suppressed for Huffman encoding. This allows the compression system to adjust to changes in the input data mix. If the input data is expected to change rapidly throughout the compression (a mix of text and binary data, for example), the maximum weight should be set to a low value to allow the compression system to adjust more rapidly to the changes in the data. However, reducing this number will hurt compression on relatively homogeneous data (ASCII text, for example). Maximum weights from 512 to 32K are supported.
+
+<P>
+The hash size affects the speed of the compression. Increasing the number of bits in the hash speeds compression by distributing the organization of the dictionary (data in the sliding window) over a large buffer. This reduces the amount of data that needs to be processed when a pattern points to a location in the hash buffer. A 9-bit hash requires 1K of memory, and each increment in the number of bits in the hash doubles the memory requirements, with a maximum memory usage of 64K for a 15-bit hash. Hash sizes from 9 bits to 15 bits are supported.
+
+<P>
+Of these four variables, window length has the greatest effect on both speed and compression ratio. The hash size has the next greatest effect on speed but no effect whatsoever on the compression ratio. The maximum weight has a significant effect on the compression ratio and only a slight effect on compression speed (larger weights increase the speed), but the effect on the compression ratio is completely dependent on the characteristics of the compressed data. The look-ahead length has a minimal effect on compression ratio (it increases slightly as it is increased above 256 bytes) and almost no effect on compression speed.
+
+<H2><A NAME="HEAD0003">Compression System Assumptions and Limitations
+</A></H2>
+
+Before data can be compressed, the compression system must be initialized by calling <A HREF="rcompres.htm#_pack_start">_pack_start</A> or <A HREF="rcompres.htm#_pack_startc">_pack_startc</A>. And before data can be decompressed, the decompression system must be initialized by calling <A HREF="rcompres.htm#_unpack_start">_unpack_start</A> or <A HREF="rcompres.htm#_unpack_startc">_unpack_startc</A>. The compression and decompression systems cannot both be initialized at the same time. For example, calling <A HREF="rcompres.htm#_unpack_start">_unpack_start</A> effectively "uninitializes" the compression system.
+
+<H2><A NAME="HEAD0004">Initializing the Compression System
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rcompres.htm#_pack_bufsize">_pack_bufsize</A><DD>  Returns the memory requirements of the compression system.
+<DT><A HREF="rcompres.htm#_pack_bufsizec">_pack_bufsizec</A><DD> Returns the memory requirements of the compression system using a custom configuration.
+<DT><A HREF="rcompres.htm#_pack_start">_pack_start</A><DD>    Initializes the compression system.
+<DT>_pack_startc<DD>   Initializes the compression system using a custom configuration.
+</DL>
+_pack_bufsize and <A HREF="rcompres.htm#_pack_bufsizec">_pack_bufsizec</A> are used to determine the minimum, recommended, and maximum memory requirements of the compression system based on the speed/size specifier. <A HREF="rcompres.htm#_pack_bufsize">_pack_bufsize</A> calculates the memory requirements from the speed/size specifier alone. <A HREF="rcompres.htm#_pack_bufsizec">_pack_bufsizec</A> calculates the memory requirements of the compression system based on the speed/size specifier as well as a custom configuration specified in a structure of type pdat. <A HREF="rcompres.htm#_pack_bufsizec">_pack_bufsizec</A> also allows up to three separate buffers to be used to satisfy the memory requirements of the compression system. This reduces the demand on dynamic memory pools by allowing smaller, existing buffers to be used as well as dynamically allocated memory.
+
+<P>
+These functions return three values representing the amount of additional memory needed by the compression system for the given speed/size specifier:
+<DL COMPACT>
+<DT>minimum<DD>The amount of additional memory that would be required for the compression system without sacrificing compression.
+<DT>recommended<DD>    minimum plus some extra for speed optimizations.
+<DT>maximum<DD>minimum plus the maximum amount of memory that could be used by the compression system for speed optimizations.
+</DL>
+Note that minimum is actually a relative value which depends on the speed/size specifier. The absolute minimum memory requirements of the data compression system may be obtained by setting the speed/size specifier to 255 before calling <A HREF="rcompres.htm#_pack_bufsize">_pack_bufsize</A> or <A HREF="rcompres.htm#_pack_bufsizec">_pack_bufsizec</A>.
+
+<P>
+<A HREF="rcompres.htm#_pack_start">_pack_start</A> and <A HREF="rcompres.htm#_pack_startc">_pack_startc</A> initialize the variables and buffers used by the compression system and return the address and size of the initial input buffer. Both functions perform this initialization based on a supplied speed/size specifier, and both functions require an externally-supplied work buffer. In addition, <A HREF="rcompres.htm#_pack_startc">_pack_startc</A> accepts a pdat structure pointer to specify custom configuration options. If these functions are not given enough memory to meet the requirements of the speed/size specifier, non-custom settings are adjusted (at the expense of the compression ratio) to initialize the compression system with the memory provided. If the work buffer is larger than the minimum required size, the extra memory is used for speed optimizations.
+
+<P>
+The pdat structure used by the custom initialization functions is defined in COMPRESS.H as follows:
+<PRE><CODE>
+typedef struct {
+   void far * buf1;                       /* pointer to user buffer 1 */
+   int buf1size;                          /* size of user buffer 1 (in bytes, 0=none) */
+   void far * buf2;                       /* pointer to user buffer 2 */
+   int buf2size;                          /* size of user buffer 2 (in bytes, 0=none) */
+   int winlen;                            /* size of sliding window (512-32k bytes) */
+   int looklen;                           /* size of look-ahead buffer (256-16k bytes) */
+   int maxweight;                         /* maximum weight of huffman tree (512-32k) */
+   char hash;                             /* hash setting (9-15 bits, 15=fastest) */
+} pdat;
+</CODE></PRE>
+If winlen, looklen, maxweight, or hash is set to zero, that value is calculated based on the speed/size specifier. If buf1size and/or buf2size is non-zero, the compression system attempts to use the larger buffer as the input buffer and the smaller buffer (if any) for output of compressed data. If the larger buffer is too small to be used as the input buffer, it is used as the output buffer instead. User buffers must be at least 512 bytes in size to be used by the compression system.
+
+<P>
+To determine the amount of memory that will be required to decompress the data, _unpack_bufsuze or <A HREF="rcompres.htm#_unpack_bufsizec">_unpack_bufsizec</A> can be called in conjunction with <A HREF="rcompres.htm#_get_packprefix">_get_packprefix</A> after the compression system has been initialized.
+
+<H2><A NAME="HEAD0005">The Compression Prefix
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rcompres.htm#_get_packprefix">_get_packprefix</A><DD>Gets the current data compression prefix.
+</DL>
+When the compression system is initialized, the output buffer is initialized to contain a compression prefix. This prefix is approximately 10 bytes in length and is always the first block of data written to the compressed data stream. The first byte after the prefix in the compressed data stream must always be a 0xFF byte marker.
+
+<P>
+Because the compression prefix is required to initialize the decompression system, some applications choose to store the compression prefix separately from the compressed data. The <A HREF="rcompres.htm#_get_packprefix">_get_packprefix</A> function is provided to make this possible. This function makes a copy of the compression prefix at a specified address but does not remove the compression prefix from the output data stream. <A HREF="rcompres.htm#_pack_start">_pack_start</A> or <A HREF="rcompres.htm#_pack_startc">_pack_startc</A> must be called before this function may be used.
+
+<P>
+The compression prefix contains all the information which the decompression system needs to successfully decompress a compressed data stream. The compression prefix is a structure of type packp (defined in COMPRESS.H) as follows:
+<PRE><CODE>
+typedef struct {
+   char len;                              /* prefix length, in bytes */
+   int ver;                               /* compression system version number (varies) */
+   int winlen;                            /* window length */
+   int looklen;                           /* look-ahead length */
+   int maxweight;                         /* maximum Huffman tree weight */
+} packp;
+</CODE></PRE>
+In addition, the compression prefix is always followed by a byte value of 0xFF in the compressed data stream. The fields in the packp structure are defined as follows:
+<DL COMPACT>
+<DT>len<DD>    The length of the compression prefix, in bytes. This is identical to the value of the PREFIX_LEN symbolic constant (defined in COMPRESS.H). This field indicates the number of bytes in the compressed data stream which must be skipped to encounter the initial 0xFF marker.
+<DT>ver<DD>    The compression system version number. The major version number is stored in the high byte, and the minor version number is stored in the low byte. The version number is subtracted from 0xFFFF prior to being stored in the prefix. For example, if the version were 1.2, pp_ver would be equal to 0xFEFD (0xFFFF - 0x0102). If the major version number in the compression prefix is different than the version number of the compression system, the UNPACK_START and UNPACK_STARTC functions return an error. The current compression system version number may be obtained from the COMPRESS_VER symbolic constant (defined in COMPRESS.H).
+<DT>winlen<DD> Equal to the value of pdat.winlen at the time the data was compressed.
+<DT>looklen<DD>Equal to the value of pdat.looklen at the time the data was compressed.
+<DT>maxweight<DD>      Equal to the value of pdat.maxweight at the time the data was compressed.
+</DL>
+In future releases, the compression prefix may contain additional fields not shown above. For this reason, the PREFIX_LEN symbolic constant (or sizeof(packp)) should be used any time the true length of the compression prefix is required. However, the decompression system may be safely initialized using only the fields shown above, even if the data was compressed by a more recent version of the compression system.
+
+<H2><A NAME="HEAD0006">Compressing Data
+</A></H2>
+<DL COMPACT>
+<DT>_pack_continue<DD> Compresses data.
+</DL>
+Once the compression system has been initialized, the input buffer must be filled with data. <A HREF="rcompres.htm#_pack_continue">_pack_continue</A> is then called repeatedly to compress data until the input stream has been exhausted.
+
+<P>
+Each time <A HREF="rcompres.htm#_pack_continue">_pack_continue</A> returns, it indicates one of three possible conditions: 1) more input is needed; 2) output needs to be flushed; or 3) compression is complete. When more input is needed or the output needs to be flushed, <A HREF="rcompres.htm#_pack_continue">_pack_continue</A> returns the address and size of the input or output buffer. After input data has been requested, <A HREF="rcompres.htm#_pack_continue">_pack_continue</A> accepts an input value which indicates the number of input bytes placed in the input buffer. When this input value is zero, all remaining data in the input buffer is compressed and flushed. The "compression complete" condition is then returned.
+
+<P>
+The following is an example of code which compresses a file:
+<PRE><CODE>
+   int inhandle, outhandle, flag = 1;
+   void far *buffer;
+   unsigned int read_size;
+   ...                              /* open input and output files, initialize compression system */
+   do {
+      switch (flag)
+      {
+         case 1:
+            read_size = <A HREF="rfileio.htm#_read_h">_read_h</A> (inhandle, buffer, read_size);
+            if (read_size == 0xffff)
+            {
+               <A HREF="rdosio.htm#_put_str">_put_str</A> ("Error reading from input file");
+               return;
+            }
+            break;
+         case -1:
+            read_size = <A HREF="rfileio.htm#_write_h">_write_h</A> (outhandle, buffer, read_size);
+            if (read_size == 0xffff)
+            {
+              <A HREF="rdosio.htm#_put_str">_put_str</A> ("Error writing to output file");
+              return;
+            }
+      }
+      flag = <A HREF="rcompres.htm#_pack_continue">_pack_continue</A> (&buffer, &read_size);
+  } while (flag);
+</CODE></PRE>
+<H2><A NAME="HEAD0007">Initializing the Decompression System
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rcompres.htm#_unpack_bufsize">_unpack_bufsize</A><DD>Returns the memory requirements of the decompression system.
+<DT><A HREF="rcompres.htm#_unpack_bufsizec">_unpack_bufsizec</A><DD>       Returns the memory requirements of the decompression system using a custom configuration.
+<DT>_unpack_start<DD>  Initializes the decompression system.
+<DT>_unpack_startc<DD> Initializes the decompression system using a custom configuration.
+</CODE></PRE>
+<DT>_unpack_bufsize<DD>and <A HREF="rcompres.htm#_unpack_bufsizec">_unpack_bufsizec</A> are used to determine the minimum, recommended, and maximum memory requirements of the decompression system. <A HREF="rcompres.htm#_unpack_bufsize">_unpack_bufsize</A> calculates the memory requirements assuming a single block of memory will be allocated dynamically.
+
+<DT><A HREF="rcompres.htm#_unpack_bufsizec">_unpack_bufsizec</A><DD>allows two additional buffers to be specified (via a structure of type udat). This reduces the demand on dynamic memory pools by allowing smaller, existing buffers to be used as well as dynamically allocated memory. Additional memory is used to buffer input and output data, reducing the number of times <A HREF="rcompres.htm#_unpack_continue">_unpack_continue</A> must be called.
+
+<DT>These<DD>functions return three values representing the amount of additional memory needed by the decompression system:
+<DT><DL<DD>COMPACT>
+<DT>minimum<DD>The amount of additional memory that would be required to initialize the decompression system.
+<DT>recommended<DD>    minimum plus some extra for speed optimizations.
+<DT>maximum<DD>minimum plus the maximum amount of memory that could be used by the decompression system for speed optimizations.
+</DL>
+_unpack_start and <A HREF="rcompres.htm#_unpack_startc">_unpack_startc</A> initialize the variables and buffers used by the decompression system and return the address and size of the initial input buffer. Both functions perform this initialization based on the data in the compression prefix from the input stream, and both functions require an externally-supplied work buffer. In addition, <A HREF="rcompres.htm#_unpack_startc">_unpack_startc</A> accepts a pointer to a structure of type udat to identify up to two additional buffers which may be used by the decompression system for input and output. An error condition is returned if these functions are not given enough memory to meet the requirements of the compression prefix. If the work buffer is larger than the minimum required size, the extra memory is used for speed optimizations.
+
+<P>
+The udat structure used by <A HREF="rcompres.htm#_unpack_bufsizec">_unpack_bufsizec</A> and <A HREF="rcompres.htm#_unpack_startc">_unpack_startc</A> is defined in COMPRESS.H as follows:
+<PRE><CODE>
+typedef struct {
+   void far * buf1;                       /* pointer to user buffer 1 */
+   int buf1size;                          /* size of user buffer 1 (bytes) */
+   void far * buf2;                       /* pointer to user buffer 2 */
+   int buf2size;                          /* size of user buffer 2 (bytes) */
+} udat;
+</CODE></PRE>
+<H2><A NAME="HEAD0008">Decompressing Data
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rcompres.htm#_unpack_continue">_unpack_continue</A><DD>       Decompress the data from the input buffer to the output buffer.
+</DL>
+Once the decompression system has been initialized, <A HREF="rcompres.htm#_unpack_continue">_unpack_continue</A> must be called repeatedly to compress data until the input stream has been exhausted. The initial data to be decompressed must be placed into the input buffer before the initial call to <A HREF="rcompres.htm#_unpack_continue">_unpack_continue</A>. The initial data must include the compression prefix. (The compression prefix is automatically written to the compressed data stream by <A HREF="rcompres.htm#_pack_start">_pack_start</A> or <A HREF="rcompres.htm#_pack_startc">_pack_startc</A>.)
+
+<P>
+Each time <A HREF="rcompres.htm#_unpack_continue">_unpack_continue</A> returns, it indicates one of three possible conditions: 1) more input is needed; 2) output needs to be flushed; or 3) decompression is complete. When more input is needed or the output needs to be flushed, <A HREF="rcompres.htm#_unpack_continue">_unpack_continue</A> returns the address and size of the input or output buffer. After input data has been requested, <A HREF="rcompres.htm#_unpack_continue">_unpack_continue</A> accepts an input value which indicates the number of input bytes placed in the input buffer. When this input value is zero, all remaining data in the input buffer is decompressed and flushed. The "decompression complete" condition is then returned.
+
+<P>
+Following is an example of code that would decompress a file:
+<PRE><CODE>
+   int inhandle, outhandle, flag = 1;
+   unsigned int read_size;
+   void far *buffer;
+   ...                              /* open input and output files, initialize decompression */
+   do {
+      switch (flag)
+      {
+         case 1:
+            read_size = <A HREF="rfileio.htm#_read_h">_read_h</A> (inhandle, buffer, read_size);
+            if (read_size == 0xffff)
+            {
+               <A HREF="rdosio.htm#_put_str">_put_str</A> ("Error reading from input file");
+               return;
+            }
+            break;
+         case -1:
+            read_size = <A HREF="rfileio.htm#_write_h">_write_h</A> (outhandle, buffer, read_size);
+            if (read_size == 0xffff)
+            {
+              <A HREF="rdosio.htm#_put_str">_put_str</A> ("Error writing to output file");
+              return;
+            }
+      }
+      flag = <A HREF="rcompres.htm#_pack_continue">_pack_continue</A> (&buffer, &read_size);
+   } while (flag);
+</CODE></PRE>
+<H2><A NAME="HEAD0009">Getting the Compression/Decompression Status
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rcompres.htm#_get_packratio">_get_packratio</A><DD> Returns the compression ratio for the current data compression session.
+<DT><A HREF="rcompres.htm#_pack_cmplinit">_pack_cmplinit</A><DD> Initializes the compression system to allow subsequent calculation of the completion percentage.
+<DT><A HREF="rcompres.htm#_unpack_cmplinit">_unpack_cmplinit</A><DD>       Initializes the decompression system to allow subsequent calculation of the completion percentage.
+<DT><A HREF="rcompres.htm#_get_packcmpl">_get_packcmpl</A><DD>  Returns the percentage of data compression completed.
+<DT><A HREF="rcompres.htm#_get_unpackcmpl">_get_unpackcmpl</A><DD>Returns the percentage of data decompression completed.
+</DL>
+<A HREF="rcompres.htm#_get_packratio">_get_packratio</A> calculates the compression ratio for the current compression session (since the last initialization). This value is calculated by dividing the size of the output data by the size of all equivalent input data since the compression session began. This ratio is returned as an integer value which is equal to 10,000 * output bytes / input bytes. This value is 100 times the current compression percentage, where 100% indicates no compression. <A HREF="rcompres.htm#_get_packratio">_get_packratio</A> may be called any time <A HREF="rcompres.htm#_pack_continue">_pack_continue</A> returns to request input or flushing of output.
+
+If <A HREF="rcompres.htm#_get_packratio">_get_packratio</A> returns a value of 9,500 or greater (95% or more of original size), the input data is probably random or has been previously compressed. To speed processing in this case, the application may wish to store the input data "as is" instead of continuing the compression process.
+
+<P>
+<A HREF="rcompres.htm#_pack_cmplinit">_pack_cmplinit</A> initializes the compression system to allow the compression completion percentage to be calculated. <A HREF="rcompres.htm#_unpack_cmplinit">_unpack_cmplinit</A> initializes the decompression system to allow the decompression completion percentage to be calculated. Both functions require the total size of the data before compression, in bytes. Both initialization functions may be called again to reset the respective completion percentage to zero. Thereafter, <A HREF="rcompres.htm#_get_packcmpl">_get_packcmpl</A> (or <A HREF="rcompres.htm#_get_unpackcmpl">_get_unpackcmpl</A>) may be called to obtain the current compression (or decompression) completion percentage.
+
+<P>
+The completion percentages reported by <A HREF="rcompres.htm#_get_packcmpl">_get_packcmpl</A> and <A HREF="rcompres.htm#_get_unpackcmpl">_get_unpackcmpl</A> are integers between 0 and 100. These values are calculated by determining the total number of uncompressed (or decompressed) bytes processed since the last call to the initialization function and then dividing this value by the original, uncompressed size of the corresponding data stream.
+
+<H2><A NAME="HEAD000A">Verifying the Integrity of the Compressed Data
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rcompres.htm#_crc_ccitt">_crc_ccitt</A><DD>              Calculates or updates a 16 bit CCITT CRC value.
+</DL>
+<A HREF="rcompres.htm#_crc_ccitt">_crc_ccitt</A> calculates or update a 16-bit CRC (cyclic redundancy check) that conforms to the CCITT standard. The CRC is calculated on a buffer-by-buffer basis. This function makes it possible to ensure with reasonable certainty that compressed data has not been corrupted between compression and decompression. More precisely, the CCITT algorithm used by this CRC function is documented to detect
+<PRE>
+100%              of all single-bit errors,
+100%              of all two-bit errors,
+100%              of all odd numbers of errors,
+100%              of all burst errors less than 17 bits wide,
+99.9969%          of all burst errors 17 bits wide, and
+99.9985%          of all burst errors greater than 17 bits wide.
+</PRE>
+<H2><A NAME="HEAD000B">Sample Program
+</A></H2>
+
+The sample program shown above (PACK.C) is provided on the distribution diskettes and may be compiled and linked using the following Microsoft C and Borland C command lines:
+
+<P>
+Microsoft C:
+<PRE><CODE>
+cl /c /I\msc\include /I\sa\include pack.c
+link pack,pack,,\sa\lib\_sas \msc\lib\slibce
+</CODE></PRE>
+Borland C:
+<PRE><CODE>
+bcc /c /ms /I\bc\include /I\sa\include pack.c
+tlink \bc\lib\c0s pack,pack,,\sa\lib\_sas \bc\lib\cs
+</CODE></PRE>
+</BOBY>
+</HTML>

@@ -1,0 +1,1792 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Array Management Reference</TITLE>
+</HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Array Management</H1>
+<P ALIGN=CENTER>Reference Section </P>
+<UL>
+<LI><A HREF="TOC.htm">Table of Contents</A>
+<LI><A HREF="index.htm">Function Index</A>
+<LI><A HREF="gindex.htm">Group Index
+</UL>
+<A HREF="rarray.htm#ARRAY_ALLOC">ARRAY_ALLOC</A><BR>
+<A HREF="rarray.htm#_array_append">_array_append</A><BR>
+<A HREF="rarray.htm#_array_bfind">_array_bfind</A><BR>
+<A HREF="rarray.htm#ARRAY_CLEAR">ARRAY_CLEAR</A><BR>
+<A HREF="rarray.htm#ARRAY_CMPF">ARRAY_CMPF</A><BR>
+<A HREF="rarray.htm#ARRAY_COUNT">ARRAY_COUNT</A><BR>
+<A HREF="rarray.htm#_array_curn">_array_curn</A><BR>
+<A HREF="rarray.htm#_array_delete">_array_delete</A><BR>
+<A HREF="rarray.htm#ARRAY_EMPTY">ARRAY_EMPTY</A><BR>
+<A HREF="rarray.htm#ARRAY_ESIZE">ARRAY_ESIZE</A><BR>
+<A HREF="rarray.htm#ARRAY_FULL">ARRAY_FULL</A><BR>
+<A HREF="rarray.htm#_array_full">_array_full</A><BR>
+<A HREF="rarray.htm#_array_init">_array_init</A><BR>
+<A HREF="rarray.htm#_array_insert">_array_insert</A><BR>
+<A HREF="rarray.htm#_array_lfind">_array_lfind</A><BR>
+<A HREF="rarray.htm#_array_lfindr">_array_lfindr</A><BR>
+<A HREF="rarray.htm#ARRAY_MAX">ARRAY_MAX</A><BR>
+<A HREF="rarray.htm#_array_next">_array_next</A><BR>
+<A HREF="rarray.htm#_array_nth">_array_nth</A><BR>
+<A HREF="rarray.htm#_array_prev">_array_prev</A><BR>
+<A HREF="rarray.htm#_array_qsort">_array_qsort</A><BR>
+<A HREF="rarray.htm#_bin_search">_bin_search</A><BR>
+<A HREF="rarray.htm#_lin_rsearch">_lin_rsearch</A><BR>
+<A HREF="rarray.htm#_lin_search">_lin_search</A><BR>
+<A HREF="rarray.htm#_quick_sort">_quick_sort</A><BR>
+<H2><A NAME="ARRAY_ALLOC">ARRAY_ALLOC</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Macro) Allocates and initializes a structured array.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>	ARRAY_ALLOC(s_array, max, size, cmpf)
+<BR>
+<BR>	s_array is the name to be assigned to the structured array.
+<BR>	max is the number of array elements to reserve space for.
+<BR>	size is the size of each array element, in bytes (e.g., sizeof(int)).
+<BR>	cmpf is the name of the assembly comparison function to be used for this array (e.g., str_cmp).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This macro statically allocates space for a structured array in a source file. Space is allocated for max array elements, each of size bytes. The contents of the memory allocated for s_array is undefined.
+<BR>
+<BR>	The static specifier may be used with this macro to initialize all bytes in the array space to 0x00. For example:
+<BR>
+<BR>	static ARRAY_ALLOC (array1, 100, 4, str_cmp);/* init array elements to zero */
+<BR>
+<BR>	The following structure is used by this macro to define the array header and allocate memory for the array elements (MAX and SIZE denote the max and size parameters):
+<BR>
+<BR>	struct {
+<BR>	   void(*cmpf)(void);	/* assembly comparison function */
+<BR>	   unsigned int size;	/* size of each element */
+<BR>	   unsigned int max;	/* maximum number of elements */
+<BR>	   unsigned int cnt;	/* number of current elements */
+<BR>	   char array[MAX][SIZE];/* location of first element in array */
+<BR>	};
+<BR>
+<BR>	The array field indicates the location of the first element of the array. All functions which operate on structured arrays expect the address of this field, NOT the address of the structure. Array header information may be accessed using the following macros:
+<BR>
+<BR>	ARRAY_COUNT(array)		  (array pntr -2) Current number of array elements
+<BR>	ARRAY_MAX(array)		  (array pntr -2) Maximum number of array elements
+<BR>	ARRAY_ESIZE(array)		  (array pntr -6) Size of each array element, in bytes
+<BR>	ARRAY_CMPF(array)		(array pntr -8 small code models, -10 in large code models) User comparison function address
+<BR>
+<BR>	In addition, HEADER_SIZE is defined in ARRAY.H to indicate the exact size of the array header in the current memory model.
+<BR>
+<BR>	The comparison function (cmpf) is called every time array elements are compared by any of the structured array management functions. Therefore, the speed of the comparison function directly impacts the performance of the structured array sort/search functions. To maintain the advantage of the assembly language core to the sort/search functions, cmpf must have an assembly language interface. cmpf must preserve all registers while supporting the following inputs and outputs:
+<BR>
+<BR>	Comparison function inputs:
+<BR>
+<BR>	DS:SI	address of the element to compare against (key)
+<BR>	ES:DI	address of the element to compare (element)
+<BR>
+<BR>	Comparison function outputs:
+<BR>
+<BR>	JA if key would appear after element in the array (key is greater than element).
+<BR>
+<BR>	JE	if key would appear at the same location as element in the array (key is equal to element).
+<BR>
+<BR>	JB	if key would appear before element in the array (key is less than element).
+<BR>
+<BR>	Note that the return conditions for the comparison function only indicate whether key should appear before, at, or after (i.e., JB, JE, or JA) the position of element in the array. No assumptions are made about the elements themselves. This allows elements to contain any information, and it allows the array to be sorted in any order (i.e., ascending, descending, etc.). If each array element is a single ASCIIZ string, then str_cmp or str_cmpi may be used as the comparison function.
+<BR>
+<BR>WARNING! To ensure compatibility with future releases, the HEADER_SIZE define should be used any time the size of the header needs to be known.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void *location;
+	   ARRAY_ALLOC (array1, 3, 4, str_cmp); /* use ASM cmpf */
+	 
+	   _array_insert(array1.array, "cat", array1.array[0]);
+	   _array_append(array1.array, "car");
+	   if(_array_bfind("aaa",array1.array, &amplocation) != 0)
+	      _array_insert(array1.array,"aaa",location);
+	   	  	 /* make room for new element */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	{
+	   char *str;
+	   ARRAY_ALLOC (array1, 2, 4, str_cmp);/* use ASM cmpf */
+	   lea bx,array1.array/* BX -&gt element[0] in array */
+	   str = "cat";
+	   mov si,str/* SI = offset of "cat" */
+	   mov di,bx /* DI -&gt location to insert element */
+	   array_insert();/* insert "cat" in array */
+	   str = "can";
+	   mov si,str/* SI = offset of "can" */
+	   array_append(); /* append "can" in array */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	SA_ARRAY.H		  <B>ASM equiv</B>.ARRAY_ALLOC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rarray.htm#_array_init">_array_init</A>
+<BR></DL>
+<H2><A NAME="_array_append">_array_append</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Appends an element to the end of a structured array.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>	int _array_append(void far *s_array, const void far *element);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if element was successfully appended to s_array.
+<BR>
+<BR>	-1 if element could not be appended to s_array.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function appends element to the end of s_array and increments the element count. If s_array is already full, 0 is returned and s_array remains unchanged.
+<BR>
+<BR>WARNING! This function may only be used with structured arrays. Structured arrays may be created using ARRAY_ALLOC or _array_init.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ...
+	   ARRAY_ALLOC (array1, 2, 4, str_cmp);/* use ASM cmpf */
+	   _array_insert(array1.array, "cat", array1.array[0]);
+	   _array_append(array1.array, "car");
+	   if(_array_append(array1.array, "can") == -1)
+	      _put_str("\n\rUnable to append element.");
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	{
+	   char *str;
+	   void *array_ptr; /* pointer to dynamic (structured) array */
+	   ...
+	   if((array_ptr = (char *)malloc(20+HEADER_SIZE)) == NULL)
+	      exit(0);
+	   mov di,array_ptr/* DI -&gt array */
+	   mov  cx,4	/* CX = size of elements */
+	   mov  bx,5	/* BX = number of elements */
+	   mov  ax,offset str_cmp
+	   array_init();
+	   mov di,bx
+	   str = "aaa";
+	   mov si,str	/* SI -&gt "aaa" */
+	   array_insert();   /* insert "aaa" */
+	   str = "bbb";
+	   mov si,str	/* SI -&gt "bbb" */
+	   array_append();/* append "bbb" */
+	   free(array_ptr);
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_ARAPPND.ASM		  <B>ASM equiv</B>	ARRAY_APPEND
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rarray.htm#_array_delete">_array_delete</A>, <A HREF="rarray.htm#_array_full">_array_full</A>, <A HREF="rarray.htm#_array_init">_array_init</A>, <A HREF="rarray.htm#_array_insert">_array_insert</A>
+<BR></DL>
+<H2><A NAME="_array_bfind">_array_bfind</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches for an element in a structured array using a binary search.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>	int _array_bfind(const void far *key, const void far *s_array, void far **location);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the element matching key was found in s_array.
+<BR>	location		pointer to the matching array element
+<BR>
+<BR>	-1 if no elements matching key were found in s_array.
+<BR>	location		pointer to the position where key may be inserted into s_array
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches s_array for an element matching key. The search is performed using a non-recursive binary search algorithm. If a matching element is found, 0 is returned and location points to element that matches key. If no matching elements are found, -1 is returned and location points to the position that a matching element would occupy in s_array if it were present. This address may be used with _array_insert to insert key into the array in sorted order. 
+<BR>
+<BR>WARNING! This function may only be used with structured arrays. Structured arrays may be created using ARRAY_ALLOC or _array_init. This function also expects the array to be in sorted order.
+<BR>
+<BR>	_array_qsort may be used to sort the array.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ...
+	   ARRAY_ALLOC (array1, 3, 4, str_cmp);/* use ASM cmpf */
+	   _array_insert(array1.array, "bbb", array1.array[0]);
+	   _array_append(array1.array, "ccc");
+	   if(_array_bfind("aaa",array1.array, &amplocation) != 0)
+	      _array_insert(array1.array,"aaa",location);
+	   	  	 	/* make room for new element */
+	...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	{
+	   char *key;
+	   ...
+	   ARRAY_ALLOC (array1, 3, 4, str_cmp);
+	   	  	 	/* allocate static array */
+	   lea bx,array1.array/* BX -&gt array1.array */
+	   key = "aaa";
+	   mov si,key	/* SI -&gt element to insert */
+	   mov di,bx	/* DI -&gt array1.array */
+	   array_insert();    /* insert "bbb" in array */
+	   key = "bbb";
+	   mov si,key	/* SI -&gt element to insert */
+	   array_append();    /* insert "ccc" in array */
+	   key = "ccc";
+	   mov si,key	/* SI -&gt comparison key */
+	   array_bfind();	/* is "aaa" in array? */
+	    jnca_bfnd_100/*   y: jump out */
+	   array_append();    /*   n: insert in array */
+	   ...
+	a_bfnd_100:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_ARBFIND.ASM		  <B>ASM equiv</B>	ARRAY_BFIND
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rarray.htm#_array_init">_array_init</A>, <A HREF="rarray.htm#_array_insert">_array_insert</A>, <A HREF="rarray.htm#_array_lfind">_array_lfind</A>, <A HREF="rarray.htm#_array_qsort">_array_qsort</A>, <A HREF="rarray.htm#_bin_search">_bin_search</A>
+<BR></DL>
+<H2><A NAME="ARRAY_CLEAR">ARRAY_CLEAR</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Macro) Clears a structured array.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>	ARRAY_CLEAR(s_array)
+<BR>	s_array is the address of the first element in a structured array
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This macro clears s_array by setting its element count to zero. No other changes are made to s_array.
+<BR>
+<BR>WARNING! This macro may only be used with structured arrays. Structured arrays may be created using ARRAY_ALLOC or _array_init.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ...
+	   ARRAY_ALLOC (array1, 3, 4, str_cmp);
+	   	  	 	/* use ASM comparison function */
+	   _array_insert(array1.array, "bbb", array1.array[0]);
+	   _array_delete(array1.array,array1.array[0]);
+	   ARRAY_CLEAR(array1.array);/* set array count == 0 */
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	(Not applicable)
+
+</CODE></PRE>
+<B>Source file</B>	SA_ARRAY.H		   <B>ASM equiv</B> .ARRAY_CLEAR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD>_array_count, <A HREF="rarray.htm#_array_init">_array_init</A>
+<BR></DL>
+<H2><A NAME="ARRAY_CMPF">ARRAY_CMPF</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Macro) Returns the address of the comparison function.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>	void *ARRAY_CMPF(s_array)
+<BR>	s_array is the address of the first element in a structured array
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	Address of comparison function.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This macro returns the address of the assembly comparison function used by s_array.
+<BR>
+<BR>WARNING! This macro may only be used with structured arrays. Structured arrays may be created using ARRAY_ALLOC or _array_init.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>
+	{
+	   char outbuf[80];
+	   ARRAY_ALLOC (array1, 3, 4, str_cmp);
+	   	  	 /* use ASM comparison function */
+	   #if __LARGE_CODE__
+	      _put_str(_ul_to_dec(ARRAY_CMPF(array1.array), outbuf));
+	   #else
+	      _put_str(_ui_to_dec(ARRAY_CMPF(array1.array), outbuf));
+	   #endif
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	(Not applicable)
+
+</CODE></PRE>
+<B>Source file</B>	SA_ARRAY.H		  <B>ASM equiv</B>	None
+
+<BR><H2><A NAME="ARRAY_COUNT">ARRAY_COUNT</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Macro) Returns the number of elements in a structured array.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>	int ARRAY_COUNT(s_array)
+<BR>	s_array is the address of the first element in a structured array
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	Number of elements in the array.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This macro returns the number of elements currently in s_array.
+<BR>
+<BR>WARNING! This macro may only be used with structured arrays. Structured arrays may be created using ARRAY_ALLOC or _array_init.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char outbuf[80];
+	   ...
+	   ARRAY_ALLOC (array1, 3, 4, str_cmp);
+	   _put_str(_i_to_dec(ARRAY_COUNT(array1.array), outbuf));
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	(Not applicable)
+
+</CODE></PRE>
+<B>Source file</B>	SA_ARRAY.H		  <B>ASM equiv</B>.ARRAY_COUNT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD>_array_empty, <A HREF="rarray.htm#_array_full">_array_full</A>, <A HREF="rarray.htm#_array_init">_array_init</A>
+<BR></DL>
+<H2><A NAME="_array_curn">_array_curn</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the index of a specified element in a structured array.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>	unsigned int _array_curn(const void far *s_array, const void far *element);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	Index of element in s_array.
+<BR>
+<BR>	-1 if element is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the index (element number) of element in s_array. Array elements are numbered zero through n-1, where n is the total number of elements currently in s_array. -1 is returned if element points past the last element in s_array.
+<BR>
+<BR>WARNING! This function may only be used with structured arrays. Structured arrays may be created using ARRAY_ALLOC or _array_init.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	unsigned index;
+	   ...
+	   ARRAY_ALLOC (array1, 3, 4, str_cmp);/* use ASM cmpf */
+	   _array_insert(array1.array,"bbb",array1.array[0]);
+	   _array_append(array1.array,"ccc");
+	   index = _array_curn(array1.array,array1.array[1]);
+	   	  	 	    /* index = 1 */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	{
+	char *element;
+	unsigned index;
+	   ARRAY_ALLOC (array1, 3, 4, str_cmp);
+	   lea bx,array1.array;
+	   element = "bbb";
+	   mov si,element/* SI -&gt "bbb" */
+	   mov di,bx	 /* DI -&gt array1.array[0] */
+	    array_insert();	/* insert first element */
+	    element = "ccc";
+	    mov si,element/* SI -&gt "ccc" */
+	    array_append();	/* append "ccc" */
+	    array_bfind();	 /* find "ccc", return address */
+	    index = array_curn();/* index = 1 */
+	    ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_ARCURN.ASM		  <B>ASM equiv</B>	ARRAY_CURN
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rarray.htm#_array_init">_array_init</A>, <A HREF="rarray.htm#_array_nth">_array_nth</A>
+<BR></DL>
+<H2><A NAME="_array_delete">_array_delete</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Removes an element from a structured array.	 
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>	int _array_delete(void far *s_array, const void far *element);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if element was successfully deleted from array.
+<BR>
+<BR>	-1 if element was invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function removes element from s_array. Elements which reside beyond element in s_array are moved one position toward the start of s_array. The array count is decremented and 0 is returned. If element lies beyond the last element in s_array, -1 is returned and s_array remains unchanged.
+<BR>
+<BR>WARNING! This function may only be used with structured arrays. Structured arrays may be created using ARRAY_ALLOC or _array_init.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   unsigned index;
+	   ...
+	   ARRAY_ALLOC (array1, 3, 4, str_cmp);/* use ASM cmpf */
+	   _array_insert(array1.array,"bbb",array1.array[0]);
+	   _array_delete(array1.array,array1.array[0]);
+	   if(array1.cnt == 0)
+	      _put_str("\n\rNo current elements in array.");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	{
+	   char *element;
+	   ...
+	   ARRAY_ALLOC (array1, 3, 4, str_cmp);/* use ASM cmpf */
+	   lea  bx,array1.array; /* BX = offset of array1.array[0] */
+	   element = "bbb";
+	   mov si,element    /* SI = offset "bbb" */
+	   mov di,bx       /* DI = offset of array1.array[0] */
+	   array_insert();      /* insert element */
+	   array_delete();      /* delete element */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_ARDELET.ASM		  <B>ASM equiv</B>	ARRAY_DELETE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD>_array_empty, <A HREF="rarray.htm#_array_init">_array_init</A>, <A HREF="rarray.htm#_array_insert">_array_insert</A>, <A HREF="rarray.htm#_array_nth">_array_nth</A>
+<BR></DL>
+<H2><A NAME="ARRAY_EMPTY">ARRAY_EMPTY</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Macro) Indicates whether or not a structured array is empty.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>	int ARRAY_EMPTY(s_array)
+<BR>	s_array is the address of the first element in a structured array
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if s_array is empty.
+<BR>
+<BR>	0 if s_array is not empty.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This macro indicates whether or not s_array is empty. A structured array is empty if its current element count is 0.
+<BR>
+<BR>WARNING! This macro may only be used with structured arrays. Structured arrays may be created using ARRAY_ALLOC or _array_init.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char outbuf[80];
+	   ...
+	   ARRAY_ALLOC (array1, 3, 4, str_cmp);
+	   if(ARRAY_EMPTY(array1.array))
+	      _put_str("Array is now empty.");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	(Not applicable)
+
+</CODE></PRE>
+<B>Source file</B>	SA_ARRAY.H		  <B>ASM equiv</B>.ARRAY_EMPTY
+
+<BR><DL>
+<DT><B>See also</B>
+<DD>_array_count, <A HREF="rarray.htm#_array_init">_array_init</A>
+<BR></DL>
+<H2><A NAME="ARRAY_ESIZE">ARRAY_ESIZE</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Macro) Returns the size of each element in a structured array.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>	int ARRAY_ESIZE(s_array)
+<BR>	s_array is the address of the first element in a structured array
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	Size of each array element.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This macro returns the size of each array element in s_array. All elements in the array are the same size.
+<BR>
+<BR>WARNING! This macro may only be used with structured arrays. Structured arrays may be created using ARRAY_ALLOC or _array_init.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char outbuf[80];
+	   ...
+	   ARRAY_ALLOC(array1, 3, 4, str_cmp);
+	   _put_str(_i_to_dec(ARRAY_ESIZE(array1.array), outbuf));
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	(Not applicable)
+
+</CODE></PRE>
+<B>Source file</B>	SA_ARRAY.H		  <B>ASM equiv</B>.ARRAY_ESIZE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rarray.htm#_array_init">_array_init</A>
+<BR></DL>
+<H2><A NAME="ARRAY_FULL">ARRAY_FULL</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Macro) Indicates whether or not a structured array is full.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>	int ARRAY_FULL(s_array)
+<BR>	s_array is the address of the first element in a structured array
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if s_array is full.
+<BR>
+<BR>	0 if s_array is not full.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This macro indicates whether or not s_array is full. A structured array is full if its current element count is greater than or equal to the maximum allowed number of array elements.
+<BR>
+<BR>WARNING! This macro may only be used with structured arrays. Structured arrays may be created using ARRAY_ALLOC or _array_init.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char outbuf[80];
+	   ...
+	   ARRAY_ALLOC (array1, 3, 4, str_cmp);
+	   if(ARRAY_FULL(array1.array))
+	      _put_str("Array is now full.");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	(Not applicable)
+
+</CODE></PRE>
+<B>Source file</B>	SA_ARRAY.H		  <B>ASM equiv</B>.ARRAY_FULL
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rarray.htm#ARRAY_CLEAR">ARRAY_CLEAR</A>, <A HREF="rarray.htm#ARRAY_COUNT">ARRAY_COUNT</A>, <A HREF="rarray.htm#_array_init">_array_init</A>
+<BR></DL>
+<H2><A NAME="_array_full">_array_full</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Indicates whether or not a structured array is full.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>	int _array_full(const void far *s_array);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if s_array is full.
+<BR>
+<BR>	0 if s_array is not full.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function indicates whether or not s_array is full. An array is full when the current array element count is greater than or equal to the maximum allowed number of array elements.
+<BR>
+<BR>WARNING! This function may only be used with structured arrays. Structured arrays may be created using ARRAY_ALLOC or _array_init.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char outbuf[80];
+	   ...
+	   ARRAY_ALLOC (array1, 3, 4, str_cmp);
+	   if(_array_full(array1.array))
+	      _put_str("Array is now full.");
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	{
+	   char *element;
+	   char str[] = "Array is now full.";
+	   ...
+	   ARRAY_ALLOC (array1, 3, 4, str_cmp); /* use ASM cmpf */
+	   lea  bx,array1.array; /* BX = offset of array1.array[0] */
+	   array_full();
+	    jnelabel_020
+	   lea si,str
+	   put_str();
+	   ...
+	label_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_ARFULL.ASM		  <B>ASM equiv</B>	ARRAY_FULL
+
+<BR><DL>
+<DT><B>See also</B>
+<DD>_array_clear, _array_count, <A HREF="rarray.htm#_array_init">_array_init</A>
+<BR></DL>
+<H2><A NAME="_array_init">_array_init</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Initializes a structured array.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>	void far *_array_init(void far *s_array, unsigned int max, int size, void(*cmpf)(void));
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the first element in s_array.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function dynamically initializes a structured array in s_array by creating an array header at that location. The array header is initialized to indicate that s_array is currently empty (no elements), that the size of each element is size bytes, that the maximum allowed number of array elements is max, and that the address of the comparison function to be used to compare elements is cmpf.
+<BR>
+<BR>	The array elements are not initialized. The address of the first byte past the header is returned. This is the address where the first array element will be inserted. It is also the address which must be used to refer to s_array whenever it is operated on by any array management function.
+<BR>
+<BR>	Structured arrays may be statically allocated and initialized using the ARRAY_ALLOC macro.
+<BR>
+<BR>	Since the array header precedes the first element in the array, array header information may be accessed using the following macros:
+<BR>
+<BR>	ARRAY_COUNT(s_array)	(array pntr -2) Current number of array elements
+<BR>	ARRAY_MAX(s_array)		(array pntr -2) Maximum number of array elements
+<BR>	ARRAY_ESIZE(s_array)	(array pntr -6) Size of each array element, in bytes
+<BR>	ARRAY_CMPF(s_array)		(array pntr -8 small code models, -10 in large code
+<BR>	   					models) User comparison function address
+<BR>
+<BR>	For example, the following instruction may be used to move the maximum number of array elements into num:
+<BR>
+<BR>	   ...
+<BR>	   unsigned int num;
+<BR>	   char *array, *array_ptr;
+<BR>	   ...
+<BR>	   if ((char = (char *)malloc(20+HEADER_SIZE)) == NULL)
+<BR>	      _put_str("Not enough memory");
+<BR>	   else
+<BR>	   {
+<BR>	      array_ptr = _array_init(array, 5, 4, str_cmp);
+<BR>	      num = ARRAY_MAX(array);/* num = max # of elements (5) */
+<BR>	   }
+<BR>	   ...
+<BR>
+<BR>	In addition, HEADER_SIZE is defined in ARRAY.H to indicate the exact size of the array header in the current memory model. 
+<BR>
+<BR>	The comparison function (cmpf) is called every time array elements are compared by any of the structured array management functions. Therefore, the speed of the comparison function directly impacts the performance of the structured array sort/search functions. 
+<BR>
+<BR>	To maintain the advantage of the assembly language core to the sort/search functions, cmpf must have an assembly language interface. cmpf must preserve all registers while supporting the following inputs and outputs:
+<BR>
+<BR>	Comparison function inputs:
+<BR>
+<BR>	DS:SI	address of the element to compare against (key)
+<BR>	ES:DI	address of the element to compare (element)
+<BR>
+<BR>	Comparison function outputs:
+<BR>
+<BR>	JA if key would appear after element in the array (key is greater than element).
+<BR>
+<BR>	JE if key would appear at the same location as element in the array (key is equal to element).
+<BR>
+<BR>	JB if key would appear before element in the array (key is less than element).
+<BR>
+<BR>	Note that the return conditions for the comparison function only indicate whether key should appear before, at, or after (i.e., JB, JE, or JA) the position of element in the array. No assumptions are made about the elements themselves. This allows elements to contain any information, and it allows the array to be sorted in any order (i.e., ascending, descending, etc.). If each array element is a single ASCIIZ string, then str_cmp or str_cmpi may be used as the comparison function.
+<BR>
+<BR>WARNING! To ensure compatibility with future releases, the HEADER_SIZE define should be used any time the size of the header needs to be known. This define may be used to determine the required size of the buffer for array.
+<BR>
+<BR>	The buffer for array must be large enough to accommodate the array header and all array elements or information following the buffer may be overwritten.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int num;
+	   void *array_ptr, *heap_array;
+	   ...	  	 /* pointer to dynamic array */
+	   if((array_ptr = (char *)malloc(20+HEADER_SIZE)) == NULL)
+	      _put_str("Not enough memory for array initialization.");
+	   else
+	      heap_array = _array_init(array_ptr,5,4,str_cmp);
+	   _array_insert(heap_array,"aaa",(char *)heap_array);
+	   _array_append(heap_array,"bbb");
+	   num = ARRAY_COUNT(heap_array);
+	   	  	 /* num = number of elements (2) */
+	   free(array_ptr);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	int test14(void)
+	{
+	   char *str;
+	   void *array_ptr; /* pointer to dynamic (structured) array */
+	   ...
+	   if((array_ptr = (char *)malloc(20+HEADER_SIZE)) == NULL)
+	         exit(0);
+	   mov di,array_ptr/* DI -&gt array */
+	   mov  cx,4	/* CX = size of elements */
+	   mov  bx,5	/* BX = number of elements */
+	   mov  ax,offset str_cmp
+	   array_init();
+	   mov di,bx
+	   str = "aaa";
+	   mov si,str	/* SI -&gt "aaa" */
+	   array_insert();   /* insert "aaa" */
+	   str = "bbb";
+	   mov si,str	/* SI -&gt "bbb" */
+	   array_append();/* append "bbb" */
+	   free(array_ptr);
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_ARINIT.ASM		  <B>ASM equiv</B>	ARRAY_INIT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD>_array_alloc, <A HREF="rarray.htm#_array_insert">_array_insert</A>
+<BR></DL>
+<H2><A NAME="_array_insert">_array_insert</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Inserts an element into a structured array.	 
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>	int _array_insert(void far *s_array, const void far *element, void far *inspos);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if element was successfully inserted into s_array.
+<BR>
+<BR>	-1 if element could not be inserted into s_array because s_array was full.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function inserts element into s_array at inspos. All elements from inspos to the end of s_array are moved toward the end of s_array to make room for element. If s_array is already full, -1 is returned and s_array is unchanged. If element is successfully inserted, the element count is incremented by one and 0 is returned.
+<BR>
+<BR>WARNING! This function may only be used with structured arrays. Structured arrays may be created using ARRAY_ALLOC or _array_init.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ARRAY_ALLOC (array1, 2, 4, str_cmp);/* use ASM cmpf */
+	   ...
+	   _array_insert(array1.array, "cat", array1.array[0]);
+	   	  /* insert "cat" as first element in array */
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	{
+	   char str[] = "cat";
+	   ARRAY_ALLOC (array1, 2, 4, str_cmp);/* use ASM cmpf */
+	   lea bx,array1.array;/* BX -&gt array1.array[0] */
+	   lea si,str	/* SI -&gt "cat" */
+	   mov di,bx	/* DI -&gt array1.array[0] */
+	   array_insert();    /* insert "cat" */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_ARINSRT.ASM		  <B>ASM equiv</B>	ARRAY_INSERT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rarray.htm#_array_append">_array_append</A>, <A HREF="rarray.htm#_array_bfind">_array_bfind</A>, <A HREF="rarray.htm#_array_delete">_array_delete</A>, <A HREF="rarray.htm#_array_init">_array_init</A>
+<BR></DL>
+<H2><A NAME="_array_lfind">_array_lfind</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches for an element in a structured array using a forward linear search.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>	void far *_array_lfind(const void far *key, const void far *s_array);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the matching array element.
+<BR>
+<BR>	NULL if no elements matching key were found in s_array.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches s_array for an element which matches key.
+<BR>
+<BR>	The search begins with the first element in s_array and continues with each succeeding element until a matching element is found or until all elements in s_array have been examined. If a matching element is found, a pointer to it is returned; otherwise, NULL is returned.
+<BR>
+<BR>	The array does not need to be in sorted order to use this function.
+<BR>
+<BR>WARNING! This function may only be used with structured arrays. Structured arrays may be created using ARRAY_ALLOC or _array_init.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char outstr[20], *location;
+	   int num;
+	   ARRAY_ALLOC(array1, 3, 4, mem_cmp);
+	   ...
+	   num = 1111;
+	   _array_insert(array1.array, &ampnum, array1.array[0]);
+	   num = 3333;
+	   _array_append(array1.array, &ampnum);
+	   num = 2222;
+	   if((location = _array_lfind(&ampnum, array1.array)) == NULL)
+	      _array_append (array1.array, &ampnum);  /* append 222 */
+	   else
+	   {
+	      _put_str(_ui_to_dec((int)location, outstr));
+	      _put_str(" found.");
+	      _put_newline();
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	{
+	   int num;
+	   ARRAY_ALLOC(array1, 3, 4, mem_cmp);
+	    ...
+	    lea bx,array1.array;/* BX -&gt array1.array */
+	    lea si,num  	    /* SI -&gt num */
+	    num = 111;
+	    mov di,bx	 	/* DI -&gt array1.array */
+	    array_insert();	    /* insert 111 */
+	    num = 333;
+	    array_append();	    /* append 333 */
+	    num = 222;
+	    array_lfind();	 	/* is 222 in array? */
+	     jnca_lfind_100	/*   y: continue */
+	    mov di,bx	 	/* reset DI */
+	    array_append();	    /* append 222 */
+	    ...
+	a_lfind_100:
+	    ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_ARLFIND.ASM		  <B>ASM equiv</B>	ARRAY_LFIND
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rarray.htm#_array_bfind">_array_bfind</A>, <A HREF="rarray.htm#_array_init">_array_init</A>, <A HREF="rarray.htm#_array_lfind">_array_lfind</A>, <A HREF="rarray.htm#_lin_search">_lin_search</A>
+<BR></DL>
+<H2><A NAME="_array_lfindr">_array_lfindr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches for an element in a structured array using a reverse linear search.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>	void far *_array_lfindr(const void far *key, const void far *s_array);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to matching array element.
+<BR>
+<BR>	NULL if no elements matching key were found in s_array.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches s_array for an element which matches key.
+<BR>
+<BR>	The search begins with the last element in s_array and continues with each preceding element until a matching element is found or until all elements in s_array have been examined. If a matching element is found, a pointer to its address is returned; otherwise, NULL is returned. The array does not need to be in sorted order to use this function.
+<BR>
+<BR>WARNING! This function may only be used with structured arrays. Structured arrays may be created using ARRAY_ALLOC or _array_init.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char outstr[20], *location;
+	   int num;
+	   ARRAY_ALLOC(array1, 3, 4, mem_cmp);
+	   ...
+	   num = 1111;
+	   _array_insert(array1.array, &ampnum, array1.array[0]);
+	   num = 3333;
+	   _array_append(array1.array, &ampnum);
+	   num = 2222;
+	   if((location = _array_lfindr(&ampnum, array1.array)) == NULL)
+	      _array_append (array1.array, &ampnum); /* append 2222 */
+	   else
+	   {
+	      _put_str(_ui_to_dec((int)location, outstr)); 
+	      _put_str(" found.");
+	      _put_newline();
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	{
+	   int num;
+	   ARRAY_ALLOC(array1, 3, 4, mem_cmp);
+	   ...
+	   lea bx,array1.array;/* BX -&gt array */
+	   lea si,num 	    /* SI -&gt num */
+	   num = 111;
+	   mov di,bx	/* DI -&gt array1[0] */
+	   array_insert();    /* insert 111 */
+	   num = 333;
+	   array_append();    /* append 333 */
+	   num = 222;
+	   array_lfindr();    /* is 222 in array? */
+	    jncl_rfind_100/*   y: continue */
+	   mov di,bx	/* reset DI -&gt array1[0] */
+	   array_append();    /* append 222 */
+	l_rfind_100:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_ARRFIND.ASM		  <B>ASM equiv</B>	ARRAY_LFINDR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rarray.htm#_array_init">_array_init</A>, <A HREF="rarray.htm#_array_lfind">_array_lfind</A>, <A HREF="rarray.htm#_lin_rsearch">_lin_rsearch</A>
+<BR></DL>
+<H2><A NAME="ARRAY_MAX">ARRAY_MAX</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Macro) Returns the maximum number of elements allowed in a structured array.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>	int ARRAY_MAX(s_array)
+<BR>	s_array is the address of the first element in the structured array
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	Maximum number of allowed elements.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This macro returns the maximum number of allowed elements in s_array.
+<BR>
+<BR>WARNING! This macro may only be used with structured arrays. Structured arrays may be created using ARRAY_ALLOC or _array_init.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char outbuf[80];
+	   ...
+	   ARRAY_ALLOC(array1, 3, 4, str_cmp);
+	   _put_str(_i_to_dec(ARRAY_MAX(array1.array), outbuf));
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	(Not applicable)
+
+</CODE></PRE>
+<B>Source file</B>	SA_ARRAY.H		  <B>ASM equiv</B>	None
+
+<BR><H2><A NAME="_array_next">_array_next</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns a pointer to the next element in a structured array.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>	void far *_array_next(const void far *s_array, const void far *element);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the next element in s_array.
+<BR>
+<BR>	NULL if element is invalid or if it is the last element in s_array.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns a pointer to the element in s_array which immediately follows element. NULL is returned if element is invalid or if it is the last element in s_array.
+<BR>
+<BR>WARNING! This function may only be used with structured arrays. Structured arrays may be created using ARRAY_ALLOC or _array_init.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   ARRAY_ALLOC (array1, 5, 4, str_cmp);
+	   ...
+	   _array_insert(array1.array,"aaa",array1.array[0]);
+	   _array_append(array1.array,"bbb");
+	   _put_str(_array_next(array1.array, array1.array[0]));
+	   	  	 	/* "bbb" */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	{
+	   char *element;
+	   ARRAY_ALLOC(array1, 5, 4, str_cmp);
+	   ...
+	   lea bx,array1.array;/* BX -&gt array[0] */
+	   element = "aaa";
+	   mov si,element/* SI -&gt "aaa" */
+	   mov di,bx	/* DI -&gt array1.array[0] */
+	   array_insert();    /* insert "aaa" */
+	   element = "bbb";
+	   mov si,element/* SI -&gt element to insert */
+	   array_append();    /* append "bbb" */
+	   array_next();
+	   mov si,di	/* SI -&gt next element */
+	   put_str();	/* "bbb" */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_ARNEXT.ASM		  <B>ASM equiv</B>	ARRAY_NEXT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rarray.htm#_array_init">_array_init</A>, <A HREF="rarray.htm#_array_nth">_array_nth</A>, <A HREF="rarray.htm#_array_prev">_array_prev</A>
+<BR></DL>
+<H2><A NAME="_array_nth">_array_nth</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns a pointer to a structured array element given its index.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>	void far *_array_nth(const void far *s_array, unsigned int index);
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the array element which corresponds to index.
+<BR>
+<BR>	NULL if element is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns a pointer to the element in s_array which corresponds to index, where index is the origin zero element number of the element in s_array. NULL is returned if s_array does not contain an element which corresponds to index. 
+<BR>
+<BR>WARNING! This function may only be used with structured arrays. Structured arrays may be created using ARRAY_ALLOC or _array_init.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   ARRAY_ALLOC (array1, 5, 4, str_cmp);
+	   ...
+	   _array_insert(array1.array,"aaa",array1.array[0]);
+	   _array_append(array1.array,"bbb");
+	   _put_str(_array_nth(array1.array, 0)); /* "aaa" */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	{
+	   char *array, *element;
+	   ARRAY_ALLOC (array1, 5, 4, str_cmp);
+	   ...
+	   lea bx,array1.array;
+	   element = "aaa";
+	   mov si,element/* SI -&gt element to insert */
+	   mov di,bx         /* DI -&gt array1.array[0] */
+	   array_insert();    /* insert "aaa" */
+	   element = "bbb";
+	   mov si,element/* SI -&gt element to insert */
+	   array_append();    /* append "bbb" */
+	   mov ax,0	/* element to return address of */
+	   array_nth();
+	   mov si,di	/* SI -&gt 0 element */
+	   put_str();	/* "aaa" */
+	   put_newline();
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_ARNTH.ASM		  <B>ASM equiv</B>	ARRAY_NTH
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rarray.htm#_array_curn">_array_curn</A>, <A HREF="rarray.htm#_array_init">_array_init</A>
+<BR></DL>
+<H2><A NAME="_array_prev">_array_prev</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns a pointer to the previous element in a structured array.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>	void far *_array_prev(const void far *s_array, const void far *element);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the previous element in s_array.
+<BR>	NULL if element is invalid or if it is the first element in s_array.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns a pointer to the element in s_array which immediately precedes element. NULL is returned if element is the first element in s_array.
+<BR>
+<BR>WARNING! This function may only be used with structured arrays. Structured arrays may be created using ARRAY_ALLOC or _array_init.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	ARRAY_ALLOC (array1, 5, 4, str_cmp);
+	   ...
+	   _array_insert(array1.array,"aaa",array1.array[0]);
+	   _array_append(array1.array,"bbb");
+	   _put_str(_array_prev(array1.array, array1.array[1]));
+	   	  	 	/* "aaa" */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	{
+	   char *element;
+	   ...
+	   ARRAY_ALLOC (array1, 5, 4, str_cmp); /* use ASM cmpf */
+	   lea bx,array1.array	  /* BX -&gt first element */
+	   element = "aaa";
+	   mov si,element/* SI -&gt "aaa" */
+	   mov di,bx	/* DI -&gt array1.array[0] */
+	   array_insert();    /* insert "aaa" */
+	   element = "bbb";
+	   mov si,element/* SI -&gt "bbb" */
+	   array_append();    /* append "bbb" */
+	   add di,4	/* DI -&gt array1.array[1] */
+	   array_prev();	/* locate previous element */
+	   mov si,di	/* SI -&gt array1.array[0] */
+	   put_str();	/*  "aaa" */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_ARPREV.ASM		  <B>ASM equiv</B>	ARRAY_PREV
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rarray.htm#_array_init">_array_init</A>, <A HREF="rarray.htm#_array_next">_array_next</A>, <A HREF="rarray.htm#_array_nth">_array_nth</A>
+<BR></DL>
+<H2><A NAME="_array_qsort">_array_qsort</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sorts the elements in a structured array.	 
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>	void far *_array_qsort(void far *s_array);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the sorted array.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sorts the elements in s_array using a "median of three" recursive quicksort algorithm. The comparison function specified in the array header is used to compare s_array elements when sorting.
+<BR>
+<BR>	The sort algorithm used by this function is non-stable. (This means that the original order of identical elements is not preserved.)
+<BR>WARNING! This function may use up to 32ùlog2n bytes of stack space plus the stack requirements of the comparison function, where n is the current number of elements in the array. 512 bytes of stack space is sufficient for the largest arrays. This function may also only be used with structured arrays. Structured arrays may be created using ARRAY_ALLOC or _array_init.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int i;
+	   ARRAY_ALLOC (array1, 3, 4, str_cmp);
+	   ...
+	  _array_insert(array1.array, "cat", array1.array[0]);
+	  _array_append(array1.array, "cap");
+	  _array_append(array1.array, "can");
+	  _array_qsort(array1.array);    /* sort the array */
+	  for (i = 0; i &lt; 3; i++)
+	    { _put_str(array1.array[i]); _put_chr(' ');};
+	   	  	 	    /* "can cap cat" */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	{
+	   char *element;
+	   ARRAY_ALLOC (array1, 3, 4, str_cmp);
+	   ...
+	   lea bx,array1.array;/* BX -&gt array1.array[0] */
+	   element = "cat";
+	   mov si,element/* SI -&gt "cat" */
+	   mov di,bx	/* DI -&gt array1.array[0] */
+	   array_insert();    /* insert "cat" */
+	   element = "can";
+	   mov si,element/* SI -&gt "can" */
+	   array_append();    /* append "can" */
+	   element = "cap";
+	   mov si,element/* SI -&gt "cap" */
+	   array_append();    /* append "cap" */
+	   array_qsort();	/* sort elements */
+	   mov si,bx	/* SI -&gt array1.array[0] */
+	   mov cx,3	/* CX = number of elements */
+	   mov al,' '	/* AL = space character */
+	a_out_100:
+	   put_str();	/* display string element */
+	   put_chr();	/*
+	   add si,ARRAY_ESIZE/* SI -&gt next element */
+	     loop a_out_100    /* "can cap cat" */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_ARQSORT.ASM		  <B>ASM equiv</B>	ARRAY_QSORT
+<DL>
+<DT><B>See also</B>
+<DD><A HREF="rarray.htm#_array_bfind">_array_bfind</A>, <A HREF="rarray.htm#_array_init">_array_init</A>, <A HREF="rarray.htm#_quick_sort">_quick_sort</A>
+<BR></DL>
+<H2><A NAME="_bin_search">_bin_search</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Locates an element in an array using a binary search.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>		int _bin_search(const void far *key, const void far *array, unsigned int num, int size, void(*cmpf)(void), void far * far * location);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if an element matching key was found in array.
+<BR>	location	address of matching array element
+<BR>
+<BR>	-1 if no elements matching key were found in array.
+<BR>	location	points to location where key may be inserted into array
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches array for an element matching key. The search is performed using a non-recursive binary search algorithm. If a matching element is found, location contains its address and 0 is returned. If no matching elements are found, -1 is returned and location indicates the position a matching element would occupy in array if it were present. This address may be used to insert key into the array in sorted order. To insert key into array, all elements at or beyond the returned address must be moved a distance of size bytes towards the end of the array; key may then be copied into array at the returned pointer position (see _array_insert).
+<BR>
+<BR>	Because the comparison function (cmpf) is called every time array elements are compared, the speed of the comparison function directly impacts the performance of _bin_search. To maintain the advantage of the assembly language core, cmpf must have an assembly language interface. cmpf must preserve all registers while supporting the following inputs and outputs:
+<BR>
+<BR>	Comparison function inputs:
+<BR>
+<BR>	DS:SI	address of the element to compare against (key)
+<BR>	ES:DI	address of the element to compare (element)
+<BR>
+<BR>	Comparison function outputs:
+<BR>
+<BR>	JA	if key would appear after element in the array (key is greater than element).
+<BR>	JE	if key would appear at the same location as element in the array (key is equal to element).
+<BR>	JB	if key would appear before element in the array (key is less than element).
+<BR>
+<BR>	Note that the return conditions for the comparison function only indicate whether key should appear before, at, or after (JB, JE, or JA) the position of element in the array. No assumptions are made about the elements themselves. This allows elements to contain any information, and it allows the array to be sorted in any order (e.g., ascending, descending). If each array element is a single ASCIIZ string, then str_cmp or str_cmpi (no leading underscore) may be used as the comparison function.
+<BR>
+<BR>WARNING! This function expects the array to be in sorted order. The same comparison function which is used to sort the array must be used to search the array. The total size of array must be less than 64K bytes. This function is designed to use only comparison functions that have an assembly interface.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char *location;
+	   char array2[3][4];
+	   _str_cpy(array2[0],"bbb");
+	   _str_cpy(array2[1],"ccc");
+	   if(_bin_search("aaa",(char *)array2[0], 5, sizeof(array2[0]),
+	                   str_cmp, &amplocation) != 0)
+	      _str_cpy(location,"aaa");/* add new element */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char *str;
+	   char array2[3][4];
+	   
+	   str = "bbb";
+	   mov si,str	/* SI = offset of str */
+	   lea di,array2[0]
+	   str_cpy();	/* copy element to array */
+	   str = "ccc";
+	   mov si,str	/* SI = offset of str */
+	   add di,4	/* DI = offset of array2[1] */
+	   str_cpy();	/* append "ccc" to array */
+	   str = "aaa";
+	   mov si,str	/* SI = offset of str */
+	   sub di,4	/* DI = offset of array2[0] */
+	   mov bx,2	/* BX = number of elements */
+	   mov cx,4	/* CX = size of elements */
+	   lea ax,str_cmp/* AX = offset of cmpf */
+	   bin_search();	/* is "aaa" in array? */
+	    jncb_srch_100/*   y: continue */
+	   str = "aaa";	/*   n: append "aaa" */
+	   mov si,str	/* SI = offset of "aaa" */
+	   add di,8	/* di = offset of next element */
+	   str_cpy();	/* copy "aaa" into array */
+	b_srch_100:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_ARBFND2.ASM		  <B>ASM equiv</B>	BIN_SEARCH
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rarray.htm#_array_bfind">_array_bfind</A>, <A HREF="rarray.htm#_quick_sort">_quick_sort</A>, <A HREF="rarray.htm#_array_insert">_array_insert</A>, <A HREF="rarray.htm#_array_delete">_array_delete</A>
+<BR></DL>
+<H2><A NAME="_lin_rsearch">_lin_rsearch</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches for an element in an array using a reverse linear search.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>		void far *_lin_rsearch(const void far *key, const void far *array, unsigned int num, int size, void(*cmpf)(void));
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the matching element in array.
+<BR>
+<BR>	NULL if an element matching key was not found in array.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches for an element in array which matches key. The search begins with the last element in array and continues with each preceding element until a matching element is found or until there are no more elements in array. If a matching element is found, a pointer to its address is returned; otherwise, NULL is returned.
+<BR>
+<BR>	The array does not need to be in sorted order to use this function.
+<BR>
+<BR>	Because the comparison function (cmpf) is called every time array elements are compared, the speed of the comparison function directly impacts the performance of the _lin_rsearch function. To maintain the advantage of the assembly language core, cmpf must have an assembly language interface. cmpf must preserve all registers while supporting the following inputs and outputs:
+<BR>
+<BR>	Comparison function inputs:
+<BR>
+<BR>	DS:SI	address of element to compare against (key)
+<BR>	ES:DI	address of element to compare (element)
+<BR>
+<BR>	Comparison function outputs:
+<BR>
+<BR>	JA	if key would appear after element in the array (key is greater than element).
+<BR>	JE	if key would appear at the same location as element in the array (key is equal to element).
+<BR>	JB	if key would appear before element in the array (key is less than element).
+<BR>
+<BR>	Note that the return conditions for the comparison function only indicate whether key should appear before, at, or after (i.e., JB, JE, or JA) the position of element in the array. No assumptions are made about the elements themselves. This allows elements to contain any information, and it allows the array to be sorted in any order (i.e., ascending, descending, etc.). If each array element is a single ASCIIZ string, then str_cmp or str_cmpi may be used as the comparison function.
+<BR>
+<BR>WARNING! The total size of array must be less than 64K bytes. This function expects an assembly comparison function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char array1[3][4];
+	   char *location;
+	   _str_cpy (array1[0],"aaa");
+	   _str_cpy (array1[1],"ccc");
+	   if((location = (char *)_lin_rsearch("bbb",(void *)array1, 3, 
+	   sizeof(array1[0]), str_cmp)) == NULL)
+	      _str_cpy (array1[2], "bbb"); /* if "bbb" is not found */
+	   else
+	   {
+	      _put_str(location); _put_str(" already in array.");
+	      _put_newline();
+	   } 
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char *str;
+	   char array1[3][4];
+	   ...
+	   lea di,array1[0];/* DI = offset array1[0] */
+	   str = "aaa";
+	   mov si,str	/* SI = offset "aaa" */
+	   str_cpy();	/* add element to array */
+	   str = "ccc";
+	   mov si,str	/* SI = offset "ccc" */
+	   add di,4	/* DI -&gt array1[1] */
+	   str_cpy();	/* add element to array */
+	   str = "bbb";	
+	   mov si,str	/* SI = offset "bbb" */
+	   add di,4	/* DI -&gt array[2] */
+	   mov cx,3	/* CX = number of elements */
+	   mov bx,4	/* BX = size of each element */
+	   mov ax,offset str_cmp /* AX = offset of cmpf */
+	   lin_rsearch();	/* is "bbb" in array? */
+	    jncl_rsrch_100
+	   str_cpy();	/*   n: add to array */
+	l_rsrch_100:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_ARRFND2.ASM		  <B>ASM equiv</B>	LIN_RSEARCH
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rarray.htm#_array_lfind">_array_lfind</A>, <A HREF="rarray.htm#_bin_search">_bin_search</A>, <A HREF="rarray.htm#_lin_search">_lin_search</A>
+<BR></DL>
+<H2><A NAME="_lin_search">_lin_search</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches for an element in an array using a forward linear search.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>		void far *_lin_search(const void far *key, const void far *array, unsigned int num, int size, void(*cmpf)(void));
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the matching element in array.
+<BR>
+<BR>	NULL if an element matching key was not found in array.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches for an element in array which matches key. The search begins with the last element in array and continues with each preceding element until a matching element is found or until there are no more elements in array. If a matching element is found, a pointer is returned to the element in array; otherwise, NULL is returned.
+<BR>
+<BR>	The array does not need to be in sorted order to use this function.
+<BR>
+<BR>	Because the comparison function (cmpf) is called every time array elements are compared, the speed of the comparison function directly impacts the performance of the _lin_search function. To maintain the advantage of the assembly language core, cmpf must have an assembly language interface. cmpf must preserve all registers while supporting the following inputs and outputs:
+<BR>
+<BR>	Comparison function inputs:
+<BR>
+<BR>	DS:SI	address of element to compare against (key)
+<BR>	ES:DI	address of element to compare (element)
+<BR>
+<BR>	Comparison function outputs:
+<BR>
+<BR>	JA	if key would appear after element in the array (key is greater than element).
+<BR>	JE	if key would appear at the same location as element in the array (key is equal to element).
+<BR>	JB	if key would appear before element in the array (key is less than element).
+<BR>
+<BR>	Note that the return conditions for the comparison function only indicate whether key should appear before, at, or after (i.e., JB, JE, or JA) the position of element in the array. No assumptions are made about the elements themselves. This allows elements to contain any information, and it allows the array to be sorted in any order (i.e., ascending, descending, etc.). If each array element is a single ASCIIZ string, then str_cmp or str_cmpi may be used as the comparison function.
+<BR>
+<BR>WARNING! The total size of array must be less than 64K bytes.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char array1[3][4];
+	   char *location;
+	   _str_cpy (array1[0],"aaa");
+	   _str_cpy (array1[1],"ccc");
+	   if((location = (char *)_lin_search("bbb",(void *)array1, 3, 
+	   sizeof(array1[0]), str_cmp)) == NULL)
+	      _str_cpy (array1[2], "bbb"); /* if "bbb" is not found */
+	   else
+	   {
+	      _put_newline(); 
+	      _put_str(location); _put_str("already in array.");
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;include.h&gt
+	{
+	   char *str;
+	   char array1[3][4];
+	   ...
+	   lea di,array1[0];/* DI = offset array1[0] */
+	   str = "aaa";
+	   mov si,str	/* SI = offset "aaa" */
+	   str_cpy();	/* add element to array */
+	   str = "ccc";
+	   mov si,str	/* SI = offset "ccc" */
+	   add di,4	/* DI -&gt array1[1] */
+	   str_cpy();	/* add element to array */
+	   str = "bbb";	
+	   mov si,str	/* SI = offset "bbb" */
+	   sub di,4	/* DI -&gt array[0] */
+	   mov cx,3	/* CX = number of elements */
+	   mov bx,4	/* BX = size of each element */
+	   mov ax,offset str_cmp /* AX = offset of cmpf */
+	   lin_search();	/* is "bbb" in array? */
+	    jncl_rsrch_100
+	   add di,8	/* DI -&gt array[2] */
+	   str_cpy();	/*   n: add to array */
+	l_rsrch_100:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_ARLFND2.ASM		  <B>ASM equiv</B>	LIN_SEARCH
+
+<BR><DL>
+<DT><B>See also</B>
+<DD>array_lfind, <A HREF="rarray.htm#_bin_search">_bin_search</A>, <A HREF="rarray.htm#_lin_rsearch">_lin_rsearch</A>
+<BR></DL>
+<H2><A NAME="_quick_sort">_quick_sort</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sorts the elements in an array.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;sa_array.h&gt
+<BR>	void far *_quick_sort(void far *array, unsigned int num, int size, void(*cmpf)(void));
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A far pointer to sorted array.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sorts the elements in array using a "median of three" recursive quicksort algorithm. The comparison function (cmpf) is called every time array elements are compared. Therefore, the speed of the comparison function directly impacts the performance of the _quick_sort function. To maintain the advantage of the assembly language core to the _quick_sort function, cmpf must have an assembly language interface. cmpf must preserve all registers while supporting the following inputs and outputs:
+<BR>
+<BR>	Comparison function inputs:
+<BR>
+<BR>	DS:SI	address of element to compare against (key)
+<BR>	ES:DI	address of element to compare (element)
+<BR>
+<BR>	Comparison function outputs:
+<BR>
+<BR>	JA	if key would appear after element in the array (key is greater than element).
+<BR>	JE	if key would appear at the same location as element in the array (key is equal to element).
+<BR>	JB	if key would appear before element in the array (key is less than element).
+<BR>
+<BR>	Note that the return conditions for the comparison function only indicate whether key should appear before, at, or after (i.e., JB, JE, or JA) the position of element in array. No assumptions are made about the elements themselves. This allows elements to contain any information, and it allows the array to be sorted in any order (i.e., ascending, descending, etc.). If each array element is a single ASCIIZ string, then str_cmp or str_cmpi may be used as the comparison function.
+<BR>
+<BR>	The sort algorithm used by this function is non-stable. (This means that the original order of identical elements is not preserved.)
+<BR>
+<BR>WARNING! This function may use up to 32ùlog2n bytes of stack space plus the stack requirements of the comparison function, where n is the current number of elements in array. 512 bytes of stack space is sufficient for the largest arrays.
+<BR>
+<BR>WARNING! The total size of array must be less than 64K bytes. This function is designed for use with an assembly interface comparison function only.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char array2[5][4];
+	   _str_cpy (array2[0],"cat");
+	   _str_cpy (array2[1],"car");
+	   _str_cpy (array2[2],"cab");
+	   _str_cpy (array2[3],"cap");
+	   _str_cpy (array2[4],"can");
+	   _quick_sort((void *)array2, 5, sizeof(array2[0]), str_cmp);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char *element;
+	   char array1[5][4];
+	   ...
+	   pushss
+	   pop es	 	/* ES=SS (segment of array) */
+	   lea di,array1[0]/* DI = offset of array1[0] */
+	   mov bx,di	/* BX = saved array offset */
+	   element = "aaa";
+	   mov si,element/* SI = offset of "aaa" */
+	   str_cpy();	/* insert "aaa" */
+	   add di,4	/* DI = offset of array1[1] */
+	   element = "ddd";
+	   mov si,element/* SI = offset of "ddd" */
+	   str_cpy();	/* insert "ddd" */
+	   add di,4	/* DI = offset of array1[2] */
+	   element = "bbb";
+	   mov si,element/* SI = offset of "bbb" */
+	   str_cpy();	/* insert "bbb" */
+	   add di,4	/* DI = offset of "array1[3] */
+	   element = "ccc";
+	   mov si,element/* SI = offset of "ccc" */
+	   str_cpy();	/* insert "ccc" */
+	   add di,4	/* DI = offset of "array[4] */
+	   element = "eee";    
+	   mov si,element/* SI = offset of "eee" */
+	   str_cpy();	/* insert "eee" */
+	   mov di,bx	/* reset DI = offset of array1 */
+	   mov bx,5	/* BX = number of elements */
+	   mov cx,4	/* CX = size of each element */
+	   mov ax,offset str_cmp /* AX = offset of cmpf */
+	#if __LARGE_CODE__
+	   mov dx,seg str_cmp/* DX = segment of cmpf */
+	#endif
+	    quick_sort();  /* sort array */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_ARQSRT2.ASM		  <B>ASM equiv</B>	QUICK_SORT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rarray.htm#_array_qsort">_array_qsort</A>, <A HREF="rarray.htm#_bin_search">_bin_search</A>
+<BR>
+<BR></BODY>
+<BR></HTML><BR>

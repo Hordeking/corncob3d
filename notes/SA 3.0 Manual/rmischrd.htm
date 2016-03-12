@@ -1,0 +1,900 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Miscellaneous Hardware Reference</TITLE>
+</HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Miscellaneous Hardware</H1>
+<P ALIGN=CENTER>Reference Section </P>
+<UL>
+<LI><A HREF="TOC.htm">Table of Contents</A>
+<LI><A HREF="index.htm">Function Index</A>
+<LI><A HREF="gindex.htm">Group Index
+</UL>
+<A HREF="rmischrd.htm#_get_timer0">_get_timer0</A><BR>
+<A HREF="rmischrd.htm#_get_timer0mode">_get_timer0mode</A><BR>
+<A HREF="rmischrd.htm#_get_timer2">_get_timer2</A><BR>
+<A HREF="rmischrd.htm#_get_vec">_get_vec</A><BR>
+<A HREF="rmischrd.htm#_is_3270">_is_3270</A><BR>
+<A HREF="rmischrd.htm#_is_compaq">_is_compaq</A><BR>
+<A HREF="rmischrd.htm#_reset_timer0">_reset_timer0</A><BR>
+<A HREF="rmischrd.htm#_set_timer0">_set_timer0</A><BR>
+<A HREF="rmischrd.htm#_set_timer2">_set_timer2</A><BR>
+<A HREF="rmischrd.htm#_set_vec">_set_vec</A><BR>
+<A HREF="rmischrd.htm#_sound_beep">_sound_beep</A><BR>
+<A HREF="rmischrd.htm#_sound_change">_sound_change</A><BR>
+<A HREF="rmischrd.htm#_sound_off">_sound_off</A><BR>
+<A HREF="rmischrd.htm#_sound_on">_sound_on</A><BR>
+<A HREF="rmischrd.htm#_sound_pulse">_sound_pulse</A><BR>
+<H2><A NAME="_get_timer0">_get_timer0</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Reads system timer zero.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mischard.h&gt
+<BR>	unsigned int _get_timer0(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The current count from system timer 0.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function reads the current count from system timer zero without disrupting the counting process. The count is then returned. System timer zero is normally used to generate the BIOS time-of-day interrupt.
+<BR>
+<BR>	Hardware limitations make it difficult to determine the timer's current mode of operation and reload value. _get_timer0mode must be used for this purpose.
+<BR>
+<BR>	If this function is called with interrupts off, they will remain off during the entire duration of the function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int count = _get_timer0 ();
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   get_timer0 ();	/* CX = count */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_MHGTMR0.ASM		  <B>ASM equiv</B>	GET_TIMER0
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_get_time">_get_time</A>, get_timer2, <A HREF="rdatetim.htm#_set_time">_set_time</A>
+<BR></DL>
+<H2><A NAME="_get_timer0mode">_get_timer0mode</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines the counting mode and reload value for system timer zero.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mischard.h&gt
+<BR>	int _get_timer0mode(unsigned int *reload);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The current mode of operation for timer 0.
+<BR>	reload		reload value
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the current programmed counting mode and reload value for system timer zero. The returned values for mode and reload are "educated guesses". They cannot be read directly from the timer because of hardware limitations.
+<BR>
+<BR>	System timer zero is used as the system clock timer and generally produces a BIOS time-of-day (INT 8) interrupt 18.2 times a second. Most BIOS power on self-test routines initialize this timer to mode three with a reload value of zero (so it counts 64k times before generating an interrupt). Some applications and TSRs reprogram the timer to mode two to facilitate high-resolution timing. This function makes it possible to estimate the programmed state of this timer after it has been reprogrammed.
+<BR>
+<BR>	This function assumes that mode is MODE_2 or MODE_3 and that binary counting (non-BCD) is being performed since other modes are less useful for generating time-of-day interrupts. MODE_3 is returned only if counter mode 3 is detected. Otherwise, MODE_2 is assumed and returned. (Note that MODE_2 = 0x04 and MODE_3 = 0x06. These values are used because they are the same values used to program the timer to operate in the corresponding modes. See _set_timer0.)
+<BR>
+<BR>	The following symbolic constants (defined in MISCHARD.H) represent the possible system timer mode values:
+<BR>
+<BR>	MODE_2	(0x04) Rate Generator
+<BR>	MODE_3	(0x06) Square Wave Rate Generator
+<BR>
+<BR>	This function also assumes that the current reload value is 65536/2n, where n is an integer in the range 0 ó n ó 15. Programming system timer zero with a reload value of 65536/2n increases the interrupt rate by a factor of 2n. This allows accurate system time to be maintained by passing control to the original interrupt handler every 2nth interrupt. Programming the reload value to any other number would make it very difficult to maintain the system time accurately. Reload values less than 210 or 1024 (64 times the default interrupt rate), may not be determined accurately on 4.77MHz PCs.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   unsigned int reload, mode;
+	   ...
+	   mode = _get_timer0mode (&ampreload);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   get_timer0mode ();/* AL=mode, CX=reload value */
+
+</CODE></PRE>
+<B>Source file</B>	_MHT0MOD.ASM		  <B>ASM equiv</B>	GET_TIMER0MODE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_get_time">_get_time</A>, <A HREF="rdatetim.htm#_set_time">_set_time</A>
+<BR></DL>
+<H2><A NAME="_get_timer2">_get_timer2</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Reads system timer two.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mischard.h&gt
+<BR>	unsigned int _get_timer2(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The current count from system timer 2.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function reads and returns the current count from system timer two without disrupting the counting process. System timer two is normally used to drive the system speaker.
+<BR>
+<BR>	Hardware limitations make it difficult to determine the timer's current mode of operation and reload value. See _get_timer0mode for an example of how this information is determined for system timer zero.
+<BR>
+<BR>	If this function is called with interrupts off, they will remain off during the entire duration of the function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int count;
+	   ...
+	   count = _get_timer2 ();
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+
+	   get_timer2 ();	/* CX=count */
+
+</CODE></PRE>
+<B>Source file</B>	_MHGTMR2.ASM		  <B>ASM equiv</B>	GET_TIMER0
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_get_time">_get_time</A>, <A HREF="rdatetim.htm#_set_time">_set_time</A>
+<BR></DL>
+<H2><A NAME="_get_vec">_get_vec</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets an interrupt handler address.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mischard.h&gt
+<BR>	void (interrupt far * _get_vec(int intnum))();
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	Interrupt handler address for intnum.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the address of the interrupt handler which is currently servicing intnum. The interrupt handler address is obtained by reading the system interrupt table directly.
+<BR>
+<BR>	This function is faster than _get_vect because it does not use DOS services. If this function is called with interrupts off, they will remain off during the entire duration of the function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void (interrupt far *intptr)();
+	   ...
+	   intptr = _get_vec(0x24);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   ...
+	   mov bl,0x24	/* bl = int # */
+	   get_vec ();/* DX:AX -&gt int routine for "int #" */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MHGVEC.ASM		  <B>ASM equiv</B>	GET_VEC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmischrd.htm#_get_vec">_get_vec</A>, <A HREF="rmischrd.htm#_set_vec">_set_vec</A>
+<BR></DL>
+<H2><A NAME="_is_3270">_is_3270</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines whether or not the host computer is an IBM 3270-PC.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mischard.h&gt
+<BR>	int _is_3270(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if the host computer is an IBM 3270-PC computer.
+<BR>
+<BR>	0 if the host computer is not an IBM 3270-PC computer.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function checks the host computer to determine if it is an IBM 3270-PC computer.
+<BR>
+<BR>	3270-PC computers have a number of unique characteristics which require special programming attention. For example, the 3270 keyboard generates "make" codes for most key presses without generating associated "break" codes. Also, only 8 foreground colors are available in color text modes.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   if (_is_3270 ())
+	   {
+	      ...
+	   } else
+	   {
+	      ...
+	   }
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   is_3270 ();
+	    je is_3270_010/* if the host computer is a 3270 */
+	   ... 	 /* if the host computer is not a 3270 */
+	   jmp short is_3270_020
+
+	is_3270_010:
+	   ... 	 /* handle special 3270 setup */
+	is_3270_020:
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MH3270.ASM		  <B>ASM equiv</B>	IS_3270
+
+<BR><H2><A NAME="_is_compaq">_is_compaq</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines whether or not the host computer is a COMPAQ computer.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mischard.h&gt
+<BR>	int _is_compaq(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if the host computer is a COMPAQ computer.
+<BR>
+<BR>	0 if the host computer is not a COMPAQ computer.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function checks the host computer to determine if it is a COMPAQ computer. The return value indicates the result of the test.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   if (_is_compaq ())
+	   {
+	      ...
+	   } else
+	   {
+	      ...
+	   }
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   is_compaq ();
+	    je compaq_010/* if the host computer is COMPAQ */
+	   ... 	 /* if the host computer is not COMPAQ */
+	   jmp short compaq_020
+
+	compaq_010:
+	   ... 	 /* if the host computer is COMPAQ */
+	compaq_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MHCMPAQ.ASM		  <B>ASM equiv</B>	IS_COMPAQ
+
+<BR><H2><A NAME="_reset_timer0">_reset_timer0</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets the counting mode and reload value for system timer zero to the system default values.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mischard.h&gt
+<BR>	void _reset_timer0(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function forces timer zero into the system default counting mode.
+<BR>
+<BR>	The timer is programmed for mode three (square wave), non-BCD counting with a reload value of zero (counts 64k times before interrupting). This results in an interrupt rate of about 18.2 times per second. System timer zero is normally used to generate the BIOS time-of-day interrupt (INT 08h).
+<BR>
+<BR>	If this function is called with interrupts off, they will remain off during the entire duration of the function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   _reset_timer0 ()
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   reset_timer0 ();
+
+</CODE></PRE>
+<B>Source file</B>	MHRTMR0.ASM		  <B>ASM equiv</B>	RESET_TIMER0
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_get_time">_get_time</A>, <A HREF="rdatetim.htm#_set_time">_set_time</A>
+<BR></DL>
+<H2><A NAME="_set_timer0">_set_timer0</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets the counting mode and reload value for system timer zero.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mischard.h&gt
+<BR>	void _set_timer0(int mode, unsigned int reload);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function programs system timer zero to use counting mode mode with a reload value of reload. Timer zero is normally used to generate BIOS time-of-day interrupts (INT 8).
+<BR>
+<BR>	mode may be any one of the following:
+<BR>
+<BR>	MODE_0(0x00) Interrupt on Terminal Count
+<BR>	MODE_1(0x02) Retriggerable One-Shot
+<BR>	MODE_2(0x04) Rate Generator
+<BR>	MODE_3(0x06) Square Wave Rate Generator
+<BR>	MODE_4(0x08) Software Triggered Strobe
+<BR>	MODE_5(0x0A) Hardware Triggered Strobe
+<BR>	BCD_COUNT(0x01) Binary coded decimal (BCD) counting
+<BR>
+<BR>	The BCD_COUNT flag must be used in conjunction with one of the mode flags by bitwise ORing the two flags together. If BCD counting is specified, the timer counts in BCD mode and the maximum reload value is 9999. Otherwise, the timer counts in binary mode with a maximum count of 64K. (The maximum count is the system default and is specified using a reload value of 0). The symbolic constants listed above are defined in MISCHARD.H. For a more detailed explanation of the counting modes, refer to manufacturer specifications for the 8253/8254 timer/counter chip.
+<BR>
+<BR>WARNING! No checking is done to ensure that mode is valid.
+<BR>
+<BR>	If this function is called with interrupts off, they remain off during the entire duration of the function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int reload;
+	   ...
+	   _set_timer0 (MODE_0, reload);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   {
+	      int reload;
+	      ...
+	   	  mov al,MODE_0
+	   	  mov cx,reload
+	   	  set_timer0 ();/* set mode to "MODE_0" */
+	   	  ... 	/*   and reload value "reload" */
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_MHSTMR0.ASM		  <B>ASM equiv</B>	SET_TIMER0
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_get_time">_get_time</A>, <A HREF="rdatetim.htm#_get_time">_get_time</A>, <A HREF="rdatetim.htm#_set_time">_set_time</A>
+<BR></DL>
+<H2><A NAME="_set_timer2">_set_timer2</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets the counting mode and reload value for system timer two.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mischard.h&gt
+<BR>	void _set_timer2(int mode, unsigned int reload);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function programs system timer two to use counting mode mode with a reload value of reload. Timer two is normally used to drive the system speaker. 
+<BR>
+<BR>	mode may be any one of the following:
+<BR>
+<BR>	MODE_0(0x00) Interrupt on Terminal Count
+<BR>	MODE_1(0x02) Retriggerable One-Shot
+<BR>	MODE_2(0x04) Rate Generator
+<BR>	MODE_3(0x06) Square Wave Rate Generator
+<BR>	MODE_4(0x08) Software Triggered Strobe
+<BR>	MODE_5(0x0A) Hardware Triggered Strobe
+<BR>	BCD_COUNT(0x01) Binary coded decimal (BCD) counting
+<BR>
+<BR>	The BCD_COUNT flag must be used in conjunction with one of the mode flags by bitwise ORing the two flags together. If BCD counting is specified, the timer counts in BCD mode and the maximum reload value is 9999. Otherwise, the timer counts in binary mode with a maximum count of 64K. (The maximum count is specified using a reload value of 0). The symbolic constants listed above are defined in HARDWARE.H. For a more detailed explanation of counting modes, refer to manufacturer specifications for the 8253/8254 timer/counter chip.
+<BR>
+<BR>WARNING! No checking is done to ensure that mode is valid. If this function is called with interrupts off, they remain off during the entire duration of the function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int reload;
+	   _set_timer2 (MODE_3, reload);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   int reload;
+	   ...
+	   mov al,MODE_3
+	   mov cx,reload
+	   set_timer2 ();/* set timer 2 to mode "MODE_3" */
+	   ... 	 /*   and reload value "reload" */
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MHSTMR2.ASM		  <B>ASM equiv</B>	SET_TIMER0
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_get_time">_get_time</A>, <A HREF="rdatetim.htm#_set_time">_set_time</A>
+<BR></DL>
+<H2><A NAME="_set_vec">_set_vec</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets an interrupt vector directly.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mischard.h&gt
+<BR>	void (interrupt far *_set_vec (int intnum, intaddr new_int))();
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The previous interrupt handler address.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sets the address of the interrupt handler for intnum to new_int. The address of the replaced interrupt vector is returned. The interrupt handler address is set by manipulating the system interrupt table directly. If this function is called with interrupts off, they remain off during the entire duration of the function.
+<BR>
+<BR>	Because this function returns the previous interrupt handler address, the interrupt vector can checked at the time it is being restored. For example, if the active interrupt vector is not the same as the originally installed handler, then another handler has been installed and restoration may not be possible. Immediately calling _set_vec a second time (with the return value from the first call) will abort the restoration process. Interrupts should remain off throughout this process.
+<BR>
+<BR>	See the _isr_... functions for flexible, high-level alternatives to the use of this function.
+<BR>
+<BR>	new_int should be cast as intaddr when calling this function. This prevents the compiler from generating assembly language SEG instructions, which preclude the use of .COM format in the TINY memory model. Some compilers also require type casting of interrupt functions in parameter lists to eliminate spurious compiler errors.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	void interrupt far func ()
+	{
+	   ...
+	}
+	{
+	   void (interrupt far *old_int)();
+	   ...
+	   old_int = _set_vec (0x24, (intaddr) func);
+	   ...
+	   if ((intaddr) _get_vec (0x24) == (intaddr) func)
+	   {
+	      _set_vec (0x24, (intaddr) old_int);
+	   } else
+	   {
+	      /* Handle the interrupt vector being changed */
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   #ifdef __cplusplus
+	      extern "C" void interrupt far func ()
+	   #else
+	      void interrupt far func ()
+	   #endif
+
+	   ...
+	{
+	   ...
+	#if __TINY__
+	   mov dx,cs
+	#else
+	   mov dx,seg func
+	#endif
+	   mov ax,offset func/* DX:AX -&gt new interrupt func */
+	   mov bl,0x24	    /* bl = int # */
+	   set_vec ();	/* DX:AX -&gt old interrupt func */
+	   pushdx	 	/* preserve address of old 
+	   	  	 	   interrupt routine */
+	   pushax
+	   ...
+	   pop ax	 	/* restore address of old 
+	   	  	 	   interrupt routine */
+	   pop dx
+	/* if current interrupt handler =! my interrupt handler, 
+	   	  	 don't reinstall the old int handler */
+	   cli 	 	/* turn interrupts off */
+	   set_vec ();   	/* DX:AX -&gt previous int func */
+	   cmp ax,offset func/* "previous" = "new" offset? */
+	    jneset_vec_010/*   n: go abort restoration */
+	#if __TINY__
+	   mov cx,cs   	/*   y: "previous" seg = "new"? */
+	   cmp dx,cx
+	#else
+	   cmp dx,seg func
+	#endif
+	    je set_vec_020/*     y: keep restoration */
+	set_vec_010:
+	   set_vec ();	/*     n: abort restoration */
+	set_vec_020:
+	   sti 	 	/* turn interrupts back on */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MHSVEC.ASM		  <B>ASM equiv</B>	SET_VEC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmischrd.htm#_get_vec">_get_vec</A>, <A HREF="rtsr.htm#_isr_getstat">_isr_getstat</A>, <A HREF="rtsr.htm#_isr_hremove">_isr_hremove</A>, <A HREF="rtsr.htm#_isr_install">_isr_install</A>, <A HREF="rtsr.htm#_isr_remove">_isr_remove</A>, <A HREF="rtsr.htm#_isr_remove">_isr_remove</A>, <A HREF="rmischrd.htm#_set_vec">_set_vec</A>
+<BR></DL>
+<H2><A NAME="_sound_beep">_sound_beep</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Generates a tone for a specified number of hundredths of a second.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mischard.h&gt
+<BR>	void _sound_beep(unsigned int freq, unsigned int time);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function generates a tone at the frequency freq for time hundredths of a second. The duration of the tone is approximated using the system timer, which updates the system time approximately 18.2 times per second.
+<BR>
+<BR>	For more accurate tone durations, use _sound_pulse.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   _sound_beep (10000, 50);
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   mov ax,10000/* frequency = 10,000 Hz */
+	   mov dx,50	/* duration = 0.5 sec. */
+	   sound_beep ();	/* beep (0.5 sec at 10,000Hz) */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_MHSNDBP.ASM		  <B>ASM equiv</B>	SOUND_BEEP
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmischrd.htm#_sound_on">_sound_on</A>, <A HREF="rmischrd.htm#_sound_pulse">_sound_pulse</A>
+<BR></DL>
+<H2><A NAME="_sound_change">_sound_change</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Changes the frequency of the current tone.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mischard.h&gt
+<BR>	void _sound_change(unsigned int freq);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function changes the frequency of the current tone to freq without disturbing tone quality.
+<BR>
+<BR>	This function assumes that system counter two is in the correct mode. If it is not, the results are undefined.
+<BR>
+<BR>	System counter two is automatically set to the proper mode whenever _sound_on is called. However, _sound_on adversely affects tone quality if it is used to change the frequency while a tone is already being generated. _sound_change is provided to allow the tone to be changed without affecting tone quality. The normal programming sequence for tone generation is as follows:
+<BR>
+<BR>		Call _sound_on to initialize the speaker and generate the first tone.
+<BR>		Call _sound_change to change the tone. This may be repeated as often as required.
+<BR>		Call _sound_off to turn the sound generator off.
+<BR>
+<BR>	If this function is called with interrupts off, they remain off during the entire duration of the function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   /* produce a phaser sound */
+	   int times, freq;
+	   _sound_on (2500);
+	   for (times = 6; times &gt 0; times--)
+	   for (freq = 2500; freq &gt 0; freq--)
+	   _sound_change (freq);
+	   _sound_off ();
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{  	  /* produce a phaser sound */
+	   int times, freq;
+	   ...
+	   mov ax,2500	    /* AX = starting frequency */
+	   sound_on ();
+	   mov cx,6	/* CX = # of loops */
+	sound_020:
+	   sound_change ();/* change freq to value in AX */
+	   dec ax	 	/* decrease freq, at 0 yet? */
+	    jnzsound_020/*   n: loop again */
+	   mov ax,2500	    /*   y: reset start frequency */
+	    loopsound_020/* loop CX times */
+
+	   sound_off ();
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MHSNDCH.ASM		  <B>ASM equiv</B>	SOUND_CHANGE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmischrd.htm#_sound_on">_sound_on</A>
+<BR></DL>
+<H2><A NAME="_sound_off">_sound_off</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Turns off the system speaker.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mischard.h&gt
+<BR>	void _sound_off(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function turns off the system speaker and sound generator.
+<BR>
+<BR>	If this function is called with interrupts off, they remain off during the entire duration of the function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   /* produce a phaser sound */
+	   int times, freq;
+	   _sound_on (2500);
+	   for (times = 6; times &gt 0; times--)
+	   for (freq = 2500; freq &gt 0; freq--)
+	   _sound_change (freq);
+	   _sound_off ();
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{  /* produce a phaser sound */
+	   int times, freq;
+	...
+	mov ax,2500	/* AX = starting frequency */
+	sound_on ();
+	mov cx,6	 /* CX = # of loops */
+	sound_020:
+	sound_change ();/* change freq to value in AX */
+	dec ax 	 /* decrease freq, at 0 yet? */
+	 jnzsound_020/*   n: loop again */
+	mov ax,2500	/*   y: reset start frequency */
+	 loopsound_020/* loop CX times */
+
+	sound_off ();
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	MHSNDOFF.ASM		  <B>ASM equiv</B>	SOUND_OFF
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmischrd.htm#_sound_on">_sound_on</A>
+<BR></DL>
+<H2><A NAME="_sound_on">_sound_on</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Starts generating a tone on the system speaker.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mischard.h&gt
+<BR>	void _sound_on(unsigned int freq);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function turns on the system speaker after programming the sound generator to emit a tone of frequency freq.
+<BR>
+<BR>	This function ensures that the sound generator is properly initialized by forcing timer two to count in mode three. This adversely affects tone quality if another tone is currently being generated. For this reason, _sound_change should be used whenever a new tone is required while another tone is being generated.
+<BR>
+<BR>	If this function is called with interrupts off, they remain off during the entire duration of the function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   /* produce a phaser sound */
+	   int times, freq;
+	   _sound_on (2500);
+	   for (times = 6; times &gt 0; times--)
+	   for (freq = 2500; freq &gt 0; freq--)
+	   _sound_change (freq);
+	   _sound_off ();
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{  /* produce a phaser sound */
+	   int times, freq;
+	mov ax,2500	/* AX = starting frequency */
+	sound_on ();
+	mov cx,6	 /* CX = # of loops */
+	sound_020:
+	sound_change ();/* change freq to value in AX */
+	dec ax 	 /* decrease freq, at 0 yet? */
+	 jnzsound_020/*   n: loop again */
+	mov ax,2500	/*   y: reset start frequency */
+	 loopsound_020/* loop CX times */
+
+	sound_off ();
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MHSNDON.ASM		  <B>ASM equiv</B>	SOUND_ON
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmischrd.htm#_sound_beep">_sound_beep</A>, <A HREF="rmischrd.htm#_sound_change">_sound_change</A>, <A HREF="rmischrd.htm#_sound_off">_sound_off</A>, <A HREF="rmischrd.htm#_sound_pulse">_sound_pulse</A>
+<BR></DL>
+<H2><A NAME="_sound_pulse">_sound_pulse</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Generates a tone for a specified number of milliseconds.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;mischard.h&gt
+<BR>	void _sound_pulse(unsigned int freq, unsigned int time);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function generates a tone at the frequency freq for time milliseconds.
+<BR>
+<BR>	This function makes use of the millisecond timer sleep function (_sleep_msec). The duration of the tone is exact unless unusually long system interrupts occur.
+<BR>
+<BR>	The millisecond timer should be initialized prior to calling this function or the duration may be incorrect. _init_msec is provided for this purpose.
+<BR>
+<BR>	If this function is called with interrupts off, they remain off during the entire duration of the function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   _sound_pulse (10000, 500);
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   mov ax,10000/* frequency = 10,000 Hz */
+	   mov dx,500	/* duration = 0.5 sec. */
+	sound_pulse ();	/* sound on for 0.5 sec 
+		   	    at 10,000 Hz */
+	...
+
+</CODE></PRE>
+<B>Source file</B>	_MHSDPLS.ASM		  <B>ASM equiv</B>	SOUND_PULSE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdatetim.htm#_init_msec">_init_msec</A>, <A HREF="rmischrd.htm#_sound_beep">_sound_beep</A>, <A HREF="rmischrd.htm#_sound_on">_sound_on</A>
+<BR>
+<BR></BODY>
+<BR></HTML><BR>

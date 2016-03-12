@@ -1,0 +1,178 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Charater Classification and Conversion Reference</TITLE>
+</HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Charater Classification and Conversion</H1>
+<P ALIGN=CENTER>Reference Section </P>
+<UL>
+<LI><A HREF="TOC.htm">Table of Contents</A>
+<LI><A HREF="index.htm">Function Index</A>
+<LI><A HREF="gindex.htm">Group Index
+</UL>
+<A HREF="rkaractr.htm#_is_instr">_is_instr</A><BR>
+<A HREF="rkaractr.htm#_to_lower">_to_lower</A><BR>
+<A HREF="rkaractr.htm#_to_upper">_to_upper</A><BR>
+<H2><A NAME="_is_instr">_is_instr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines if a character matches any character from a given string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;charconv.h&gt
+<BR>	int _is_instr(int chr, char *string);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if chr matches a character in string (terminating NULL excluded).
+<BR>
+<BR>	0 if chr does not match a character in string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function compares chr with each successive character in string until either a match or the end of string is reached. 1 is returned if a character matching chr is found in the string. 0 is returned if no matching character is found.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char chr = _to_upper (_get_chr());
+	   if (chr == 0)
+	      _get_chr ();/* get extended chars also */
+	   else
+	   {
+	      if (!_is_instr (chr, "ABCD"))
+	      {
+	         _put_str ("Invalid selection\n\r");
+	      }
+	      else
+	      {
+	         /* process the keystroke */
+	      }
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char string[] = "beam me up...!";
+	   ...
+	   lea si,string
+	   get_chr ();	/* AL = chr */
+	   is_instr ();	/* is chr in string? */
+	    je instr_020/*   y: handle the keystroke */
+	   _put_str ("Invalid selection");
+	   	  	 	/*   n: give message and exit */
+	   put_newline ();
+	   jmp instr_040
+
+	instr_020:
+	   /* Handle the keystroke */
+	instr_040:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_CHISINS.ASM		  <B>ASM equiv</B>	IS_INSTR
+
+<BR><H2><A NAME="_to_lower">_to_lower</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts an uppercase ASCII letter (A-Z) to lowercase (a-z).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;charconv.h&gt
+<BR>	char _to_lower(int chr);
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The lowercase equivalent of chr.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function converts chr from ASCII uppercase (A-Z) to lowercase (a-z). chr is not converted unless it is an ASCII uppercase letter.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char chr = _get_chr ();
+	   if (chr == 0)
+	   _get_chr ();	 /* get extended chars also */
+	   chr = _to_lower (chr); /* Process the lowercase keystroke */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ... 
+	   get_chr ();	/* AL = character*/
+	   to_lower ();	/* AL = converted chr*/
+	   	  	 	/* Handle the keystroke */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_CHTOLWR.ASM		  <B>ASM equiv</B>	TO_LOWER
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rkaractr.htm#_to_upper">_to_upper</A>
+<BR></DL>
+<H2><A NAME="_to_upper">_to_upper</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts a lowercase ASCII letter (a-z) to uppercase (A-Z).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;charconv.h&gt
+<BR>	char _to_upper(int chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The uppercase equivalent of chr.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function converts chr from ASCII lowercase (a-z) to uppercase (A-Z). chr is not converted unless it is an ASCII lowercase letter.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char chr = _get_chr ();
+	   if (chr == 0)
+	   _get_chr ();	 /* get extended chars also */
+	   chr = _to_upper (chr); /* Process the uppercase keystroke */
+	}   
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+
+	   get_chr ();	/* AL = character*/
+	   to_upper ();	/* AL = converted chr*/
+	   	  	 	/* Handle the keystroke */
+
+</CODE></PRE>
+<B>Source file</B>	_CHTOUPR.ASM		  <B>ASM equiv</B>	TO_UPPER
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rkaractr.htm#_to_lower">_to_lower</A>
+<BR>
+<BR></BODY>
+<BR></HTML><BR>

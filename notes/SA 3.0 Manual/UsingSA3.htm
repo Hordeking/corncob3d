@@ -1,0 +1,472 @@
+<HTML>
+<head>
+<TITLE>SpontaneousAssembly 3.0 Online Manual - Using Spontaneous Assembly</TITLE>
+</head>
+<body>
+
+<H1 ALIGN=CENTER> Using Spontaneous Assembly </H1>
+
+<UL>
+<LI><A HREF="UsingSA3.htm#H201"> Programming With spontaneous Assembly For C/C++</A>
+	<UL>
+	<LI><A HREF="UsingSA3.htm#H301"> Overview</A>
+	<LI><A HREF="UsingSA3.htm#H302">How Are Spontaneous Assembly Functions Accessed?</A>
+	<LI><A HREF="UsingSA3.htm#H303">Header Files</A>
+	<LI><A HREF="UsingSA3.htm#H304">Linking with Spontaneous Assembly For C/C++ Libraries</A>
+	<LI><A HREF="UsingSA3.htm#H305">Optional Startup Code</A>
+	<LI><A HREF="UsingSA3.htm#H306">Typedefs Used</A>
+	</UL>
+<LI><A HREF="UsingSA3.htm#H202"> Programming With Inline Assembly</A>
+	<UL>
+	<LI><A HREF="UsingSA3.htm#H307">Overview</A>
+	<LI><A HREF="UsingSA3.htm#H308">Why Program With Inline Assembly?</A>
+	<LI><A HREF="UsingSA3.htm#H309">A Basic Example</A>
+	<LI><A HREF="UsingSA3.htm#H310">The INLINE.H Header File</A>
+	<LI><A HREF="UsingSA3.htm#H311">Naming Convention of Inline Functions</A>
+	<LI><A HREF="UsingSA3.htm#H312">C Register Use</A>
+	<LI><A HREF="UsingSA3.htm#H313">C Return Value Register Use</A>
+	<LI><A HREF="UsingSA3.htm#H314">Loading Values of C Variables Using Inline Assembly</A>
+	<LI><A HREF="UsingSA3.htm#H315">Loading Addresses of C Variables Using Inline Assembly</H3>
+	<LI><A HREF="UsingSA3.htm#H316">Linking the Appropriate Spontaneous Assembly For C/C++ Libraries</A>
+	<LI><A HREF="UsingSA3.htm#H317">Sample Programs</A>
+	    <UL>
+	    <LI><A HREF="#H41>STRSORT1 (C Program)</A>
+	    </UL>
+	<LI><A HREF="#H318>Using the Spontaneous Assembly Source Code</A>
+	</UL>
+</UL>	
+
+<H2 ALIGN=CENTER><A NAME="H201">Programming With spontaneous Assembly For C/C++</A></H2>
+<P ALIGN=CENTER>Chapter three </P>
+
+<H3><A NAME="H301">Overview</A></H3>
+
+This chapter explains the fundamentals of programming with Spontaneous Assembly For C/C++. More detailed treatment of specific subjects is found in the technical notes and in the reference section of this manual. 
+
+<H3><A NAME="H302">How Are Spontaneous Assembly Functions Accessed?</A></H3>
+
+Just include the appropriate C header file, add the appropriate Spontaneous Assembly library(s) to your linker command line or project file, and use the functions the same way any other C function would be used. Header files are indicated with each function description in the reference section. Spontaneous Assembly functions may also be accessed using simplified inline assembly for added efficiency, and both access methods can even be used interchangeably in the same program. Numerous examples of both access methods are provided in the reference section.
+<P>
+See Chapter 4: Programming with Inline Assembly for more information about using inline assembly with Spontaneous Assembly For C/C++.
+
+<H3><A NAME="H303">Header Files</A></H3>
+
+All Spontaneous Assembly For C/C++ functions are fully prototyped in header files that are compatible with Microsoft, Borland, TopSpeed, and Zortech compilers. Each function in the reference section identifies the header file that should be included in any source file that will use that function.
+
+<H3><A NAME="H304">Linking with Spontaneous Assembly For C/C++ Libraries</A></H3>
+
+The Spontaneous Assembly libraries are as follows:
+<DL COMPACT>
+<DT> _SAm.LIB
+<DD>	Standard functions.
+
+<DT>_FPCc m.LIB
+<DD>	Compiler-specific floating point conversion routines (for use with the compiler's floating point emulator or on systems which have a math coprocessor; see the Data Conversion or Scripted I/O technical notes).
+
+<DT>_TSAm.LIB
+<DD>	Transient versions of the standard functions (for use with TSRs; see the TSRs and Device Drivers technical notes).
+
+<DT>_ESAm.LIB
+<DD>	EMS-relocatable versions of the standard functions (for use with TSRs; see the TSRs and Device Drivers technical notes).
+</DL>
+
+<P>
+In the library names above, m must be replaced with T, S, M, C, or L to denote TINY, SMALL, MEDIUM, COMPACT, and LARGE, and c must be replaced with B, M, T, Z, or N to denote Borland, Microsoft, TopSpeed, Zortech, or Non-emulated floating-point coprocessor instructions.
+<P>
+Most non-TSR applications are linked with both _SAm.LIB and _FPCcm.LIB to ensure that all necessary data conversion functions are linked into the application. However, _FPCcm.LIB is only necessary if floating-point data conversion or scripted I/O functions are used in the application.
+<P>
+If the Spontaneous Assembly heap management functions or floating-point emulation initialization functions are used, Spontaneous Assembly libraries should be specified before the other libraries on the compiler command line. Failure to do this may cause link errors.
+<P>
+The default when using the Scripted I/O and Data Conversion floating point functions requires the _FPCcm to be included. To coalesce a floating point library with a default _SAm library a librarian provided by each compiler may be used to add the two libraries together as follows:
+<DL>
+<DT>lib _sas.lib+_fpcns.lib;	<DD>Non-emulated floating point library + default library
+
+<DT>lib _sas.lib+_fpcbs.lib;	<DD>Borland specific floating point library + default library
+
+<DT>lib _sas.lib+_fpcms.lib;	<DD>Microsoft specific floating point library + default library
+</DL>
+
+<H3><A NAME="H305">Optional Startup Code</A></H3>
+
+Startup code is provided for initializing C programs which use the Spontaneous Assembly libraries exclusively. Use of this startup code is completely optional, but it does eliminate unnecessary overhead found in the compiler startup code. Special startup code is also provided for creating TSRs and device drivers as well as non-TSR applications which use TSR functionality (such as hotkeys).
+<P>
+The Spontaneous Assembly startup code is as follows:
+<DL>
+<DT>_STARTm.OBJ	<DD>Standard startup code.
+
+<DT>_NSTARTm.OBJ	<DD>Startup code for non-TSR programs which use TSR functions, or for TSRs where main is compiled with Microsoft C 6.0 or earlier, Zortech C/C++, or TopSpeed C/C++ (see the Start/Exit or TSRs and Device Drivers technical notes).
+
+<DT>_TSTARTm.OBJ	<DD>Startup code for TSRs (see the Start/Exit or TSRs and Device Drivers technical notes).
+
+<DT>_DSTARTT.OBJ	<DD>Startup code for device drivers (see the Start/Exit or TSRs and Device Drivers technical notes).
+</DL>
+
+The m in the file names above must be replaced with T, S, M, C, or L to denote the TINY, SMALL, MEDIUM, COMPACT, or LARGE memory model.
+
+<H3><A NAME="H306">Typedefs Used</A></H3>
+
+Several typedefs are included in the header files to improve the readability of the documentation and the useability of the library. These typedefs are referred to throughout the documentation and source code, as follows:
+<DL>
+<DT><B>
+quad, uquad,         
+quadptr,             
+quadfptr, quadnptr   
+</B><DD>
+       Typedefs for 64-bit integer math types. Used                    
+       primarily with the Data                           
+       Conversion and Integer Math functions. The quad   
+       type is an 8-byte                                 
+       char array, the uquad type is an 8-byte unsigned  
+       char array. quadptr,                              
+       quadfptr, and quadnptr are pointers to these                    
+       typedefs.
+       
+<DT><B>
+bcd, bcdptr,         
+bcdfptr,             
+bcdnptr              
+</B><DD>                     
+     Typedefs for a BCD type and pointer to a BCD type.                 
+     Used primarily                                                     
+     with the Data Conversion functions. The bcd type                   
+     is a 10-byte                                       
+     unsigned char array. bcdptr, bcdfptr and bcdnptr          
+     are pointers to a                                         
+     bcd type.                                                 
+
+<DT><B>segaddr</B>
+<DD>           Typedef for a segment address. Used instead of    
+               unsigned int to                                   
+               clarify syntax and return values for functions    
+               which use a segment                               
+               address as input or output. The segaddr type is   
+               equivalent to                                     
+               unsigned int.                                     
+</DL>
+
+<H2 ALIGN=CENTER><A NAME="H202">Programming With Inline Assembly</A></H2>
+<P ALIGN=CENTER>Chapter four</P>
+<BLOCKQUOTE>                            
+"Assembly language serves many purposes, such as improving program speed, reducing memory needs, and controlling hardware."
+<P>
+-<I>Microsoft Corporation, Programming Techniques</I> (Microsoft C/C++ 7.0), 1991, pg. 111
+</BLOCKQUOTE>
+
+<H3><A NAME="H307">Overview</A></H3>
+
+This chapter is a brief tutorial on the use of inline assembly with Spontaneous Assembly. The basics of using inline assembly in C applications are described and demonstrated using examples. However, to use inline assembly successfully, the programmer must have a basic understanding of assembly language as well as a general understanding of compiler register usage. A compiler which supports inline assembly is also required.
+<P>
+You do NOT need to understand inline assembly to use Spontaneous Assembly For C/C++. Inline assembly simply provides an alternate, advantageous method of accessing Spontaneous Assembly functions.
+
+<H3><A NAME="H308">Why Program With Inline Assembly?</A></H3>
+
+Internally, the Spontaneous Assembly For C/C++ library uses an extremely efficient assembly language parameter-passing convention (parameters passed in registers, conditions returned in flags). Externally, Spontaneous Assembly For C/C++ supports the C parameter-passing convention through the use of binders (front ends). This makes the library effortless to use in a C or C++ environment, but it adds additional overhead. (See Why Does Spontaneous Assembly Use a Binder Interface? in Chapter 2, for a discussion of the advantages and disadvantages of binders in a library of this nature.) This overhead is eliminated when inline assembly is used to access functions.
+<P>
+Spontaneous Assembly For C/C++ allows the programmer to choose whether the underlying functions are accessed through the binders or directly using inline assembly. This makes it easy for the programmer to eliminate extra overhead in especially time-critical or size-critical sections of code. Both access methods may be used with the same function in the same module without any degradation of performance. And binders are only linked into the final application on an as-needed basis. This gives the programmer complete freedom to choose the function interface which best suits the needs of the application at any time, without penalty.
+<P>
+The difference between programs written in C using a C interface and programs written with Spontaneous Assembly For C/C++ using inline assembly can be dramatic. On the average, a Spontaneous Assembly inline function is roughly half the size and twice the speed of its counterpart in the standard C library. The library is also highly granular, so program size is kept to an absolute minimum. The net result is that programs written using Spontaneous Assembly For C/C++ withinline assembly can be 50% to 90% smaller than equivalent applications written in C, and they are usually much faster.
+
+<H3><A NAME="H309">A Basic Example</A></H3>
+
+Since inline assembly uses a register-and-flags parameter passing convention, use of inline assembly usually saves several assembly instructions per function call depending on the number of arguments passed to the function. For example, the following code:
+<PRE><CODE><SMALL>{
+   char str1[] = "hello";
+   char str2[] = "hola";
+   _str_cmp(str2,str1);
+}
+</SMALL></CODE></PRE>
+would be translated into the following code (in the SMALL memory model) by the compiler:
+<PRE><CODE><SMALL>{
+   char str1[] = "hello";
+   char str2[] = "hola";
+	   lea	 ax,str1
+	   push	 ax      		/* load parameter on stack */
+	   lea	 ax,str2
+	   push	 ax	    		/* load parameter on stack */
+	   call	 _str_cmp		/* call function */
+	   pop	 cx	    		/* clean stack */
+	   pop	 cx
+}
+</SMALL></CODE></PRE>
+However, if the same function is called with inline assembly, the resulting code is as follows:
+<PRE><CODE><SMALL>{
+   char str1[] = "hello";
+   char str2[] = "hola";
+   	   lea	 si,str1 		/* load SI register directly */
+	   lea	 di,str2 		/* load DI register directly */
+	   push	 ss
+	   pop	 es	    		/* ES = SS */
+   str_cmp();	 	    		/* call function */
+}
+</SMALL></CODE></PRE>
+
+<H3><A NAME="H310">The INLINE.H Header File</A></H3>
+
+When the Spontaneous Assembly INLINE.H header file is included, assembly code and C code can be used interchangeably in a source file-there is no need to use the asm or _asm directives to designate assembly language instructions. The one exception to this rule applies to instructions with C naming conflicts (e.g., INT). All of the inline assembly examples in this manual assume that INLINE.H has been included.
+
+<H3><A NAME="H311">Naming Convention of Inline Functions</A></H3>
+
+In Spontaneous Assembly For C/C++, the inline assembly functions usually follow the same naming convention as their C binder counterparts, but without a leading underscore. For example, str_cmp is the inline equivalent of _str_cmp. The exact name of the assembly language function is noted as the ASM equiv in the reference section entry for each C function.
+<P>
+The complete interface for each inline assembly function is documented in the white Spontaneous Assembly manual which accompanies this package.
+
+<H3><A NAME="H312">C Register Use</A></H3>
+
+In an assembly-language environment such as Spontaneous Assembly, functions are expected to preserve all registers unless the register is used to return a value. This rule does NOT hold true in a C environment (even if Spontaneous Assembly For C/C++ is used). The documented register usage for C compilers allows AX, BX, CX, DX, and ES to be used freely. DS, BP, SI, and DI should not be changed by a function. The BP register is used as a stack frame pointer to reference localvariables and function parameters and must not be changed. The DS register is always assumed to point to the program data segment in the TINY, SMALL, MEDIUM, COMPACT, and LARGE memory models. In HUGE, DS points to the data segment of the current file.
+<P>
+These rules must also be followed whenever inline assembly is used. For example, inline assembly code which modifies DS, SI, or DI must restore the appropriate registers when it is finished. The results are undefined if these rules are not followed in inline assembly code.
+
+<H3><A NAME="H313">C Return Value Register Use</A></H3>
+
+When a C function is called with inline assembly, the programmer must be aware of the location of the return value from the function. The following table lists each C type and the register or combination of registers which are used by C functions to return that type:
+<PRE>C Type          Register
+
+char            AL
+unsigned char   AL
+int             AX
+unsigned int    AX
+long            DX;AX
+unsigned long   DX;AX
+near pointer    AX
+far pointer     DX:AX
+</PRE>
+
+For example, if the return type is a long, then the return value is returned in DX;AX, so any value in AX or DX would be overwritten by the return value.
+
+<H3><A NAME="H314">Loading Values of C Variables Using Inline Assembly</A></H3>
+
+No special code is necessary to load the value of a C variable into a register (or vice versa) with inline assembly. If the value is loaded using the MOV instruction, the compiler automatically makes sure that the variable is loaded from the correct location. (However, if DS has been modified, it should be restored to its original value before attempting to load the value of a variable or the results are undefined.) 
+
+<H3><A NAME="H315">Loading Addresses of C Variables Using Inline Assembly</A></H3>
+
+When the address of a variable is required in an inline function, the programmer must be careful to load the address correctly. The required loading method depends on how and where the variable is declared and the memory model in use. The rules for loading addresses are as follows:
+<P>
+1.	far pointers should be loaded using the LES or LDS instructions. If LES is used, the segment of the pointer is placed in ES; if LDS is used, the segment is placed in DS.
+<P>
+2.	near pointers should be loaded using the MOV instruction. The segment of the pointer is already in DS.
+<P>
+3.	Addresses of global or static data should be loaded using MOV with OFFSET. The segment portion of the address is already in DS.
+<P>
+4.	Addresses of local data must be loaded using LEA. The segment portion of the address is already in DS in small data models; it is in SS in large data models.
+<P>
+5.	The segment portion of an address may be moved from one segment register to another by using PUSH followed by POP.
+<P>
+6.	If DS, SI, or DI are modified, they MUST be restored before calling any function or finishing a particular block of inline assembly. This is usually done by using PUSH at the start of the block and POP at the end.
+<P>
+The following code illustrates various methods of declaring variables and the proper method of obtaining the variable address for each type of declaration:
+<PRE><CODE><SMALL>/***** Rule 1 (far pointers) *****/
+
+   char far *global_ptr;		/* global far pointer */
+   ...
+   void func (char far *param_ptr)	/* parameter far pointer */
+   {
+      char far *local_ptr;	  	/* local far pointer */
+      ...
+      lds		 si,global_ptr	/* DS:SI = global_ptr pointer */
+      les		 di,local_ptr	/* ES:DI = local_ptr pointer */
+      ...
+      lds		 si,param_ptr	/* DS:SI = param_ptr pointer */
+      ...
+   }
+
+/***** Rule 2 (near pointers) *****/
+
+   char near *global_ptr;	  	/* global near pointer */
+   {
+      char near *local_ptr;	  	/* local near pointer */
+      ...
+      mov		 si,local_ptr	/* SI = local_ptr pointer */
+      mov		 di,global_ptr	/* DI = global_ptr pointer */
+   }
+
+/***** Rule 3 (address of global or static) *****/
+
+   char global[10];	    		/* global array */
+   ...
+   {
+      static char buffer[10];	  	/* static buffer */
+      ...                           
+      mov		 di,offset global	/* DI = offset of global */
+      mov		 si,offset buffer	/* SI = offset of buffer */
+      ...
+   }
+
+/***** Rules 4 and 5 (address of local) *****/
+
+   {
+      char buffer[10];
+      ...
+   #if __LARGE_DATA__
+      push	 ss
+      pop		 es	    	/* ES = SS in large data */
+   #endif
+      lea		 di,buffer	/* DI = offset of buffer */
+      ...
+   }
+
+/***** Rule 6 (preserve registers) *****/
+
+   {
+      char buf1[10];
+      char buf2[10];
+      ...
+      push	 si	    		/* preserve registers */
+      push	 di
+   #if __LARGE_DATA__
+      push	 ds
+      push	 ss
+      pop		 ds	    	/* DS = SS in large data models */
+   #endif
+      lea		 si,buf1 	/* DI = offset of buf2 */
+      lea		 di,buf2 	/* DI = offset of buf2 */
+      ...
+   #if __LARGE_DATA__
+      pop		 ds	  	/* restore registers */
+   #endif
+      pop		 di
+      pop		 si
+   }
+</SMALL></CODE></PRE>
+
+When using Microsoft C, the compiler may generate "Illegal size for operand" warnings when it encounters the LEA instruction. These warnings may be suppressed by specifying the size of the operand, as in this example:
+<PRE><CODE><SMALL>	   lea	 di,word ptr variable_name
+</SMALL></CODE></PRE>
+
+<H3><A NAME="H316">Linking the Appropriate Spontaneous Assembly For C/C++ Libraries</A></H3>
+
+When the application is linked, the appropriate Spontaneous Assembly For C/C++ libraries must be linked into the application. All inline assembly functions are located in the same libraries as the C/C++ functions. The naming convention for the standard libraries is _SAm.LIB; the naming convention for the floating-point support libraries is _FPCc m, where m may be T, S, M, C, or L (TINY, SMALL, MEDIUM, COMPACT, or LARGE) and c may be B, M, T, or Z (Borland, Microsoft, TopSpeed, or Zortech). The memory model of the C application and the Spontaneous Assembly library must be the same, except in the case of the HUGE model which is supported by the LARGE model library. The library may also be specified within a project file with Borland's IDE or Microsoft's Workbench. (See Chapter 3 Linking with Spontaneous Assembly for C/C++ Libraries).
+
+<H3><A NAME="H317">Sample Programs</A></H3>
+
+The following sample programs demonstrate the use of inline assembly with Spontaneous Assembly For C/C++ functions. Each of these programs writes a string to the screen, sorts the characters in the string, and then redisplays the sorted string. These examples demonstrate some of the principles described above.
+
+<H4><A NAME="H41">STRSORT1 (C Program)</A></H4>
+
+The first program (STRSORT1) is written without inline assembly. Note that the Spontaneous Assembly For C/C++ _quick_sort function expects a sorting function which returns flags (this is unique to this function in the C/C++ library).
+<PRE><CODE><SMALL>/******************************************************************/ 
+/* STRSORT1.C - Sample C program                                  */
+/******************************************************************/
+ 
+#include		 <inline.h>
+#include		 <sa_array.h>
+ 
+void    cmpf(void);	    /* compare function prototype */
+ 
+char	   str1[] = "Here is a string of characters in sorted order..."; 
+ 
+main() 
+{ 
+   _put_str(str1);	    /* print the normal string */   
+   _put_newline();
+   _quick_sort(str1, sizeof(str1) - 1,1,cmpf); /* sort the string */
+   _put_str(str1);	    /* print the sorted string */
+} 
+ 
+void	   cmpf(void)	    /* compare two chars as defined by _quick_sort */
+{
+	   push	 ax	    /* preserve AX as required by _quick_sort */
+	   mov	 al,[si]
+	   cmp	 al,[di]    /* compare the characters */
+	   pop	 ax
+}
+
+</SMALL></CODE></PRE>
+STRSORT2 (C Program Using Inline Assembly)<P>
+
+The second program (STRSORT2) is written in C, but it uses inline assembly to call the Spontaneous Assembly For C/C++ inline quick_sort function to perform the sorting.
+<PRE><CODE><SMALL>
+/*******************************************************************************/
+/* STRSORT2.C - Sample C program with inline assembly                          */
+/*              Uses the Spontaneous Assembly C/C++ inline quick_sort function */
+/*******************************************************************************/
+
+#include		 <inline.h>
+#include		 <sa_array.h>
+
+void	   cmpf(void);	    	/* compare function prototype */
+
+char	   str1[] = "Here is a string of characters in sorted order...";
+int	   len_str1 = sizeof(str1) - 1;
+
+void_main()
+{
+   _put_str(str1);	    	/* print the normal string */
+   _put_newline();
+	   push	 di	    		  
+	   push	 ds
+	   pop	 es	    	/* ES -> DGROUP */
+	   mov	 di,offset str1  /* ES:DI -> the string to sort */
+	   mov	 ax,offset cmpf  /* AX -> the comparison function to use */
+   #if __LARGE_CODE__
+	   mov	 dx,cs   	/* if large code, load segment address (see Assembly manual) */
+   #endif
+	   mov	 cx,1    	/* CX = the number of bytes per element */
+	   mov	 bx,len_str1	/* BX = the number of array elements (characters) */
+	   quick_sort();   	/* perform the sort */
+	   pop	 di
+ 
+   _put_str(str1);	    	/* print the sorted string */
+}
+
+void	   cmpf(void)	    	/* compare two chars as defined by quick_sort */
+{
+	   push	 ax	    	/* preserve AX as required by quick_sort */
+	   mov	 al,[si]
+	   cmp	 al,[di] 	/* compare the characters */
+	   pop	 ax
+}
+</SMALL></CODE></PRE>
+
+<H3><A NAME="H318">Using the Spontaneous Assembly Source Code</A></H3>
+
+One way to integrate Spontaneous Assembly functions into existing applications is to use the source code directly. This is done by lifting the code from the appropriate source file and placing the code into the application's source file. For example, lifting source code from the Spontaneous Assembly function (i.e. MEM_MOV) the programmer can create a tight, fast C function using inline assembly as follows:
+<PRE><CODE><SMALL>#include		 <inline.h>
+
+void _memmov(const char *srcblk, const char far *destblk, unsigned num)
+{
+#if __SMALL_DATA__
+	   mov	 si,srcblk	  /* SI = offset of srcblk */
+#else
+	   lds	 si,srcblk	  /* DS:SI -> srcblk */
+#endif
+	   les	 di,destblk	  /* ES:DI -> destblk */
+	   mov	 cx,num  	  /* CX = num */
+	   push	 di	  
+	   push	 si	  
+	   mov	 si,ds   
+	   mov	 di,es   
+	   cmp	 di,si   
+	   pop	 si
+	   pop	 di	    	  /* is DS = ES? */
+	    je	 _memmov_020	  /*   y: do overlapping copy */
+	   mem_cpy();	    	  /*   n: do regular copy */
+	   ret
+
+_memmov_020:
+	   push	 cx
+	   push	 di
+	   push	 si	    	  /* save count and block pointers */
+	   cmp	 di,si   	  /* is dest addr <= src addr? */
+	    jbe	 _memmov_030	  /*   y: copy forward from src to dest */
+	   std	 	    	  /*   n: copy backward from src to dest */
+	   add	 di,cx
+	   dec	 di	    	  /* point to end of dest block */
+	   add	 si,cx
+	   dec	 si	    	  /* point to end of src block */
+_memmov_030:
+	   rep	 movsb   	  /* copy src to dest */
+	   pop	 si
+	   pop	 di
+	   pop	 cx	    	  /* restore count and pointers */
+	   cld	 	    	  /* ensure direction flag is clear (up) */
+	   ret
+}
+</SMALL></CODE></PRE>
+<EM>
+Under copyright law, Spontaneous Assembly source and object code always remain the property of Acclaim Technologies, Inc. This is true even if the source code is edited and reassembled, regardless of the extent of the changes. This means that Spontaneous Assembly source code must always be accompanied by the copyright notice which appears at the top of the original source file, even if it is integrated into the source code of another application. The exact wording of the original copyright notice must be the same.
+<P>
+Although Spontaneous Assembly code may be distributed in EXECUTABLE format royalty-free (see the copyright declaration at the front of this manual for details and restrictions), SOURCE code may only be distributed with the prior written consent of Acclaim Technologies, Inc. Permission is readily granted to commercial developers who need to license or distribute source code with their applications. This permission can only be granted in writing as it requires the signing of an agreement. A nominal one-time fee may be charged. For details, contact PowerQuest/Base Two Development.
+</EM>
+</body>
+</html>
+

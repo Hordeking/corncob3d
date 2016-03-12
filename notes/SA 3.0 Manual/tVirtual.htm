@@ -1,0 +1,343 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: Virtual Screen</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Virtual Screen</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tVirtual.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tVirtual.htm#HEAD0001">Definitions
+</A><BR>
+<A HREF="tVirtual.htm#HEAD0002">Primary Adapter vs. Active Adapter
+</A><BR>
+<A HREF="tVirtual.htm#HEAD0003">The Default Screen (STDSCR)
+</A><BR>
+<A HREF="tVirtual.htm#HEAD0004">Screen Buffering
+</A><BR>
+<A HREF="tVirtual.htm#HEAD0005">Determining Screen Buffer Sizes
+</A><BR>
+<A HREF="tVirtual.htm#HEAD0006">Initializing the Virtual Screen System
+</A><BR>
+<A HREF="tVirtual.htm#HEAD0007">Creating a Virtual Screen
+</A><BR>
+<A HREF="tVirtual.htm#HEAD0008">Selecting the Active Screen
+</A><BR>
+<A HREF="tVirtual.htm#HEAD0009">Opening a Screen
+</A><BR>
+<A HREF="tVirtual.htm#HEAD000A">Removing a Screen
+</A><BR>
+<A HREF="tVirtual.htm#HEAD000B">Suspending the Virtual Screen System
+</A><BR>
+<A HREF="tVirtual.htm#HEAD000C">Sample Code
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+The virtual screen system provides a complete system for managing multiple, virtual text mode screens on one or two display adapters. Integral support is provided for buffered and unbuffered screens with buffers on specified video pages, at arbitrary memory locations, or at arbitrary offsets within disk files. Functions are provided for creating, selecting, opening, and removing screens and for initializing, suspending, and resuming virtual screen support at run time. A support function is also provided for specifying an intermediate buffer for screens which are buffered to disk.
+
+<P>
+The virtual screen system is fully compatible with the Spontaneous Assembly console I/O and windowing systems. In fact, separate screens may maintain and access distinct windowing systems simultaneously. Furthermore, the virtual screen system is fully modular, so unnecessary support functions (e.g., buffering or file I/O) are not linked into the application.
+
+<P>
+The virtual screen system must be initialized by calling <A HREF="rvirtual.htm#_vscreen_init">_vscreen_init</A>. If disk buffering is to be performed, <A HREF="rvirtual.htm#_set_vsworkbuf">_set_vsworkbuf</A> must be called to initialize the file I/O portion of the virtual screen system.
+
+<H2><A NAME="HEAD0001">Definitions
+</A></H2>
+
+A screen is a virtual text-mode display on which console I/O may be performed. Each screen is assigned a video adapter, a text video mode, and a specific video page on its adapter. If multiple screens are assigned to a single page on a single adapter, then the screens are swapped on that page as needed, and they are buffered if buffering has been specified.
+
+<P>
+Screens are referenced using the addresses of their respective screen descriptors as handles. Screen descriptors are structures of type vscrn, which is defined in VSCREEN.H.
+
+<P>
+When a screen is visible on its adapter it is said to be open. If two adapters are present in the system, then two screens may be open simultaneously (one on each adapter). Screens are opened by calling <A HREF="rvirtual.htm#_vscreen_open">_vscreen_open</A>. Unlike windows, screens may not be closed at will, but they are said to be closed if they are not currently visible on their adapter.
+
+<P>
+The active screen is the only screen which is affected when a console I/O or windowing function is called. Console I/O and windowing functions may be called at any time-even if the active screen is closed. Changes to closed screens are remembered and displayed when those screens are opened. The active screen is selected using <A HREF="rvirtual.htm#_vscreen_select">_vscreen_select</A>.
+
+<P>
+Interaction with Console I/O and Windowing Systems
+
+<P>
+When the virtual screen system is active, all console I/O and windowing functions are directed to the active screen, including changes to the video mode, video page, and screen dimensions. Since any screen may be active at any time, console I/O can be directed to screens whether or not they are visible on their adapter.
+
+<P>
+Only the active screen is affected when a new adapter, video mode, number of text rows, video page, or similar display characteristic is selected.  All other console I/O functions affect only the active screen, including <A HREF="rconsole.htm#_console_init">_console_init</A>. The only exception to this rule applies to the documented loss of screen data on unbuffered screens (see Screen Buffering in this section).
+
+<P>
+There is no need to call <A HREF="rconsole.htm#_console_init">_console_init</A> before writing to a virtual screen since <A HREF="rconsole.htm#_console_init">_console_init</A> is automatically called by the virtual screen system whenever a screen is created.
+
+<H2><A NAME="HEAD0002">Primary Adapter vs. Active Adapter
+</A></H2>
+
+It is important to distinguish between the active adapter and the primary adapter when the virtual screen system is in use. The primary adapter means the adapter to which all BIOS output is directed; the virtual screen system may change the primary adapter any time a virtual screen function is called. The active adapter is the adapter to which the active screen is assigned; the active adapter is changed only when a new active screen is selected or when the adapter of the active screen is changed by calling <A HREF="rconsole.htm#_set_adapter">_set_adapter</A>.
+
+<P>
+These terms are synonymous only when the virtual screen system is NOT being used or when the active screen is also open. If the virtual screen system is being used, applications cannot assume that video BIOS calls will take effect on the active adapter unless the active screen is open.
+
+<H2><A NAME="HEAD0003">The Default Screen (STDSCR)
+</A></H2>
+
+The virtual screen system includes support for a temporary, unbuffered screen called STDSCR ("standard screen"). STDSCR is automatically created and opened each time it is selected, and it is automatically removed when another screen is selected or when another screen is opened on the same adapter. STDSCR cannot be opened, created, or removed manually; it may only be selected. Once selected, STDSCR may be assigned to any adapter or video page using the console I/O functions.
+
+<P>
+Each time it is selected, STDSCR inherits the state and contents of the open screen on the display adapter of the active screen. The inherited screen contents are only a copy of the original if the previously-open screen is buffered. STDSCR is automatically selected on the primary display adapter when <A HREF="rvirtual.htm#_vscreen_init">_vscreen_init</A> is called.
+
+<P>
+Console I/O performed on STDSCR is temporary. Because STDSCR is unbuffered, text and attributes written to STDSCR are lost whenever another screen is opened on the same adapter. In addition, because STDSCR is re-created each time it is selected, STDSCR characteristics such as the current video mode, current screen dimensions, and current text attribute are all re-initialized whenever STDSCR is selected.
+
+<P>
+Windowing may be performed on STDSCR, but all windowing should be terminated normally before any other screen is selected or opened on the same adapter or all windowing information will be lost. <A HREF="rwindow.htm#_win_suspend">_win_suspend</A> and <A HREF="rwindow.htm#_win_resume">_win_resume</A> cannot be used to preserve the state of the windowing system on STDSCR while another screen is selected.
+
+<P>
+STDSCR is a symbolic constant defined in VSCREEN.H with a value of -1. STDSCR may be used in place of the screen descriptor offset for any function which allows STDSCR as a screen descriptor.
+
+<H2><A NAME="HEAD0004">Screen Buffering
+</A></H2>
+
+The virtual screen system always preserves the state (video mode, screen dimensions, etc.) of every virtual screen in the system. However, screen contents (text and attributes) are only preserved by the virtual screen system on buffered screens; the contents of unbuffered screens are not automatically preserved. Unbuffered screens with active windowing systems behave like buffered screens except for STDWIN (which loses it contents when the screen is flushed).
+
+<P>
+Buffered screens may be buffered to a screen buffer address (in memory) or to a disk file. If a DOS file handle is provided in the screen descriptor, then the screen buffer address in the descriptor is interpreted as a file pointer position at which the screen contents should be buffered. Disk buffering is slower than buffering to memory, but its memory requirements are minimal.
+<P>
+When disk buffering is used, a single disk file is normally used for all buffered screens which are managed by the virtual screen system. The disk file is usually created (_create_h) and sized (_setfsize_h) before the virtual screen system is initialized to ensure that adequate disk space is available for the buffered screens. It is suggested that 16K be allocated within the disk file for each screen which may be buffered, since text screens commonly support resolutions as high as 132x60 (132x60x2=15840 bytes, plus approximately 32 bytes for saved state information). Alternatively, the exact disk buffer requirements for a screen may be determined by calling <A HREF="rvirtual.htm#_vscreen_bufsize">_vscreen_bufsize</A>.
+
+<P>
+WARNING!        If the screen dimensions change, the size of the required screen buffer also changes. Failure to provide an adequate screen buffer will cause the virtual screen to be treated as if it is unbuffered. The size and address of a screen buffer may only be changed immediately before or after calling <A HREF="rconsole.htm#_set_vmode">_set_vmode</A>, <A HREF="rconsole.htm#_set_dimens">_set_dimens</A>, <A HREF="rvirtual.htm#_vscreen_create">_vscreen_create</A>, or <A HREF="rconsole.htm#_console_init">_console_init</A>.
+
+<P>
+Screens are flushed to their buffers by the virtual screen system whenever the contents of those screens would otherwise be corrupted or lost. Buffered screens are flushed to their screen buffers without any loss of screen data. Unbuffered, windowed screens are flushed to their window buffers and only lose the contents of STDWIN. Unbuffered, unwindowed screens cannot be flushed to a buffer, so they are blanked in the default text attribute instead. Screens are flushed (or blanked) under the following circumstances:
+<OL>
+<LI>    When a screen is opened, the contents of the screen are physically transferred to the video page buffer of the video page to which the screen is assigned. If another screen already resides on that page, that screen is flushed to its buffer before the new screen is copied to the video page and opened.
+<LI>    If the adapter video mode or screen dimensions must be reprogrammed to open a new screen, then all screens on that adapter which reside in video page buffers are flushed to their buffers before the new screen is opened.
+<LI>    If <A HREF="rconsole.htm#_set_dimens">_set_dimens</A> or <A HREF="rconsole.htm#_set_vmode">_set_vmode</A> is called when the active screen is open, all other screens on the same adapter as the active screen which reside in video page buffers are flushed to their buffers before the operation is performed.
+<LI>    If <A HREF="rconsole.htm#_set_vpage">_set_vpage</A> is called, the active screen is flushed before the screen is assigned to the new video page. This physically reassigns the screen contents to the new page if the screen is buffered.
+<LI>    If <A HREF="rconsole.htm#_set_adapter">_set_adapter</A> is called, the active screen is always blanked (whether or not the screen is buffered) when it is assigned to the new video adapter since existing text attributes will not be correct on the new adapter. For this reason, the programmer should always re-initialize the windowing system and re-create all windows with new text attributes after calling <A HREF="rconsole.htm#_set_adapter">_set_adapter</A> if windowing is in effect.
+</OL>
+<H2><A NAME="HEAD0005">Determining Screen Buffer Sizes
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rvirtual.htm#_vscreen_bufsize">_vscreen_bufsize</A><DD>       Returns the required buffer size for a specified virtual screen.
+</DL>
+This function determines the minimum size of the disk or memory buffer required for a specified virtual screen in its current state. The buffer size is calculated using the initial screen dimensions contained in the specified screen descriptor.
+
+<H2><A NAME="HEAD0006">Initializing the Virtual Screen System
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rvirtual.htm#_vscreen_init">_vscreen_init</A><DD>  Initializes the virtual screen system.
+<DT><A HREF="rvirtual.htm#_set_vsworkbuf">_set_vsworkbuf</A><DD> Specifies the location and size of the virtual screen work buffer for disk buffering.
+</DL>
+<A HREF="rvirtual.htm#_vscreen_init">_vscreen_init</A> initializes the virtual screen system, creates STDSCR on the active display adapter and active video page, and selects STDSCR as the active screen. The contents of the display adapters and video pages are not changed. All defined screens are removed from the system and the virtual screen system is re-initialized if <A HREF="rvirtual.htm#_vscreen_init">_vscreen_init</A> is called when the virtual screen system is active. The virtual screen system remains active until <A HREF="rvirtual.htm#_vscreen_suspend">_vscreen_suspend</A> is called.
+
+<A HREF="rvirtual.htm#_set_vsworkbuf">_set_vsworkbuf</A> must be called if disk buffering of virtual screens is to be performed (see Screen Buffering in this section). This function establishes the location and size of the work buffer which is used to read and write screens using the file I/O system. This function also establishes the necessary linkages between the virtual screen and the file I/O systems. The results are unpredictable if this function is not called when disk buffering is specified.
+
+<H2><A NAME="HEAD0007">Creating a Virtual Screen
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rvirtual.htm#_vscreen_create">_vscreen_create</A><DD>Creates and initializes a virtual screen.
+</DL>
+The <A HREF="rvirtual.htm#_vscreen_create">_vscreen_create</A> function creates and initializes a screen within the virtual screen system. The screen is defined on a specified display adapter and video page using the screen size and refresh state defined in a screen descriptor supplied by the programmer. Once created, the new virtual screen is managed by the virtual screen system until it is removed (see Removing Screens in this section).
+
+<P>
+<A HREF="rvirtual.htm#_vscreen_create">_vscreen_create</A> expects a screen descriptor of type vscrn to define the initial video adapter, video mode, and video page on which the screen resides as well as the initial screen dimensions, initial video refresh state, inheritance and auto-open status, buffer address, and disk buffer file handle. This descriptor is also used to maintain the screen's console I/O and windowing characteristics, as follows:
+<PRE><CODE>
+typedef struct {
+   char adapter;                          /* active adapter (-1=current) */
+   char vmode;                            /* active video mode (-1=current) */
+   char vpage;                            /* active video page (-1=current) */
+   char refresh;                          /* refresh state (1=on,0=off,-1=current) */
+   unsigned int dimens;                   /* screen dimensions (-1=current) */
+   char inherit;                          /* inherit contents (1=inherit,0=clear) */
+   char open;                             /* auto-open flag (1=open,0=not) */
+   int handle;                            /* DOS file handle (-1=not disk buffered) */
+   void far * buffer;                     /* buffer address */
+   unsigned int bufsize;                  /* buffer size (0=unbuffered) */
+   char reserved[?];                      /* console I/O and windowing data */
+} vscrn;
+</CODE></PRE>
+WARNING!        The definition shown above is a simplified representation and is provided only to identify structure elements which are required for defining and creating screens. The actual VSCRN structure definition in VSCREEN.H should be used any time screen descriptors must be allocated or defined. The actual vscrn structure may be 200 or more bytes in size.
+
+<P>
+Each vscrn structure element shown above specifies a characteristic of the virtual screen when the screen is created. These fields are defined as follows:
+
+<P>
+adapter Adapter type of the adapter on which the virtual screen will initially reside. This field is specified using the same values described for the <A HREF="rconsole.htm#_set_adapter">_set_adapter</A> function in the reference section, including -1 for the primary adapter and -2 for the secondary adapter. <A HREF="rvirtual.htm#_vscreen_create">_vscreen_create</A> returns an error if an invalid adapter is specified. The default is -1 (primary adapter). (WARNING!       Specifying -1 or -2 for this field after screens have been opened may produce unexpected results. See Primary Adapter vs. Active Adapter in this section for cautions regarding the primary adapter and the virtual screen system.)
+<DL COMPACT>
+<DT>vmode<DD>  Initial video mode for the virtual screen. This mode is enforced when the screen is opened, if required. The results are undefined if the mode is invalid. -1 may be specified to cause the new screen to inherit the active video mode of the open screen on the specified adapter. The default is -1 (inherit active mode).
+<DT>vpage<DD>  Initial video page to which the virtual screen is assigned. This video page serves as the screen buffer if only one screen is assigned to it. The results are undefined if an invalid page is specified. -1 may be specified to cause the new screen to inherit the active video page of the open screen on the specified adapter. The default is -1 (inherit active video page).
+<DT>refresh<DD>Initial refresh state for the screen. A value of 1 indicates that video refresh is initially on, a value of 0 indicates that video refresh is initially off. The default state is 1 (refresh is on). The refresh field of the vscrn structure may be set to -1 to inherit the active video refresh state.
+<DT>dimens<DD> Initial screen dimensions, specified with the number of screen columns in the low byte and the number of screen rows in the high byte. If required, these dimensions are enforced when the screen is opened. <A HREF="rvirtual.htm#_vscreen_create">_vscreen_create</A> returns an error if invalid dimensions are specified. -1 may be specified to cause the new screen to inherit the currently programmed dimensions of the open screen on the specified adapter. The default is -1 (inherit dimensions).
+<DT>inherit<DD>Inherit page contents flag. A value of 1 indicates that the newly-created screen inherits the text, attributes, and cursor position of its assigned video page (including current and default text attributes). A value of 0 indicates that the screen is blanked instead. To successfully inherit the video page contents, the display adapter of the new screen must already be programmed for the specified video mode and screen dimensions. In addition, the new virtual screen must either be buffered or auto-opened or it must be the first screen assigned to its video page. Otherwise, the flag is ignored and screen is blanked. The default is 1 (attempt to inherit screen contents).
+<DT>open<DD>   Auto-open flag. A value of 1 indicates that the screen should be created in the open state. A value of 0 indicates that the screen should be created in the closed state. If auto-open is specified, the screen is opened in the same manner described for the <A HREF="rvirtual.htm#_vscreen_open">_vscreen_open</A> function. The default is 0 (do not auto-open).
+<DT>handle<DD> File buffer handle. This value specifies the DOS file handle of the file to be used to buffer the screen. The file buffer offset is specified in the buffer field. No file buffering is performed if this value is -1. The default is -1 (no file buffering).
+<DT>buffer<DD> Buffer address. This value specifies the address of the screen buffer in segment:offset form (or, if a file handle has been specified in handle, this value specifies absolute the file offset, in bytes, of the file buffer). The default is 0 (beginning of file). (WARNING!  Failure to initialize this field will result in a system crash if bufsize has been initialized and handle is -1.)
+</DL>
+        This field can be set to a file position as follows:
+<PRE><CODE>
+        screen.buffer = (void far *)(16*1024);
+</CODE></PRE>
+bufsize Buffer size. This value specifies the size of the screen buffer specified by buffer. The screen is not buffered if the buffer size is insufficient to hold the screen contents and video state or if buffer is -1. The default is 0 (unbuffered).
+
+<P>
+All other initial screen state information (current and default text attributes, video border state, video border color, cursor state, and cursor type) is inherited from the open screen on the specified display adapter exactly as it would be if <A HREF="rconsole.htm#_console_init">_console_init</A> were called on that adapter. If the specified adapter has no open screen, then this information is inherited from the current hardware state of the specified adapter.
+
+<P>
+The new screen is NOT automatically opened when it is created unless the open flag is set in the screen descriptor. Furthermore, the created screen is NOT automatically selected as the active screen unless it is automatically opened AND the newly-opened screen supersedes STDSCR. This behavior is consistent with the behavior of <A HREF="rvirtual.htm#_vscreen_open">_vscreen_open</A>.
+
+<P>
+There is no need to call <A HREF="rconsole.htm#_console_init">_console_init</A> on the newly-created screen-this is performed automatically when the screen is created. However, <A HREF="rwindow.htm#_win_init">_win_init</A> must be called on the new screen if windowing is to be performed.
+
+<P>
+The <A HREF="rconsole.htm#_get_adapters">_get_adapters</A> and <A HREF="rconsole.htm#_get_adaptinfo">_get_adaptinfo</A> functions (in the console I/O unit) return the information required to properly initialize the screen descriptor fields explained above. <A HREF="rconsole.htm#_get_adapters">_get_adapters</A> indicates which adapters are present in the system as well as their attached monitors. <A HREF="rconsole.htm#_get_adaptinfo">_get_adaptinfo</A> returnsthe characteristics of a specified adapter, including the number of supported video display pages as well as current and supported screen dimensions.
+
+<P>
+When disk buffering is used with virtual screens, the offset within the file to buffer to is specified in the buffer field of the VSCRN structure. When initializing this field with a long int (an offset into a file), the value must be type cast as a void far *, as follows:
+<PRE><CODE>
+screen.buffer = (void far *)(16*1024);
+</CODE></PRE>
+WARNING!        Fields within a screen descriptor must not be modified after the screen has been created since this structure is modified dynamically by the console I/O and windowing systems. Modifications by the programmer after calling <A HREF="rvirtual.htm#_vscreen_create">_vscreen_create</A> will produce undefined results.
+
+<H2><A NAME="HEAD0008">Selecting the Active Screen
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rvirtual.htm#_vscreen_select">_vscreen_select</A><DD>Selects the active virtual screen.
+</DL>
+A new active screen may be selected at any time by calling <A HREF="rvirtual.htm#_vscreen_select">_vscreen_select</A>. The active screen is the screen to which all console I/O is directed, including text and attribute output as well as video page, mode, and screen dimension changes. The active screen is the only screen affected by console I/O functions. The newly-active screen is NOT automatically opened unless the new screen is STDSCR.
+
+<P>
+STDSCR is automatically created and opened each time it is selected as the active screen. STDSCR inherits the state and contents of the previously-open screen on the display adapter of the previously-active screen. The inherited screen contents are only a copy of the original if the previously-open screen is buffered.
+
+<P>
+Console I/O and windowing may be performed on the active screen whether or not it is open, although these operations are generally faster on screens which are not visible. <A HREF="rvirtual.htm#_vscreen_open">_vscreen_open</A> must be called to ensure that any given screen is actually visible.
+
+<H2><A NAME="HEAD0009">Opening a Screen
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rvirtual.htm#_vscreen_open">_vscreen_open</A><DD>          Opens a virtual screen.
+</DL>
+This function opens (makes visible) a specified screen on its adapter. The screen is NOT automatically selected as the active screen unless the previously-open screen on the same display adapter was STDSCR. This means that console I/O is NOT automatically directed to the newly-opened screen unless <A HREF="rvirtual.htm#_vscreen_select">_vscreen_select</A> is called before or after the screen is opened.
+
+<P>
+If another screen is already open on the same video page of the same adapter before this function is called, then the state of the previous screen is saved and the contents of that screen are flushed to its buffer (if any) before the new screen is made visible.
+
+<P>
+If the specified screen is not already visible on its adapter, its adapter is reprogrammed as required to support the video mode, video page, screen dimensions, refresh state, border color, cursor shape, etc. of the newly-opened screen. The contents of the new screen are then copied to its video page if the screen is buffered and the screen is not already on its video page. The screen is blanked when it is opened only if the screen is unbuffered and it is not already present on its assigned video page. No change takes place if the screen is already visible on its adapter when this function is called.
+
+<H2><A NAME="HEAD000A">Removing a Screen
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rvirtual.htm#_vscreen_remove">_vscreen_remove</A><DD>        Removes a virtual screen.
+</DL>
+This function removes a specified screen from the virtual screen system. This function must be called whenever a created screen is no longer to be treated as a part of the virtual screen system. If the specified screen is the active screen, STDSCR is selected as the new active screen on the same display adapter as the removed screen. The appearance of the open screen on the active display adapter is not changed.
+
+<P>
+Once <A HREF="rvirtual.htm#_vscreen_remove">_vscreen_remove</A> has been called, the old screen descriptor may be reused or returned to its memory pool, if applicable.
+
+<H2><A NAME="HEAD000B">Suspending the Virtual Screen System
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rvirtual.htm#_vscreen_suspend">_vscreen_suspend</A><DD>       Temporarily suspends the virtual screen system.
+<DT><A HREF="rvirtual.htm#_vscreen_resume">_vscreen_resume</A><DD>Resumes virtual screen support.
+</DL>
+The virtual screen system may be temporarily suspended by calling <A HREF="rvirtual.htm#_vscreen_suspend">_vscreen_suspend</A>. This function is usually used prior to executing another application which could reprogram a display adapter or disturb the contents of any video page. <A HREF="rvirtual.htm#_vscreen_suspend">_vscreen_suspend</A> flushes all buffered screens and places the virtual screen system into single-screen mode. The console I/O system is initialized to inherit the state and contents of the open screen on the adapter of the active screen. <A HREF="rvirtual.htm#_vscreen_suspend">_vscreen_suspend</A> does not affect the appearance of any screen.
+
+<P>
+<A HREF="rvirtual.htm#_vscreen_suspend">_vscreen_suspend</A> does NOT necessarily restore the video state to the state which was active when <A HREF="rvirtual.htm#_vscreen_init">_vscreen_init</A> was called. <A HREF="rconsole.htm#_save_vstate">_save_vstate</A> and <A HREF="rconsole.htm#_restore_vstate">_restore_vstate</A> or their equivalents must be used for this purpose if this is required.
+
+<P>
+Once <A HREF="rvirtual.htm#_vscreen_suspend">_vscreen_suspend</A> has been called, <A HREF="rvirtual.htm#_vscreen_resume">_vscreen_resume</A> may be called to restore the virtual screen system to its pre-_vscreen_suspend condition. <A HREF="rvirtual.htm#_vscreen_resume">_vscreen_resume</A> accomplishes this by reselecting the active screen and open screens on both adapters. Text and attributes are only restored on buffered screens or screens which have active windowing systems. All unbuffered screens without active windowing systems are blanked in the screen's default text attribute. Unbuffered screens with active windowing systems lose only the contents of STDWIN when <A HREF="rvirtual.htm#_vscreen_resume">_vscreen_resume</A> is called.
+
+<P>
+WARNING!        Once <A HREF="rvirtual.htm#_vscreen_suspend">_vscreen_suspend</A> has been called, the results are unpredictable if virtual screen functions are called before <A HREF="rvirtual.htm#_vscreen_resume">_vscreen_resume</A>.
+
+<H2><A NAME="HEAD000C">Sample Code
+</A></H2>
+
+The following sample code demonstrates the power and ease of use of the virtual screen system. This code establishes and uses two screens on the target system in the most memory-efficient manner. The two screens are established on different display adapters if two adapters are present. If only one adapter is present, then the second screen resides on the second page of the active adapter if more than one page is supported by that adapter; if only one video page is supported, then the second screen is buffered to a disk file.
+<PRE><CODE>
+#include <vscreen.h>
+#include <fileio.h>
+
+#define VSWBUFSIZ 262                           /* work buffer size */
+#define FILBUFSIZ 16*1024                       /* file buffer size */
+
+vscrn primary = {-1,-1,-1,-1,1,1,0,-1,0,0};     /* PRIMARY screen (inherit, auto-open) */
+vscrn secondary = {-2,-1,-1,-1,0,0,0,-1,0,0};	/* SECONDARY screen (noinherit, closed) */
+saadapt adaptinfo;                              /* structure for adapter information */
+char buffile[] = "{SCREEN}.BUF";                /* temp screen buffer filename */
+char vswbuf[VSWBUFSIZ];                         /* work buffer for disk buffering */
+char dual = 1;                                  /* 0=single monitor, 1=dual monitor */
+
+void main()
+{
+   ...
+
+   if(mk_screens() == -1)
+      exit(1);
+   ...
+
+}
+
+int mk_screens(void)
+{
+   char dflags, pagecnt, cols, rows, vpage;
+   unsigned int handle;
+
+   <A HREF="rconsole.htm#_adapter_init">_adapter_init</A>();                             /* init for dual adapters */
+   <A HREF="rvirtual.htm#_vscreen_init">_vscreen_init</A>();                             /* init virtual screen system */
+
+/* ------ check for secondary adapter */
+
+   if(!_get_adaptinfo(-2, &adaptinfo));         /* secondary adapter present? */
+   {
+      secondary.adapter = -1;                   /* n: use primary adapter */
+      dual = 0;                                 /* clear dual monitor flag */
+      <A HREF="rconsole.htm#_get_adaptinfo">_get_adaptinfo</A>(-1, &adaptinfo);           /* get primary adapter info */
+
+/* ------ no secondary adapter, try to use second page of primary adapter */
+
+      if(adaptinfo.pagecnt)                     /* if more than one video page */
+      {
+            primary.vpage = adaptinfo.vpage;
+            adaptinfo.vpage ^= 1;               /* if page is even, use page 1 */
+            adaptinfo.vpage &= 1;               /* if page is odd, use page 0 */
+            secondary.vpage = adaptinfo.vpage;  /* SECONDARY = other page, unbuffered */
+      }
+
+/* ------ only one page on one adapter, use disk buffering */
+
+      else                                      /* if only one video page */
+      {
+            <A HREF="rvirtual.htm#_set_vsworkbuf">_set_vsworkbuf</A>(vswbuf, VSWBUFSIZ);  /* declare disk work buffer */
+            if((handle = <A HREF="rfileio.htm#_create_h">_create_h</A>("{SCREEN}.BUF", FA_NORM)) != 0)
+               return(1);                       /* return error */
+            else
+            {
+               if(_setfsize_h(handle, FILBUFSIZ) == -1) /* ensure adequate disk space */
+                  return(1);                    /* return error */
+               else
+               {
+                  secondary.handle = handle;     /* indicate file handle */
+                  secondary.bufsize = FILBUFSIZ; /* indicate buffer size */
+                                                 /* (offset 0 is the default) */
+               }
+            }
+       }
+   }
+
+/* ------ create and open screens */
+
+   if(_vscreen_create(&primary) == -1)
+                 return(-1);                     /* return error */
+   if(dual != 0)
+      secondary.open = 1;
+   if(_vscreen_create(&secondary) != 0)
+      return(-1);                                /* return error */
+   else
+      return(0);                                 /* return success */
+}
+</CODE></PRE>
+After calling the _mk_screens function shown above, PRIMARY is the active screen and has inherited the contents and state of the primary display adapter. SECONDARY resides on the secondary display adapter and is open only if two adapters are present; otherwise it is defined on the primary display adapter and is not yet visible. The DUAL variable indicates whether or not the system is a dual monitor system. The program may select either screen for console I/O or windowing at any time by calling <A HREF="rvirtual.htm#_vscreen_select">_vscreen_select</A>. If DUAL=0, then <A HREF="rvirtual.htm#_vscreen_open">_vscreen_open</A> must be called with SECONDARY as the screen descriptor to view the secondary virtual screen.
+</BOBY>
+</HTML>

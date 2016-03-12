@@ -1,0 +1,884 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: TSRs and Device Drivers</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>TSRs and Device Drivers</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tTSR.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tTSR.htm#HEAD0001">What is a TSR?
+</A><BR>
+<A HREF="tTSR.htm#HEAD0002">A Quick Start
+</A><BR>
+<A HREF="tTSR.htm#HEAD0003">The Segment Structure of a TSR
+</A><BR>
+<A HREF="tTSR.htm#HEAD0004">The Resident Portion of a TSR
+</A><BR>
+<A HREF="tTSR.htm#HEAD0005">The Transient Portion of a TSR
+</A><BR>
+<A HREF="tTSR.htm#HEAD0006">The EMS-relocatable Portion of a TSR
+</A><BR>
+<A HREF="tTSR.htm#HEAD0007">Resident, Transient, and EMS-relocatable Versions of the Library
+</A><BR>
+<A HREF="tTSR.htm#HEAD0008">Making Code and Data Resident, Transient, or EMS-relocatable
+</A><BR>
+<A HREF="tTSR.htm#HEAD0009">Function Restrictions in a TSR
+</A><BR>
+<A HREF="tTSR.htm#HEAD000A">Determining If a TSR Is Already Loaded
+</A><BR>
+<A HREF="tTSR.htm#HEAD000B">Using Predefined ISRs
+</A><BR>
+<A HREF="tTSR.htm#HEAD000C">Creating Entry Definition Structures
+</A><BR>
+<A HREF="tTSR.htm#HEAD000D">Managing System Resources
+</A><BR>
+<A HREF="tTSR.htm#HEAD000E">Managing Entry Definition Structures
+</A><BR>
+<A HREF="tTSR.htm#HEAD000F">Initializing a Program to Use Predefined ISRs
+</A><BR>
+<A HREF="tTSR.htm#HEAD0010">Near and Far Heaps in a TSR
+</A><BR>
+<A HREF="tTSR.htm#HEAD0011">Terminating and Staying Resident
+</A><BR>
+<A HREF="tTSR.htm#HEAD0012">Using Predefined ISRs without Going Resident
+</A><BR>
+<A HREF="tTSR.htm#HEAD0013">Activating and Deactivating Predefined ISRs
+</A><BR>
+<A HREF="tTSR.htm#HEAD0014">The Entry Request Queue
+</A><BR>
+<A HREF="tTSR.htm#HEAD0015">Stack Use in a TSR
+</A><BR>
+<A HREF="tTSR.htm#HEAD0016">Managing Custom ISRs
+</A><BR>
+<A HREF="tTSR.htm#HEAD0017">Emulating Keystrokes
+</A><BR>
+<A HREF="tTSR.htm#HEAD0018">Using Control Codes within the Keystroke Feeder
+</A><BR>
+<A HREF="tTSR.htm#HEAD0019">Uninstalling the TSR
+</A><BR>
+<A HREF="tTSR.htm#HEAD001A">TSR Reentrancy
+</A><BR>
+<A HREF="tTSR.htm#HEAD001B">Device Drivers
+</A><BR>
+<A HREF="tTSR.htm#HEAD001C">Creating a TSR
+</A><BR>
+<A HREF="tTSR.htm#HEAD001D">Sample Program
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit provides a complete set of functions for creating TSR (terminate and stay resident) programs and device drivers. It consists of functions for creating, initializing, and installing interrupt service routines (ISRs) for specified entry functions; determining if the TSR is already active; making a TSR resident; managing the keyboard buffer and stack; accessing an active TSR's data and code; monitoring system resources; and uninstalling the TSR. The TSR system also supports automatic use of expanded memory.
+
+<P>
+Writing a TSR with the Spontaneous Assembly TSR system is a very simple process. The system relieves the programmer of the chore of having to check, save, initialize, and restore a multitude of system resources. The programmer need only select the method of TSR activation and specify which resource(s) will be used, and Spontaneous Assembly automatically does the checking, saving, initializing, and restoring of the necessary system resources.
+
+<P>
+Many of the functions in this unit are also very useful in non-TSR programs.
+
+<H2><A NAME="HEAD0001">What is a TSR?
+</A></H2>
+
+A TSR is a program that remains in memory after it terminates, allowing other programs to run while it is still in memory. A TSR usually provides services that are available to other programs that are running (such as a disk cache) or to the user (such as a pop-up note pad).
+
+<P>
+Since TSRs receive control of the computer while another program is running, a TSR must take extra steps to enable it to use system resources safely. First, the TSR must verify that resources that are not reentrant are not already in use. Second, the TSR must save and restore all resources that will be modified (the screen and DTA for example). Third, the TSR may need to modify system settings to make system resources available to the TSR. Finally, the TSR must ensure that it cannot be terminated by a CTRL-BREAK, divide-by-zero, or critical error when it is activated. All of these details of TSR programming are handled by Spontaneous Assembly.
+
+<P>
+A TSR works by monitoring interrupts that correspond to needed services. When an event occurs or a service is requested which uses the monitored interrupt, the TSR's interrupt service routines (ISRs) determine if the service or event is to be "captured" by the TSR. If so, the ISR calls the appropriate TSR function to service the interrupt. If the event or service is not being captured by the TSR, control is passed to the original interrupt handler to allow it to service the interrupt. In this way, a TSR can redefine specific system services while remaining transparent to others. For example, a specific key combination could pop up a note pad without affecting other key combinations. The result is a program that sits in memory waiting for a certain event to occur to signal that the TSR is needed.
+
+<H2><A NAME="HEAD0002">A Quick Start
+</A></H2>
+
+A complete understanding of the TSR/Device driver functionality is not required to create a TSR. In fact, a TSR can be created by following these simple steps:
+<OL>
+<LI>    Copy the template file TSRMAIN.CCC to progname.C.
+<LI>    Edit the copy of the template file (see instructions in the file).
+<LI>    Compile the edited template file.
+<LI>    Link the result with the startup code file _TSTART?.OBJ.
+</OL>
+What follows is a detailed explanation of the TSR/Device driver unit and how the functions tie together.
+
+<H2><A NAME="HEAD0003">The Segment Structure of a TSR
+</A></H2>
+
+A TSR can be broken down into three basic parts: an initialization (transient) portion, a resident portion, and an optional portion which is relocatable to expanded memory (EMS). The following table shows how these pieces and their segments are arranged in memory:
+<PRE>
+Description     			Segment name        Class name
+
+Resident code   			(name)_TEXT         'CODE'
+Far resident data   		(name)_DATA         'DATA'
+Resident data   			_DATA               'DATA'
+Resident stack (not TINY)   STACK               'STACK'
+EMS code (and data)         _EMS                'EMSCODE'
+Transient code              (name)_TTEXT        'TCODE'
+Transient data              _TDATA              'TDATA'
+Far transient data          (name)_TDATA        'TDATA'
+COMstack (TINY only)        _TEXT               'CODE'
+</PRE>
+When the TSR goes resident (terminates without releasing its resident memory to DOS), the EMS portion (if present) is relocated to EMS (if available). If specified, near and far heaps are created. The stack size is adjusted to the resident stack size. The program then terminates, releasing all memory except for the resident portion (unless the EMS portion cannot be relocated, in which case the EMS portion is left resident along with the resident portion).
+
+<H2><A NAME="HEAD0004">The Resident Portion of a TSR
+</A></H2>
+
+The resident portion of a TSR consists of ISRs, TSR entry functions, support routines needed while resident, and the data needed by the resident functions. By default, all code and data is placed in the resident portion of the program.
+
+<P>
+The resident portion of a TSR may not access data in the transient or EMS-relocatable portions, since these portions will not be present or in their expected locations when the TSR is resident.
+
+<H2><A NAME="HEAD0005">The Transient Portion of a TSR
+</A></H2>
+
+In a TSR, memory consumption must be kept to a minimum. All code and data that is not needed when the TSR goes resident should be discarded after installation. The transient portion includes startup code, the MAIN function, and any support routines and data not needed after the TSR goes resident. Transient code and data are overwritten by DOS when the TSR goes resident.
+
+<H2><A NAME="HEAD0006">The EMS-relocatable Portion of a TSR
+</A></H2>
+
+Relocating a portion of the TSR to expanded memory can reduce the amount of conventional memory used by the TSR to only the ISRs and the support routines for those ISRs. The EMS-relocatable portion may co-exist in the TSR with the transient and resident portions, but has additional restrictions:
+<OL>
+<LI>    Functions and data in the EMS-relocatable portion cannot be accessed directly from the resident portion. Instead, functions in the EMS-relocatable portion may only be called by the ISRs that control TSR activation.
+<LI>    Functions in the EMS-relocatable portion of a TSR may call routines within the resident portion. However, functions that will be called from the EMS-relocatable portion must be declared as far functions.
+<LI>    All functions (other than entry functions) within the EMS-relocatable portion must be near functions.
+<LI>    The EMS-relocatable portion of a program is limited to the SMALL and COMPACT memory models.
+<LI>    WARNING!        Any system calls that require a buffer (e.g., file I/O) should not use a buffer that has been relocated to EMS. It is possible for a buffer in EMS memory to be moved while the system interrupt is being serviced. For example, EMSNETX (Novell Inc.'s NetWare Expanded Memory shell) re-maps expanded memory to handle file I/O across the network. This invalidates any buffers within the re-mapped region, causing data written to the old buffer address to be written to EMS memory now owned by EMSNETX.
+</OL>
+The EMS-relocatable portion is automatically relocated by <A HREF="rtsr.htm#_tsr_resident">_tsr_resident</A> if <A HREF="rtsr.htm#_tsr_emsinit">_tsr_emsinit</A> has been called and EMS memory is available. EMS relocation is available only under LIM 4.0.
+
+<P>
+Due to the segment-independent structure of the TINY model and the segment-specific nature of EMS-relocatable segments, EMS-relocation is not supported in the TINY model.
+
+<H2><A NAME="HEAD0007">Resident, Transient, and EMS-relocatable Versions of the Library
+</A></H2>
+
+The Spontaneous Assembly library is provided in all three formats: resident, transient, and EMS-relocatable. These libraries have the following characteristics:
+<DL COMPACT>
+<DT>Resident<DD>       The resident versions of the library follow a _SAm.LIB naming convention, where m is a letter that represents one of the standard memory models. These are the standard libraries. The functions and data in these libraries are resident.
+<DT>Transient<DD>      The transient versions of the libraries follow a _TSAm.LIB naming convention, where m is a letter that represents one of the standard memory models. Each function name is prefixed with _t_ instead of a single underscore. The functions in these libraries are transient.
+</DL>
+EMS-relocatable The EMS-relocatable libraries follow a _ESAm.LIB naming convention, where m is a letter that represents one of the standard memory models. Each function name is prefixed with _e_ instead of a single underscore. The functions in these libraries are moved to EMS if EMS is available. Otherwise these functions remain resident. WARNING! <A HREF="rtsr.htm#_tsr_emsinit">_tsr_emsinit</A> must be called if EMS-relocatable functions or data are used. Failure to call this function will cause the EMS-relocatable segment to be treated as a transient segment and may result in a system crash.
+
+<P>
+Any function may be used from any of the libraries, and all functions of the same name (ignoring the _t_ or _e_ prefixes) share the same internal variables. Furthermore, all internal variables are contained in the resident library. This reduces memory consumption by allowing resident and EMS-relocatable functions to be initialized using transient initialization routines.
+
+<P>
+The prototypes for all transient and EMS-relocatable functions are automatically included in all files that are included after TSR.H.
+
+<P>
+WARNING!        All internal data for the Spontaneous Assembly transient and EMS-relocatable functions is located in the resident library. Therefore, the appropriate resident library (_SAm.LIB) must always be linked in if Spontaneous Assembly transient or EMS-relocatable functions are used.
+
+<P>
+The resident, transient, and EMS-relocatable versions of the windowing, multitasking, and virtual screen systems all maintain a seperate suspended/resumed state. If these systems are used, they need to be initialized once (with the appropriate transient ..._init function), and resumed once (with the appropriate resident or EMS-relocatable ..._resume function).
+
+<H2><A NAME="HEAD0008">Making Code and Data Resident, Transient, or EMS-relocatable
+</A></H2>
+
+Header files must included into a C or C++ source file to make its code EMS-relocatable or transient or to make its data transient. All code and/or data in the file is affected. Otherwise, all C or C++ code or data in the file is resident.
+
+<P>
+These header files must appear first in the source file. Due to compiler limitations, separate include files must be used for the Microsoft and Borland compilers. The header files are as follows:
+<PRE>
+Header File     Description
+
+ECODE_B.H       Specifies EMS-relocatable code and data (Borland compilers).
+ECODE_M.H       Specifies EMS-relocatable code and data (Microsoft C/C++ 7.0+ compilers).
+TCODE_B.H       Specifies transient code (Borland compilers).
+TCODE_M.H       Specifies transient code (Microsoft C/C++ 7.0+  compilers).
+TDATA_B.H       Specifies transient data (Borland compilers).
+TDATA_M.H       Specifies transient data (Microsoft C/C++ 7.0+  compilers).
+</PRE>
+The files *_B.H files are for Borland compilers and the *_M.H files are for Microsoft C/C++ compilers (version 7.0 or above). When using the TINY model for a TSR with BORLAND, all modules with transient code must be compiled with the -zPDGROUP command line options. (Note: Only use this switch in the TINY model and only on modules whose code is transient.) Since some compilers do not allow segment class names to be specified, EMS-relocatable code and transient code and data cannot be created with Microsoft C versions prior to 7.0, Zortech C/C++, and TopSpeed C/C++. When using the Borland IDE, the include files that make code/data transient or EMS-relocatable are ignored by the compiler.
+
+<H2><A NAME="HEAD0009">Function Restrictions in a TSR
+</A></H2>
+
+When the TSR is resident, certain functions cannot be used reliably because the operating system or other programs have devoted the resource to another program. The following table lists classes of functions that should not be used from a TSR without taking special precautions:
+<PRE>
+Function Class          Precaution or Reason It Should Not Be Used
+</PRE>
+<DL COMPACT>
+<DT>DOS_memory_management<DD>  May be used, but cannot be depended on to allocate memory, since the last executed program may use all available memory.
+<DT>C_memory_management<DD>    C memory management functions are not compatible with TSRs. Spontaneous Assembly memory management may be used from a TSR.
+<DT>Floating_point_routines<DD>The state of the numeric processor extension (NPX) must be saved. This usually requires a 188 byte buffer. If an emulator is installed, it must be watched to prevent reentrancy. This would usually have an unacceptable impact on the performance of floating point operations.
+<DT>EXIT_and_related_functions<DD>     A TSR cannot terminate normally after it is resident. It must be uninstalled or a system crash will occur. Spontaneous Assembly provides <A HREF="rtsr.htm#_tsr_remove">_tsr_remove</A> and <A HREF="rtsr.htm#_tsr_hremove">_tsr_hremove</A> as well as <A HREF="rtsr.htm#_progid_remtsr">_progid_remtsr</A> and <A HREF="rtsr.htm#_progid_hremtsr">_progid_hremtsr</A> to uninstall TSRs.
+<DT>Global_instances_of_classes_(C++)<DD>      To save code space, the special startup code that is required to call the constructor and destructor functions for global instances of classes in C++ is not included.
+</DL>
+In addition, functions from other libraries (such as C compiler libraries) often depend on startup code provided with the compiler. Since a TSR uses different startup code, these functions may not operate properly in a TSR. Instead, alternative functions from the Spontaneous Assembly library should be used. Note that functions from C compiler libraries are always resident.
+
+<H2><A NAME="HEAD000A">Determining If a TSR Is Already Loaded
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rtsr.htm#_progid_install">_progid_install</A><DD>Installs a specified program ID for detection by other programs.
+<DT><A HREF="rtsr.htm#_progid_check">_progid_check</A><DD>  Determines if a specified program ID is installed in the system.
+<DT><A HREF="rtsr.htm#_progid_remtsr">_progid_remtsr</A><DD> Uninstalls the TSR which corresponds to a specified program ID.
+<DT><A HREF="rtsr.htm#_progid_hremtsr">_progid_hremtsr</A><DD>Unconditionally uninstalls the TSR which corresponds to a specified program ID.
+</DL>
+<A HREF="rtsr.htm#_progid_install">_progid_install</A> installs a "program ID" that allows other programs to determine if the TSR is already installed. The installed program ID also provides global access to a public data area in the resident program. The public data area makes it possible to access to functions and variables within the TSR or to change installed options from the command line.
+
+<A HREF="rtsr.htm#_progid_check">_progid_check</A> checks for a specific program ID that was installed with <A HREF="rtsr.htm#_progid_install">_progid_install</A>. If a TSR with the specified program ID is already loaded, this function returns the address of the public data area that was specified when the program ID was installed.
+
+The address returned by <A HREF="rtsr.htm#_progid_check">_progid_check</A> is normally a pointer to a structure within the TSR that contains the version number of the TSR, all options that can be changed after installation, and the addresses of routines that are available to the program that is checking for the ID. For example, a TSR may be written to provide database services to an accounting program. When the accounting program is run, it will check for the presence of the TSR and ensure that the required functions are supported by the version installed. The accounting program would then have access to all of the database routines in the installed TSR. Note that if a function from the TSR will be called by other programs, it must be a far function.
+
+<P>
+<A HREF="rtsr.htm#_progid_remtsr">_progid_remtsr</A> removes a TSR that corresponds to a specified program ID string if it is safe to do so. If the TSR has installed functions with <A HREF="rexit.htm#_on_exit">_on_exit</A>, those functions will be called.
+
+<P>
+<A HREF="rtsr.htm#_progid_hremtsr">_progid_hremtsr</A> unconditionally removes a TSR that corresponds to a specified program ID string. If the TSR has installed functions with <A HREF="rexit.htm#_on_exit">_on_exit</A>, those functions will be called.
+
+<P>
+When <A HREF="rtsr.htm#_progid_install">_progid_install</A> is called, an INT 0x15 handler is installed that becomes active on function 0x64 subfunction 0x93 (AX = 0x6493). This INT 0x15 ISR then compares the installed program ID to the program ID being looked for. If the program IDs match, AX is NOTed (returned as 0x966C) and the address of the public data area is returned. If the program IDs do not match, the interrupt is passed on to the next interrupt handler in the chain.
+
+<P>
+When <A HREF="rtsr.htm#_progid_check">_progid_check</A> is called, an INT 0x15 function 0x64 subfunction 0x93 is issued. If AX is returned as 0x966C, a match was found and the address of the public data area has been returned. Otherwise no match was found.
+
+<P>
+This method of checking for resident programs is a safer variant of the method used by WordPerfect Corporation in WordPerfect version 5.0 and later to detect the presence of the Repeat Performance keyboard accelerator.
+
+<H2><A NAME="HEAD000B">Using Predefined ISRs
+</A></H2>
+
+ISRs (interrupt service routines) are used to watch for specific system events, determine if required resources are available, preserve the state of essential system resources, activate the program, and then restore the state of the preserved system resources. ISRs are usually the most tedious portion of a TSR. To simplify this task, Spontaneous Assembly provides predefined ISRs for the most common system events. Any combination of these predefined ISRs may be used to specify how a program gains control. For each of the predefined ISRs, one or more entry definition structures must be set up and installed. The predefined ISRs are as follows:
+<DL COMPACT>
+<DT>directkey<DD>      This ISR monitors INT 9 for a scan code that matches a hotkey specified in an installed entry definition structure. The keypress is checked before the keystroke issent to the keyboard buffer, allowing detection of combinations that are normally suppressed by the BIOS, such as CTRL-ALT. Control is intercepted immediately when the hotkey combination is pressed. This ISR is not supported by some very early IBM PCs.
+</DL>
+        The directkey ISR has the capability of distinguishing between standard and enhanced keyboard scan codes (scan codes are the codes generated by the keyboard whenever a key is pressed or released). The scan code can be either a "make" or "break" code, where "make" refers to a key press and "break" refers to a key release (see Appendix E). Keys such as the right shift key or the num lock key that are normally suppressed by the BIOS are supported.
+
+<P>
+        WARNING!        Selected key combinations should be tested to verify they operate properly on target systems. For example, OS/2 2.0 has a bug in which the keyboard flags will not indicate when both CTRL keys or both ALT keys are pressed. If the TSR be may run on an OS/2 2.0 system and the depression of both CTRL or both ALT keys needs to be detected, only one of the CTRL or ALT keys should be specified in the keyboard flags, and the other one should be specified as a scan code.
+<DL COMPACT>
+<DT>bioskey<DD>This ISR monitors INT 0x16 for a BIOS key code that matches a hotkey specified in an installed entry definition structure. The keystrokes are checked as they are retrieved from the keyboard buffer. This method waits until the specified key combination is retrieved from the keyboard buffer before activating the TSR, and can only activate the TSR when keys are being processed from the keyboard buffer.<BR>This ISR is very useful for non-TSR programs. Many programs have keys that have the same function across all portions of the program (such as F1 always bringing up a help screen). The key only has to be defined once using this ISR, and it will be supported throughout the rest of the program.
+<DT>stimer<DD> This ISR monitors INT 8 and activates the TSR after a specified number of system timer ticks. System timer ticks occur roughly 18.2 times per second unless the system timer has been reprogrammed.<BR>This ISR is most useful when the program needs to receive control regularly (e.g., to update a clock on the screen). Since the interrupt rate of the system timer can be reprogrammed by programs (as it is by Microsoft Windows), a system timer rate of 18.2 times per second should not be assumed. Applications which require accurate measurement of elapsed time should use the erq ISR type instead. A modified system timer rate will only affect the stimer ISR if the offending application is installed before the stimer ISR since most applications which reprogram the system timer also install an INT 8 handler that compensates for the new timer rate.
+<DT>idle<DD>   This ISR monitors INT 0x28, giving the program control when DOS or another program indicates that it is idle. This is the method PRINT.COM uses for background printing. This ISR is ideal for performing operations which are not time critical or which could otherwise degrade system performance.
+<DT>erq<DD>    The erq (entry request queue) is intended for mission-oriented tasks that do not correspond to a specific interrupt, such as a pop-up alarm or saving a file in the background. The entry request queue can pass control to the TSR via INT 8, INT 0x16, INT 0x21, and/or INT 0x28. The erq is especially useful for retrying other entry attempts which could not be serviced at the time of the original interrupt. (See The Entry Request Queue, below.)<BR>Any entry definition structure used for the directkey, bioskey, stimer, or idle ISRs can be used with the erq as well. For example, if a hotkey is pressed but the program is not able to immediately service the hotkey (e.g., because a resource such as DOS is unavailable), the hotkey entry definition structure may be added tothe erq. The entry will then be retried at the specified <A HREF="rexit.htm#start">start</A> time and at specified intervals until the specified stop time is reached. Entry request structures are removed from the queue just before their associated entry functions are called or when their specified stop times are reached.
+</DL>
+<H2><A NAME="HEAD000C">Creating Entry Definition Structures
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rtsr.htm#DIRECTKEY_DEF">DIRECTKEY_DEF</A><DD>  (Macro) Creates a hardware hotkey TSR entry definition structure.
+<DT><A HREF="rtsr.htm#BIOSKEY_DEF">BIOSKEY_DEF</A><DD>    (Macro) Creates a BIOS hotkey TSR entry definition structure.
+<DT><A HREF="rtsr.htm#STIMER_DEF">STIMER_DEF</A><DD>     (Macro) Creates a system timer TSR entry definition structure.
+<DT><A HREF="rtsr.htm#IDLE_DEF">IDLE_DEF</A><DD>       (Macro) Creates a DOS idle TSR entry definition structure.
+</DL>
+These macros create and initialize entry definition structures in a data segment. Entry definition structures created with these macros can be installed with the ..._add functions.
+<DL COMPACT>
+<DT><A HREF="rtsr.htm#DIRECTKEY_DEF">DIRECTKEY_DEF</A><DD>creates and initializes an entry definition structure for the directkey ISR. The entry definition structure used for the directkey ISR is dkspec, which is defined as follows:
+</DL>
+<PRE><CODE>
+typedef struct {                            /* directkey entry definition */
+   dkspec near * next_spec;                 /* address of next structure */
+   void (near/far * entry_func)(dkspec * const);
+                                            /* function to call if checks succeed */
+   void (near/far * fail_func)(dkspec * const e_struct, char causefail, char entryfail)
+                                 /* function to call if checks fail */
+   void (* near * check_list)(); /* offset of list of functions that check resources */
+   void (* near * save_list)();  /* offset of list of functions that save and init resources */
+   void (* near * restore_list)(); /* offset of list of functions that cleanup when finished */
+   int stack_len;                /* number of bytes of stack space needed by entry_func */
+   int entry_mask;               /* checks for and preserves program resources */
+   char scan_code;               /* make/break code */
+   int keyflags;                 /* keyboard flags (CTRL-SHIFT-ALT) */
+} dkspec;
+</CODE></PRE>
+<A HREF="rtsr.htm#BIOSKEY_DEF">BIOSKEY_DEF</A> creates and initializes an entry definition structure for the bioskey ISR. The entry definition structure used for the bioskey ISR is bkspec, which is defined as follows:
+<PRE><CODE>
+typedef struct {                 /* bioskey entry definition */
+   bkspec near * next_spec;      /* address of next structure */
+   void (near/far * entry_func)(bkspec * const);
+                                 /* function to call if checks succeed */
+   void (near/far * fail_func)(bkspec * const e_struct, char causefail, char entryfail)
+                                 /* function to call if checks fail */
+   void (* near * check_list)(); /* offset of list of functions that check resources */
+   void (* near * save_list)();  /* offset of list of functions that save and init resources */
+   void (* near * restore_list)(); /* offset of list of functions that cleanup when finished */
+   int stack_len;                /* number of bytes of stack space needed by entry_func */
+   int entry_mask;                        /* checks for and preserves program resources */
+   int bios_code;                         /* BIOS key code to activate on */
+} bkspec;
+</CODE></PRE>
+<A HREF="rtsr.htm#STIMER_DEF">STIMER_DEF</A> creates and initializes an entry definition structure for the stimer ISR. The entry definition structure used for the stimer ISR is stmrspec, which is defined as follows:
+<PRE><CODE>
+typedef struct {                          /* stimer entry definition */
+   stmrspec near * next_spec;     /* address of next structure */
+   void (near/far * entry_func)(stmrspec * const);
+                                                  /* function to call if checks succeed */
+   void (near/far * fail_func)(stmrspec * const e_struct, char causefail, char entryfail)
+                                                  /* function to call if checks fail */
+   void (* near * check_list)(); /* offset of list of functions that check resources */
+   void (* near * save_list)(); /* offset of list of functions that save and init resources */
+   void (* near * restore_list)(); /* offset of list of functions that cleanup when finished */
+   int stack_len;                         /* number of bytes of stack space needed by entry_func */
+   int entry_mask;                        /* checks for and preserves program resources */
+   int wait_ricks;                        /* number of ticks to skip before entry_func is called */
+   int retry_ticks;                       /* reload value for wait_ticks if a "check" functions fail */
+   int rld_ticks;                         /* reload value for wait_ticks after entry_func is called */
+} stmrspec;
+</CODE></PRE>
+wait_ticks is decremented if it is non-zero whenever a system timer tick occurs. entry_func is then called if wait_ticks is zero. If entry_func cannot be called (e.g., because needed system resources are unavailable), fail_func is called and wait_ticks is reloaded with retry_ticks. Otherwise, wait_ticks is reloaded with rld_ticks when entry_func is finished. This system minimizes the impact on system performance since system resources are only checked at specified intervals and are only saved and restored when the TSR actually gains control.
+<DL COMPACT>
+<DT><A HREF="rtsr.htm#IDLE_DEF">IDLE_DEF</A><DD>creates and initializes an entry definition structure for the idle ISR. The entry definition structure used for the idle ISR is idlespec, which is defined as follows:
+</DL>
+<PRE><CODE>
+typedef struct {                                        /* idle entry definition */
+   idlespec near * next_spec;                   /* address of next structure */
+   void (near/far * entry_func)(idlespec * const);
+                                                                /* function to call if checks succeed */
+   void (near/far * fail_func)(idlespec * const e_struct, char causefail, char entryfail)
+                                                                /* function to call if checks fail */
+   void (* near * check_list)();                /* offset of list of functions that check resources */
+   void (* near * save_list)();                 /* offset of list of funcs that save and init resrces */
+   void (* near * restore_list)();              /* offset of list of functions to cleanup when finished*/
+   int stack_len;                                       /* number of bytes of stack space needed by entry_func */
+   int entry_mask;                                      /* checks for and preserves program resources */
+} idlespec;
+</CODE></PRE>
+WARNING!        The near/far directives in each structure above indicate a near pointer when using the TINY memory model and a far pointer when using all other memory models (including SMALL and COMPACT). This is necessary to allow EMS relocation.
+
+<P>
+Note that the first eight fields of the directkey, bioskey, stimer, and idle entry definition structures are the same. The check_list, save_list, and restore_list fields are automatically filled in by each ..._DEF macro. See Managing System Resources below for more information on resource management.
+
+<P>
+The fields for the dkspec, bkspec, stmrspec, and idlespec entry definition structures are explained below. The fields are listed in alphabetical order.
+<DL COMPACT>
+<DT>bios_code<DD>      BIOS key code which activates the program. When the BIOS returns this key code, resources are checked, saved, and entry_func is called. See Appendix E for a list of all BIOS key codes. BIOS key codes are also defined in KEYS.H.
+<DT>check_list<DD>     Offset of an internal list of functions to be called to check the availability of resources before calling entry_func. This field is automatically filled in by the ..._DEF macros.
+<DT>entry_mask<DD>     Integer bit field used by the ISR to determine if required program resources are available. When entry_func is called, the program resources specified by this field are locked. This field is used to control program reentrancy. By default, this field is always assigned a value of 1 to disallow all reentrancy. See Appendix F for more information on controlling reentrancy in TSRs.
+<DT>entry_func<DD>     Entry point into the program. This entry function is called by the ISR when all requirements specified in the entry definition structure are met. The entry definition functions should be declared as follows:<BR><CODE>void far func_name (bk/dk/idle/stmrspec * const);</CODE>
+<DT>fail_func<DD>      Function to call if the program cannot be safely entered. If -1 is specified as the address, no function will be called. This function cannot depend on any significant amount of stack space or any system resources being available. No ctrl-break or divide-by zero handling is provided for the fail function. Two actions that can be performed safely are: 1) beep the system speaker with the Spontaneous Assembly_sound_... functions; or 2) add an item to the entry request queue. Fail functions should be declared as follows:<BR><CODE>void far func_name (bk/dk/idle/stmrspec * const, char causefail, char entryfail);</CODE>
+</DL>
+        Where:  causefail indicates the cause of the failed entry attempt
+<P>
+        entryfail indicates the entry method which failed
+
+<P>
+        causefail describes why the entry attempt failed. The following symbolic defines (defined in TSR.H) for causefail may be used to determine the corresponding action which needs to be taken by the fail function:
+<DL COMPACT>
+<DT>        EFAIL_ERQSTOP<DD>  (00) The entry attempt did not succeed before the specified stop time for this erq entry was reached. This entry request has been removed from the entry request queue.
+<DT>        EFAIL_LOCKMASK<DD>(01) A program resource that is needed by the entry function was already in use. Program resources are specified in the entry_mask field of each entry definition structure and maintained on a program wide basis in the <A HREF="rtsr.htm#tsr_lockmask">tsr_lockmask</A> variable.
+<DT>        EFAIL_STACK<DD>   (02) Fewer than stack_len bytes were available on the resident stack.
+<DT>        EFAIL_RESOURCE<DD>(03) A required system resource was not available (such as DOS).
+</DL>
+        entryfail describes which entry method failed. It cannot be relocated to EMS memory. The entry methods are the four predefined ISRs and the entry request queue. The following symbolic defines (defined in TSR.H) can be used to help determine what action needs to be taken by the fail function:
+<DL COMPACT>
+<DT>                 EFAIL_ERQ<DD>     (00) Entry through the erq failed.
+<DT>                 EFAIL_DIRECTKEY<DD>       (01) Entry through the directkey ISR failed.
+<DT>                 EFAIL_BIOSKEY<DD> (02) Entry through the bioskey ISR failed.
+<DT>                 EFAIL_STIMER<DD>  (03) Entry through the stimer ISR failed.
+<DT>                 EFAIL_IDLE<DD>               (04) Entry through the idle ISR failed.
+</DL>
+        The EFAIL_ERQSTOP causefail code is only returned in conjunction with the EFAIL_ERQ entryfail code.
+
+<P>
+        These fail codes are arranged to be easily used with the Spontaneous Assembly table functions. See the Table Management technical notes for more information on the table functions.
+<DL COMPACT>
+<DT>key_flags<DD>      Integer bit field representing the special key conditions related to scan_code. These conditions must be met before entry_func will be called. This field specifies the status of the CTRL, SHIFT, and ALT keys and whether the key is specific to enhanced keyboards. The following symbolic constants (defined in KEYS.H) can be added or bitwise ORed together to produce the desired key_flags value:
+</DL>
+<DL COMPACT>
+<DT>                 DK_NONE<DD>                  (0x0000) No keyboard flag conditions are required
+<DT>                 DK_SHIFT<DD>                 (0x0001) Either shift key must be depressed
+<DT>                 DK_RSHIFT<DD>        (0x0002) Right shift key must be depressed
+<DT>                 DK_LSHIFT<DD>        (0x0004) Left shift key must be depressed
+<DT>                 DK_CTRL<DD>                  (0x0008) Either CTRL key must be depressed
+<DT>                 DK_RCTRL<DD>                 (0x0010) Right CTRL key must be depressed
+<DT>                 DK_LCTRL<DD>                 (0x0020) Left CTRL key must be depressed
+<DT>                 DK_ALT<DD>           (0x0040) Either ALT key must be depressed
+<DT>                 DK_RALT<DD>                  (0x0080) Right ALT key must be depressed
+<DT>                 DK_LALT<DD>                  (0x0100) Left ALT key must be depressed
+<DT>                 DK_EXACT<DD>      (0x0200) The key flag states must exactly match
+<DT>                 DK_GRAY<DD>                  (0x0400) The scan code must be a gray duplicate
+<DT>                 DK_STANDARD<DD>      (0x0800) The scan code must be a standard code
+</DL>
+        Note that these key flag defines are different from those defined in the Console I/O unit for <A HREF="rconsole.htm#_get_keyflags">_get_keyflags</A>.
+
+<P>
+        If DK_EXACT is specified, the actual status of the SHIFT, CTRL, and ALT key flags must exactly match those flags specified in key_flags. This means that a specific right or left key flag must be specified AND the non-specific version of that key flag must also be specified in key_flags or the hotkey combination will not be recognized. For example, if an entry definition structure specified the left CTRL key and the right ALT key and required an exact match, DK_CTRL + DK_LCTRL + DK_ALT + DK_RALT + DK_EXACT would need to be specified for key_flags.
+
+<P>
+        If DK_EXACT is not specified, the key flags indicate the minimum requirements. The state of all other key flags is ignored. For example, if DK_CTRL is specified for key_flags, CTRL + SHIFT + key or ALT + CTRL + key would both activate the TSR as well as CTRL + key.
+
+<P>
+        Some keys that are present on standard keyboards have duplicates on extended keyboards: CTRL, ALT, INS, PGUP, DEL, HOME, END, the arrow keys, forward slash, and ENTER. The enhanced-specific versions of these keys are all gray in color. The DK_GRAY flag indicates that the key must be the gray (or extended) version of the key. DK_STANDARD specifies that the key must not be one of the extended-specific gray keys listed above. Either version of the key is recognized if neither DK_GRAY or DK_STANDARD are specified. Appendix E lists the keyboard scan codes for all keys that have unique codes.
+<DL COMPACT>
+<DT>next_spec<DD>      Address of the next entry definition structure in the respective linked list. This field is used internally by Spontaneous Assembly to maintain the linked lists of installed entry definition structures. When one of the ..._add functions is called, the specified structure is added to the end of its respective linked list. This field must be -2 (0xFFFE) when this structure is added to the list. A value of -1 (0xFFFF) indicates the end of the linked list. Any other value in this field indicates the structure is already installed.
+<DT>restore_list<DD>   Offset of an internal list of functions to be called after entry_func returns. Functions in this list restore the state of the saved system resources. This field is automatically filled in by the ..._DEF macros.
+<DT>retry_ticks<DD>    Defines the value to be reloaded in wait_ticks if fail_func is called. This field defines how frequently the call to entry_func is retried if the resource checking fails.
+<DT>rld_ticks<DD>      Value to reload wait_ticks with after entry_func has been called. This field defines how frequently entry_func is called by the stimer ISR.
+<DT>save_list<DD>      Offset of an internal list of functions that must be called to save and initialize resources before calling entry_func. This field is automatically filled in by the ..._DEF macros.
+<DT>scan_code<DD>      Keyboard scan code of the key that triggers the calling of entry_func. The value in scan_code may be either a make code or a break code (key press or release). This field is used in conjunction with the key_flags field. See Appendix E for a list of all keyboard scan codes. Keyboard scan codes are also defined in KEYS.H.
+<DT>stack_len<DD>      Number of bytes of stack space that will be needed for entry_func. If not enough stack space can be allocated, fail_func is called instead of entry_func. If this field is set to zero, no stack checking will be done. This field must include the number of bytes of stack that will be needed for entry_func plus the number of bytes of data stored to the stack by each of the resources specified when the entry definition structure was defined. (See Managing System Resources, below.)
+<DT>wait_ticks<DD>     Number of clock ticks to wait before calling entry_func. Every time a clock tick occurs, wait_ticks is checked to see if it is zero. If wait_ticks is zero, entry_func is called, otherwise wait_ticks is decremented.
+</DL>
+<H2><A NAME="HEAD000D">Managing System Resources
+</A></H2>
+
+When a program is entered through a specified entry function, system resources must be checked for availability and saved if they are available for use. Upon return, all resources that were saved must be restored. This is automatically performed by the predefined ISRs using tables which are pointed to by the check_list, restore_list, and save_list fields in each entry definition structure. These tables are established at compile time by the ..._DEF macros; the values in these tables depend on resources which must be specified when each entry definition structure is created. Resources are specified by using the following symbolic identifiers:
+<PRE>
+Resource        Description
+</PRE>
+<DL COMPACT>
+<DT>_Con<DD>   The entry function uses the console I/O system for input, output, or any service that operates on the display system. This includes reading and writing to the display as well as BIOS sound services (but NOT the Spontaneous Assembly _sound_... functions). Console I/O in a TSR is supported through the Spontaneous Assembly console I/O functions. DOS screen output is not supported from any of the predefined ISRs. No stack storage space is used.
+<DT>_Direct<DD>The entry function accesses the disk directly, bypassing DOS. This resource does NOT apply to most programs.
+<DT>_Dos<DD>   The entry function uses DOS services, including functions which access the disk in any way, such as Spontaneous Assembly file I/O and file/directory functions. This resource is a superset of the _Dosnd resource. This resource saves the PSP (2 bytes), the DTA (4 bytes), the critical error handler address (4 bytes), the extended error information (22 bytes), and creates a new DTA (128 bytes) on the stack. The total stack storage used is 156 bytes.
+<DT>_Dosnd<DD> The entry function uses DOS services other than those that access the disk, such as <A HREF="rmiscdos.htm#_get_verify">_get_verify</A>. If DOS services that access the disk will be used, _Dos should be specified instead. This resource saves the critical error handler address (4 bytes), and the extended error information (22 bytes) to the stack. The total stack storage used is 26 bytes.
+<DT>_Kbd<DD>   The entry function uses the keyboard. The keyboard may be accessed directly, via the BIOS, or via Spontaneous Assembly console I/O functions. DOS keyboard input is NOT supported. This resource saves the state and contents of the system keyboard buffer (40 bytes) to the stack and flushes the keyboard buffer before calling the specified entry function. Total stack storage space used is 40 bytes.
+<DT>_None<DD>  The entry function does not depend on any of the above resources. This resource cannot be combined with any other resources.
+</DL>
+Required resources are specified by combining the above resource names (other than _None) in alphabetical order. For example, if an entry_func required the use of DOS disk services and the keyboard, the resource would be specified as _Dos_Kbd.
+
+<P>
+Once an ISR and a set of resources are selected (using a ..._DEF macro) and installed (using an ..._add function), the Spontaneous Assembly TSR functions automatically do the checking, saving, restoring, and initialization required to use those resources (see Creating Entry Definition Structures, above). The system automatically avoids redundant checking, saving, initializing, and restoring.
+
+<P>
+The stack usage is listed for each resource that must save data to the stack. This data will be saved to the resident stack. In addition, if the entry_func for the entry definition structure is relocated to EMS, approximately 130 extra bytes of stack space will be used. The stack usage for each resource should be added to the amount of stack usage of each entry definition structure. See Creating Entry Definition Structures above.
+<P>
+Since the console I/O system cannot be generalized to simply "check", "save" and "restore", the TSR system only verifies that the BIOS is safe to use when _Con is specified as a resource. The TSR system does NOT automatically save and restore the contents or state of the current screen, nor does it automatically initialize the console I/O system. Instead, this functionality must be performed each time the TSR gains control before the console I/O system can be used. The necessary functions for these services are provided in the console I/O system.
+
+<P>
+The following list outlines the steps which should be followed when writing a TSR entry function which uses the console I/O system:
+<OL>
+<LI>    _Con must be specified as a resource for any TSR entry function which intends to use the console I/O system. In addition, _Dos must be specified if the _hsave_... or _hread_... functions are to be used to save the screen contents. These resources must be specified when the entry definition structure is defined.
+<LI>    <A HREF="rconsole.htm#_is_textmode">_is_textmode</A> should be called as soon as the TSR entry function receives control. If <A HREF="rconsole.htm#_is_textmode">_is_textmode</A> indicates that the video display adapter is in a non-text mode, then the entry function should return without calling <A HREF="rconsole.htm#_console_init">_console_init</A>. Before returning, the TSR entry function may sound a tone on the system speaker to indicate that the TSR entry attempt failed or add an entry request structure to the entry request queue.
+<LI>    <A HREF="rconsole.htm#_console_init">_console_init</A> must be called to initialize the console I/O system.
+<LI>    The video state and contents of the current screen must be saved before console I/O is performed. This may be performed by calling <A HREF="rconsole.htm#_save_screen">_save_screen</A> or <A HREF="rconsole.htm#_hsave_screen">_hsave_screen</A>. Alternatively, a smaller area of the screen may be saved and restored by calling <A HREF="rconsole.htm#_save_vstate">_save_vstate</A> followed by <A HREF="rconsole.htm#_read_textattr">_read_textattr</A> or <A HREF="rconsole.htm#_hread_textattr">_hread_textattr</A>.
+<LI>    After the TSR gains control, console I/O should only be performed on the active display adapter. Calling _adapter_switch or creating virtual screens on the secondary adapter could corrupt the screen contents and video state of the secondary display adapter.
+<LI>    Video mode changes and screen dimension changes are not recommended, since they may change custom text mode fonts which are being used by the foreground application. This would change the appearance of the foreground application screen when the TSR returns control to the foreground application.
+<LI>    When the TSR has finished its work, the screen state and contents should be restored. This may be performed by calling <A HREF="rconsole.htm#_restore_screen">_restore_screen</A> or <A HREF="rconsole.htm#_hrestore_screen">_hrestore_screen</A> (or <A HREF="rconsole.htm#_restore_vstate">_restore_vstate</A> followed by <A HREF="rconsole.htm#_write_textattr">_write_textattr</A> or <A HREF="rconsole.htm#_hwrite_textattr">_hwrite_textattr</A> if a small portion of the screen was saved).
+</OL>
+<H2><A NAME="HEAD000E">Managing Entry Definition Structures
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rtsr.htm#_directkey_add">_directkey_add</A><DD> Adds a hardware hotkey to the list of active TSR hotkeys.
+<DT><A HREF="rtsr.htm#_directkey_rmv">_directkey_rmv</A><DD> Removes a hardware hotkey from the list of active TSR hotkeys.
+<DT><A HREF="rtsr.htm#_bioskey_add">_bioskey_add</A><DD>   Adds a BIOS hotkey to the list of active TSR hotkeys.
+<DT><A HREF="rtsr.htm#_bioskey_rmv">_bioskey_rmv</A><DD>   Removes a BIOS hotkey from the list of active TSR hotkeys.
+<DT><A HREF="rtsr.htm#_idle_add">_idle_add</A><DD>      Adds a DOS idle entry point to the list of active TSR entry points.
+<DT><A HREF="rtsr.htm#_idle_rmv">_idle_rmv</A><DD>      Removes a DOS idle entry point from the list of active TSR entry points.
+<DT><A HREF="rtsr.htm#_stimer_add">_stimer_add</A><DD>    Adds a system timer entry point to the list of active TSR entry points.
+<DT><A HREF="rtsr.htm#_stimer_rmv">_stimer_rmv</A><DD>    Removes a system timer entry point from the list of active TSR entry points.
+</DL>
+The ..._add functions dynamically add an entry definition structure to the list of structures for the named ISR. When entry definition structures are installed, they are added to the end of their respective ISR linked lists.
+
+<P>
+The ..._rmv functions dynamically remove an entry definition structure from the list of structures for the named ISR.
+
+<P>
+Because linked lists are maintained for each ISR type, entry definition structures may be added to these lists, changed, or deleted at will. Changes to entry definition structures take effect immediately. For example, if a directkey entry definition structure is installed and the keycombination that activates the TSR needs to be changed, the program only needs to change the appropriate field(s) in the structure that defines that hotkey combination.
+
+<P>
+WARNING!        If the TSR is active, interrupts should be disabled (using the cli inline assembly directive) while entry definition structures are being modified or the results can be unpredictable. If cli is used, the sti inline assembly directive must also be used immediately afterward to re-enable interrupts.
+
+<P>
+The following example demonstrates how to create an entry definition structure (directkey) and install it into a predefined ISR's linked list:
+<PRE><CODE>
+#include "tsr.h"
+#include "keys.h"
+#include "mischard.h"
+...
+void (far * entry_func)(idlespec * const);
+void far popup_func (dkspec * const e_struct)
+{
+   ...
+}
+void far fail_func (dkspec * const f_struct, char causefail, char entryfail)
+{
+   <A HREF="rmischrd.htm#_sound_pulse">_sound_pulse</A> (10000, 100);
+}
+...
+DIRECTKEY_INIT (direct_popup,popup_func,M_PGUP,DK_GRAY,_Con_Kbd,150,fail_func,1);
+...
+   directkey_add (direct_popup);
+...
+</CODE></PRE>
+The preceding code designates the grey PgUp key as a hardware hotkey. The entry definition structure (direct_popup) assigns popup_func as the hotkey's entry point and fail_func as the function to call if popup_func cannot be called (e.g., if the specified stack space is unavailable). The entry definition structure indicates that 150 bytes of stack space is required by popup_func as well as the console I/O and keyboard resources.
+
+<H2><A NAME="HEAD000F">Initializing a Program to Use Predefined ISRs
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rtsr.htm#_tsr_init">_tsr_init</A><DD>      Initializes the TSR system.
+<DT><A HREF="rtsr.htm#_tsr_initc">_tsr_initc</A><DD>     Initializes the TSR system, allowing custom critical error and divide-by-zero handlers to be specified.
+<DT><A HREF="rtsr.htm#_tsr_emsinit">_tsr_emsinit</A><DD>   Enables automatic relocation of EMS-relocatable segments.
+</DL>
+The TSR system must be initialized before the program can be activated through a predefined ISR. This initialization may be performed by <A HREF="rtsr.htm#_tsr_init">_tsr_init</A> or <A HREF="rtsr.htm#_tsr_initc">_tsr_initc</A>. These functions locate DOS variables, initialize TSR system variables, and determine the type of keyboard installed. Both <A HREF="rtsr.htm#_tsr_init">_tsr_init</A> and <A HREF="rtsr.htm#_tsr_initc">_tsr_initc</A> install critical error and divide-by-zero handlers, since critical errors and divide-by-zero errors must always be intercepted when the TSR is active to protect the underlying program.
+
+<P>
+A default divide-by-zero handler is always installed whenever entry_func is called. This handler restores the stack and returns control to the underlying program as if entry_func had simply returned. In addition, a cleanup routine is called by the divide-by-zero handler if <A HREF="rtsr.htm#_tsr_initc">_tsr_initc</A> was used to initialize the TSR and a cleanup routine was specified. This routine may set flags, disable the TSR entry point, sound a tone on the system speaker, or any similar functionality prior to returning control to the underlying program.
+
+<P>
+A critical error handler is also installed whenever entry_func is called. The default critical error handler (installed by <A HREF="rtsr.htm#_tsr_init">_tsr_init</A>) returns the FAIL condition if the DOS version is 3.1 or later, and returns IGNORE when using versions of DOS prior to 3.1. While this method is very compact and is employed by most TSRs, returning IGNORE can pass invalid data to the TSR when it is not expected. This problem is avoided if <A HREF="rtsr.htm#_tsr_initc">_tsr_initc</A> is called to initialize the TSR system instead of <A HREF="rtsr.htm#_tsr_init">_tsr_init</A>, since <A HREF="rtsr.htm#_tsr_initc">_tsr_initc</A> initializes the TSR to use the critical error manager (see <A HREF="rmiscdos.htm#_cem_install">_cem_install</A>) instead of the default critical error handler. <A HREF="rtsr.htm#_tsr_initc">_tsr_initc</A> also allows a user-specified critical errorcleanup routine to be specified which may be used to determine the action to be taken in the event of a critical error. If no user-specified critical error routine is provided, the critical error handler always returns the FAIL condition, even when not directly supported by DOS. (See <A HREF="rmiscdos.htm#_cem_install">_cem_install</A> for information on writing a user supplied critical error routine.) The critical error manager is more than 150 bytes larger than the default critical error handler, but it handles critical errors in a safer, more consistent manner, regardless of the DOS version. Under DOS versions 3.1 and later (when support for the FAIL condition was added), the default critical error handler and the critical error manager are equally safe.
+
+<P>
+<A HREF="rtsr.htm#_tsr_emsinit">_tsr_emsinit</A> must be called in addition to <A HREF="rtsr.htm#_tsr_init">_tsr_init</A> or <A HREF="rtsr.htm#_tsr_initc">_tsr_initc</A> if EMS-relocatable segments are to be recognized when the TSR goes resident. This function enables EMS relocation of the EMS-relocatable segment if the system has adequate EMS memory available. Otherwise, the EMS-relocatable segment is simply treated as a resident segment. The divide-by-zero function and the critical error manager cannot be relocated to EMS memory in a TSR.
+
+<P>
+WARNING!        If <A HREF="rtsr.htm#_tsr_emsinit">_tsr_emsinit</A> is not called when EMS-relocatable code and data is defined, the EMS-relocatable segment is treated as a transient (NOT resident) segment. This programming error will likely cause a system crash. (This is a necessary side-effect of the Spontaneous Assembly philosophy which only links necessary support code into an application.)
+
+<P>
+The Control-Break Handler
+
+<P>
+Before an entry function is called from a predefined ISR, the original control-break handler is replaced with an interrupt handler that ignores all ctrl-break events. Upon return from the entry function, the original ctrl-break handler is restored. If a custom ctrl-break handler is installed by the entry function, it does not need to be restored before returning because the predefined ISRs restore the original ctrl-break handler automatically.
+
+<H2><A NAME="HEAD0010">Near and Far Heaps in a TSR
+</A></H2>
+
+A TSR may declare and use transient near and far heaps by using the normal Spontaneous Assembly heap management functions. When a TSR goes resident, resident near and far heaps may be allocated, but the transient near and far heaps are not preserved. The size of each resident heap is specified when TSR_RESIDENT is called. When initialized, the resident near and far heaps occupy the memory that was formerly used by the transient and EMS-relocatable portions of the TSR.
+
+<H2><A NAME="HEAD0011">Terminating and Staying Resident
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rtsr.htm#_tsr_resident">_tsr_resident</A><DD>  Returns to DOS, leaving the resident portion of the TSR in memory and freeing the transient portion to DOS.
+<DT><A HREF="rtsr.htm#_tsr_memusage">_tsr_memusage</A><DD>  Calculates the memory requirements of a TSR.
+</DL>
+<A HREF="rtsr.htm#_tsr_resident">_tsr_resident</A> terminates a program, leaving it resident. This function installs the ISRs that are being used, resizes and initializes the stack to its specified resident size, performs resident near and far heap initialization, releases unused memory to DOS, and terminates. If EMS is being used and enough EMS memory is available, the EMS-relocatable portion of the TSR will be moved to EMS memory. This function may either be called or jumped to.
+
+<A HREF="rtsr.htm#_tsr_memusage">_tsr_memusage</A> calculates and returns the amount of memory the TSR will use when it goes resident. This function returns separate values which indicate the amount of memory that will be used for resident code and data, the size of the resident stack, the number of bytes that will be relocated to expanded memory, and the size of the resident near and far heaps.
+
+<H2><A NAME="HEAD0012">Using Predefined ISRs without Going Resident
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rtsr.htm#_tsr_enable">_tsr_enable</A><DD>    Enables hotkeys and TSR entry points before going resident.
+</DL>
+<A HREF="rtsr.htm#_tsr_enable">_tsr_enable</A> installs all of the predefined ISRs that are being used and initializes the stack for TSR use. This activates all hotkeys and TSR entry points without calling <A HREF="rtsr.htm#_tsr_resident">_tsr_resident</A>. Only hotkeys and entry points in the list of active entry points are activated. Entries may be added to the list of active hotkeys and entry points by calling <A HREF="rtsr.htm#_directkey_add">_directkey_add</A>, <A HREF="rtsr.htm#_bioskey_add">_bioskey_add</A>, <A HREF="rtsr.htm#_idle_add">_idle_add</A>, or <A HREF="rtsr.htm#_stimer_add">_stimer_add</A>.
+This function should only be called if hotkeys and TSR entry points need to be activated before calling <A HREF="rtsr.htm#_tsr_resident">_tsr_resident</A>, since hotkeys and entry points are automatically activated when <A HREF="rtsr.htm#_tsr_resident">_tsr_resident</A> is called. Calling <A HREF="rtsr.htm#_tsr_enable">_tsr_enable</A> can cause programs to be reentered through interrupts before going resident. <A HREF="rtsr.htm#_tsr_enable">_tsr_enable</A> cannot be used after a program goes resident.
+
+<H2><A NAME="HEAD0013">Activating and Deactivating Predefined ISRs
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rtsr.htm#_directkey_off">_directkey_off</A><DD> Disables all active hardware hotkeys.
+<DT><A HREF="rtsr.htm#_directkey_on">_directkey_on</A><DD>  Enables all active hardware hotkeys.
+<DT><A HREF="rtsr.htm#_bioskey_off">_bioskey_off</A><DD>   Disables all active BIOS hotkeys.
+<DT><A HREF="rtsr.htm#_bioskey_on">_bioskey_on</A><DD>    Enables all active BIOS hotkeys.
+<DT><A HREF="rtsr.htm#_stimer_off">_stimer_off</A><DD>    Disables all active system timer TSR entry points.
+<DT><A HREF="rtsr.htm#_stimer_on">_stimer_on</A><DD>     Enables all active system timer TSR entry points.
+<DT><A HREF="rtsr.htm#_idle_off">_idle_off</A><DD>      Disables TSR activation when DOS is idle.
+<DT><A HREF="rtsr.htm#_idle_on">_idle_on</A><DD>       Enables TSR activation when DOS is idle.
+</DL>
+The ..._off functions disable hardware hotkeys, BIOS hotkeys, system timer entry points, or DOS idle entry points by disabling their associated ISRs. The ISR is still installed in the interrupt chain when it is disabled, but control is unconditionally passed to the next interrupt in the chain when the interrupt occurs.
+
+<P>
+The ..._on functions turn on their corresponding hotkeys or entry points by enabling their associated ISRs. It is only necessary to call an ..._on function if the corresponding ..._off function has been called.
+
+<H2><A NAME="HEAD0014">The Entry Request Queue
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rtsr.htm#_erq_add">_erq_add</A><DD>       Schedules a TSR entry request at a specified time.
+<DT><A HREF="rtsr.htm#_erq_addrel">_erq_addrel</A><DD>    Schedules a TSR entry request after a specified elapsed time.
+<DT><A HREF="rtsr.htm#_erq_rmv">_erq_rmv</A><DD>       Removes a specified TSR entry request from the entry request queue.
+<DT><A HREF="rtsr.htm#_erq_off">_erq_off</A><DD>       Disables program activation via the entry request queue.
+<DT><A HREF="rtsr.htm#_erq_on">_erq_on</A><DD>Enables program activation via the entry request queue.
+<DT><A HREF="rtsr.htm#_erq_8on">_erq_8on</A><DD>       Allows the entry request queue to be serviced from the system timer
+<DT><A HREF="rtsr.htm#_erq_8off">_erq_8off</A><DD>      interrupt.
+<DT><A HREF="rtsr.htm#_erq_16on">_erq_16on</A><DD>      Disallows servicing of the entry request queue via the system timer
+<DT><A HREF="rtsr.htm#_erq_16off">_erq_16off</A><DD>     interrupt.
+<DT><A HREF="rtsr.htm#_erq_21on">_erq_21on</A><DD>      Allows the entry request queue to be serviced from the system keyboard interrupt.
+<DT><A HREF="rtsr.htm#_erq_21off">_erq_21off</A><DD>     Disallows servicing of the entry request queue via the system keyboard interrupt.
+<DT><A HREF="rtsr.htm#_erq_28on">_erq_28on</A><DD>      Allows the entry request queue to be serviced from the DOS interrupt.
+<DT><A HREF="rtsr.htm#_erq_28off">_erq_28off</A><DD>     Disallows servicing of the entry request queue via the DOS interrupt.
+</DL>
+The entry request queue (erq) allows mission-critical TSR entry requests to be scheduled without explicitly assigning them to specific interrupts. For example, the erq is ideal for timed alarms or retries of entry_func requests which could not be serviced from their assigned ISRs due to resource unavailability. The erq may be serviced from any of five selectable interrupt types including the DOS services interrupt (0x21).
+
+<P>
+Entry requests are added to the entry request queue by calling <A HREF="rtsr.htm#_erq_add">_erq_add</A> or <A HREF="rtsr.htm#_erq_addrel">_erq_addrel</A>. These functions require a pointer to an erqspec structure which in turn points to an entry definition structure for any of the other predefined ISRs. The erqspec structure is defined in TSR.H as follows:
+<PRE><CODE>
+typedef struct {
+   erqspec near * next;                                 /* offset of next structure in the linked list */
+   std_time <A HREF="rexit.htm#start">start</A>;                                      /* time to <A HREF="rexit.htm#start">start</A> trying the entry request */
+   std_time stop;                                       /* time to stop trying the entry request */
+   unsigned char intspec;                       /* ints the request will be serviced from */
+   unsigned int waitticks;                      /* number clock ticks to wait before next try */
+   unsigned int retryticks;                     /* value to load into waitticks if retry is needed */
+   void near * eds;                                     /* offset of associated entry definition structure */
+} erqspec;
+</CODE></PRE>
+The erqspec structure fields are defined as follows:
+<PRE><CODE>
+<A HREF="rtsr.htm#IDLE_DEF">IDLE_DEF</A> (erq_popup,display_window,_None,256,erq_fail,1);
+erqspec erq_struc = {(erqspec near *)-2,{0,0,0,0},{0,0,0,0},0,2,3,&erq_popup);
+</CODE></PRE>
+Note that the first element in the structure must always be initialized to "(erqspec near *)-2".
+
+<P>
+The erqspec structure fields are defined as follows:
+<DL COMPACT>
+<DT>next<DD>   Address of the next erqspec structure in the erq linked list. This field is used internally by Spontaneous Assembly to maintain the linked lists of installed erqspec structures. When <A HREF="rtsr.htm#_erq_add">_erq_add</A> or <A HREF="rtsr.htm#_erq_addrel">_erq_addrel</A> is called, the specified structure is added to the end of erq linked list. This field must be set to -2 (0xfffe) when this structure is added to the list. A value of -1 (0xffff) indicates the end of the linked list. Any other value in this field indicates the structure is already installed.
+<DT><A HREF="rexit.htm#start">start</A><DD>  Time (in Spontaneous Assembly DWORD format) to begin attempting the entry request. Valid times are in the range 00:00:00.00 to 255:59:59.99. When the specified time is reached, the resources for the entry definition structure will be checked. If any of these checks fail, fail_func will be called. If these checks pass, entry_func will be called and the entry request will be removed from the queue.<BR>start is always stored as an absolute time referenced from 00:00:00 on the current day, but it may be specified as either an absolute time of day or as a time relative to the current time depending on which <A HREF="rtsr.htm#_erq_add">_erq_add</A>... function is used. Specified times always refer to the future. An absolute time less than the current time is assumed to refer to the next day, so 24:00:00 is added to the time when it is specified. At the beginning of each new day, this field is decremented by 24:00:00. This allows scheduling of events more than a week in advance.
+<DT>stop<DD>   Time (in Spontaneous Assembly DWORD format) to stop attempting the entry request. Valid times are in the range 00:00:00.00 to 255:59:59.99. When the specified time is reached, the entry request is removed from the queue. If this time is specified as a DWORD value of -1 (255:255:255.255), the entry request will be tried until successful.<BR>stop is always stored as an absolute time referenced from 00:00:00 on the current day, but it may be specified as either an absolute time of day or as a time relative to the current time depending on which <A HREF="rtsr.htm#_erq_add">_erq_add</A>... function is used. Specified times always refer to the future. An absolute time less than the current time is assumed to refer to the next day, so 24:00:00 is added to the time when it is specified. At the beginning of each new day, this field is decremented by 24:00:00. This allows scheduling of events more than a week in advance.
+</DL>
+intspec Flags to define which interrupts the entry request will be serviced from. The selected interrupts are specified by bitwise ORing one or more of the following equates together (these equates are defined in TSR.H):
+<DL COMPACT>
+<DT>                 ERQ_8<DD> (01) Allow the entry request to be serviced from the system timer interrupt (INT 0x08).
+<DT>                 ERQ_16<DD>(02) Allow the entry request to be serviced from the BIOS keyboard interrupt (INT 0x16).
+<DT>                 ERQ_21<DD>(04) Allow the entry request to be serviced from the DOS services interrupt (INT 0x21).
+<DT>                 ERQ_28<DD>(08) Allow the entry request to be serviced from the DOS idle interrupt (INT 0x28).
+</DL>
+<DL COMPACT>
+<DT>waitticks<DD>      Number of system timer ticks to wait before trying the entry request. System timer ticks normally occur roughly 18.2 times per second. This field only applies when the entry request queue is serviced from INT 8.
+<DT>retryticks<DD>     Number of system timer ticks to wait before retrying the entry. This value is loaded into waitticks when the entry request queue is processed with waitticks set to zero. System timer ticks occur roughly 18.2 times per second. This field only applies when the entry request queue is serviced from INT 8.
+<DT>eds<DD>    Offset of the entry definition structure that is being placed in the queue. A bioskey, directkey, idle, or stimer entry definition structure must be used.
+</DL>
+<A HREF="rtsr.htm#_erq_add">_erq_add</A> dynamically adds an erqspec structure to the list of structures for the entry request queue. The times indicated in <A HREF="rexit.htm#start">start</A> and stop are interpreted as being absolute times. Structures are always added to the end of the linked list.
+<A HREF="rtsr.htm#_erq_addrel">_erq_addrel</A> adds an erqspec structure to the list of installed structures. The times indicated in <A HREF="rexit.htm#start">start</A> and stop are interpreted as being relative to the current time. Structures are always added to the end of the linked list.
+<A HREF="rtsr.htm#_erq_rmv">_erq_rmv</A> dynamically removes an entry definition structure from the list of structures for the entry request queue.
+The entry request queue may be disabled by calling <A HREF="rtsr.htm#_erq_off">_erq_off</A>. When disabled, the erq ISRs are still installed, but control is unconditionally passed to the next interrupt in the chain. The erq is reactivated by calling <A HREF="rtsr.htm#_erq_on">_erq_on</A>. <A HREF="rtsr.htm#_erq_on">_erq_on</A> only needs to be called if <A HREF="rtsr.htm#_erq_off">_erq_off</A> has been called.
+<P>
+The _erq_...on functions enable a specific interrupt handler to service the entry request queue. All of these interrupt handlers default to OFF, so the desired _erq_...on functions must be called before the entry request queue can be serviced from the named interrupts.
+<P>
+The _erq_...off functions disable the named erq interrupt handler, preventing entries from being serviced by the named interrupt.
+<P>
+The interrupt handlers that service the entry request queue can be removed by calling _tsr_disable, <A HREF="rtsr.htm#_tsr_hremove">_tsr_hremove</A>, or <A HREF="rtsr.htm#_isr_removeall">_isr_removeall</A>.
+
+<H2><A NAME="HEAD0015">Stack Use in a TSR
+</A></H2>
+
+Stack space is automatically allocated from the program stack when the program is entered through one of the predefined ISRs. Before calling the function specified in an entry definition structure, the ISR makes sure that there is enough room on the resident stack to accommodate the stack usage of the function. The amount of stack space needed for each entry function is specified in the entry definition structure when it is created. If not enough stack space is available, the "on fail" function in the entry definition structure is called. If the stack size is specified as zero, no stack switching or checking is done.
+
+<P>
+A common problem with TSRs is not allocating enough resident stack space. A symptom of insufficient stack space is the TSR crashing in inconsistent places. Try increasing the stack space whenever an unexplainable TSR problem is encountered, as this will often solve the problem.
+
+<P>
+A stack should only be linked in non-TINY programs and in device drivers. (This is handled in the TSR templates provided.) For example:
+<PRE><CODE>
+#if !__TINY__
+extern unsigned int stack_2k = 0;
+#endif
+</CODE></PRE>
+The size of the resident stack is specified when <A HREF="rtsr.htm#_tsr_resident">_tsr_resident</A> is called.
+
+<H2><A NAME="HEAD0016">Managing Custom ISRs
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rtsr.htm#_isr_install">_isr_install</A><DD>   Installs and manages an interrupt vector using an isrctrl structure.
+<DT><A HREF="rtsr.htm#_isr_remove">_isr_remove</A><DD>    Removes an interrupt vector which is managed by an isrctrl structure.
+<DT><A HREF="rtsr.htm#_isr_hremove">_isr_hremove</A><DD>   Unconditionally removes an interrupt vector which is managed by an isrctrl structure.
+<DT><A HREF="rtsr.htm#_isr_removeall">_isr_removeall</A><DD> Removes all interrupt vectors which are managed by isrctrl structures.
+<DT><A HREF="rtsr.htm#_isr_getstat">_isr_getstat</A><DD>   Determines if a specified isrctrl structure is installed.
+</DL>
+The _isr_... functions provide a system for easy management of custom ISRs. These functions allow ISRs to be uninstalled regardless of install order and allow all vectors to be uninstalled with a single function call. This functionality is made possible by an isrctrl structure which is associated with each ISR as it is installed. The isrctrl structure is defined in TSR.H as follows:
+<PRE><CODE>
+typedef struct {
+  void far * next;                                      /* maintains linked list */
+  void (interrupt far *oldaddr)();              /* original interrupt address */
+  intaddr newaddr;                                      /* address of new ISR */
+  unsigned char intnum;                                 /* interrupt number to install ISR on */
+} isrctrl;
+</CODE></PRE>
+The first element in an isrctrl structure must always be initialized to "(isrctrl far *)-2". The intaddr type indicates a near interrupt address in the TINY model and a far interrupt address in all other memory models, including SMALL and COMPACT. (The intaddr type is explained further in the reference section description for <A HREF="rmischrd.htm#_set_vec">_set_vec</A>.)
+
+<P>
+The isrctrl structure fields are defined as follows:
+<DL COMPACT>
+<DT>next<DD>   Address of the next isrctrl structure in the isrctrl structure linked list. This field is used internally to maintain the linked list of installed isrctrl structures. When an isrctrl structure is installed, the structure is inserted at the beginning of the list and this field is set to the address of the next isrctrl structure in the list. This field must be set to -2 when this structure is added to the list (use the syntax (isrctrl far *)-2). A value of -1 indicates the end of the linked list. Any other value in this field indicates the structure is already installed.
+
+<DT>oldaddr<DD>Address of the original interrupt handler. In order to properly allow installed isrctrl structures to be randomly uninstalled, the address in this field must be used whenever the original interrupt handler is called. This field may change as isrctrl structures are uninstalled.
+
+<DT>newaddr<DD>Address of the new ISR to be installed. This field must be initialized before calling <A HREF="rtsr.htm#_isr_install">_isr_install</A>.
+
+<DT>intnum<DD> Number of the interrupt that newaddr will be installed on. This field must be initialized before calling <A HREF="rtsr.htm#_isr_install">_isr_install</A>.
+
+<DT><A HREF="rtsr.htm#_isr_install">_isr_install</A><DD>installs an isrctrl structure into a linked list and modifies the interrupt vector table. An error condition is returned if the isrctrl structure is already installed.
+
+<DT><A HREF="rtsr.htm#_isr_remove">_isr_remove</A><DD>removes an installed isrctrl structure from the linked list and makes any appropriate changes to the interrupt vector table. This function can uninstall any isrctrl structure regardless of the install order provided that the _isr_... functions are used for all changes to the interrupt vector table. This function fails if the interrupt address for interrupt number intnum has changed without using the _isr_... functions.
+
+<DT><A HREF="rtsr.htm#_isr_hremove">_isr_hremove</A><DD>unconditionally uninstalls the ISR for the specified isrctrl structure and removes the isrctrl structure from the linked list. WARNING!    Using this function can cause system crashes if important changes to the interrupt vector table are overwritten.
+
+<DT><A HREF="rtsr.htm#_isr_removeall">_isr_removeall</A><DD>removes all ISRs that have an installed isrctrl structure, provided that all changes to the interrupt vector are made with the _isr_... functions. Each isrctrl structure is removed from the linked list when its ISR is uninstalled. This function fails if changes have been made to the interrupt vector table without the _isr_... functions. If unsuccessful, the interrupt vector table remainsunchanged, and the address of the first uninstallable isrctrl structure is returned. <A HREF="rtsr.htm#_isr_hremove">_isr_hremove</A> may then be used to remove the identified isrctrl structure, if necessary.
+
+<DT><A HREF="rtsr.htm#_isr_getstat">_isr_getstat</A><DD>determines if an isrctrl structure is installed and determines if that structure can be safely uninstalled.
+</DL>
+It is recommended that the _isr_... functions be used whenever interrupt vectors are installed or removed. This ensures that all ISR-related TSR functions are able to uninstall all interrupt vectors properly when required. For example, if all custom interrupt vectors are installed using the _isr_... functions, then these vectors will be automatically uninstalled or disabled along with all predefined ISRs whenever <A HREF="rtsr.htm#_tsr_remove">_tsr_remove</A>, <A HREF="rtsr.htm#_tsr_hremove">_tsr_hremove</A>, or _tsr_disable is called.
+
+<H2><A NAME="HEAD0017">Emulating Keystrokes
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rtsr.htm#_keyfeed_insert">_keyfeed_insert</A><DD>Schedules a keyfeed operation to occur immediately.
+<DT><A HREF="rtsr.htm#_keyfeed_append">_keyfeed_append</A><DD>Schedules a keyfeed operation to occur after all other scheduled keyfeed operations.
+<DT><A HREF="rtsr.htm#_keyfeed_rmv">_keyfeed_rmv</A><DD>   Removes a scheduled keyfeed operation from the keyfeed queue.
+<DT><A HREF="rtsr.htm#_keyfeed_off">_keyfeed_off</A><DD>   Disables keystroke feeding.
+<DT><A HREF="rtsr.htm#_keyfeed_on">_keyfeed_on</A><DD>    Enables keystroke feeding.
+<DT><A HREF="rtsr.htm#_keyfeed_convert">_keyfeed_convert</A><DD>       Converts an ASCII string to its corresponding BIOS keystroke codes.
+</DL>
+The Spontaneous Assembly keystroke feeder emulates keyboard activity by passing predefined BIOS keystroke codes to the foreground application. This is essential for TSR "cut and paste" operations as well as recording and replaying BIOS-level keystroke macros. Keystrokes are passed to the keystroke feeder in buffers which contain BIOS keystroke codes. These buffers may be defined statically using the keystroke codes defined in KEYS.H (see Appendix E), or they may be created from ASCII strings by calling the <A HREF="rtsr.htm#_keyfeed_convert">_keyfeed_convert</A> function. Keyfeed requests are maintained in a queue and are processed as they are encountered. Requests may be added to the beginning of the queue by calling <A HREF="rtsr.htm#_keyfeed_insert">_keyfeed_insert</A>, or they may be added to the end of the queue by calling <A HREF="rtsr.htm#_keyfeed_append">_keyfeed_append</A>.
+
+<P>
+The keystroke feeder is a special kind of ISR. While its primary functionality is predefined, the functionality of the other predefined ISRs is user-specified. Because the keystroke feeder is an ISR, it is automatically installed by <A HREF="rtsr.htm#_tsr_enable">_tsr_enable</A> or <A HREF="rtsr.htm#_tsr_resident">_tsr_resident</A> if it is used.
+
+<P>
+These functions use the keyf structure to control keyfeed operations. The keyf structure is defined in TSR.H as follows:
+<PRE><CODE>
+typedef struct {
+   keyf near * next;                      /* next structure to feed */
+   int near/far * buffer;         /* address of BIOS codes to emulate */
+   int near * nextcode;                   /* offset within KF_BUFFER of next BIOS code */
+   char flags;                            /* status of standard keyboard flags to emulate  */
+   char enhflags;                         /* status of enhanced keyboard flags to emulate  */
+   char repeat;                           /* number of times to feed the buffer */
+   char flush;                            /* number of times to report "no keys"
+                                                     to prevent flushing of the buffer */
+   char flushcnt;                         /* number of times left to report "no keys"
+                                                     before indicating a keystroke is
+                                                     available */
+   int (near/far * getfunc)(keyf * const kf_struct, int kf_code, char bios_cmd);
+                                                  /* address of user function to call on
+                                                     BIOS "get keystroke" interrupts */
+   int (near/far * chkfunc)(keyf * const kf_struct, int kf_code, char bios_cmd);
+                                                  /* address of user function to call on
+                                                     BIOS "check keystroke" interrupts */
+} keyf;
+</CODE></PRE>
+WARNING!        Each near/far directive indicates a near pointer in the TINY model and a far pointer in all other memory models, including SMALL and COMPACT.
+
+<P>
+The keyf structure fields are defined as follows:
+<DL COMPACT>
+<DT>next<DD>   Address of the next keyf structure in the keyf structure linked list. This field is used internally by Spontaneous Assembly to maintain the linked list of installed keyf structures. This field is set to -2 if the structure is not installed, -1 if the structure is the last structure in the linked list, otherwise it is set to the offset of the next structure in the linked list.<BR>WARNING!        This field must initialized to -2 when the structure is created. If this field is not set to -2 when <A HREF="rtsr.htm#_keyfeed_insert">_keyfeed_insert</A> or <A HREF="rtsr.htm#_keyfeed_append">_keyfeed_append</A> is called, the structure will not be installed.
+<DT>buffer<DD> Address of the buffer of BIOS codes to be emulated. The end of the buffer is marked with a -1 integer value.
+<DT>nextcode<DD>Current offset within buffer of the BIOS code to return the next time a program requests a character. If this field is -1 when the structure is installed, it will be set to the beginning of buffer. Codes can be skipped or repeated by changing the value of this field. This allows embedded control codes (such as 0xFFFE) in buffer to be interpreted. getfunc and chkfunc can then watch for the specified control codes, take the appropriate action, and adjust nextcode to ensure that the control codes are not interpreted as BIOS codes.
+<DT>flags<DD>  Standard keyboard status flags to return. This allows the state of the keys listed below to be emulated. Each bit is assigned a meaning as follows:<DL COMPACT><DT>SHIFT_KEY<DD>(0x01) Right Shift key is depressed<DT>LSHIFT_KEY <DD>     (0x02) Left Shift key is depressed<DT>CTRL_KEY  <DD>      (0x04) Ctrl key is depressed<DT> ALT_KEY <DD>(0x08) Alt key is depressed<DT> SCROLL_LOCK<DD>     (0x10) Scroll Lock is ON<DT> NUM_LOCK <DD>       (0x20) Num Lock is ON<DT>CAPS_LOCK <DD> (0x40) Caps Lock is ON<DT> INSERT_ON  <DD>  (0x80) Insert is ON</DL><BR> These keyboard flag equates are defined in KEYFLAGS.H and are automatically included by the KEYS.H header file. Note that these keyflags are the same as those returned by the <A HREF="rconsole.htm#_get_keyflags">_get_keyflags</A> function.
+<DT>enhflags<DD>       Enhanced keyboard status flags to return. If an enhanced keyboard has been detected (_kbd_init is called internally), these keyflags are returned along with flags to the requesting program. This allows the state of the keys listed below to be emulated if an enhanced keyboard is present. Each bit is assigned a meaning as follows:<DL COMPACT><DT>LCTRL_KEY<DD>   (0x01) Left Ctrl key is depressed<DT>LALT_KEY<DD>        (0x02) Left Alt key is depressed<DT>RCTRL_KEY  <DD>     (0x04) Right Ctrl key is depressed<DT>RALT_KEY   <DD>     (0x08) Right Alt key is depressed<DT>SCROLL_KEY <DD>     (0x10) Scroll Lock key is depressed<DT>NUM_KEY <DD>(0x20) Num Lock key is depressed<DT>CAPS_KEY <DD>       (0x40) Caps Lock key is depressed<DT>SYSREQ_KEY <DD>     (0x80) System Request key is depressed</DL><BR>These keyboard flag equates are defined in KEYFLAGS.H and are automatically included by the KEYS.H include file. Note that these keyflags are the same as those returned by the <A HREF="rconsole.htm#_get_keyflags">_get_keyflags</A> function.
+<DT>repeat<DD> Number of times to emulate the buffer of BIOS key codes. Every time the end marker of a buffer (a -1 integer value for the key code) is reached, repeat is checked to see if it is zero. If repeat is zero, the current keyf structure is removed. Otherwise repeat is decremented and checked for zero again. If repeat is zero, the current keyf structure is removed. Otherwise the buffer is emulated again.
+<DT>flush<DD>  Number of times to report that "there are no keystrokes waiting in the keyboard buffer" to the requesting program. This count is used to prevent the emulated keystrokes from being flushed. Most programs flush keystrokes by polling the keyboard for a keystroke and removing it from the buffer if it exists. This sequence is repeated until the keyboard poll returns that there are no more keystrokes. This can be prevented by returning that there are no keystrokes waiting in the keyboard buffer for a specified number of times before signaling that a keystroke is waiting. A value of 3 is usually sufficient, but may need to be increased if an unusual number of keyboard flush operations are expected to occur back-to-back.
+<DT>flushcnt<DD>       Number of times left to report "no keys" before signaling that a keystroke is available. This field is maintained internally by Spontaneous Assembly. If this field is zero when a keyboard poll occurs, it is set to the value of flush, the keystroke feeder indicates that a keystroke is waiting, and chkfunc is called. If this field is not zero, it is decremented, the keystroke feeder indicates that no keystroke is waiting, and chkfunc is not called.
+<DT>getfunc<DD>Address of the function that is called when a "keystroke get" (wait for keystroke) interrupt occurs. No function is called if -1 is specified for getfunc (to specify -1, use the syntax "(kfptr)-1"). The BIOS code that will be returned and the address of the keyf structure that defines the current keyfeed operation are passed to getfunc when it is called. This function may modify the fields in the structure as well as the BIOS code to be returned. This function may also indicate that the current code in buffer should be ignored by returning -1 as the BIOS code. The getfunc function should be declared as follows:<CODE>        int far getfunc (keyf * const kf_struct, int key_code, int bios_cmd);</CODE><DL COMPACT><DT> Where:<DD>  kf_struct is the address of the keyf structure<BR>                         key_code is the current code from the keyfeed buffer<BR>        bios_cmd is the BIOS command code (0 = standard keyboard read; 0x10 = enhanced keyboard read)<BR><BR>        The return value is the BIOS code to return to the calling program (usually the same as key_code; -1 means ignore the current code and proceed to the next one).</DL>
+<DT>chkfunc<DD>Address of the function that is called when a "keystroke check" (check for pending keystrokes) interrupt occurs. No function is called if -1 is specified for chkfunc (to specify -1, use the syntax "(kfptr)-1"). The BIOS code that will be returned and the address of the keyf structure that defines the current keyfeed operation are passed to chkfunc when it is called. This function may modify the fields in the structure as well as the BIOS code to be returned. This function may also indicate that no keystroke is waiting by returning -1 as the BIOS code. The chkfunc function should be declared as follows:<CODE>        int far getfunc (keyf * const kf_struct, int key_code, int bios_cmd);</CODE><BR>        Where:<DL COMPACT><DT>   kf_struct<DD> is the address of the keyf structure<DT>   key_code<DD> is the current code from the keyfeed buffer<DT>   bios_cmd<DD> is the BIOS command code (1 = standard keyboard check; 0x11 = enhanced keyboard check)</DL>        Return value is the BIOS code to return to the calling program (will usually be the same as key_code, -1 means signal that no keystroke is waiting in the keystroke buffer).
+</DL>
+<DL COMPACT>
+<DT>_keyfeed_insert<DD>installs a buffer of BIOS keystroke codes (see Appendix E) to be emulated before any previously installed buffers. If this function is called before a previously installed bufferhas been completed, that buffer will be suspended until the newly installed buffer of keys is completed.
+<DT>_keyfeed_append<DD>installs a buffer of BIOS keystroke codes (see Appendix E) to be emulated after any previously installed buffers. If this function is called while other buffers are installed, those buffers will be completed before the newly installed buffer is used.
+<DT>_keyfeed_rmv<DD>removes a specified buffer of BIOS keystroke codes before its keyfeed operation has been completed. Buffers are automatically removed when they are completed, so this function does not normally need to be called.
+<DT>_keyfeed_off<DD>disables the KEYFEED ISR. The ISR remains installed, but no keystroke emulation will be performed.
+<DT><A HREF="rtsr.htm#_keyfeed_on">_keyfeed_on</A><DD>enables the ISR that allows keystrokes to be emulated. This function only needs to be called if <A HREF="rtsr.htm#_keyfeed_off">_keyfeed_off</A> has been called.
+<DT><A HREF="rtsr.htm#_keyfeed_convert">_keyfeed_convert</A><DD>converts an ASCIIZ string to its equivalent BIOS keystroke codes. If a value of 0xFF is encountered in the source string, the next two char values are treated as literal BIOS codes and are not translated. This allows BIOS codes for non-character keystrokes to be embedded in the source string. (Equates for literal BIOS keystroke codes are defined in the KEYS.H header file. See Appendix E for a complete listing.) For example, the source string in the following example:
+</DL>
+<PRE><CODE>
+#include "keys.h"
+char * text_buf1 = "text"___F1;
+</CODE></PRE>
+would be converted to the following keyfeed-compatible format:
+<PRE><CODE>
+unsigned int bios_buf[] = {0x1474,0x1265,0x2D78,0x1474,0x3B00,0xFFFF};
+</CODE></PRE>
+By default, the keystroke feeder passes keystrokes to any program which requests them, including the TSR itself. If required, there are two ways to prevent the TSR from feeding keystrokes to itself. First, the keyfeed ISR can be manually disabled with <A HREF="rtsr.htm#_keyfeed_off">_keyfeed_off</A>. Alternatively, keystroke feeding can be selectively disabled by locking the keyfeed bit (bit 15) in <A HREF="rtsr.htm#tsr_lockmask">tsr_lockmask</A>. This is performed automatically for any TSR entry point which has set bit 15 of the entry_mask field in its associated entry definition structure.
+
+<P>
+WARNING!        No stack or resource checking is performed by the keystroke feeder, so any user-specified functions must assume that there is a limited amount of stack space and that non-keyboard resources such as DOS functions or disk services cannot be used reliably. If these resources need to be used, they should be accessed through an entry definition structure using one of the other predefined ISRs.
+
+<H2><A NAME="HEAD0018">Using Control Codes within the Keystroke Feeder
+</A></H2>
+
+Typically a KEYFEED buffer consists of only valid BIOS codes, but the buffer is not restricted to these values. If specific control codes (invalid BIOS codes) such as 0xFFFE are placed in the buffer, getfunc and chkfunc may watch for these values and take appropriate action when they are encountered. This allows custom features to be built into the keystroke feeder such as conditional operation of programs based on the current screen contents. (Note that this functionality even makes it possible for application tutorials to be created using the keystroke feeder.)
+
+<P>
+Control codes should be carefully selected to avoid conflicts with valid BIOS keystroke codes. In addition, certain programs (such as the Borland Integrated Development Environment) provide extensions to the BIOS key codes to allow the detection of keystrokes that are normally suppressed by the BIOS. Generally, the safest range for integer-length control codes is 0xF000 to 0xFFFE, and the safest ranges for BYTE-length control codes are 0x80 to 0xDF and 0xE2 to 0xFE.
+
+<H2><A NAME="HEAD0019">Uninstalling the TSR
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rtsr.htm#_tsr_remove">_tsr_remove</A><DD>    Uninstalls a TSR and releases its memory to DOS.
+<DT><A HREF="rtsr.htm#_tsr_hremove">_tsr_hremove</A><DD>   Unconditionally uninstalls a TSR and releases its memory to DOS.
+</DL>
+<A HREF="rtsr.htm#_tsr_remove">_tsr_remove</A> uninstalls all predefined and custom ISRs, calls the functions installed with <A HREF="rexit.htm#_on_exit">_on_exit</A>, releases TSR memory to DOS, and returns control to the foreground application. This function only returns to the calling program if the function call was unsuccessful because interrupt vectors have been modified (other than through the _isr_... functions) and have not been restored. If <A HREF="rtsr.htm#_tsr_remove">_tsr_remove</A> fails, <A HREF="rtsr.htm#_tsr_hremove">_tsr_hremove</A> may be called to unconditionally uninstall the TSR.
+
+<A HREF="rtsr.htm#_tsr_hremove">_tsr_hremove</A> unconditionally uninstalls all predefined and custom ISRs, calls any functions installed with <A HREF="rexit.htm#_on_exit">_on_exit</A>, releases TSR memory to DOS, and returns control to the foreground application.
+
+<A HREF="rtsr.htm#_tsr_remove">_tsr_remove</A> and <A HREF="rtsr.htm#_tsr_hremove">_tsr_hremove</A> are designed for terminating and removing the active TSR from a hotkey or other TSR entry point. The <A HREF="rtsr.htm#_progid_remtsr">_progid_remtsr</A> or <A HREF="rtsr.htm#_progid_hremtsr">_progid_hremtsr</A> functions should be used instead if a TSR must be removed by any other program.
+
+WARNING!        Using <A HREF="rtsr.htm#_tsr_hremove">_tsr_hremove</A> can cause unpredictable results if other programs have installed interrupt handlers on the same interrupts.
+
+<H2><A NAME="HEAD001A">TSR Reentrancy
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rtsr.htm#tsr_lockmask">tsr_lockmask</A><DD>   (Variable) Contains the program resource bit mask used to control reentrancy.
+</DL>
+This integer variable contains the bit mask of active, user-defined program resources (not system resources such as _Kbd or _Con). Before the entry function for an entry definition structure is called, the global variable <A HREF="rtsr.htm#tsr_lockmask">tsr_lockmask</A> is ANDed with the entry_mask field of that entry definition structure. The entry function is called ONLY if the result is zero; fail_func is called otherwise. The entry mask is then ORed into <A HREF="rtsr.htm#tsr_lockmask">tsr_lockmask</A> to lock the program resources that will be used by that entry point. After the TSR entry function returns, the appropriate bits are cleared to unlock the program resources.
+
+<P>
+Each bit in this variable is typically assigned to a program resource (a global program buffer would be considered a program resource; the windowing system would also be considered a program resource). By default, bit 0 is assigned to the entire TSR (a single program resource). Bits 0 to 14 may be reassigned by the programmer. Bit 15 is always assigned to the keystroke feeder.
+
+<P>
+This variable is provided to aid in making programs safely reentrant. See Appendix F for more information on controlling reentrancy with <A HREF="rtsr.htm#tsr_lockmask">tsr_lockmask</A>.
+
+<H2><A NAME="HEAD001B">Device Drivers
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rtsr.htm#_device_resident">_device_resident</A><DD>       Returns to DOS, leaving the resident portion of the device driver in memory and freeing the transient portion back to DOS.
+</DL>
+<A HREF="rtsr.htm#_device_resident">_device_resident</A> terminates a device driver program, leaving it resident. This function installs the ISRs that are being used, resizes and initializes the stack to its specified resident size, performs the near and far heap initialization, releases unused memory to DOS, and terminates.
+The three types of device drivers are block, character, and TSR. Block drivers (e.g., RAMDISK.SYS) define new drive letters. Character drivers redefine specific device names (e.g., ANSI.SYS redefines the "CON" device). TSR drivers are simply CONFIG.SYS-installable TSRs.
+<P>
+All three types of device drivers are supported by Spontaneous Assembly. TSR device drivers are fairly easy to create. Block and character drivers, however, require a complex DOS messaging structure that is dependent upon the services being provided and is beyond the scope of this documentation. A DOS technical reference manual should be consulted for more information on this subject before creating block or character device drivers.
+<P>
+To create a TSR device driver, the TSRMAIN.CCC template should be used in the TINY memory model. The resulting code must be linked with _DSTART.OBJ (TINY model device driver startup code) aswell as the _SAT.LIB library. _DSTART.OBJ must be the first object file linked. The resulting .EXE must then be converted to a .SYS file using the EXE2BIN or TDSTRIP utilities provided with the compiler. Alternatively, some linkers support a /T command line option to output .COM or .SYS files directly.
+<P>
+Following are some special considerations for creating device drivers:
+<P>
+        The device driver must use <A HREF="rtsr.htm#_device_resident">_device_resident</A> to terminate. <A HREF="rtsr.htm#_tsr_resident">_tsr_resident</A> should not be called.
+<P>
+        When the device driver is installing, other device drivers may not be installed and COMMAND.COM will not be available. Services that depend on COMMAND.COM or device drivers (such as ANSI.SYS) should not be used.
+<P>
+        A device driver cannot be uninstalled.
+<P>
+        Device drivers cannot do any file I/O before going resident and cannot use any environment functions.
+<P>
+A stack should only be linked in non-TINY programs and in device drivers. (This is handled in the TSR templates provided.) For example:
+<PRE><CODE>
+#if !__TINY__
+extern unsigned int stack_2k = 0;
+#endif
+</CODE></PRE>
+<H2><A NAME="HEAD001C">Creating a TSR
+</A></H2>
+
+The TSRMAIN.CCC template makes TSR creation a very simple task. This template includes everything necessary for a simple TSR along with notes explaining how and where customization needs to be performed. This file should be linked with _TSTART?.OBJ to create a TSR, or _NSTART?.OBJ to create a non-TSR program that uses the functionality of the TSR unit. See the Start/Exit technical notes for more information on the startup code.
+
+<P>
+The minimum steps that must be performed in order to create a TSR that uses the Spontaneous Assembly TSR system are as follows:
+<UL>
+<LI>        Create a program stack as explained in the Start/Exit technical notes.
+<LI>        Create entry definition structures (using macros at compile time).
+<LI>        Initialize the Spontaneous Assembly TSR system.
+<LI>        Install entry definition structures.
+<LI>        Terminate and stay resident.
+</UL>
+Note that these steps only create the most basic TSR. However, more advanced TSR features can be easily implemented using the Spontaneous Assembly TSR system. The necessary framework is provided in the template file TSRMAIN.CCC. Common features of more advanced TSRs and the steps necessary to implement those features are listed below.
+
+<P>
+WARNING!        To insure maximum efficiency and flexibility, the TSR startup code does not automatically allocate a program stack. If an insufficient stack is allocated, a system crash is likely. The framework provided in the TSRMAIN.CCC template file allocates a small program stack, but it is advisable to adjust the amount of stack space allocated based on the needs of the program. See the Start/Exit technical notes for more information on creating a program stack.
+
+<P>
+More advanced TSR features:
+<UL>
+<LI>        Prevent multiple installations of the same TSR.
+<LI>        Automatically relocate portions of the TSR to expanded memory, if available.
+<LI>        View and change installed options from a hotkey or the command line.
+<LI>        Turn the TSR on or off from a hotkey or the command line.
+<LI>        Change hotkeys at run time.
+<LI>        Pop up in nonstandard text video modes (e.g., 132 column modes).
+<LI>        Process pop-up requests when initially-unavailable resources become available (e.g., the system screen and keyboard).
+<LI>        Uninstall the TSR from a hotkey or the command line.
+</UL>
+RESIDENT DATA (steps to implement the features listed above):
+<UL>
+<LI>        Create a directkey entry definition structure (with the <A HREF="rtsr.htm#DIRECTKEY_DEF">DIRECTKEY_DEF</A> macro) to define a hotkey and to specify how the TSR will be activated when the hotkey is pressed. For the options shown above, the _Con and _Kbd resources should be specified at the very minimum.
+<LI>        Define a public data area. This is usually a global structure that contains all installed options and any functions to be accessed from outside the TSR.
+<LI>        Define a unique ASCIIZ program ID string (e.g., "Example TSR Program v1.0. Copyright (c) 1995 Your Company, Inc.").
+</UL>
+TRANSIENT CODE (steps to implement the features listed above):
+<UL>
+<LI>        Check for a previous installation of the TSR with <A HREF="rtsr.htm#_progid_check">_progid_check</A>.
+<LI>        If a previous installation of the TSR was found, process command line arguments and set resident options via the public data area address returned by <A HREF="rtsr.htm#_progid_check">_progid_check</A>.
+<LI>        If a previous installation of the TSR was found, terminate normally, without going resident.
+<LI>        Install the program ID string with <A HREF="rtsr.htm#_progid_install">_progid_install</A>.
+<LI>        Initialize the TSR system by calling <A HREF="rtsr.htm#_tsr_init">_tsr_init</A> or <A HREF="rtsr.htm#_tsr_initc">_tsr_initc</A>.
+<LI>        Initialize for EMS relocation by calling <A HREF="rtsr.htm#_tsr_emsinit">_tsr_emsinit</A>.
+<LI>        Install the defined directkey entry definition structure with <A HREF="rtsr.htm#_directkey_add">_directkey_add</A>.
+<LI>        Terminate and stay resident with <A HREF="rtsr.htm#_tsr_resident">_tsr_resident</A>.
+</UL>
+RESIDENT CODE (steps to implement the features listed above):
+<UL>
+<LI>        Define an entry function for the directkey entry definition structure, following the rules for console I/O system use (see Managing System Resources in this section). This function should display a window with the necessary information in it (e.g., a menu of options). One option must allow the TSR to be uninstalled (with <A HREF="rtsr.htm#_tsr_remove">_tsr_remove</A>). Another option must allow the hotkey to be redefined. The newly-specified hotkey definition must be placed directly into the already-defined directkey entry definition structure.
+<LI>        Define a fail function for the directkey entry definition structure. This function should add the directkey structure to the entry request queue by calling <A HREF="rtsr.htm#_erq_add">_erq_add</A>... and specifying appropriate retry <A HREF="rexit.htm#start">start</A> and end times. This allows the pop-up request to be processed when the required resources become available.
+</UL>
+<H2><A NAME="HEAD001D">Sample Program
+</A></H2>
+
+The TSR example programs (TSR*.C) are provided on the distribution diskettes as examples of how the TSR functions can be used. The TSR example programs may be compiled and linked using the instructions in the source file for each example.
+</BOBY>
+</HTML>

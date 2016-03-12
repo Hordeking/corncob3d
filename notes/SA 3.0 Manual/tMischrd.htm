@@ -1,0 +1,98 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: Miscellaneous Hardware</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Miscellaneous Hardware</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tMischrd.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tMischrd.htm#HEAD0001">Manipulating the System Timers
+</A><BR>
+<A HREF="tMischrd.htm#HEAD0002">Generating Sound
+</A><BR>
+<A HREF="tMischrd.htm#HEAD0003">Determining Machine Characteristics
+</A><BR>
+<A HREF="tMischrd.htm#HEAD0004">Manipulating Interrupt Vectors Directly
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit consists of functions which manipulate and return information about the system hardware. Functions are provided to read and write system timer zero (time-of-day) and system timer two (speaker), generate tones on the system speaker, and determine machine characteristics. Functions are also provided which manipulate system interrupt vectors directly.
+
+<H2><A NAME="HEAD0001">Manipulating the System Timers
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmischrd.htm#_set_timer2">_set_timer2</A><DD>    Sets the counting mode and reload value for system timer two.
+<DT><A HREF="rmischrd.htm#_get_timer2">_get_timer2</A><DD>    Reads system timer two.
+<DT><A HREF="rmischrd.htm#_set_timer0">_set_timer0</A><DD>    Sets the counting mode and reload value for system timer zero.
+<DT><A HREF="rmischrd.htm#_get_timer0">_get_timer0</A><DD>    Reads system timer zero.
+<DT><A HREF="rmischrd.htm#_get_timer0mode">_get_timer0mode</A><DD>Determines the counting mode and reload value for system timer zero.
+<DT><A HREF="rmischrd.htm#_reset_timer0">_reset_timer0</A><DD>  Sets the counting mode and reload value for system timer zero to the system default values.
+</DL>
+These functions manipulate the 8253/8254 timer/counter chip which is present in all IBM-compatible systems. The 8253/8254 contains three timers. One of six different counting modes can be selected for each timer. Regardless of the mode, counting can be performed in either binary or BCD. The current count may be read at any time from any timer. See a specification sheet for the 8253/8254 for detailed information about counting modes and programming considerations.
+
+<P>
+On IBM PC-compatible systems, timer zero is used as the system clock and timer two is used to drive the system speaker. Both may be safely reprogrammed as long as the BIOS time-of-day interrupt handler (INT 8) still receives control at the expected rate. Timer one, on the other hand, is used to control memory refresh and must not be reprogrammed.
+
+<P>
+System timer zero generates the BIOS time-of-day interrupt (INT 8) roughly 18.2 times a second. This timer is programmed by the BIOS POST to operate in mode three, non-BCD counting, with a reload value of zero (65536). Some applications reprogram this timer to mode two to simplify the timing of short intervals. Applications may also increase the interrupt rate to obtain greater timing resolution. In this case, the time-of-day interrupt is only passed on to the BIOS at the standard rate of 18.2 times per second; the other time-of-day interrupts are not passed on by the application.
+
+<P>
+System timer two serves as the sound generator. It is usually programmed to operate in mode three (square wave mode). The reload value is selected to generate the square wave output at a particular frequency. Since the output is tied directly to the system speaker, this generates a tone whenever the speaker is enabled.
+
+<P>
+The <A HREF="rmischrd.htm#_get_timer0">_get_timer0</A> and <A HREF="rmischrd.htm#_get_timer2">_get_timer2</A> functions return the current count of their respective timers without disrupting the counting process. <A HREF="rmischrd.htm#_set_timer0">_set_timer0</A> and <A HREF="rmischrd.htm#_set_timer2">_set_timer2</A> reprogram the counting modeand reload values for their respective timers. <A HREF="rmischrd.htm#_reset_timer0">_reset_timer0</A> forces timer zero to the BIOS default state (mode three, non-BCD and reload value of zero).
+
+<P>
+Unfortunately, hardware limitations make it impossible to read a timer's operating mode and reload value directly. <A HREF="rmischrd.htm#_get_timer0mode">_get_timer0mode</A> is provided as a solution to this problem; it can be used to determine the mode and reload value for timer zero. This function reads the timer many times and makes a highly-reliable estimate for the mode and reload values. The mode is assumed to be either mode two or mode three with binary (non-BCD) counting enabled. The reload value is assumed to be a number 65536/2n where 0 ó n ó 15 (65536, or 65536/20, is the same as zero since the reload value is an int). These assumptions are reasonably safe since any other mode of operation does not generate the required interrupts, and any reload value other than a power of two is difficult to use and still maintain clock interrupts 18.2 times a second.
+
+<P>
+Symbolic constants for each of the counting modes are defined in HARDWARE.H.
+
+<H2><A NAME="HEAD0002">Generating Sound
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmischrd.htm#_sound_on">_sound_on</A><DD>      Starts generating a tone on the system speaker.
+<DT><A HREF="rmischrd.htm#_sound_change">_sound_change</A><DD>  Changes the frequency of the current tone.
+<DT><A HREF="rmischrd.htm#_sound_off">_sound_off</A><DD>     Turns off the system speaker.
+<DT><A HREF="rmischrd.htm#_sound_pulse">_sound_pulse</A><DD>   Generates a tone for a specified number of milliseconds.
+<DT><A HREF="rmischrd.htm#_sound_beep">_sound_beep</A><DD>    Generates a tone for a specified number of hundredths of a second.
+</DL>
+These functions control the system sound generation hardware. They operate on system timer two and I/O port 0x61.
+
+<P>
+<A HREF="rmischrd.htm#_sound_on">_sound_on</A> forces system timer two into mode three (square wave) with a reload value that produces the desired frequency. It also gates the timer and speaker on. <A HREF="rmischrd.htm#_sound_off">_sound_off</A> gates the timer and speaker off. <A HREF="rmischrd.htm#_sound_change">_sound_change</A> assumes the timer is already in mode three and that the timer and speaker are gated on. This function simply changes the reload value to a value that results in the desired frequency. This eliminates the clicking sound caused by reprogramming the timer when the sound generator is already producing a tone.
+
+<P>
+<A HREF="rmischrd.htm#_sound_pulse">_sound_pulse</A> generates a tone for a specified number of milliseconds, and <A HREF="rmischrd.htm#_sound_beep">_sound_beep</A> generates a tone for a specified number of hundredths of a second. <A HREF="rmischrd.htm#_sound_pulse">_sound_pulse</A> utilizes a millisecond timer to generate highly accurate durations whether or not interrupts are enabled. <A HREF="rmischrd.htm#_sound_beep">_sound_beep</A>, on the other hand, uses the system timer, so the duration of the tone is only accurate to the nearest 1/18th of a second. <A HREF="rmischrd.htm#_sound_beep">_sound_beep</A> also requires that interrupts be enabled when it is called. Note that <A HREF="rdatetim.htm#_init_msec">_init_msec</A> should be called to properly initialize the millisecond timer before <A HREF="rmischrd.htm#_sound_pulse">_sound_pulse</A> is used.
+
+<H2><A NAME="HEAD0003">Determining Machine Characteristics
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmischrd.htm#_is_compaq">_is_compaq</A><DD>     Determines whether or not the host computer is a COMPAQ computer.
+<DT><A HREF="rmischrd.htm#_is_3270">_is_3270</A><DD>       Determines whether or not the host computer is an IBM 3270-PC.
+</DL>
+These functions determine some characteristics of the system hardware.
+
+<P>
+The <A HREF="rmischrd.htm#_is_compaq">_is_compaq</A> function indicates whether or not the host computer is a Compaq computer. Most older Compaq computers with CGA (but not EGA) adapters have dual-mode or gray-scale monitors. This function can be used in conjunction with the _get_monitor function to anticipate the presence of a dual-mode display. Color text display attributes may then be adjusted as needed (i.e., by calling <A HREF="rconsole.htm#_set_attrtbl">_set_attrtbl</A>).
+
+<P>
+The <A HREF="rmischrd.htm#_is_3270">_is_3270</A> function determines whether or not the host computer is an IBM 3270 PC. 3270 PC's behave much like IBM PC's, but they present a host of compatibility problems for the programmer.
+
+<H2><A NAME="HEAD0004">Manipulating Interrupt Vectors Directly
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmischrd.htm#_get_vec">_get_vec</A><DD>       Gets an interrupt vector directly from the interrupt table.
+<DT><A HREF="rmischrd.htm#_set_vec">_set_vec</A><DD>       Sets an interrupt vector directly.
+</DL>
+These functions directly manipulate system interrupt vectors. Unlike their counterparts in the miscellaneous DOS unit, these functions make it possible to set several interdependent interrupt vectors while leaving interrupts off. They are also much faster than their DOS counterparts.
+
+<P>
+Zortech C compilers do not support interrupt functions. To avoid error messages, the <A HREF="rmischrd.htm#_get_vec">_get_vec</A> and <A HREF="rmischrd.htm#_set_vec">_set_vec</A> functions are not defined when using this compiler. See the MISCHARD.H header file for more details.
+
+<P>
+Some programs which monitor the interrupt vector table may miss accesses to the vector table made with these functions.
+</BOBY>
+</HTML>

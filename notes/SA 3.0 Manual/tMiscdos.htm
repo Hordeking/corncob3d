@@ -1,0 +1,256 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: Miscellaneous DOS</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Miscellaneous DOS</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tMiscdos.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tMiscdos.htm#HEAD0001">Handling DOS Error Messages
+</A><BR>
+<A HREF="tMiscdos.htm#HEAD0002">Checking the DOS Version
+</A><BR>
+<A HREF="tMiscdos.htm#HEAD0003">Managing System Memory
+</A><BR>
+<A HREF="tMiscdos.htm#HEAD0004">DOS Country Information
+</A><BR>
+<A HREF="tMiscdos.htm#HEAD0005">Manipulating the DTA
+</A><BR>
+<A HREF="tMiscdos.htm#HEAD0006">Getting Disk Drive Information
+</A><BR>
+<A HREF="tMiscdos.htm#HEAD0007">Manipulating the Verify Flag
+</A><BR>
+<A HREF="tMiscdos.htm#HEAD0008">Managing the Interrupt Vectors
+</A><BR>
+<A HREF="tMiscdos.htm#HEAD0009">Handling Control-Break Events
+</A><BR>
+<A HREF="tMiscdos.htm#HEAD000A">Handling Critical Errors
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit consists of functions which handle DOS error messages, check the DOS version, manage system memory, manage DOS country information, manipulate the DTA, get disk drive information, manipulate the verify flag, manage interrupt vectors, handle control-break events, handle critical errors. These functions present a uniform, DOS version-independent interface to existing DOS functions, and in most cases provide enhanced functionality.
+
+<P>
+If a miscellaneous DOS function returns an error code, it does so through the global  <A HREF="rmiscdos.htm#e_code">e_code</A> variable. This allows functions to maintain a smaller profile, and it allows error conditions to be ignored or dealt with at a later time. Symbolic equates are defined for each error code in the ECODES.H header file. A list of these codes, their symbolic constants, and their meanings can be found in Appendix A. These equates use an E_... naming convention.
+
+<H2><A NAME="HEAD0001">Handling DOS Error Messages
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmiscdos.htm#_dos_errmsg">_dos_errmsg</A><DD>    Returns the offset of a DOS error message string.
+<DT><A HREF="rmiscdos.htm#_dos_errmsge">_dos_errmsge</A><DD>   Returns the offset of the DOS error message string describing the most recent DOS error.
+<DT><A HREF="rmiscdos.htm#e_code">e_code</A><DD>         (Variable) Contains the most recent error code.
+<DT><A HREF="rmiscdos.htm#_get_ecode">_get_ecode</A><DD>     Returns the value of  <A HREF="rmiscdos.htm#e_code">e_code</A>.
+</DL>
+These functions get an error code and provide pointers to appropriate error messages. The global variable  <A HREF="rmiscdos.htm#e_code">e_code</A> holds the most recent error code. When any of the DOS interface functions returns an error code it does so through this global variable. The address of the corresponding DOS error message can be obtained by calling <A HREF="rmiscdos.htm#_dos_errmsg">_dos_errmsg</A> or <A HREF="rmiscdos.htm#_dos_errmsge">_dos_errmsge</A>. <A HREF="rmiscdos.htm#_dos_errmsg">_dos_errmsg</A> is called with the DOS error code, while <A HREF="rmiscdos.htm#_dos_errmsge">_dos_errmsge</A> gets the error code directly from  <A HREF="rmiscdos.htm#e_code">e_code</A>.
+
+<P>
+The error code can be accessed directly or it can be retrieved by calling <A HREF="rmiscdos.htm#_get_ecode">_get_ecode</A>.
+
+<H2><A NAME="HEAD0002">Checking the DOS Version
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmiscdos.htm#_chk_version">_chk_version</A><DD>   Terminates program execution immediately if the current DOS version is unacceptable.
+<DT><A HREF="rmiscdos.htm#_chk_version2">_chk_version2</A><DD>  Terminates program execution immediately if the current DOS version is 1.0 or 1.1.
+<DT><A HREF="rmiscdos.htm#_get_version">_get_version</A><DD>   Gets the current DOS version number.
+<DT><A HREF="rmiscdos.htm#_cmp_version">_cmp_version</A><DD>   Compares the required DOS version number with the current version.
+</DL>
+These functions check and get the DOS version number. The global variables _osmajor and _osminor are defined in most C libraries, and therefore, to avoid conflicts, are not defined in the C version of the Spontaneous Assembly libraries. _osmajor and _osminor hold the major and minor portions of the current DOS version number, respectively. These variables are automaticallyinitialized any time <A HREF="rmiscdos.htm#_chk_version">_chk_version</A>, <A HREF="rmiscdos.htm#_chk_version2">_chk_version2</A>, or <A HREF="rmiscdos.htm#_get_version">_get_version</A> is called. Since DOS versions 1.0 and 1.x cannot be easily distinguished, any 1.x version is assumed to be version 1.0.
+
+<P>
+Most programs require a minimum DOS version in order to function properly. (The Spontaneous Assembly Library functions only support DOS 2.0 or greater.) To check the active DOS version, the program should call <A HREF="rmiscdos.htm#_chk_version">_chk_version</A> or <A HREF="rmiscdos.htm#_chk_version2">_chk_version2</A> immediately after program <A HREF="rexit.htm#start">start</A> up. <A HREF="rmiscdos.htm#_chk_version">_chk_version</A> is called with the required DOS version number; <A HREF="rmiscdos.htm#_chk_version2">_chk_version2</A> assumes DOS 2.0 is the required version number. If the actual DOS version number is less than the required version number, the function writes a DOS-like error message to the standard output device (STDOUT), exits the program, and returns control to DOS using the appropriate exit method for the active DOS version; otherwise, the function returns normally. To ensure that a program can always be exited gracefully, <A HREF="rmiscdos.htm#_chk_version">_chk_version</A> and <A HREF="rmiscdos.htm#_chk_version2">_chk_version2</A> are compatible with DOS 1.0 and above.
+
+<P>
+<A HREF="rmiscdos.htm#_cmp_version">_cmp_version</A> is designed to be used to conditionally execute code which depends on the DOS version number. <A HREF="rmiscdos.htm#_cmp_version">_cmp_version</A> is called with the required DOS version number and compares the required version number with the actual version number stored in _osmajor and _osminor. 1, 0 or -1 ("greater than", "equal", or "less than") is returned depending on the result of the comparison. _osmajor and _osminor must be initialized before this function is called. (Using <A HREF="rmiscdos.htm#_cmp_version">_cmp_version</A> is more efficient than using <A HREF="rmiscdos.htm#_get_version">_get_version</A> and then comparing the returned version number.)
+
+<H2><A NAME="HEAD0003">Managing System Memory
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmiscdos.htm#_dos_malloc">_dos_malloc</A><DD>    Allocates a block of DOS memory.
+<DT><A HREF="rmiscdos.htm#_dos_mavail">_dos_mavail</A><DD>    Gets the size of the largest block of allocable DOS memory.
+<DT><A HREF="rmiscdos.htm#_dos_mfree">_dos_mfree</A><DD>     Frees a block of allocated DOS memory.
+<DT><A HREF="rmiscdos.htm#_dos_mset">_dos_mset</A><DD>      Modifies the size of a block of DOS memory.
+<DT><A HREF="rmiscdos.htm#_dos_msize">_dos_msize</A><DD>     Gets the size of a block of DOS memory.
+</DL>
+These functions allocate, manipulate, and free blocks of conventional memory. They are low-level in nature and are usually used only in programs that do not need the higher level heap management functionality provided in the memory management unit.
+
+<P>
+Note that the <A HREF="rmiscdos.htm#_dos_msize">_dos_msize</A> function has no DOS counterpart. It examines DOS Memory Control Blocks directly in order to determine the size of a given block.
+
+<H2><A NAME="HEAD0004">DOS Country Information
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmiscdos.htm#_get_countryinfo">_get_countryinfo</A><DD>        Gets the current DOS country information.
+<DT><A HREF="rmiscdos.htm#_set_country">_set_country</A><DD>            Sets the current DOS country code (DOS 3.0 or above).
+</DL>
+<A HREF="rmiscdos.htm#_get_countryinfo">_get_countryinfo</A> gets the DOS country information for the current or a specified country. The DOS country information is returned in dcountry structure format. The dcountry structure follows the standard DOS country information format and is defined in MISCDOS.H as follows:
+<PRE><CODE>
+typedef struct {
+   int  cntry_dtformat;             /* date format */
+   char cntry_curstr[5];            /* currency symbol (ASCIIZ) */
+   char cntry_thdelim[2];           /* thousand delimiter (ASCIIZ) */
+   char cntry_decdelim[2];          /* decimal delimiter (ASCIIZ) */
+   char cntry_dtdelim[2];           /* date delimiter (ASCIIZ) */
+   char cntry_tmdelim[2];           /* time delimiter (ASCIIZ) */
+   char cntry_curloc;               /* currency symbol location */
+   char cntry_cdigits;              /* digits after decimal point */
+                                    /* for currency */
+   char cntry_tmformat;             /* time format 12/24 hour */
+   long cntry_case;                 /* case map */
+   char cntry_datadelim[2];         /* data delimiter (ASCIIZ) */
+   char cntry_reserved[10];         /* DOS (reserved) */
+} dcountry;
+</CODE></PRE>
+The following symbolic constants may be used to check or modify the information in the cntry_dtformat field (these equates are defined in MISCDOS.H):
+<DL COMPACT>
+<DT>CDATE_MDY<DD>               (0x0000) For USA (MONTH/DAY/YEAR)
+<DT>CDATE_DMY<DD>                       (0x0001) For European (DAY/MONTH/YEAR)
+<DT>CDATE_YMD<DD>                       (0x0002) For Japanese (YEAR/MONTH/DAY)
+</DL>
+The following symbolic constants may be used to check or modify the information in the cntry_curloc field (these equates are defined in MISCDOS.H):
+<DL COMPACT>
+<DT>CURR_PN<DD>(0x00) Currency symbol precedes the value. No spaces are between the currency symbol and the value.
+<DT>CURR_FN<DD>(0x01) Currency symbol follows the value. No spaces are between the currency symbol and the value.
+<DT>CURR_P1<DD>(0x02) Currency symbol precedes the value. One space is between the currency symbol and the value.
+<DT>CURR_F1<DD>(0x03) Currency symbol follows the value. One space is between the currency symbol and the value.
+<DT>CURR_R<DD> (0x04) Currency symbol replaces the decimal delimiter.
+</DL>
+The following symbolic constants may be used to check or modify the information in the cntry_tmformat field (these equates are defined in MISCDOS.H):
+<DL COMPACT>
+<DT>CTIME_12HR<DD>              (0x00) For 12-hour clock.
+<DT>CTIME_24HR<DD>              (0x01) For 24-hour clock.
+</DL>
+<A HREF="rmiscdos.htm#_set_country">_set_country</A> specifies a new "current DOS country." After calling this function, other functions which query DOS for information about the current DOS country will recognize the specified country as the default country.
+
+A list of valid DOS country codes may be found in the DOS user manuals for DOS 4.x and above and in many programming reference manuals.
+
+<P>
+_osmajor must be properly initialized prior to calling either of these functions. Both functions use _osmajor internally because: 1) DOS version 2.x returns the country information in a different format than DOS version 3.0 and above, and 2) the DOS country cannot be set using DOS version 2.x. When using Spontaneous Assembly for C/C++, this variable is supplied and initialized by the compiler instead of the Spontaneous Assembly library.
+
+<H2><A NAME="HEAD0005">Manipulating the DTA
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmiscdos.htm#_get_dta">_get_dta</A><DD>       Gets the disk transfer address (DTA).
+<DT><A HREF="rmiscdos.htm#_dta_restore">_dta_restore</A><DD>   Restores the Disk Transfer Address (DTA).
+<DT><A HREF="rmiscdos.htm#_dta_save">_dta_save</A><DD>      Saves the current Disk Transfer Address (DTA).
+<DT><A HREF="rmiscdos.htm#_set_dta">_set_dta</A><DD>       Sets the disk transfer address (DTA).
+</DL>
+These functions get, set, save and restore the DTA (Disk Transfer Address).
+
+<P>
+<A HREF="rmiscdos.htm#_dta_save">_dta_save</A> and <A HREF="rmiscdos.htm#_dta_restore">_dta_restore</A> allow the DTA to be saved, manipulated in some way, and then restored. These are particularly useful in TSR <A HREF="rexit.htm#start">start</A> up and exit routines. Since the DTA is restored by DOS when a program terminates, these functions do not need to be called at the beginning and end of a non-TSR program.
+
+<P>
+The DTA functions work in harmony with the <A HREF="rfiledir.htm#_find_first">_find_first</A> and <A HREF="rfiledir.htm#_find_next">_find_next</A> functions. Specifically, these functions keep track of the current DTA in an internal variable. The _find... functions then check this variable to see if the DTA needs to be changed prior to issuing a DOS Find First or Find Next function call. This simplifies the interface to the _find... functions without slowing them down with unnecessary DOS calls. However, it imposes the restriction that the DTA should never be modified directly if the _find... functions are being used. To be safe, the ...dta... functions should always be used to access the DTA if other Spontaneous Assembly library functions are being used. If this rule is followed, the DTA may be modified at will without interfering with any other Spontaneous Assembly library functions.
+
+<H2><A NAME="HEAD0006">Getting Disk Drive Information
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmiscdos.htm#_get_cdfree">_get_cdfree</A><DD>    Gets the amount of free disk space on the current drive.
+<DT><A HREF="rmiscdos.htm#_get_cdinfo">_get_cdinfo</A><DD>    Gets File Allocation Table (FAT) information for the current drive.
+<DT><A HREF="rmiscdos.htm#_get_cdsize">_get_cdsize</A><DD>    Gets the disk size for the current drive.
+<DT><A HREF="rmiscdos.htm#_get_dfree">_get_dfree</A><DD>     Gets the free disk space on a specified drive.
+<DT><A HREF="rmiscdos.htm#_get_dinfo">_get_dinfo</A><DD>     Gets File Allocation Table (FAT) information about the specified drive.
+<DT><A HREF="rmiscdos.htm#_get_dsize">_get_dsize</A><DD>     Gets the disk size for a specified drive.
+<DT><A HREF="rmiscdos.htm#_get_lastdrive">_get_lastdrive</A><DD> Gets the total number of logical drives.
+</DL>
+These functions get disk drive information.
+
+<P>
+<A HREF="rmiscdos.htm#_get_cdfree">_get_cdfree</A>, <A HREF="rmiscdos.htm#_get_cdinfo">_get_cdinfo</A> and <A HREF="rmiscdos.htm#_get_cdsize">_get_cdsize</A> provide parallel functionality to <A HREF="rmiscdos.htm#_get_dfree">_get_dfree</A>, <A HREF="rmiscdos.htm#_get_dinfo">_get_dinfo</A> and <A HREF="rmiscdos.htm#_get_dsize">_get_dsize</A>. The _get_cd... functions return information about the current drive and the _get_d... functions return information about a specified drive.
+
+<P>
+Functions which expect a drive specifier as an input expect an ASCII alphabetic character in either upper or lower case. Functions which return a drive specifier return an ASCII uppercase letter. For example, the following code obtains the free disk space on drive A:
+<PRE><CODE>
+long int dfree;
+dfree = <A HREF="rmiscdos.htm#_get_dfree">_get_dfree</A> ('A');
+</CODE></PRE>
+<H2><A NAME="HEAD0007">Manipulating the Verify Flag
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmiscdos.htm#_get_verify">_get_verify</A><DD>                Gets the state of the DOS verify flag.
+<DT><A HREF="rmiscdos.htm#_set_verify">_set_verify</A><DD>                Sets or clears the DOS verify flag.
+<DT><A HREF="rmiscdos.htm#_verify_off">_verify_off</A><DD>                Disables DOS write verification.
+<DT><A HREF="rmiscdos.htm#_verify_on">_verify_on</A><DD>                 Enables DOS write verification.
+<DT><A HREF="rmiscdos.htm#_verify_restore">_verify_restore</A><DD>            Restores the original state of the DOS verify flag.
+<DT><A HREF="rmiscdos.htm#_verify_save">_verify_save</A><DD>               Saves the current state of the DOS verify flag.
+</DL>
+These functions get, set, save, and restore the state of the DOS verify flag.
+
+<P>
+When verify is off, disk writes are not verified; when verify in on, all disk writes are verified to assure that data is properly written.
+
+<P>
+<A HREF="rmiscdos.htm#_verify_save">_verify_save</A> and <A HREF="rmiscdos.htm#_verify_restore">_verify_restore</A> allow the verify state to be saved, changed at will, and restored. These functions are designed to be used at the beginning and end of a program which modifies the state of the verify flag.
+
+<H2><A NAME="HEAD0008">Managing the Interrupt Vectors
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmiscdos.htm#_get_vect">_get_vect</A><DD>                  Gets an interrupt handler address.
+<DT><A HREF="rmiscdos.htm#_set_vect">_set_vect</A><DD>                  Sets an interrupt handler address.
+</DL>
+These functions issue DOS calls to get and set interrupt vector addresses. They allow user interrupt handlers to be installed and removed as needed.
+
+<P>
+Zortech C compilers do not support interrupt functions. To avoid error messages, the <A HREF="rmiscdos.htm#_get_vect">_get_vect</A> and <A HREF="rmiscdos.htm#_set_vect">_set_vect</A> functions are not defined when using this compiler. See the MISCDOS.H header file for more details.
+
+<P>
+Note that the <A HREF="rmischrd.htm#_get_vec">_get_vec</A> and <A HREF="rmischrd.htm#_set_vec">_set_vec</A> functions in the miscellaneous hardware unit provide a faster and more flexible method of manipulating interrupt vectors. However, some semi-compatible PC's (i.e., the DEC Rainbow) don't support direct manipulation of system interrupt vectors. In these rare cases, <A HREF="rmiscdos.htm#_get_vect">_get_vect</A> and <A HREF="rmiscdos.htm#_set_vect">_set_vect</A> must be used.
+
+<H2><A NAME="HEAD0009">Handling Control-Break Events
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmiscdos.htm#_cbrk_check">_cbrk_check</A><DD>                    Allows a ctrl-break event to be processed if one is pending and the DOS ctrl-break flag is set.
+<DT><A HREF="rmiscdos.htm#_cbrk_disable">_cbrk_disable</A><DD>                  Disables all DOS ctrl-break checking
+<DT><A HREF="rmiscdos.htm#_cbrk_enable">_cbrk_enable</A><DD>                   Enables DOS ctrl-break after <A HREF="rmiscdos.htm#_cbrk_disable">_cbrk_disable</A> has been called.
+<DT><A HREF="rmiscdos.htm#_cbrk_install">_cbrk_install</A><DD>                  Installs a DOS ctrl-break handler.
+<DT><A HREF="rmiscdos.htm#cbrk_pending">cbrk_pending</A><DD>                   (Variable) Indicates whether or not ctrl-break events occurred while <A HREF="rmiscdos.htm#_cbrk_disable">_cbrk_disable</A> was in effect.
+<DT><A HREF="rmiscdos.htm#_cbrk_remove">_cbrk_remove</A><DD>                   Removes an installed DOS ctrl-break handler.
+<DT><A HREF="rmiscdos.htm#_cbrk_restore">_cbrk_restore</A><DD>                  Restores the original state of the DOS ctrl-break flag.
+<DT><A HREF="rmiscdos.htm#_cbrk_save">_cbrk_save</A><DD>                     Saves the current state of the DOS ctrl-break flag.
+<DT><A HREF="rmiscdos.htm#_get_cbrk">_get_cbrk</A><DD>                              Returns the state of the DOS ctrl-break flag.
+<DT><A HREF="rmiscdos.htm#_set_cbrk">_set_cbrk</A><DD>                              Sets or clears the DOS ctrl-break flag.
+</DL>
+These functions get, set, save, and restore the state of the DOS ctrl-break flag. The global variable <A HREF="rmiscdos.htm#cbrk_pending">cbrk_pending</A> holds the most recent control break state. Functions are also provided which install and remove ctrl-break handlers, disable and enable ctrl-break checking, and check for pending ctrl-break events.
+
+<P>
+The <A HREF="rmiscdos.htm#_get_cbrk">_get_cbrk</A>, <A HREF="rmiscdos.htm#_set_cbrk">_set_cbrk</A>, <A HREF="rmiscdos.htm#_cbrk_save">_cbrk_save</A>, and <A HREF="rmiscdos.htm#_cbrk_restore">_cbrk_restore</A> functions all deal with the DOS ctrl-break flag. These functions get, set, save, and restore the flag status, respectively. <A HREF="rmiscdos.htm#_cbrk_save">_cbrk_save</A> and <A HREF="rmiscdos.htm#_cbrk_restore">_cbrk_restore</A> make it easy to save the initial state of the ctrl-break flag, modify it, and then restore it to its original state. Note that if a program modifies the DOS ctrl-break flag it must restore it before it terminates or it will modify the BREAK state for subsequent programs.
+
+<P>
+<A HREF="rmiscdos.htm#_cbrk_install">_cbrk_install</A> installs a new ctrl-break handler which replaces the currently-installed handler. DOS passes control to the ctrl-break handler whenever a ctrl-break event is detected and the ctrl-break flag is set. The ctrl-break handler supports an assembly language interface and may perform any action including making DOS function calls and/or terminating the program. The handler may also return via a far return (RETF) as long as it preserves all of the registers. In this case, the carry flag is used to indicate whether or not program execution should continue or be terminated (if the carry flag is set, the program terminates immediately; if the carry flag is clear, the program continues where execution left off).
+
+<P>
+<A HREF="rmiscdos.htm#_cbrk_remove">_cbrk_remove</A> removes the current ctrl-break handler by setting the ctrl-break address to the address which was active when the program first began execution (this address is obtained from the Program Segment Prefix).
+
+<P>
+Since DOS only processes pending ctrl-break events whenever a DOS function call is issued, it is possible for a program to execute for long periods of time without ever checking for ctrl-break events. <A HREF="rmiscdos.htm#_cbrk_check">_cbrk_check</A> is provided to allow unresponsive code to check for ctrl-break events. If the DOS ctrl-break flag is set and a ctrl-break event is pending when <A HREF="rmiscdos.htm#_cbrk_check">_cbrk_check</A> is called, then DOS will pass control to the active ctrl-break handler.
+
+<P>
+Unfortunately, clearing the DOS ctrl-break flag does not completely disable DOS control ctrl-break checking. If the flag is set, DOS checks for ctrl-break events whenever almost any DOS function call is issued; when the flag is clear, DOS still checks for ctrl-break events when I/O is performed using a standard I/O function. Furthermore, these standard I/O functions treat ctrl-C events exactly like ctrl-break events.
+
+<P>
+For the reasons mentioned above, <A HREF="rmiscdos.htm#_cbrk_disable">_cbrk_disable</A> must be used any time ctrl-break checking must be completely disabled. This function installs a temporary BIOS break (INT 0x1B) handler, preventing DOS from being notified of ctrl-break events. A temporary ctrl-break (INT 0x23) handler is also installed to trap any ctrl-C events which are detected by DOS standard I/O functions. Note that DOS function calls 9 and 0xA are always affected by ctrl-C events (^C and a new line are output to the display and I/O resumes from the beginning of the line). This occurs even after <A HREF="rmiscdos.htm#_cbrk_disable">_cbrk_disable</A> has been called. Calling <A HREF="rmiscdos.htm#_cbrk_disable">_cbrk_disable</A> will, however, prevent the ctrl-break handler from receiving control. <A HREF="rmiscdos.htm#_cbrk_disable">_cbrk_disable</A> has no effect on the state of the DOS ctrl-break flag.
+
+<P>
+While <A HREF="rmiscdos.htm#_cbrk_disable">_cbrk_disable</A> is in effect, the variable <A HREF="rmiscdos.htm#cbrk_pending">cbrk_pending</A> keeps track of trapped ctrl-break events; it is set to one (1) if any ctrl-break or ctrl-C events are trapped; otherwise, it is zero (0). <A HREF="rmiscdos.htm#_cbrk_enable">_cbrk_enable</A> may then be called to re-enable ctrl-break checking. <A HREF="rmiscdos.htm#_cbrk_enable">_cbrk_enable</A> first restores the original INT 0x1B and INT 0x23 vectors. Then, if <A HREF="rmiscdos.htm#cbrk_pending">cbrk_pending</A> was non-zero on entry, <A HREF="rmiscdos.htm#_cbrk_enable">_cbrk_enable</A> notifies DOS of the pending ctrl-break event by issuing an INT 0x1B. <A HREF="rmiscdos.htm#_cbrk_check">_cbrk_check</A> is then called to allow DOS to process the pending ctrl-break event if the DOS ctrl-break flag is set. <A HREF="rmiscdos.htm#_cbrk_enable">_cbrk_enable</A> has no effect on the state of the DOS ctrl-break flag.
+
+<H2><A NAME="HEAD000A">Handling Critical Errors
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rmiscdos.htm#_ce_install">_ce_install</A><DD>                Installs a critical error handler.
+<DT><A HREF="rmiscdos.htm#_ce_remove">_ce_remove</A><DD>                 Removes an installed DOS critical error handler.
+<DT><A HREF="rmiscdos.htm#_cem_install">_cem_install</A><DD>               Installs the Critical Error Manager.
+</DL>
+These functions manage critical errors and install and remove custom critical error handlers.
+
+<P>
+<A HREF="rmiscdos.htm#_ce_install">_ce_install</A> installs a custom DOS critical error handler in place of the current critical error handler. The installed critical error handler receives control whenever a critical error occurs during a DOS function call. See a DOS Technical Reference Manual for information about how to write a custom critical error handler. In most cases, <A HREF="rmiscdos.htm#_cem_install">_cem_install</A> is preferable to <A HREF="rmiscdos.htm#_ce_install">_ce_install</A>. Zortech C compilers do not support interrupt functions. To avoid error messages, the <A HREF="rmiscdos.htm#_ce_install">_ce_install</A> function is not defined when using this compiler. See the MISCDOS.H header file for more details.
+
+<P>
+<A HREF="rmiscdos.htm#_cem_install">_cem_install</A> installs the Critical Error Manager in place of the current critical error handler. The Critical Error Manager is a predefined critical error handler which provides a simplified, DOS version-independent interface for writing custom critical error routines. When the Critical Error Manager is installed, a user function address may be specified. If a user function is provided, the Critical Error Manager passes control to this user function each time a critical error occurs. After the user function has examined information about the critical error, it may 1) direct the Critical Error Manager to abort the program immediately, 2) retry the operation which caused the error, 3) ignore the error and continue as if no error had occurred, 4) fail the function call which caused the error, or 5) quit the program by passing control to a specified exit address. If no user function is provided, the Critical Error Manager fails the DOS call, returns an appropriate error code, and passes control to the instruction following the DOS call. This eliminates "Abort, Retry, Ignore?" messages, allowing corrective action to be taken in the program (i.e., use a different floppy disk drive or display a descriptive error message). See the entry for <A HREF="rmiscdos.htm#_cem_install">_cem_install</A> in the Reference Section for detailed information about user functions and their interaction with the Critical Error Manager.
+
+<P>
+<A HREF="rmiscdos.htm#_ce_remove">_ce_remove</A> removes the current critical error handler by setting the critical error handler address to the address which was active when the program first began execution (this address is obtained from the Program Segment Prefix). <A HREF="rmiscdos.htm#_ce_remove">_ce_remove</A> may be used to remove the Critical Error Manager. This is not necessary, however, since DOS automatically replaces the critical error handler when the program terminates.
+</BOBY>
+</HTML>

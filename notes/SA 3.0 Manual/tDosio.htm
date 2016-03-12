@@ -1,0 +1,83 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: DOS Console I/O</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>DOS Console I/O</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tDosio.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tDosio.htm#HEAD0001">Performing Character I/O
+</A><BR>
+<A HREF="tDosio.htm#HEAD0002">Performing String I/O
+</A><BR>
+<A HREF="tDosio.htm#HEAD0003">Manipulating the Input Buffer
+</A><BR>
+<A HREF="tDosio.htm#HEAD0004">Redirection Rules
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit consists of functions which get characters and strings from STDIN, put characters and strings to STDOUT, and manipulate the input buffers associated with STDIN. Redirection is supported as well as ctrl-break and ctrl-C checking. These functions provide a low-overhead method for performing keyboard input and screen output in command line oriented programs. Screen oriented programs should use the console I/O functions instead of the functions in this unit.
+
+<P>
+See Appendices B, C, and D for a complete list of supported keystrokes and key codes.
+
+<P>
+The functions in this unit ignore DOS errors, even under redirection.
+
+<H2><A NAME="HEAD0001">Performing Character I/O
+</A></H2>
+<DL COMPACT>
+<DT>_get_chr<DD>       Gets a character from STDIN.
+<DT>_get_chra<DD>      Gets a character from STDIN.
+<DT>_get_chre<DD>      Gets a character from STDIN and echoes it to STDOUT.
+<DT>_get_chrae<DD>     Gets a character from STDIN and echoes it to STDOUT.
+<DT>_put_beep<DD>      Puts a BEL character to STDOUT.
+<DT>_put_chr<DD>       Puts a character to STDOUT.
+<DT>_put_newline<DD>   Puts a carriage return and linefeed to STDOUT.
+</DL>
+These functions read characters from STDIN and write characters to STDOUT.
+
+<P>
+_get_chr and <A HREF="rdosio.htm#_get_chre">_get_chre</A> read characters from STDIN. Extended characters (F1, F2, etc.) are indicated by a zero return value; the function must be called again to obtain the code for the extended keystroke. Normal (ASCII) characters and ALT-keypad characters are returned on the first call.
+
+<P>
+The <A HREF="rdosio.htm#_get_chra">_get_chra</A> and <A HREF="rdosio.htm#_get_chrae">_get_chrae</A> functions are functionally equivalent to <A HREF="rdosio.htm#_get_chr">_get_chr</A> and <A HREF="rdosio.htm#_get_chre">_get_chre</A> except that all of the character information is returned in a single call-even for extended characters. <A HREF="rdosio.htm#_get_chra">_get_chra</A> and <A HREF="rdosio.htm#_get_chrae">_get_chrae</A> return -1 if the keystroke was an extended character and 0 if the keystroke was a normal (ASCII) character or ALT-keypad character. The code for the keystroke is placed in a parameter that is passed on the stack. <A HREF="rdosio.htm#_get_chr">_get_chr</A> and <A HREF="rdosio.htm#_get_chra">_get_chra</A> do not echo input characters; <A HREF="rdosio.htm#_get_chre">_get_chre</A> and <A HREF="rdosio.htm#_get_chrae">_get_chrae</A> echo normal characters to the STDOUT device if they are in the range 0x20 to 0x7E.
+
+<P>
+<A HREF="rdosio.htm#_put_chr">_put_chr</A> writes a character to STDOUT. The special characters BEL, BS, TAB, CR, and LF receive special handling by the STDOUT device; all other characters are written to the output device without any special intervention. <A HREF="rdosio.htm#_put_beep">_put_beep</A> and <A HREF="rdosio.htm#_put_newline">_put_newline</A> write a BEL and a CR/LF pair to STDOUT, respectively.
+
+<H2><A NAME="HEAD0002">Performing String I/O
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rdosio.htm#_get_str">_get_str</A><DD>       Gets a string from the STDIN device.
+<DT><A HREF="rdosio.htm#_put_str">_put_str</A><DD>       Puts a string to STDOUT.
+<DT><A HREF="rdosio.htm#_fput_str">_fput_str</A><DD>      Puts a far string to STDOUT.
+</DL>
+These functions read strings from STDIN and write strings to STDOUT.
+
+<P>
+<A HREF="rdosio.htm#_get_str">_get_str</A> reads characters from STDIN into an input buffer. Simple editing of the input string may be performed using the backspace key. The system speaker sounds a tone if an attempt is made to read too many keys into the input buffer. Input terminates when a CR is encountered (i.e., when the Enter key is pressed), at which time a CR/LF pair is echoed to STDOUT and the function returns. The resulting string is NULL terminated.
+
+<P>
+<A HREF="rdosio.htm#_put_str">_put_str</A> and <A HREF="rdosio.htm#_fput_str">_fput_str</A> write an ASCIIZ string to the STDOUT device. All characters except the terminating NULL are written. <A HREF="rdosio.htm#_fput_str">_fput_str</A> is a far version of <A HREF="rdosio.htm#_put_str">_put_str</A> which always accepts a far string pointer in small data models.
+
+<H2><A NAME="HEAD0003">Manipulating the Input Buffer
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rdosio.htm#_check_key">_check_key</A><DD>     Checks STDIN to determine if a keystroke is waiting to be read.
+<DT><A HREF="rdosio.htm#_flush_keys">_flush_keys</A><DD>    Flushes pending input from STDIN.
+</DL>
+These functions manipulate the input buffer associated with the STDIN device. <A HREF="rdosio.htm#_check_key">_check_key</A> checks STDIN to determine if a keystroke is waiting to be read. If STDIN has been redirected from a file, <A HREF="rdosio.htm#_check_key">_check_key</A> indicates that a character is ready unless the file pointer is at end-of-file. <A HREF="rdosio.htm#_flush_keys">_flush_keys</A> empties pending characters from the input buffer. If STDIN has been redirected from a file, <A HREF="rdosio.htm#_flush_keys">_flush_keys</A> moves the file pointer to end-of-file (EOF).
+
+<H2><A NAME="HEAD0004">Redirection Rules
+</A></H2>
+
+All of these functions work properly with STDIN and/or STDOUT redirected. If STDIN is redirected from a file, the characters in the file must appear in the same format and order as they would if standard DOS character input functions were used to read the keyboard. Normal characters are represented by their ASCII values; extended characters are represented by a NULL followed by an extended ASCII value.
+
+<P>
+Caution needs to be exercised when redirecting STDIN. If the last character in the file is a NULL, it will be interpreted as an extended character flag and the input function will wait indefinitely for the second half of the extended character to become available.
+
+</BOBY>
+</HTML>

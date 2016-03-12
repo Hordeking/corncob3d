@@ -1,0 +1,198 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: Charater Classification and Conversion</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Charater Classification and Conversion</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tKaractr.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tKaractr.htm#HEAD0001">Classifying Characters
+</A><BR>
+<A HREF="tKaractr.htm#HEAD0002">Converting Characters
+</A><BR>
+<A HREF="tKaractr.htm#HEAD0003">Sample Program
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit consists of functions which perform character classification and character conversion.
+<P>
+When strings are involved in character conversions, it is assumed that they are ASCIIZ strings (i.e., NULL terminated).
+
+<H2><A NAME="HEAD0001">Classifying Characters
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rkaractr.htm#_is_instr">_is_instr</A><DD>      Determines if a character matches any specified character from a given string.
+</DL>
+Spontaneous Assembly provides a rich collection of functions that determine if a character is a member of a family of characters (uppercase characters, digit characters, etc.). However, because most C compilers provide macros which perform character classification using a table look-up, C interfaces are not provided for many of the Spontaneous Assembly functions in this unit. Although the table look-up technique is very fast and tight, it requires a 257 byte table to be linked into the program. If this is unacceptable, inline assembly can be used to call Spontaneous Assembly routines which do not have the overhead of the array. A C interface is provided for <A HREF="rkaractr.htm#_is_instr">_is_instr</A> because it is generally unavailable in C libraries.
+
+<P>
+Examples of how to use the remaining Spontaneous Assembly character classification functions are given below. For each of these functions the JE condition is returned if the character matches the classification and the JNE condition is returned if it does not match the classification.
+
+<P>
+The following code assumes INLINE.H has been included:
+<PRE>
+Example 1 (<B>is_alnum</B>):                        Example 2 (<B>is_alpha</B>):
+</PRE>
+<PRE><CODE>
+    get_chr ();                                 get_chr():
+    is_alnum ();                                is_alpha();
+    jne    alnum_10                             jne  alpha_10 
+/* Alphanumeric keystroke */                 /* Handle a "non-alpha" keystroke */
+    jmp     short alnum_20                      jmp   short alpha_20 
+alnum_10:                                    alpha_10:                        
+/* Non alphanumeric keystroke */             /* Handle an "alpha" keystroke */
+alnum_20:                                    alpha_20:  
+</CODE></PRE>
+
+<PRE>
+Example 3 (<B>is_cntrl</B>):                        Example 9 (<B>is_punct</B>):
+</PRE>
+<PRE><CODE>
+    get_chr ();                                 get_chr():
+    is_cntrl ();                                is_punct();
+    jne    cntrl_20                             jne   punct_10       
+/* Handle a control keypress */              /* Punctuation character */
+    jmp     short cntrl_20                      jmp   short punct_20     
+cntrl_10:                                    punct_10:                             
+/* Handle a non-control keypress */          /* Non-punctuation character */       
+cntrl_20:                                    punct_20:                                          
+                                                put_newline ();
+</CODE></PRE>
+
+<PRE>                                     
+Example 4 (<B>is_digit</B>):                        Example 10 (<B>is_space</B>):
+</PRE>
+<PRE><CODE>
+        get_chr ();                             get_chr(): 
+        is_digit ();                            is_space():           
+         jne    digit_10                         jne  space_10                 
+/* Numeric keypress */                       /* Space character */                 
+        jmp     short digit_20                   jmp short space_20
+digit_10:                                    space_10:                                                    
+/* Non-numeric keypress */                   /* Non-space character */             
+digit_20:                                    space_20:                                         
+                                                put_newline ();
+</CODE></PRE>
+
+<PRE>                                             
+Example 5 (<B>is_graph</B>):                Example 11 (<B>is_wspace</B>):
+</PRE>
+<PRE><CODE>
+        get_chr ();                             get_chr();         
+        is_graph ();                            is_wspace();                     
+         jne    graph_10                         jne wspace_10          
+/* Graphics character */                    /* A whitespace character */                       
+        jmp     short graph_20                   jmp short wspace_20                       
+graph_10:                                  wspace_10:                                            
+/* Non-graphics character */               /* Non-whitespace character */     
+graph_20:                                  wspace_20:                                                  
+                                                 put_newline ();            
+</CODE></PRE>
+
+<PRE>                                                 
+Example 6 (<B>is_lower</B>):                      Example 12 (<B>is_xdigit</B>):    
+</PRE>
+<PRE><CODE>
+        get_chr ();                              get_chr();
+        is_lower ();                             is_xdigit();
+         jne    lower_10                          jne  xdigit_10                
+/* Lowercase character */                   /* Hexadecimal character */                           
+        jmp     short lower_20                    jmp short xdigit_20                          
+lower_10:                                   xdigit_10:        
+/* Non-lowercase character */               /* Non-hexadecimal character */                         
+lower_20:                                   xdigit_20:                             
+                                                 put_newline ();                   
+</CODE></PRE>
+
+<PRE>
+Example 7 (<B>is_upper</B>):                       Example 13 (<B>is_xspace</B>):                             
+</PRE>                                      
+<PRE><CODE>
+        get_chr ();                              get_chr();                   
+        is_upper ();                             is_xspace();                 
+         jne    is_upper_10                       jne  xspace_10                                      
+/* Uppercase character */                   /* Extended space character */     
+        jmp     short                              jmp short xspace_20        
+is_upper_20                                 xspace_10:                          
+is_upper_10:                                /* Non-extended space character */
+/* Non-uppercase character */               xspace_20:                            
+is_upper_20:                                       <A HREF="rdosio.htm#_put_newline">_put_newline</A> ();
+</CODE></PRE>
+
+<PRE>                                                                            
+Example 8 (<B>is_print</B>):                                
+</PRE>
+<PRE><CODE>
+        get_chr ();                                                  
+        is_print ();                                                     
+         jne    print_10                                           
+/* Printable character */                                                
+        jmp     short print_20                                           
+print_10:                                                          
+/* Non-printable character */                 
+print_20:                                                                
+        put_newline ();                                      
+</CODE></PRE>
+                                             
+<H2><A NAME="HEAD0002">Converting Characters
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rkaractr.htm#_to_lower">_to_lower</A><DD>      Converts an uppercase ASCII letter (A-Z) to lowercase (a-z).
+<DT><A HREF="rkaractr.htm#_to_upper">_to_upper</A><DD>      Converts a lowercase ASCII letter (a-z) to uppercase (A-Z).
+</DL>
+These functions convert ASCII alphabetic characters between uppercase and lowercase characters.
+
+<P>
+These case conversion functions only affect ASCII alphabetic characters which are not already the indicated case. Note that IBM PC international characters (characters codes above 127) are not affected by this function.
+
+<H2><A NAME="HEAD0003">Sample Program
+</A></H2>
+
+The sample program shown below uses character conversion functions to demonstrate character conversion to uppercase and to lowercase. The program is listed in its entirety.
+<PRE><CODE>
+#include <dosio.h>
+#include <charconv.h>
+#define ESC 27
+void main (void)
+{
+   char chr;
+   <A HREF="rdosio.htm#_put_str">_put_str</A> ("Press escape to exit...");
+   <A HREF="rdosio.htm#_put_newline">_put_newline</A> ();
+   <A HREF="rdosio.htm#_put_str">_put_str</A> ("Press a key... ");
+   chr = <A HREF="rdosio.htm#_get_chr">_get_chr</A> ();
+   while (chr != ESC)
+   {
+      if (chr == 0) /* ignore extended keypress */
+         <A HREF="rdosio.htm#_get_chr">_get_chr</A> ();
+      else {
+            char high,low;
+         <A HREF="rdosio.htm#_put_str">_put_str</A> ("  Character: ");
+         <A HREF="rdosio.htm#_put_chr">_put_chr</A> (chr);
+         <A HREF="rdosio.htm#_put_str">_put_str</A> ("  Uppercase: ");
+         <A HREF="rdosio.htm#_put_chr">_put_chr</A> (_to_upper (chr));
+         <A HREF="rdosio.htm#_put_str">_put_str</A> ("  Lowercase: ");
+         <A HREF="rdosio.htm#_put_chr">_put_chr</A> (_to_lower (chr));
+         <A HREF="rdosio.htm#_put_newline">_put_newline</A> ();
+         <A HREF="rdosio.htm#_put_str">_put_str</A> ("Press a key... ");
+      }
+      chr = <A HREF="rdosio.htm#_get_chr">_get_chr</A> ();
+   }
+}
+</CODE></PRE>
+The sample program shown above (CHAR.C) is provided on the distribution diskettes and may be compiled and linked using the following Microsoft C and Borland C command lines:
+
+<P>
+Microsoft C:
+<PRE><CODE>
+cl /c /I\msc\include /I\sa\include char.c
+link char,char,,\sa\lib\_sas \msc\lib\slibce
+</CODE></PRE>
+Borland C:
+<PRE><CODE>
+bcc /c /ms /I\bc\include /I\sa\include char.c
+tlink \bc\lib\c0s char,char,,\sa\lib\_sas \bc\lib\cs
+</CODE></PRE>
+</BOBY>
+</HTML>

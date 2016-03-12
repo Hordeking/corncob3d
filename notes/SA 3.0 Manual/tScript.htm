@@ -1,0 +1,2199 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: Scripted I/O</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Scripted I/O</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tScript.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tScript.htm#HEAD0001">Definitions
+</A><BR>
+<A HREF="tScript.htm#HEAD0002">Scripted Output
+</A><BR>
+<A HREF="tScript.htm#HEAD0003">Scripted Input
+</A><BR>
+<A HREF="tScript.htm#HEAD0004">Pointers in Parameter Lists
+</A><BR>
+<A HREF="tScript.htm#HEAD0005">Scripts
+</A><BR>
+<A HREF="tScript.htm#HEAD0006">Other Global Structures Affecting Scripted I/O
+</A><BR>
+<A HREF="tScript.htm#HEAD0007">Scripted Input Explained
+</A><BR>
+<A HREF="tScript.htm#HEAD0008">Scripted Input: Data Conversion
+</A><BR>
+<A HREF="tScript.htm#HEAD0009">Scripted Input: Date/Time Conversion
+</A><BR>
+<A HREF="tScript.htm#HEAD000A">Scripted Input: Overflow/Underflow
+</A><BR>
+<A HREF="tScript.htm#HEAD000B">Scripted Input: Data Validation
+</A><BR>
+<A HREF="tScript.htm#HEAD000C">Scripted Input: Data Synchronization
+</A><BR>
+<A HREF="tScript.htm#HEAD000D">Fixed-point Data Types (__FXP...)
+</A><BR>
+<A HREF="tScript.htm#HEAD000E">Scripted I/O Error Handling
+</A><BR>
+<A HREF="tScript.htm#HEAD000F">The Global S_STATUS Structure
+</A><BR>
+<A HREF="tScript.htm#HEAD0010">Script Codes: Arguments
+</A><BR>
+<A HREF="tScript.htm#HEAD0011">Script Codes: Restricted Argument Values
+</A><BR>
+<A HREF="tScript.htm#HEAD0012">Script Codes: Code/Argument Naming Convention
+</A><BR>
+<A HREF="tScript.htm#HEAD0013">Script Codes: Passing Arguments as Parameters
+</A><BR>
+<A HREF="tScript.htm#HEAD0014">Script Codes: Input Synchronization
+</A><BR>
+<A HREF="tScript.htm#HEAD0015">Script Codes: Formatted Data Conversion
+</A><BR>
+<A HREF="tScript.htm#HEAD0016">Script Codes: Console I/O
+</A><BR>
+<A HREF="tScript.htm#HEAD0017">Script Codes: Saving/Restoring Console I/O State
+</A><BR>
+<A HREF="tScript.htm#HEAD0018">Script Codes: User/Reserved
+</A><BR>
+<A HREF="tScript.htm#HEAD0019">Optimizing the Scripted I/O Functions
+</A><BR>
+<A HREF="tScript.htm#HEAD001A">Linking Requirements for Scripted I/O Functions
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit consists of functions which process scripted input/output strings with embedded codes for data conversion, console I/O, and input synchronization. Similar in principle to the C/C++ printf and scanf family of functions, this system is much faster, tighter, and more flexible than its standard C counterparts.
+
+<P>
+Because of its power and flexibility, the scripted I/O system virtually eliminates the need to call data conversion and console I/O functions directly. Using this system, a single output script can display text, change text attributes, output aligned numeric data, and draw complex borders anywhere on the screen. A single input script can reliably validate keyboard input or read all or part of a delimited ASCII file whether or not all fields in a particular record have been written.
+
+<P>
+Scripted I/O is also remarkably easy to learn and use.
+
+<H2><A NAME="HEAD0001">Definitions
+</A></H2>
+
+Each scripted I/O function accepts a script pointer and a parameter list pointer as inputs. Scripts specify how I/O is to be performed. Parameter lists specify what values, variables, and strings are to be read or written using the input or output script.
+
+<P>
+Scripts are byte strings consisting of characters and script codes. Script codes are interpreted as the script is processed; characters are processed without interpretation. Script codes may be followed by up to three 8-bit arguments per code to control the behavior of the code.
+
+<P>
+Script codes are 1, 2, or 3-byte values which have as their first byte a value in the range 0x00-0x0F, 0x7F, or 0xE0-0xFF (for <A HREF="rscript.htm#_cput_script">_cput_script</A>, the ranges are 0x00-0x1F, 0x7F-0xAF, or 0xE0-0xFF). Arguments always follow their assigned script codes and may assume any value except 0xFF (0xFF may be specified by inserting 0xFF twice in succession). All other values which are encountered in a script where a script code is expected are characters (0x10-0x7E and 0x80-0xDF; <A HREF="rscript.htm#_cput_script">_cput_script</A> treats values in the range 0x20-0x7E and 0xB0-0xDF as characters). Characters are processed without interpretation. Script codes are provided which allow literal characters or strings to be specified with values which would normally correspond to script codes.
+
+<P>
+To simplify the creation of scripts, script codes and their arguments are assigned to equates in SCRIPT.H. Examples of script code and argument equates are _END (0x00), __CHAR_F (0xFE,0xE2), and _Cdigits (0x1F). The naming convention is explained in Script Codes: Code/Argument Naming Convention, in this chapter.
+
+<P>
+Parameter lists are integer arrays which contain word-aligned immediate values and/or pointers to values. The input or output script specifies the size, type, and relative order of each expected parameter in the parameter list (e.g., byte, int, float, near, far). Entries in parameter lists are used sequentially, one at a time, as codes are encountered in the input or output script.
+
+<H2><A NAME="HEAD0002">Scripted Output
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rscript.htm#_cput_script">_cput_script</A><DD>   Uses an output script to write data to the display (console I/O system).
+<DT><A HREF="rscript.htm#_put_script">_put_script</A><DD>    Uses an output script to write data to STDOUT.
+<DT><A HREF="rscript.htm#_hput_script">_hput_script</A><DD>   Uses an output script to write data to a file or device.
+<DT><A HREF="rscript.htm#_sput_script">_sput_script</A><DD>   Uses an output script to write data to an ASCIIZ string.
+<DT><A HREF="rscript.htm#_vcput_script">_vcput_script</A><DD>  Uses an output script and a pointer to a parameter list to write data to the display (console I/O system).
+<DT><A HREF="rscript.htm#_vput_script">_vput_script</A><DD>   Uses an output script and a pointer to a parameter list to write data to STDOUT.
+<DT><A HREF="rscript.htm#_vhput_script">_vhput_script</A><DD>  Uses an output script and a pointer to a parameter list to write data to a file or device.
+<DT><A HREF="rscript.htm#_vsput_script">_vsput_script</A><DD>  Uses an output script and a pointer to a parameter list to write data to an ASCIIZ string.
+</DL>
+Each of these functions interprets an output script and performs the actions specified in the script. Each output function writes the resulting output to a different destination.
+
+<P>
+All of these functions support script codes for script flow control, formatted data conversion, and data synchronization. Only <A HREF="rscript.htm#_cput_script">_cput_script</A> supports all of the console I/O codes. <A HREF="rscript.htm#_put_script">_put_script</A> supports a very limited subset of the console I/O codes (_BEL, _BS, _TAB, _LF, and _CR). <A HREF="rscript.htm#_hput_script">_hput_script</A> and <A HREF="rscript.htm#_sput_script">_sput_script</A> do not support console I/O codes at all. Unsupported console I/O codes are treated as characters.
+
+<P>
+The _v?put_script functions provide the same functionality as the _?put_script functions, except that they expect a pointer to a parameter list instead of a list of arguments. This is the same method that is used to reference parameter lists in the assembly version of the _?put_script functions.
+
+<P>
+Each of these functions allocates a 128-byte internal buffer on the stack which is used to perform formatted data conversion. The buffer is released when the function returns.
+
+<H2><A NAME="HEAD0003">Scripted Input
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rscript.htm#_cget_script">_cget_script</A><DD>   Reads and interprets console I/O keyboard input using an input script.
+<DT><A HREF="rscript.htm#_get_script">_get_script</A><DD>    Reads and interprets input from STDIN using an input script.
+<DT><A HREF="rscript.htm#_hget_script">_hget_script</A><DD>   Reads and interprets input from a file or device using an input script.
+<DT><A HREF="rscript.htm#_sget_script">_sget_script</A><DD>   Reads and interprets an ASCIIZ string using an input script.
+<DT><A HREF="rscript.htm#_vcget_script">_vcget_script</A><DD>  Reads and interprets console I/O keyboard input using an input script and a pointer to a parameter list.
+<DT><A HREF="rscript.htm#_vget_script">_vget_script</A><DD>   Reads and interprets input from STDIN using an input script and a pointer to a parameter list.
+<DT><A HREF="rscript.htm#_vhget_script">_vhget_script</A><DD>  Reads and interprets input from a file or device using an input script and a pointer to a parameter list.
+<DT><A HREF="rscript.htm#_vsget_script">_vsget_script</A><DD>  Reads and interprets an ASCIIZ string using an input script and a pointer to a parameter list.
+</DL>
+Each of these functions uses an input script to process and interpret input data. Each of these functions processes input data from a different source.
+
+<P>
+The _v?get_script functions provide the same functionality as the _?get_script functions, except that they expect a pointer to a parameter list instead of a list of arguments. This is the same method that is used to reference parameter lists in the assembly version of the _?get_script functions.
+
+<P>
+All of these functions support script codes for script flow control, formatted data conversion, and data synchronization. Console I/O codes are not supported and are treated as characters.
+
+<P>
+Parameter Lists
+
+<P>
+Parameter lists are integer arrays of variables or values which are required to process scripts. Each element in a parameter list is a word-aligned pointer or immediate value. This word alignment is automatically enforced by the compiler if the arguments in the parameter list are passed as a variable-length argument list.
+
+<P>
+All scripted I/O functions except the _v..._script functions expect the parameters in the parameter list to be specified as arguments to the scripted I/O function. The _v..._script functions expect a pointer to the parameter list; if the pointer value is -1, no parameter list is used when the script is processed.
+
+<P>
+In the following code sample, a parameter list is passed using immediate arguments to <A HREF="rscript.htm#_cput_script">_cput_script</A>, and an equivalent parameter list is passed to <A HREF="rscript.htm#_vput_script">_vput_script</A> using a pointer:
+<PRE><CODE>
+   ...
+   float num = 1.23e5;
+   struct param_list {
+      float *xloc;
+      int pflags;
+   } params = {&num, (int)*_2_Fix_Round};
+   ...
+
+   <A HREF="rscript.htm#_cput_script">_cput_script</A>("Output float: "_FLOAT_P _30 _Arg _Currency_Thous,        /* script */
+                         &num, _2_Fix_Round);                                                     /* parameter list */
+   ...
+   <A HREF="rscript.htm#_vcput_script">_vcput_script</A>("Output float: "__FLOAT_P _30 _Arg _Currency_Thous,      /* script */
+                         &params);                                                                        /* parameter list */
+   ...
+</CODE></PRE>
+The first comma (",") separates the script string from the parameter list. With the <A HREF="rscript.htm#_cput_script">_cput_script</A> function the parameter list is automatically word-aligned by the compiler since the parameters are passed on the stack. However, every parameter in the parameter list for the <A HREF="rscript.htm#_vput_script">_vput_script</A> function must be word-aliged when it is declared. For this reason, even though the pflags parameter is a byte, it is defined as an int in the param_list structure to enforce word alignment.
+
+<P>
+WARNING!        Parameter lists must be created with care. The results can be entertaining-or disastrous-if a parameter list contains insufficient or incorrect parameters or is improperly constructed. Addresses in parameter lists are simply assumed to be correct-if they aren't, data will be written to (or read from) the specified addresses anyway.
+
+<P>
+WARNING!        In input scripts, input variables must be large enough to hold the specified data or subsequent data may be overwritten. When reading strings, the field width (width) specified with the data conversion code must not exceed the defined length of the string variable minus one byte for the terminal NULL.
+
+<H2><A NAME="HEAD0004">Pointers in Parameter Lists
+</A></H2>
+
+By default, pointers in parameter lists are assumed to be near pointers (offsets) in small data models and far pointers (segment:offset pairs) in large data models. Pointers are expected in the parameter list whenever script codes are encountered which end with ..._P, or whenever a string or an explicit address is expected. Strings are always referenced via pointers. A near or far pointer type may be explicitly specified for a specific parameter by using a script code which ends with ..._N or ..._F, respectively.
+
+<P>
+The near pointer segment is assumed to be the default data segment (where global and static non-far data are located). The near pointer override cannot be used with the HUGE memory model.
+
+<P>
+-1 may be used to indicate a NULL parameter when a pointer is expected in the parameter list. When a pointer value of -1 is encountered, a NULL parameter is assumed by the script for that parameter and script processing continues normally.
+
+<H2><A NAME="HEAD0005">Scripts
+</A></H2>
+
+Scripts are ASCIIZ strings which contain embedded codes for script flow control, input synchronization, data conversion, and console I/O functions. Scripts allow multiple input or output options to be specified along with text in a single string.
+
+<P>
+Input scripts and output scripts are similar, but they have their differences. Although output scripts support all codes supported by input scripts, input synchronization and data conversion codes are interpreted differently. This allows a single script to be used interchangeably to read and write the same data. Differences in interpretation are explained where the codes are defined.
+
+<P>
+Console I/O codes are only supported in output scripts. Furthermore, the degree of console I/O support depends on the output device supported by the specific scripted output function.
+
+<P>
+When a script is executed, it is processed a code or character at a time until the script has been exhausted. Scripts are normally processed sequentially. However, the flow of the script may be modified using flow control codes (e.g., _REP, __CALL...). Codes are interpreted as they are encountered; characters are normally processed without interpretation.
+
+<P>
+A Spontaneous Assembly script looks significantly different than an equivalent printf string. This difference is intentional. While printf() strings require less source code, scripted I/O scripts produce less executable code, they execute faster, and they are more powerful than their C counterparts.
+
+<P>
+Combining Scripts and Parameter Lists
+
+<P>
+Each script is processed using the parameter list which is specified when the scripted I/O function is called. If a parameter list offset of -1 is specified, then no parameter list is used when the script is processed. If a script is called from another script (__CALL... or __CHAIN...), then a new parameter list is usually specified. If no new parameter list is specified (-1 is specified for the address), then the calling script's parameter list is used to process the called script.
+
+<P>
+The following example demonstrates a script, including a __CHAIN to a new script without specifying a new parameter list:
+<PRE><CODE>
+#include "script.h"
+   ...
+   int time = 17;
+   float xloc = 12.7, yloc = -234.0, momentum = 159.755;
+   char m_scipt[] = "\n\rMomentum: "__FLOAT_P _10 _2_Fix_Round _Ralign " Kgm";
+   ...
+   <A HREF="rscript.htm#_cput_script">_cput_script</A>("\n\rData after elapsed time of "__CHAR_P _Nolimit _Default" seconds:"
+                   "\n\rX position: "__FLOAT_P _8 _2_Fix_Round _Ralign " m"
+                   "\n\rY position: "__FLOAT_P _8 _2_Fix_Round _Ralign " m"
+                   __CHAIN, &time, &xloc, &yloc, m_script, -1, &momentum);
+   ...
+</CODE></PRE>
+This example produces the following output:
+
+<P>
+Data after elapsed time of 17 seconds:
+<PRE>
+X position:    12.70 m
+Y position:  -234.00 m
+Momentum:     159.76 Kgm
+</PRE>
+The Global SIOOPTS Structure
+
+<P>
+A number of global scripted I/O options are described in the current sioopts structure. These options include field overflow and pad characters, field and record delimiters for I/O synchronization, and flags for disabling various types of script error checking. The behavior of the scripted I/O functions depends on the current settings for these options.
+
+<P>
+The address of the current sioopts structure is maintained in <A HREF="rscript.htm#sio_addr">sio_addr</A> (a global pointer to the sioopts structure). By changing the address of this pointer to a new sioopts structure, the behavior of the scripted I/O system can be modified at any time.
+
+<P>
+The sioopts structure is defined in SCRIPT.H as follows:
+<PRE><CODE>
+typedef struct {
+           char *        sio_fdelim;      /* address of ASCIIZ field delim string (-1=NULL) */
+           char *  sio_rdelim;    /* address of ASCIIZ record delim string (-1=NULL) */
+           char  sio_ovchr;       /* field overflow character ("*") */
+           char  sio_padchr;      /* field pad char (for L,R,C alignment) (SPACE) */
+           char  sio_eflags;      /* error check flags (disable/enable) (0) */
+} sioopts;
+</CODE></PRE>
+The default SIOOPTS structure is declared in the Spontaneous Assembly library with the default valuess shown in the comments above.
+
+<P>
+Field and record delimiters are used to enable field/record synchronization (see Scripted Input: Data Synchronization). Field/record synchronization is enabled only if non-NULL field and/or record delimiters are defined. (A NULL delimiter string is specified either with an address of -1 or by pointing to an empty string.) The string addresses are stored as near pointers in small data models (assumes DS=SS) and as far pointers in large data models.
+
+<P>
+The field overflow character is used to handle the field overflow condition when field overflow checking is disabled. On output, this character is used to write a field which is too narrow for the specified data; on input, this character is treated as an overflowed field indicator. The pad character is used for left, right, and center alignment padding of output values as well as skipping of pad characters during scripted input.
+
+<P>
+Field overflow checking may be enabled or disabled along with field underflow, numeric overflow, numeric underflow, character validation, and date/time validation by setting or clearing the appropriate bits in the sio_eflags field, as follows:
+<DL COMPACT>
+<DT>SIO_NOCHKFOV<DD>            (0x00) Field overflow does not cause an error return
+<DT>SIO_CHKFOV<DD>              (0x01) Field overflow causes an error return
+<DT>SIO_NOCHKFUND<DD>           (0x00) Field underflow does not cause an error return
+<DT>SIO_CHKFUND<DD>             (0x02) Field underflow causes an error return
+<DT>SIO_NOCHKNOV<DD>            (0x00) Numeric overflow does not cause an error return
+<DT>SIO_CHKNOV<DD>              (0x04) Numeric overflow causes an error return
+<DT>SIO_NOCHKNUND<DD>           (0x00) Numeric underflow does not cause an error return
+<DT>SIO_CHKNUND<DD>             (0x08) Numeric underflow causes an error return
+<DT>SIO_NOCHKDATE<DD>           (0x00) Invalid date/time does not cause an error return
+<DT>SIO_CHKDATE<DD>             (0x10) Invalid date/time causes an error return
+<DT>SIO_NOCHKCHAR<DD>           (0x00) Unmatched required char does not cause an error return
+<DT>SIO_CHKCHAR<DD>             (0x20) Unmatched required char causes an error return
+</DL>
+When a specific kind of error checking is disabled, no error return is generated and the error condition is handled in a consistent, logical manner. For example, if field underflow occurs and field underflow checking has been disabled, then the read is ignored and script processing continues with the next script code. If field overflow occurs, then it is handled using the field overflow character described above. For detailed explanations of each type of error checking, see Scripted Input: Overflow/underflow and Scripted I/O Error Handling in this chapter.
+
+<H2><A NAME="HEAD0006">Other Global Structures Affecting Scripted I/O
+</A></H2>
+
+Two other global data structures affect the behavior of the scripted I/O system. The current dcopts structure (which defines data conversion options) is used extensively when formatting numeric values. This structure identifies sign, exponent, and currency strings, thousands and decimal characters, the number of currency digits to the right of the decimal place, and the position of the currency string. The location of the current (active) dcopts structure is maintained in the <A HREF="rdata.htm#dc_addr">dc_addr</A> variable. See the Data Conversion technical notes for a detailed explanation of the dcopts structure.
+
+<P>
+The dtcopts structure is relied on when date and time strings are processed. This structure specifies the date format, date delimiter, time format, and time delimiter defaults for the current country as well as the 100ths of seconds delimiter and custom AM/PM strings to be used with 12-hour time format. The location of the current (active) dtcopts structure is maintained in the <A HREF="rdatetim.htm#dtc_addr">dtc_addr</A> variable. See the Date/Time Manipulation technical notes for a detailed explanation of the dtcopts        structure.
+<P>
+Scripted Output Explained
+
+<P>
+Scripted output is performed by passing output scripts to the _?put_script functions. Depending on which function is used, the output destination may be STDOUT, the screen (console I/O system), a file, or a buffer (in ASCIIZ format). Scripted output is ideal for displaying screens or values as well as for writing data in human-readable form which will subsequently be read using scripted input.
+
+<P>
+With scripted output, characters are written out whenever characters, strings, or data conversion codes are encountered in the script. Output always takes place at the position specified by the output pointer (e.g., cursor, file pointer, or string pointer). The output pointer is always advanced as data is written to the output destination.
+
+<P>
+If the output device is the screen (console I/O system), then the output pointer (cursor) is advanced in the current output direction after each character is written. Characters are always written to the active screen at the current cursor position using the current text attribute. The cursor position, cursor advance direction, and text attribute may be modified within an output script by using the supported console I/O script codes.
+
+<P>
+If a data conversion code is encountered in an output script, the next variable is read from the parameter list and its value is interpreted and written out as specified by the arguments to the data conversion code. No type checking of parameters is performed. Unused parameters at the end of a parameter list are ignored.
+
+<P>
+Output of numeric types is performed by converting numeric values to ASCII strings and formatting the result as specified in the script. Character and string types are output directly without any formatting except alignment and case conversion, if specified. Output always takes place at the current output position (e.g., cursor position or file position).
+
+<P>
+The results are undefined if the parameter list contains insufficient or incorrect parameters.
+
+<H2><A NAME="HEAD0007">Scripted Input Explained
+</A></H2>
+
+Scripted input is performed by passing input scripts to the _?get_script functions. Each scripted input function reads input data from a specific input source. Depending on which function is used, the input source may be STDIN, the keyboard (console I/O system), a file, or an ASCIIZ string. Scripted input is ideal for interpreting complex user input (e.g., "City, ST  ZIP+4") or for reading data which has been written to a file in human-readable form (e.g., a data file which may optionally be edited by the user between the time it is written out and subsequently read back in).
+
+<P>
+As a script is processed, the scripted input function maintains an input pointer which indicates the next input character to be processed from the input source. Characters are processed sequentially, one at a time, from the <A HREF="rexit.htm#start">start</A> to the end of the input source. The input pointer is always advanced past any data which is converted and read from the input source. The input pointer may also be synchronized with the script by matching, skipping, or advancing to selected input characters.
+
+<P>
+Only a single line of input data is read each time a scripted input function is called if the input source is STDIN or the keyboard; data is read a character at a time if the input source is a handle or a string. Once read, input characters are interpreted or skipped as specified in the input script. Unprocessed data at the end of the current line is discarded if the input source is STDIN or the keyboard.
+
+<P>
+WARNING!        Scripted input parameter lists must be produced with care. The results can be disastrous if an input parameter list contains insufficient or incorrect parameters. Addresses in parameter lists are simply assumed to be correct-if they aren't, data will be written to the specified addresses anyway.
+
+<P>
+WARNING!        Since no type checking or bounds checking of parameters is performed, it is important to ensure that each input parameter is large enough to hold its intended data or subsequent data may be overwritten. To avoid problems, the input parameter type should always match the data conversion code in the script. Furthermore, when reading strings, the specified string field width (width) must not exceed the defined length of the string variable minus one byte for the terminal NULL.
+
+<H2><A NAME="HEAD0008">Scripted Input: Data Conversion
+</A></H2>
+
+If a data conversion code is encountered in an input script, the data at the input pointer position is interpreted as a value. The value is interpreted as specified by the data conversion code and written into the next variable in the parameter list. No type checking of data conversion codes and parameter types is performed.
+
+<P>
+Numeric types are read by first stripping off special-purpose formatting characters (such as currency signs and thousands separators) and then converting the remaining ASCII digits. Character and string types are read directly without any formatting except case conversion, if specified.
+
+<P>
+Most of the formatting options specified with the width, precision, nformat, and other format arguments are significant during scripted input. These options are interpreted in a manner which allows data to be written and read using the same or similar scripts.
+
+<P>
+For example, the width argument limits the number of characters which will be processed on input, including leading and trailing pad characters and field overflow characters. precision limits the number of digits which will be converted to the right of the decimal point. The _Trunc and _Round options associated with precision are also significant-they determine how unused trailing digits are rounded. The _Fill option is significant (as described below). The _Fix and _Float options are ignored during scripted input.
+
+<P>
+Alignment options (specified with nformat, sformat, and align) are also significant in an input script. If any kind of alignment is specified, then the appropriate leading and/or trailing pad characters are skipped in a manner consistent with the alignment method. For example, if _Lalign is specified, then: 1) the value is read, and 2) trailing pad characters are skipped. If _Calign is specified, then 1) pad characters are skipped, 2) the value is read, and 3) any remaining pad characters are skipped. The _Fill precision option causes an appropriate number of space characters to be skipped immediately after the last decimal place (but before the exponent, if any).
+
+<P>
+Data may be successfully read with less precision than the precision at which it was written as long as the input width is greater than or equal to the output width. This is true even if field and record synchronization is not enabled. This is possible because all consecutive numeric characters within the field specified by width are skipped on input, even if some of those characters are not actually converted. However, when alignment characters are also skipped, no more than width characters will be processed for any given read, including the value itself and any pad characters.
+
+<P>
+Scripted Input: Interpretation of Leading/Trailing Strings
+
+<P>
+Leading/trailing strings and field/record delimiter strings are defined in the current dcopts, dtcopts, and sioopts     structures. These option strings receive special consideration during scripted input. When an attempt is made to match the input data to any of these strings, a case-independent match is performed (similar to <A HREF="rstring.htm#_str_cmpi">_str_cmpi</A>). In addition, space characters (0x20) within these option strings are treated as optional characters and non-space characters are treated as required characters. All characters in these option strings are processed during scripted output. A default string is used if no string is defined, according to the following table:
+<PRE>
+Global String            Default Value
+</PRE>
+<DL COMPACT>
+<DT>dc_leadplus<DD>             "+"
+<DT>dc_trailplus<DD>            NULL
+<DT>dc_leadminus<DD>            "-"
+<DT>dc_trailminus<DD>           NULL
+<DT>dc_expstr<DD>                       "e"
+<DT>dc_curstr<DD>                       Current DOS country currency string
+<DT>dtc_amstr<DD>                       " am"
+<DT>dtc_pmstr<DD>                       " pm"
+<DT>sio_fdelim<DD>              NULL
+<DT>sio_rdelim<DD>              NULL
+</DL>
+<H2><A NAME="HEAD0009">Scripted Input: Date/Time Conversion
+</A></H2>
+
+For date/time conversion, the sformat and width options are interpreted as described for numeric conversion. The dformat and tformat options are also significant on input.
+
+<P>
+Only those subfields specified in the dformat and tformat arguments are actually read and stored; the remaining fields are neither read nor stored. This means that only the specified portions of the unsigned long destination variable are modified on a successful read. It also means that the input value must be in the specified format or the field values may be interpreted incorrectly.
+
+<P>
+An invalid date/time error is returned if fewer fields were read than were expected, a required field is zero or empty, or no interpretable characters were found in a field. For example, if three date fields were expected then "//92", "2/A/92", or "11/12" would generate invalid date/time errors. The invalid date/time error is returned if numeric overflow occurs in any required field (i.e., the read value exceeds the maximum allowed value for that field). If date/time validation is disabled, then the entire date string is skipped in the above examples.
+
+<P>
+If a date or time string contains more fields than are required for the read, the leading fields must match the specified format and trailing fields are skipped. For example, if _Mdy_Noyr were specified for dformat, then "12/31" and "12/31/95" would both be read correctly. If _Mdy_Noday were specified for dformat (only month and year expected), an input string of "12/31" would be interpreted as representing month 12 of the year 2031.
+
+<P>
+The time format (12- or 24-hour) specified in tformat is significant. If 12-hour format is specified, then the scripted input function requires a am/pm indicator after the time. This indicator must match the am/pm strings specified in the current date/time conversion options structure (dtcopts), or it must match "a", "p", "am", or "pm" (case-insensitive comparison) with at most one space character between the last digit of the time and the am/pm indicator. An invalid date/time error is returned if no am/pm indicator is found when 12-hour time format has been specified. If 24-hour format is specified, then no attempt is made to match am/pm strings, nor are am/pm strings skipped if they are present. If _Cntryhr format is specified for tformat, then either 12-hour or 24-hour format is expected, as described above (depending on the setting in the current dtcopts structure). If _Flexhr format is specified for tformat, then the date is read in either 12-hour or 24-hour format, depending on the format encountered. An invalid date/time error is returned if the hour value is greater than 12 and a trailing am/pm string is encountered; or, if date/time validation is disabled, then the entire time string is skipped, including the trailing am/pm string.
+
+<P>
+Year values in date strings are read in whatever format is encountered (2-digit or 4-digit) regardless of the format specified in the dformat argument. When 2-digit year values are converted, values from 80 to 99 are assumed to represent the years 1980 through 1999; other values represent years from 2000 to 2079.
+
+<H2><A NAME="HEAD000A">Scripted Input: Overflow/Underflow
+</A></H2>
+
+Underflow and overflow are given special consideration in input scripts. Four types of underflow/overflow are handled: field underflow, numeric underflow, field overflow, and numeric overflow.
+
+<P>
+Overflow and underflow conditions generate errors if and only if error checking has been enabled by setting the appropriate flags in the current sioopts        structure. By default, all types of underflow and overflow checking are disabled. If a non-checked underflow or overflow occurs, then the read is either skipped (in the case of field underflow or overflow) or a reasonable value is returned (in the case of numeric overflow or underflow) and the entire read value is skipped.
+
+<P>
+Field underflow (no readable value present) occurs when an unsuccessful attempt is made to read a value using an input script. If field underflow error checking is disabled, field underflow is handled by ignoring the read-no value is stored in the variable. This allows default values to be handled by initializing the destination variables before the input script is processed. (If the end of the input data is encountered when a value is expected then an end-of-input condition is returned. The programmer must decided whether or not to treat this condition like field underflow by ignoring it.)
+
+<P>
+Field overflow (field overflow characters found) occurs when an attempt is made to read a field which begins with a field overflow character. If field overflow checking is disabled, field overflowis handled the same way field underflow is handled-by ignoring the read. In addition, the unreadable characters are also skipped by advancing the input pointer past no more than width consecutive field overflow characters (where width is the width specifier associated with the data conversion script code). The field overflow character is defined in the current sioopts structure.
+
+<P>
+Numeric underflow (value too small) occurs when an attempt is made to read a value which cannot be represented in the specified data type because it is too close to zero. If numeric underflow checking is disabled, numeric underflow is handled by returning a value of zero and skipping the unreadable input value. For example, if an attempt were made to read "1.2345e-6789" using __FLOAT, then 0 would be returned and the input pointer would be advanced past the entire input value. The input value is skipped by advancing the input pointer past no more than width consecutive digits and expected formatting characters.
+
+<P>
+Numeric overflow (value too large) occurs when an attempt is made to read a number which cannot be represented in the specified data type because it is too close to +/-infinity. This includes any attempt to read a negative value into an unsigned variable. Numeric overflow checking is only supported for floating-point numbers, byte integers, word integers, and fixed-point word values. If numeric overflow checking is disabled, then an undefined value is stored, the input pointer is advanced past the input value, and processing continues. The input value is skipped by advancing the input pointer past no more than width consecutive digits and formatting characters. Only expected formatting characters are skipped (as specified in the current dcopts, dtcopts, and sioopts         structures and in the nformat argument).
+
+<P>
+Technically, an attempt to read a floating-point value such as "0.0123" into an integer is not an underflow condition, though the results are the same. If any non-integer value is read into an integer, then the closest integer value is returned (i.e., 0 in the case of "0.0123") and the input pointer is advanced past the entire input value. As before, the input value is skipped by advancing the input pointer past no more than width consecutive digits and expected formatting characters.
+
+<H2><A NAME="HEAD000B">Scripted Input: Data Validation
+</A></H2>
+
+When specified, input data is checked before it is read to ensure that the input data matches the expected format. If the input data does not match, an invalid date/time or invalid character error is returned and script processing terminates immediately. An invalid character error is returned when a required character in the input script does not match the next input character. An invalid date/time error is returned when invalid date or time data is encountered (e.g., a missing field, as in "/1/92").
+
+<P>
+Invalid date/time errors and invalid character errors may be suppressed by setting the appropriate flag in the current sioopts  structure. If suppressed, then these errors are handled by ignoring the read-no value is stored-and skipping the invalid input data in a manner which is consistent with the expected input. For example, if a date is expected in "MM/DD/YY" format but only "MM/DD" is encountered, then the "MM/DD" data is skipped; if only a single numeric value is encountered then that value is skipped. An unmatched required character is ignored by treating it as an optional character and continuing-no input data is skipped.
+
+<H2><A NAME="HEAD000C">Scripted Input: Data Synchronization
+</A></H2>
+
+A major problem with scanf-type functions is the difficulty of synchronizing the input data and the script whenever the data diverges from an expected pattern. The _?get_script functions provide a straightforward solution to this problem by providing automatic field and record synchronization as well as manual synchronization of delimited ASCII data.
+
+<P>
+If field/record synchronization is enabled, the scripted input functions naturally subdivide input data into records and fields: input data is read and processed up to the next field or record delimiter, but never beyond, unless the input script explicitly advances to the next field or record. By writing field delimiters between data items and then advancing between fields after every read, the input script will always remain synchronized with the input data. This method also allows any number of input values to be defaulted by simply writing field or record delimiters with nothing between them.
+
+<P>
+Script codes are also provided to allow manual synchronization by skipping arbitrary characters up to and including a specified character, string, or character in a character set.
+<P>
+By default, field/record synchronization is disabled. It may be enabled by specifying record and field delimiters in the current sioopts        structure. These delimiters are specified as ASCIIZ strings. Most commonly, a CR/LF pair is used as the record delimiter (0x0D followed by 0x0A). Some common field delimiters are the comma (0x2C), semicolon (0x3B), and the vertical bar (0x7C) characters.
+
+<H2><A NAME="HEAD000D">Fixed-point Data Types (__FXP...)
+</A></H2>
+
+Fixed-point data conversion codes are provided for integer values which are to be interpreted as having a specified number of decimal digits fixed to the right of the decimal point. These codes allow easy input and output of values which are maintained internally as integers, yet which must be read and written with an embedded decimal point. Because fixed-point arithmetic and conversion is performed without depending on floating-point facilities (emulator, coprocessor), fixed-point values provide a fast, compact alternative to floating-point values.
+
+<P>
+Fixed-point values are commonly used to keep track of currency (dollars) with two digits to the right of the decimal point. When used in this way, the fixed-point integer values are treated as representing cents (hundredths of dollars). For example, a fixed-point integer value of 10025 would represent $100.25.
+
+<P>
+Fixed-point values are stored as integers with no indication of the location of the decimal point. Instead, the number of digits to the right of the decimal point must be supplied when a fixed-point value is to be read or written. The precision argument is used for this purpose. On output, precision designates the number of implied digits to the right of the decimal point when the internal, integer value is converted to fixed-point decimal ascii format. On input, precision specifies the number of implied decimal places to be read and stored as the least-significant digits in the internal, integer result.
+
+<P>
+For example, if an integer value of 12345 were output as an __FXPI with a precision of 2, then "123.45" would be output. Likewise, when reading "123.45" into an __FXPI with a precision of 2, the value stored would be 12345. If "123.45678" were read using __FXPI with a precision of 2 with the _Round option specified (_Round is the default), then an unsigned int value of 12346 would be read.
+
+<P>
+To prevent undesired rounding or truncation, special handling is performed when reading or writing fixed-point values in exponential formats (_Exp or _Flex). When exponential numbers are read using an __FXP... code they are first converted to non-exponential format before precision is interpreted. When fixed-point values are written as exponential numbers, all possible significant digits are written without padding with trailing zeros.
+
+<P>
+For example, If an unsigned long value of 123456789 were output in _Exp format with a precision of 5, the number would first be converted internally to 1234.56789 and would then be written as "1.23456789e03". If that ASCII result were then read with a precision of 5, the exponential format would first be converted (internally) to 1234.56789, then 5 digits would be read to the right of the decimal point giving a result of 123456789.
+
+<H2><A NAME="HEAD000E">Scripted I/O Error Handling
+</A></H2>
+
+The scripted I/O functions always terminate the current script and return an error condition under the following circumstances:
+<OL>
+<LI>    A DOS error is always returned if a DOS error occurs while attempting to process data using <A HREF="rscript.htm#_hput_script">_hput_script</A> or <A HREF="rscript.htm#_hget_script">_hget_script</A>.
+<LI>    An end-of-file error is always returned if an input script attempts to advance the input pointer past the end of the input data. However, the application must determine if the end-of-input condition is a true error. Since end-of-input is essentially field underflow of all remaining fields, the application may wish to treat end-of-input (a 1 return condition) as a normal return. The values returned in s_status.paramcnt and s_status.inprocess may be used to determine how many parameters were processed from the parameter list before end-of-input was encountered.<BR>In addition, the scripted I/O functions terminate the current script and return the following error conditions if the appropriate type of error checking is enabled:
+<LI>    An invalid character error is returned if character validation is enabled and a required character or string in an input script cannot be matched at the current input pointer position. This error is not generated if field/record synchronization is enabled and the input pointer is at end of field or end of record when a required character or string is expected. This is treated as field underflow.
+<LI>    An invalid date/time error is returned if a date/time string with missing or incomplete fields is encountered while processing an input script and while date/time validation is enabled.
+<LI>    An appropriate field/numeric underflow/underflow error is returned if the condition occurs when that type of error checking has been enabled.
+</OL>
+Overflow/underflow checking, date/time validation, and character validation may be enabled by setting the appropriate flags in the current sioopts      structure. By default, all types of error checking are DISABLED.
+
+<H2><A NAME="HEAD000F">The Global S_STATUS Structure
+</A></H2>
+
+To facilitate error recovery, the scripted I/O functions always return an error condition code as well as the number of parameters processed, the final script address, and the final parameter list address. These values are all returned in the global s_status structure. s_status is a structure of type sstat, which is defined in SCRIPT.H as follows:
+<PRE><CODE>
+struct sstat {
+           char ecode;                    /* error condition code */
+           char inprocess;                /* # of parameters in process */
+           int paramcnt;                  /* # of parameters processed */
+           char * scriptaddr;             /* final script address */
+           int * paramaddr;               /* final parameter list address
+} s_status;
+</CODE></PRE>
+To facilitate debugging and error recovery, s_status.inprocess is set to 1 as each script code is encountered which requires one or more parameters from the parameter list (i.e., each script code which is assigned to an equate which begins with two underscore characters). s_status.inprocess is reset to zero and s_status.paramcnt is incremented when the code has been successfully processed.
+
+<P>
+Script error condition codes (s_status.ecode) are defined in SCRIPT.H as follows:
+<DL COMPACT>
+<DT>SE_OK<DD>                   (0x00) No error (return 0)
+<DT>SE_EOF<DD>                  (0x01) End-of-file (return 1)
+<DT>SE_DOS<DD>                  (0x02) DOS error (e_code variable has error code)
+<DT>SE_CHR<DD>                  (0x03) Invalid character (if enabled)
+<DT>SE_DATE<DD>                 (0x04) Invalid date/time (if enabled)
+<DT>SE_FUND<DD>                 (0x05) Field underflow (if enabled)
+<DT>SE_FOV<DD>                  (0x06) Field overflow (if enabled)
+<DT>SE_NUND<DD>                 (0x07) Numeric underflow (if enabled)
+<DT>SE_NOV<DD>                  (0x08) Numeric overflow (if enabled)
+</DL>
+s_status.inprocess and s_status.paramcnt simplify debugging and error recovery by indicating the number of parameters processed by the scripting engine before the script terminated. The value in s_status.inprocess is incremented as each parameter is read from the parameter list. Then, as each script code with all of its associated arguments are successfully processed, s_status.inprocess is added to s_status.paramcnt and s_status.inprocess is reset to zero. The following output script demonstrates this process:
+<PRE><CODE>
+_cput_script(_UNSIGNED __INT_P __Arg_p _Default,...);
+</CODE></PRE>
+As this output script is processed, the following occurs:
+<OL>
+<LI>    Script processing begins. s_status.inprocess and s_status.paramcnt are initialized to zero.
+<LI>    The _UNSIGNED code is encountered. This has no effect on s_status.inprocess and s_status.paramcnt because _UNSIGNED requires no parameters from the parameter list.
+<LI>    When the __INT_P code is encountered, a single word pointer is read from the parameter list, so s_status.inprocess is incremented.
+<LI>    The __Arg_p code is then encountered as the first argument to the __INT_P script code. This causes a single, immediate byte value to be read from the parameter list, so s_status.inprocess is again incremented.
+<LI>    The last argument for the __INT_P code is then read from the script (_Default), which has no effect on s_status.inprocess because nothing is read from the parameter list.
+<LI>    The action associated with the __INT_P code is then performed (an int value is written at the current output position).<BR>
+  a.    If the int value is successfully written, s_status.inprocess is added to s_status.paramcnt and s_status.inprocess is reset to zero. s_status.ecode returns a value of SE_OK. s_status.inprocess returns a value of zero and s_status.paramcnt returns a value of two, indicating that all parameters were successfully processed.<BR>
+  b.    If the write is unsuccessful because field overflow occurs and field overflow checking is enabled, the script terminates immediately with s_status.ecode set to SE_FOV. s_status.inprocess returns a value of two and s_status.paramcnt returns a value zero, indicating that two parameters were in process but no parameters were completely processed.
+</OL>
+The script return information may be accessed as in this example:
+<PRE><CODE>
+#include "script.h"
+   ...
+   if (cget_script(...) != 0)     /* process keyboard input */
+   {
+      if (s_status.ecode = SE_DATE) { <A HREF="rdosio.htm#_put_str">_put_str</A>("date/time error."); }
+      if (s_status.paramcnt = 0) { <A HREF="rdosio.htm#_put_str">_put_str</A>("No parameters found."); }
+   ...
+   }
+</CODE></PRE>
+<H2><A NAME="HEAD0010">Script Codes: Arguments
+</A></H2>
+
+Besides containing defines for script codes, SCRIPT.H also includes equates for the arguments which are associated with these codes. Arguments occupy specified, consecutive bytes after their associated script codes. Arguments may be values, values plus optional flags, or combinations of optional flags. Arguments are usually defined directly in the script, but they may also be passed to the script via the parameter list (see Script Codes: Passing Arguments as Parameters).
+
+<P>
+Some of the Spontaneous Assembly script codes perform similar actions to the C script codes for printf and scanf while providing enhanced functionality over their C counterparts. However, the method of specifying precision, width, and format with the Spontaneous Assembly codes is different than with printf codes since the argument(s) always follow the code and are always declared using symbolic constants. For example, the codes "__FXPQUAD _20 _2 _Thous" would convert a quad integer to a numeric string with thousands delimiters, a precision of 2, and a maximum width of 20 characters.
+
+<P>
+This method of specifying script codes and arguments makes the Spontaneous Assembly scripting engine much more efficient than is possible with a printf-like syntax.
+
+<P>
+The scripting codes and arguments for Spontaneous Assembly are defined as strings in SCRIPT.H. Each argument only occupies a single byte in the script, no matter how many options are combined into the argument. For example, the script "__SHORT _20 _2 _Currency_Thous" is really represented as "\xEF\x14\x02\x0C" (four bytes) in the script string. Using printf, a total of six bytes are necessary to designate similar functionality ("%20.2f"), but this printf string provides no support for thousands delimiters or a currency symbol.
+
+<P>
+Flag options and ranges for each argument are specified in the script code documentation where the arguments are described. Where required, argument flags are combined with values or with each other by adding the flags and the value (if any) to form a single byte as shown in this example:
+<PRE><CODE>
+#include "script.h"
+           ...
+           float num = 100000;
+           <A HREF="rscript.htm#_put_script">_put_script</A>("Transactions: "__CHAR _3 _Default
+                             "\n\rBalance: "__FLOAT _10 _2_Fix _Currency_Thous,10,&num);
+           ...
+</CODE></PRE>
+In this example, _2_Fix demonstrates the case where a value is specified (2) in combination with an optional precision flag (_Fix). _Currency_Thous demonstrates a combination of nformat flags (which are not combined with a value). Flags may only be used within the arguments for which they are intended, as described in the script code documentation. All appropriate combinations of script code argument flags are defined in SCRIPT.H (see Script Codes: Formatted Data Conversion).
+
+<P>
+Wherever scripts and codes are discussed, argument names are displayed in italics, and argument names are used consistently. For example, string and charset denote an ASCIIZ string or NULL-terminated character set. script denotes any sequence of characters and/or script codes delimited with a NULL. count denotes any value in the range 0x00-0xFE. char denotes any character code in the range 0x00-0xFF. (Argument values of 0xFF are allowed only as described in the following section.)
+
+<H2><A NAME="HEAD0011">Script Codes: Restricted Argument Values
+</A></H2>
+
+WARNING!        All arguments are restricted in their use of the 0xFF value or character, since 0xFF is reserved as an escape sequence. Argument values of 0xFF may only be specified by manually defining two 0xFF (-1) codes in the script in succession or by using the following symbolic constants:
+
+<P>
+Script code, arg(s)   Parameter listDescription
+
+<DL COMPACT>
+<DT>_255<DD>(0xFF,0xFF) Specifies an argument value of 255 (-1).
+<DT>_0xFF<DD>0xFF,0xFF) Specifies an argument value of 255 (-1).
+</DL>
+In the case of a string argument (for _STRI, _TOSTR, _PUTSTRI, etc.), this rule restricting the use of 0xFF only applies to the first byte of the string. Since a string is an uninterpreted sequence of literal characters, a string argument may contain embedded -1 or 255 character codes. However, a string may not begin with -1 or 255 or it may be incorrectly interpreted as an __Arg... code. If a string must begin with -1 or 255, the _255 or _0xFF equates must be used to specify the initial character of the string.
+
+<P>
+Argument value limits and argument flags, as defined in this documentation, have been carefully selected to prevent any argument from inadvertently being assigned a value of 0xFF.
+
+<H2><A NAME="HEAD0012">Script Codes: Code/Argument Naming Convention
+</A></H2>
+
+To simplify the reading and debugging of scripts, script codes (defined in SCRIPT.H) are defined in uppercase, and argument codes (which must immediately follow script codes) are defined and shown with a single initial uppercase letter followed by lowercase letters. In addition, codes which require a parameter (in the parameter list) always begin with two leading underscore characters (__...). All other codes begin with a single leading underscore character. The convention can be seen in the preceding example.
+
+<P>
+This naming convention makes it easy to distinguish between script codes (__CHAR, __FLOAT, _NL, and _END) and arguments (_Noalign, _Fix, _Currency, _Thous). This convention also allows scripts to be quickly scanned to determine the number of parameters required in the parameter list. For example, the previous sample script (see Script Codes: Arguments) expects only two parameters: a char value and a float value.
+<P>
+Script Codes: Flow Control
+
+<P>
+Normally, scripts are processed sequentially, a byte at a time, and script codes (0x00-0x1F, 0x7F-0xAF, 0xE0-0xFF) are interpreted instead of being displayed. The following codes allow this convention to be changed by allowing characters, strings, codes, and other scripts to be embedded or called and repetitively processed inside any script. These codes are defined in SCRIPT.H.
+
+<P>
+Script code, arg(s)   Parameter listDescription
+
+<DL COMPACT>
+<DT>_END<DD> (0x00) Terminates an embedded script. A string, charset, or script embedded in a script is an ASCIIZ string and must also be delimited with   an embedded NULL or _END code.
+<DT>_REP,count<DD>  (0x01) Repeats the next character  or script code  count times. If a code follows, the code and all its arguments are executed count  times. The parameter list pointer advances as                                    each iteration is performed, if applicable, as if that iteration                                    had been explicitly defined in the                                    script. If a  _REP is preceded by another _REP,                                    then the  first _REP is ignored. A count of 0                                    is treated as a count of 1.
+<DT>_CHRI,char<DD>  (0x02) Processes char without   interpreting it.  This allows characters which would  otherwise   be interpreted as script codes   (0x00-0x1F, 0x7F-0xAF, 0xE0-0xFF)                                    to be included in the output                                        script as ASCII characters. Non-interpreted                                    characters may be included in the                                    script directly,                                    without using the _CHRI code. As                                    always, a                                    char code of 0xFF or 255 may be                   specified only     by using the _255 or _0xFF equates.
+<DT>_STRI,string<DD>(0x03) Processes string without interpreting it.                                                This allows complete strings                                    containing                                    characters which would otherwise be                                    interpreted                                    as script codes (0x01-0x1F, 0x7F-0xAF, 0xE0-0xFF) to be included in                                    an output script as                                    ASCII characters. As always, a char                                    code of                                    0xFF or 255 may be specified at the                                    beginning                                    of string only by using the _255 or                                    _0xFF                                    equates.
+<DT>_BEGIN<DD>      (0x04) Marks the beginning of an embedded script. The embedded script must be                                    delimited                                    with an _END (or a NULL) in                                    addition to the                                    NULL which terminates the main                                    script. The                                    _BEGIN code is normally used only      in                                    connection with a preceding _REP                                    code (to                                    repeat the embedded script a                                    specified number                                    of times).
+<DT>__CALL<DD>      script *,     far paramlist *
+<DT>__CALL_P<DD>   script *, paramlist *
+<DT>__CALL_N<DD>   near script *,near paramlist *
+<DT>__CALL_F<DD>   far script *, (0x05) (0x05) (0xFD,0x05)(0xFE,0x05) Calls  the script and/or parameter list  specified in the parameter list. Control returns to the current script and current parameter list when the called  script has been processed. The next   two  parameters in the current parameter    list must be  the new script address and the new  parameter  list address, respectively. Upon return, the parameter list pointer reverts to   the parameter     immediately following the script  address. No new parameter list is called if -1   is specified in   place of the new parameter list  address; instead,  the remainder of the current   parameter list is   passed to the new script and the   parameter list   position is NOT reset when the   called script has         been processed. No new script is   called and the  parameter list pointer is discarded     if -1 is   specified in place of the new   script address. (WARNING! If _REP is used with  __CALL, a separate script/parameter list pair  must be specified in the parameter list for each iteration  of the __CALL code. Use of _BEGIN/_END is usually preferred with _REP.)
+<DT>__CHAIN<DD>              script *,     (0x06) (0x06) (0xFD,0x06h<BR>paramlist *   (0xFE,0x06) Chains to the script and/or parameter list
+<DT>__CHAIN_P<DD>            script *,     specified in paramlist *   the parameter list. Control does NOT return to
+<DT>__CHAIN_N<DD>            near script *,the current script or current near parameter list. The paramlist *   next two parameters in the current
+<DT>__CHAIN_F<DD>                          parameter list far script *, must be the new script address and far paramlist the new *             parameter list address,  respectively. No new  script is called if -1 is specified  in place of the  new script address; instead, the  current script  continues execution using the  newly-specified  parameter list. No new parameter  list is called if  -1 is specified in place of the new  parameter list  address; instead, the remainder of  the current  parameter list is passed to the new  script. If this  code is preceded by _REP, then the  _REP is  ignored. Scripts which __CHAIN...  to a new  script do not need to be terminated  with a  NULL.
+<DT>__SKPPARAM,size<DD>      any           (0xFF,0x80) Advances the parameter list pointer past the next parameter in the parameter list. The next parameter is expected to be word-aligned and size bytes in length. (If size is an odd number, it is rounded to the next highest even number before advancing the parameter list pointer.) This code allows parameter lists to be used by more than one script when some parameters are not required in some scripts.
+</DL>
+As used above, string or charset denote an ASCIIZ string. count and size denote values in the range 0x00-0xFF and char denotes any character code in the range 0x00-0xFF. count, size, and char values of 0xFF must be specified by inserting two 0xFF codes in succession or by using the _255 or _0xFF equates. An initial character code of 0xFF in a string or charset must also be specified by inserting two 0xFF codes in succession or by using the _255 or _0xFF equates. A value of 0xFF may be embedded within a string or charset.
+
+<H2><A NAME="HEAD0013">Script Codes: Passing Arguments as Parameters
+</A></H2>
+
+The scripted I/O system allows individual argument values to be passed via the parameter list instead of being specified directly in the script. Among other purposes, this allows the behavior of one or more scripts to depend on a single external variable.
+
+<P>
+The following equates may be used in the script in place of any argument to specify that the argument is to be obtained from the parameter list:
+<P>
+When used in place of an immediate string or charset:
+<PRE>
+Script code, arg(s)   Parameter listDescription
+</PRE>
+<DL COMPACT>
+<DT>__Arg<DD>                char *        (0xFF,0xFB) (0xFF,0xFC) (0xFF,0xFD)
+<DT>__Arg_p<DD>              char *        (0xFF,0xFE) Reads string or
+<DT>__Arg_n<DD>              char near *   charset from
+<DT>__Arg_f<DD>              char far *    parameter list instead of script. The parameter list is expected to contain the address of the byte string which represents string or charset. If -1 is encountered in the parameter list instead of the expected address, then a NULL parameter is assumed and script processing continues. The __Arg... code always replaces the entire string or charset, including the terminating NULL.
+</DL>
+When used in place of any other argument (e.g., char, attr, count, width, precision, nformat, sformat):
+<PRE>
+Script code, arg(s)   Parameter listDescription
+
+__Arg                 char arg      (0xFF,0xFB) (0xFF,0xFC) (0xFF,0xFD)
+                      (ptr if       (0xFF,0xFE) Reads argument from
+__Arg_p               applicable)   parameter
+__Arg_n               char * arg    list instead of script. The
+__Arg_f               char near *   parameter list is
+                      arg           expected to contain the word-
+                      char far *    aligned char value
+                      arg           (or a pointer to the char value)
+                                    which is to be
+                                    used as argument.
+</PRE>
+The __Arg... codes always replace the entire argument. They MAY NOT be combined with argument flags.
+
+<H2><A NAME="HEAD0014">Script Codes: Input Synchronization
+</A></H2>
+
+Input synchronization codes allow input scripts to synchronize the input data with the variables to be read. Codes are provided for skipping required and optional characters and for locating field, record, and other delimiters in the input stream. In output scripts these codes are supported but are interpreted differently (as described with each code). All of these codes are defined in SCRIPT.H.
+
+<P>
+It should be noted that characters which appear directly in input scripts are treated as required characters. If character validation is enabled (by setting the appropriate bit in the current sioopts structure) then these characters must match characters at the current input pointer position or an error is returned. To skip optional input characters, use the _SKP... codes instead.
+
+<P>
+Field and record delimiters must be defined in the current sioopts structure or no automatic field and record synchronization is performed. In the descriptions which follow, references to field and record delimiters should be ignored in the case where no delimiters have been declared.
+
+<P>
+Script code, arg(s)   Parameter listDescription
+
+<DL COMPACT>
+<DT>_TORECORD<DD>(0xFF,0x01) Advances to next record. In an input script, this code causes the input pointer to locate and advance past the next record delimiter. In an output script, this code causes output of a record delimiter. The record delimiter is defined in the current sioopts structure. This code is ignored if no record delimiter is defined.
+<DT>_TOFIELD<DD>(0xFF,0x02) Advances to next field. In an input script, this code causes the input pointer to locate and advance past the next field delimiter, or to advance to (but not beyond) the next record delimiter, whichever is encountered first. In an output script, this code causes output of a field delimiter. The field delimiter is defined in the current sioopts structure. This code is ignored if no field delimiter is defined.
+<DT>_TOSPACE<DD>(0xFF,0x03) Advances past next space or TAB character. In an input script, this code causes the input pointer to locate and advance past the next space or TAB, or to advance to (but not beyond) the next field delimiter or record delimiter (if defined), whichever is encountered first. In an output script, this code causes a space character (0x20) to be output.
+<DT>_TOCHR,char<DD>(0xFF,0x04) Advances past next  occurrence of  char. In an input script, this code  causes the  input pointer to locate and advance  past the next  occurrence of char, or to advance  to (but not  beyond) the next field delimiter or  record  delimiter (if defined), whichever  is encountered  first. In an output script, this  code causes char  to be output.
+<DT>_TOSTR,string<DD>(0xFF,0x05) Advances past next occurrence of string. In an input script, this code causes the input pointer to locate and advance past the next occurrence of string, or to advance to (but not beyond) the next field delimiter or record delimiter (if defined), whichever is encountered first. In an output script, this code causes string to be output.
+<DT>_TOSET,charset<DD>(0xFF,0x06) Advances past next occurrence of any character in charset. In an input script, this code causes the input pointer to locate and advance past the next occurrence of any character in charset, or to advance to (but not beyond) the next field delimiter or record delimiter (if defined), whichever is encountered first. In an output script, this code causes the first character in charset to be output.
+<DT>_SKPCNT,count<DD>(0xFF,0x07) Skips a specified number of characters. In an input script, this code causes the input pointer to advance past the number of characters specified by count, or to advance to (but not beyond) the next field delimiter or record delimiter (if defined), whichever is encountered first. In an output script, this code causes count space characters (0x20) to be output.
+<DT>_SKPSPACE<DD>(0xFF,0x08) Skips an optional space or TAB character. In an input script, this code causes the input pointer to advance past an optional space or TAB character at the current input pointer position. In no case does the input pointer advance past the end of the current field or record (if field or record delimiters are defined) or past the end of the input data. In an output script, this code causes a space character (0x20) to be output.
+<DT>_SKPCHR,char<DD>(0xFF,0x09) Skips an optional occurrence of char. In an input script, this code causes the input pointer to advance past a single, optional occurrence of char at the current input pointer position. In no case does the input pointer advance past the end of the current field or record (if field or record delimiters are defined) or past the end of the input data. In an output script, this code causes char to be output.
+<DT>_SKPSTR,string<DD>(0xFF,0x0A) Skips an optional occurrence of string. In an input script, this code causes the input pointer to advance past a single, optional occurrence of string at the current input pointer position. In no case does the input pointer advance past the end of the current field or record (if field or record delimiters are defined) or past the end of the input data. In an output script, this code causes string to be output.
+<DT>_SKPSET,charset<DD>(0xFF,0x0B) Skips a single, optional occurrence of any character in charset. In an input script, this code causes the input pointer to advance past a single, optional occurrence of any character in charset at the current input pointer position. In no case does the input pointer advance past the end of the current field or record (if field or record delimiters are defined) or past the end of the input data. In an output script, this code causes the first character in charset to be output.
+<DT>_SKPSPACES<DD>(0xFF,0x0C) Skips all consecutive space or TAB characters. In an input script, this code causes the input pointer to advance past any consecutive space or TAB characters at the current input pointer position. In no case does the input pointer advance past the end of the current field or record (if field or record delimiters are defined) or past the end of the input data. In an output script, this code causes a space character (0x20) to be output.
+<DT>_SKPCHRS,char<DD>(0xFF,0x0D) Skips all consecutive occurrences of char. In an input script, this code causes the input pointer to advance past any consecutive occurrences of char at the current input pointer position. In no case does the input pointer advance past the end of the current field or record (if field or record delimiters are defined) or past the end of the input data. In an output script, this code causes char to be output.
+<DT>_SKPSTRS,string<DD>(0xFF,0x0E) Skips all consecutive occurrences of string. In an input script, this code causes the input pointer to advance past any consecutive occurrences of string at the current input pointer position. In no case does the input pointer advance past the end of the current field or record (if field or record delimiters are defined) or past the end of the input data. In an output script, this code causes string to be output.
+<DT>_SKPSETS,charset<DD>(0xFF,0x0F) Skips all consecutive occurrences of any character in charset. In an input script, this code causes the input pointer to advance past any consecutive occurrences of any character in charset at the current input pointer position. In no case does the input pointer advance past the end of the current field or record (if field or record delimiters are defined) or past the end of the input data. In an output script, this code causes the first character in charset to be output.
+<DT>_REQSPACE<DD>(0xFF,0x10) Skips a required space or TAB character. In an input script, this code causes the input pointer to advance past a single space or TAB at the current input pointer position. In an output script, this code causes a space character (0x20) to be output.
+<DT>_REQCHR,char<DD>(0x02) Skips a required character. In an input script, this code causes the input pointer to advance past a single occurrence of char at the current input pointer position. In an output script, this code causes char to be output. (This code is an alias for _CHRI.)
+<DT>_REQSTR,string<DD>(0x03) Skips a required occurrence of string. In an input script, this code causes the input pointer to advance past a single occurrence of string at the current input pointer position. In an output script, this code causes string to be output. (This code is an alias for _STRI.)
+<DT>_REQSET,charset<DD>(0xFF,0x11) Skips a single, required occurrence of any character in charset. In an input script, this code causes the input pointer to advance past a single occurrence of any character in charset at the current input pointer position. In an output script, this code causes the first character in charset to be output.
+</DL>
+<H2><A NAME="HEAD0015">Script Codes: Formatted Data Conversion
+</A></H2>
+
+The following script codes allow formatted data conversion to be specified in an input or output script. In an output script, these codes cause the next parameter in the parameter list to be formatted as an ASCII string and displayed or written to the output destination. In an input script, these codes cause a formatted ASCII value to be read from the input source and stored in the location specified in the parameter list.
+
+<P>
+These codes may be followed by as many as three parameters to specify field width, precision, and format. Symbolic constants for specifying these options are described subsequent to the code descriptions and in the reference section of the scripting functions.
+
+<P>
+Script code, arg(s)   Parameter listDescription
+
+
+<P>
+_UNSIGNED (0xE0) Specifies that the integer or fixed-point value designated by the next code (__CHAR..., __ASCINT..., __FPXQUAD..., etc.) is to be treated as an unsigned value. Unless _UNSIGNED is specified, integer values are assumed to be signed.
+<P>
+__CHAR,width          char          (0xE1) (0xE2) (0xFD,0xE2),nformat              char *        (0xFE,0xE2)
+<P>
+__CHAR_P,width        char near *   Processes a char value as a decimal,nformat char far *    ASCII
+<P>
+__CHAR_N,width                      string. In an output script, the,nformat                            char value is
+<P>
+__CHAR_F,width                      formatted as specified by nformat,nformat                            and written as an ASCII string. In an input script, a formatted char value is read at the current input pointer position, with nformat indicating allowable input formats. No more than width characters are written or skipped.
+<P>
+__INT,width           int           (0xE3) (0xE4) (0xFD,0xE4),nformat              int *         (0xFE,0xE4)
+<P>
+__INT_P,width         int near *    Processes an int value as a decimal,nformat              int far *     ASCII
+<P>
+__INT_N,width                       string. In an output script, the,nformat  int value is
+<P>
+__INT_F,width                       formatted as specified by nformat,nformat                          and written as an ASCII string. In an input script, a formatted int value is read at the current input pointer position, with nformat indicating allowable input formats. No more than width characters are written or skipped.
+<PRE>
+__LONG,width,          long         (0xE5) (0xE6) (0xFD,0xE6)           
+nformat                             (0xFE,0xE6)                         
+__LONG_P,width,        long *       Process a long value as a decimal   
+nformat                             ASCII string.                       
+__LONG_N,width,        long near *  In an output script, the long value 
+nformat                             is formatted                        
+__LONG_F,width,nformat long far *   as specified by nformat and written
+                                    as an ASCII                         
+                                    string. In an input script, a       
+                                    formatted long value                
+                                    is read at the current input        
+                                    pointer position, with              
+                                    nformat indicating allowable input  
+                                    formats. No                         
+                                    more than width characters are      
+                                    written or skipped.                 
+
+__QUAD,width,         quadptr       (0xE8) (0xE8) (0xFD,0xE8)
+nformat                             (0xFE,0xE8)
+__QUAD_P,width,nformat              Process a quad value as a decimal
+                      quadptr       ASCII string.
+__QUAD_N,width,                     In an output script, the quad value
+nformat                             is formatted
+__QUAD_F,width,       quadnptr      as specified by nformat and written
+nformat                             as an ASCII
+                                    string. In an input script, a
+                      quadfptr      formatted quad value
+                                    is read at the current input
+                                    pointer position, with
+                                    nformat indicating allowable input
+                                    formats. No
+                                    more than width characters are
+                                    written or
+                                    skipped.
+
+  __ASCCHAR,width,radi char          (0xFF,0x20) (0xFF,0x21)
+  x,align                           (0xFD,0xFF,0x21)
+  __ASCCHAR_P,width,ra              (0xFE,0xFF,0x21) Processes a char
+  dix,align                         value as an
+   __ASCCHAR_N,width,rchar *        ASCII string in a specified radix.
+   adix,align                       In an output
+  __ASCCHAR_F,width,ra              script, the char value is aligned
+  dix,align           char near *   as specified by
+                                    align and written as an ASCII
+                                    string in the
+                      char far *    given radix. In an input script, a
+                                    formatted char
+                                    value in the given radix is read at
+                                    the current
+                                    input pointer position, with align
+                                    indicating
+                                    allowable input formats. No more
+                                    than width
+                                    characters are written or skipped.
+
+__ASCINT,width,       __ASCINT_F,wid int
+radix,align           th,radix,align
+  __ASCINT_P,width,rad              int *
+  ix,align
+  __ASCINT_N,width,rad              int near *
+  ix,align
+
+                                    int far *
+
+                                    (0xFF,0x22) (0xFF,0x23)
+                                    (0xFD,0xFF,0x23)
+                                    (0xFE,0xFF,0x23) Processes an int
+                                    value as an
+                                    ASCII string in a specified radix.
+                                    In an output
+                                    script, the int value is aligned as
+                                    specified by
+                                    align and written as an ASCII
+                                    string in the
+                                    given radix. In an input script, a
+                                    formatted int
+
+                                    value in the given radix is read at
+                                    the current
+                                    input pointer position, with align
+                                    indicating
+                                    allowable input formats. No more
+                                    than width
+                                    characters are written or skipped.
+
+  __ASCLONG,width,radix, long          (0xFF,0x24) (0xFF,0x25)
+  align                                (0xFD,0xFF,0x25)
+  __ASCLONG_P,width,radix,              (0xFE,0xFF,0x25) Processes a long
+  align                  long *        value as an
+  __ASCLONG_N,width,radix,              ASCII string in a specified radix.
+  dix,align                         In an output
+  __ASCLONG_F,width,radix, long near *   script, the long value is aligned
+  align                             as specified by
+                                    align and written as an ASCII
+                          long far *    string in the
+                                    given radix. In an input script, a
+                                    formatted long
+                                    value in the given radix is read at
+                                    the current
+                                    input pointer position, with align
+                                    indicating
+                                    allowable input formats. No more
+                                    than width
+                                    characters are written or skipped.
+
+  __ASCQUAD,          quad          (0xFF,0x27) (0xFF,0x27)
+  width,radix,align                 (0xFD,0xFF,0x27)
+   __ASCQUAD_P,                     (0xFE,0xFF,0x27) Processes a quad
+   width,             quadptr       value as an
+   radix,align                      ASCII string in a specified radix.
+  __ASCQUAD_N,                      In an output
+  width,              quadnptr      script, the quad value is aligned
+  radix,align                       as specified by
+  __ASCQUAD_F,                      align and written as an ASCII
+  width,              quadfptr      string in the
+  radix,align                       given radix. In an input script, a
+                                    formatted quad
+                                    value in the given radix is read at
+                                    the current
+                                    input pointer position, with align
+                                    indicating
+                                    allowable input formats. No more
+                                    than width
+                                    characters are written or skipped.
+
+  __FXPINT,width,precision, int     (0xE9) (0xEA) (0xFD,0xEA)
+    nformat                         (0xFE,0xEA)
+  __FXPINT_P,width,precision,       Processes a fixed-point int integer,
+    nformat                  int *   value as a
+  __FXPINT_N,width,pre              decimal ASCII string. In an output
+  cision,nformat      int near *    script, the int
+  __FXPINT_F,width,pre              value is formatted as specified by
+  cision,nformat                    nformat and
+                      int far *     written as an ASCII string with
+                                    precision digits
+                                    forced to the right of the decimal
+                                    point. In an
+                                    input script, a formatted, fixed-
+                                    point int value is
+                                    read at the current input pointer
+                                    position and
+                                    stored as an integer value with
+                                    exactly precision
+                                    digits assumed to the right of the
+                                    decimal point.
+                                    No more than width characters are
+                                    written or
+                                    skipped.
+
+  __FXPLONG,width,precision, long   (0xEB) (0xEC) (0xFD,0xEC)
+  nformat                     (0xFE,0xEC)
+  __FXPLONG_P,width,precision,      Processes a fixed-point long
+  nformat                    long *  integer value as a
+  __FXPLONG_N,width,precision,      decimal ASCII string. In an output
+  nformat                           script, the
+  __FXPLONG_F,width,precsion, long near *   long value is formatted as
+  nformat                           specified by nformat
+                                    and written as an ASCII string with
+                                    precision
+                      long far *    digits forced to the right of the
+                                    decimal point. In
+                                    an input script, a formatted,
+                                    fixed-point long
+                                    value is read at the current input
+                                    pointer
+                                    position and stored as an integer
+                                    value with
+                                    exactly precision digits assumed to
+                                    the right of
+                                    the decimal point. No more than
+                                    width
+                                    characters are written or skipped.
+
+  __FXPQUAD,width,prec__FXPQUAD_F,wi quadptr
+  ision,nformat       dth,precision,
+   __FXPQUAD_P,width,p nformat       quadptr
+   recision,nformat
+   __FXPQUAD_N,width,p              quadnptr
+   recision,nformat
+
+                                    quadfptr
+
+
+                                    (0xEE) (0xEE) (0xFD,0xEE)
+                                    (0xFE,0xEE)
+                                    Processes a fixed-point quad
+                                    integer value as a
+                                    decimal ASCII string. In an output
+                                    script, the
+                                    quad value is formatted as
+                                    specified by nformat
+                                    and written as an ASCII string with
+                                    precision
+                                    digits forced to the right of the
+                                    decimal point. In
+                                    an input script, a formatted,
+                                    fixed-point quad
+
+                                    value is read at the current input
+                                    pointer
+                                    position and stored as an integer
+                                    value with
+                                    exactly precision digits assumed to
+                                    the right of
+                                    the decimal point. No more than
+                                    width
+                                    characters are written or skipped.
+
+  __FLOAT,width,precis float         (0xEF) (0xF0) (0xFD,0xF0)
+  ion,nformat                       (0xFE,0xF0)
+  __FLOAT_P,width,prec              Processes a float value as a
+  ision,nformat       float *       decimal ASCII
+  __FLOAT_N,width,prec              string. In an output script, the
+  ision,nformat                     float value is
+  __FLOAT_F,width,prec float near *  formatted as specified by nformat
+  ision,nformat                     and written as
+                                    an ASCII string. In an input
+                      float far *   script, a formatted
+                                    float value is read at the current
+                                    input pointer
+                                    position, with nformat indicating
+                                    allowable input
+                                    formats. No more than precision
+                                    digits are
+                                    stored or written to the right of
+                                    the decimal
+                                    place, and no more than width total
+                                    characters
+                                    are written or skipped.
+
+  __DOUBLE,width,preci double        (0xF1) (0xF2) (0xFD,0xF2)
+  sion,nformat                      (0xFE,0xF2)
+  __DOUBLE_P,width,pre              Processes a double value as a
+  cision,nformat      double *      decimal ASCII
+  __DOUBLE_N,width,pre              string. In an output script, the
+  cision,nformat                    double value is
+  __DOUBLE_F,width,pre double near * formatted as specified by nformat
+  cision,nformat                    and written as
+                      double far *  an ASCII string. In an input
+                                    script, a formatted
+                                    double value is read at the current
+                                    input pointer
+                                    position, with nformat indicating
+                                    allowable input
+                                    formats. No more than precision
+                                    digits are
+                                    stored or written to the right of
+                                    the decimal
+                                    place, and no more than width total
+                                    characters
+                                    are written or skipped.
+
+  __LDOUBLE,width,prec long double   (0xF3) (0xF4) (0xFD,0xF4)
+  ision,nformat                     (0xFE,0xF4)
+  __LDOUBLE_P,width,pr              Processes a long double value as a
+  ecision,nformat     long double * decimal
+  __LDOUBLE_N,width,pr              ASCII string. In an output script,
+  ecision,nformat           long    the long
+   __LDOUBLE_F,width,p      double  double value is formatted as
+   recision,nformat         near *  specified by
+                                    nformat and written as an ASCII
+                      long double   string. In an
+                      far *         input script, a formatted long
+                                    double value is
+                                    read at the current input pointer
+                                    position, with
+                                    nformat indicating allowable input
+                                    formats. No
+                                    more than precision digits are
+                                    stored or written
+                                    to the right of the decimal place,
+                                    and no more
+                                    than width total characters are
+                                    written or
+                                    skipped.
+
+  __BCD,width,        bcdptr        (0xFF,0x29) (0xFF,0x29)
+  nformat                           (0xFD,0xFF,0x29)
+   __BCD_P,width,                   (0xFE,0xFF,0x29) Processes a 10-
+   nformat            bcdptr        byte packed
+   __BCD_N,width,                   bcd value as a decimal ASCII
+   nformat            bcdnptr       string. In an
+  __BCD_F,width,                    output script, the bcd value is
+  nformat             bcdfptr       formatted as
+                                    specified by nformat and written as
+                                    an ASCII
+                                    string. In an input script, a
+                                    formatted bcd value
+                                    is read at the current input
+                                    pointer position, with
+                                    nformat indicating allowable input
+                                    formats. No
+                                    more than width total characters
+                                    are written or
+                                    skipped.
+</PRE>
+Refer to the Data Conversion technical notes for information about the bcd and bcdptr typedefs.
+<PRE>
+__NEARPTR,width, __NEARPTR_N,wi void near *
+sformat dth,sformat   void near * *
+__NEARPTR_P,width,sf__NEARPTR_F,wi
+ormat               dth,sformat   void near * near *
+
+                                    void near * far *
+
+                                    (0xFF,0x2A) (0xFF,0x2B)
+                                    (0xFD,0xFF,0x2B)
+                                    (0xFE,0xFF,0x2B) Processes a near
+                                    pointer
+                                    (offset) as a four-digit
+                                    hexadecimal number. In
+                                    an output script, the near pointer
+                                    value is
+
+                                    formatted as specified by nformat
+                                    and written as
+                                    a 4-digit hexadecimal string. In an
+                                    input script,
+                                    a formatted, 4-digit hexadecimal
+                                    near pointer is
+                                    read at the current input pointer
+                                    position, with
+                                    nformat indicating allowable input
+                                    formats. No
+                                    more than width total characters
+                                    are written or
+                                    skipped.
+
+__FARPTR,width,       void far *    (0xFF,0x2C) (0xFF,0x2D)
+sformat               void far * *  (0xFD,0xFF,0x2D)
+__FARPTR_P,width,                   (0xFE,0xFF,0x2D) Processes a far
+sformat               void far *    pointer
+                      near *        (segment:offset) in 4-digit:4-digit
+__FARPTR_N,width,                   hexadecimal
+sformat               void far *    format. In an output script, the
+                      far *         far pointer value
+                                    is formatted as specified by
+__FARPTR_F,width,                   nformat and written
+sformat                             as a 4-digit:4-digit hexadecimal
+                                    string. In an
+                                    input script, a formatted, 4-
+                                    digit:4-digit
+                                    hexadecimal far pointer is read at
+                                    the current
+                                    input pointer position, with
+                                    nformat indicating
+                                    allowable input formats. No more
+                                    than width
+                                    total characters are written or
+                                    skipped.
+
+  __DATE,width,dformat long          (0xF5) (0xF6) (0xFD,0xF6)
+  ,sformat                          (0xFE,0xF6)
+  __DATE_P,width,dform              Processes date information in a
+  at,sformat          long *        long value as an
+  __DATE_N,width,dform              ASCII date string. In an output
+  at,sformat                        script, the long
+  __DATE_F,width,dform long near *   date information is formatted as
+  at,sformat                        specified by
+                                    dformat and sformat and written as
+                      long far *    an ASCII
+                                    string. In an input script, a
+                                    formatted date is
+                                    read at the current input pointer
+                                    position into the
+                                    long date variable, with dformat
+                                    and sformat
+                                    indicating allowable input formats.
+                                    No more
+                                    than width total characters are
+                                    written or
+                                    skipped.
+
+  __TIME,width,tformat long          (0xF7) (0xF8) (0xFD,0xF8)
+  ,sformat                          (0xFE,0xF8)
+  __TIME_P,width,tform              Processes time information in a
+  at,sformat          long *        long value as an
+  __TIME_N,width,tform              ASCII time string. In an output
+  at,sformat                        script, the long
+  __TIME_F,width,tform long near *   time information is formatted and
+  at,sformat                        written as
+                                    specified by tformat and sformat
+                      long far *    and written as
+                                    an ASCII string. In an input
+                                    script, a formatted
+                                    time is read at the current input
+                                    pointer position
+                                    into the long time variable, with
+                                    tformat and
+                                    sformat indicating allowable input
+                                    formats. No
+                                    more than width total characters
+                                    are written or
+                                    skipped.
+
+  __CHARACTER,        char          (0xF9) (0xFA) (0xFD,0xFA)
+  width,sformat       char *        (0xFE,0xFA)
+  __CHARACTER_P,      char near *   Processes a single, formatted ASCII
+  width,sformat       char far *    character.
+  __CHARACTER_N,                    In an output script, the specified
+  width,sformat                     ASCII
+  __CHARACTER_F,                    character is formatted, aligned,
+  width,sformat                     and written as
+                                    specified by sformat within a total
+                                    field width of
+                                    width characters. In an input
+                                    script, an ASCII
+                                    character is read from the current
+                                    input pointer
+                                    position into the specified
+                                    variable, with sformat
+                                    indicating allowable input formats.
+                                    No more
+                                    than width total characters are
+                                    written or
+                                    skipped.
+
+__STRING,             char *        (0xFB) (0xFC) (0xFD,0xFC)
+width,                char *        (0xFE,0xFC)
+sformat               char near *   Processes a formatted string. In an
+__STRING_P,           char far *    output script,
+width,                              the specified string is formatted,
+sformat                             aligned, and
+__STRING_N,width,sform              written as specified by sformat
+at                                  within a total
+  __STRING,
+  width,
+  sformat
+
+                                    field width of width characters. In
+                                    an input
+                                    script, a string is read from the
+                                    current input
+                                    pointer position into the specified
+                                    string
+                                    variable, with sformat indicating
+                                    allowable input
+                                    formats. No more than width total
+                                    characters are
+                                    written or skipped.
+</PRE>
+As used above, width denotes the maximum width of the output field in characters and precision denotes the maximum or required number of numeric digits to the right of the decimal point. radix denotes the radix of the ASCII numeric value. dformat and tformat denote date and time formatting options, and the nformat and sformat arguments denote numeric and string formatting options.
+
+<P>
+width, precision, and radix are specified directly in the script as single-byte binary values combined with their corresponding formatting options, defined below. Options are combined with values by adding or ORing the option flags with the values. To deal with compiler limitations, all the possible combinations of options and values have been predefined in SCRIPT.H. For example, a precision of _23_Fix specifies a fixed precision of 23 digits to the right of the decimal point.
+
+<P>
+nformat, sformat, dformat, tformat, and align are specified directly in the script as single-byte values and are composed entirely of formatting option flags. These flags (defined below) have been defined for all possible flag combinations in SCRIPT.H. For example, an nformat of _Noexp_Right_Thous specifies right-aligned, non-exponential output with thousands separators inserted to the left of the decimal point.
+
+<P>
+WARNING!        For Microsoft compilers, the /EP option must be used when the symbolic constants in SCRIPT.H are used to define scripts. This requirement arises because many of the symbolic constants exceed the preprocessor default width of 32 characters. If the /EP switch is used within the PWB, the preprocessed file will be compiled and linked automatically. If the /EP switch is used on the command line, the resulting .I file can be compiled and linked manually.
+
+<P>
+The following formatting options apply to nformat, sformat, and align:
+<DL COMPACT>
+<DT>_Noalign<DD>       (0x00) No alignment is performed. The value is simply written at the current position. On input, no skipping of leading or trailing pad characters is performed.
+<DT>_Lalign<DD>(0x80) The result is left-aligned by padding right with the current pad character. Pad characters are added only until the total number of output characters equals width. On input, trailing pad characters are skipped. The pad character is specified in the current sioopts structure.
+<DT>_Ralign<DD>(0x40) The result is right-aligned by padding left with the current pad character. Pad characters are added only until the total number of output characters equals width. On input, leading pad characters are skipped. The pad character is specified in the current sioopts structure.
+<DT>_Calign<DD>(0xC0) The result is center-aligned by padding left and right with an equal number of pad characters. Pad characters are added only until the total number of output characters equals width. If an odd number of pad characters is required, the additional character is padded on the right. On input, leading and trailing pad characters are skipped. The pad character is specified in the current sioopts structure.
+<DT>_Zalign<DD>(0x20) The result is right-aligned by padding left with leading zeros ("0"). Leading zeros are always added to the immediate left of the most-significant digit of the result (to the right of leading currency and sign characters) and are never separated by thousands separators. Zeros are added only until the total number of output characters equals width. On input, this option is ignored.
+</DL>
+The following options apply to nformat only:
+<DL COMPACT>
+<DT>_Noplus<DD>(0x00) No plus sign is written if the value is positive. On input, no plus sign is allowed.
+<DT>_Plus<DD>  (0x10) A plus sign is written if the value is positive. On input, a plus sign is allowed and is specifically checked for. The plus sign is read or written using the leading/trailing plus sign strings which are specified in the current dcopts structure.
+<DT>_Nocurrency<DD>    (0x00) No currency symbol is inserted into the result. On input, no currency symbols are allowed.
+<DT>_Currency<DD>      (0x08) A currency symbol is inserted into the result in the position specified in the current dcopts structure. On input, currency symbols are checked for and removed if present. The currency symbol and insertion position are specified in the current dcopts structure.
+<DT>_Nothous<DD>       (0x00) Thousands separators are not used in the result. On input, thousands separators are not allowed.
+<DT>_Thous<DD> (0x04) Thousands separators are used in the result. On input, thousands separators are allowed. Separators appear only to the left of the decimal point.
+<DT>_Noexp<DD> (0x00) The result is written in non-exponential form. Overflow characters are output if the result exceeds width. On input, exponential format is specifically disallowed; if an exponential number is read then only the mantissa will be converted (the exponent will be ignored).
+<DT>_Exp<DD>   (0x01) The result is written in exponential form. Overflow characters are written if the result exceeds width. On input, exponential format is allowed. This option is ignored if specified with an __ASC... code.
+<DT>_Flex<DD>  (0x02) The result is written in non-exponential form if possible; precision indicates the maximum or required number of digits to the right of the decimal point. On input, exponential format is allowed. This format supports all possible output values in a more consistent and visually pleasing form than the "G" or "g" formats supported by C. The result is written in exponential form if the non-exponential result would exceed width. If exponential form must be used, the maximum possible number of digits are written to the right of the decimal point; overflow characters are written instead if the exponential result would exceed width. This option is ignored if specified with an __ASC... code.
+</DL>
+The following options apply to sformat only:
+<DL COMPACT>
+<DT>_Nocase<DD>(0x00) Characters are processed without case conversion.
+<DT>_Upper<DD> (0x01) Characters are converted to uppercase as they are processed. Only standard ASCII characters in the range 0x61-0x7A are converted.
+<DT>_Lower<DD> (0x02) Characters are converted to lowercase as they are processed. Only standard ASCII characters in the range 0x41-0x5A are converted.
+</DL>
+Symbolic constants for all valid combinations of nformat options are defined in SCRIPT.H. The exponential format option is always specified first, followed by the alignment option, followed by all other non-default options (options not equal to 0x00) in alphabetical order. Default options (options equal to 0x00) may be omitted. For example: _Noexp_Ralign, _Flex_Calign_Plus, _Ralign_Currency_Plus_Thous, _Lalign_Currency.
+
+<P>
+The following options apply to dformat:
+<DL COMPACT>
+<DT>_Cntrydate<DD>     (0x00) Day, month, and year fields are processed in the order specified in the current dtcopts structure. This option allows dates to be processed in a country-independent manner.
+<DT>_Dmy<DD>   (0x01) The date is read or written in DAY/MONTH/YEAR order.
+<DT>_Ymd<DD>   (0x02) The date is read or written in YEAR/MONTH/DAY order.
+<DT>_Mdy<DD>   (0x03) The date is read or written in MONTH/DAY/YEAR order.
+<DT>_Noyr<DD>  (0x04) Suppresses YEAR in the date string.
+<DT>_Nomon<DD> (0x08) Suppresses MONTH in the date string.
+<DT>_Noday<DD> (0x10) Suppresses DAY in the date string.
+<DT>_Padmon<DD>(0x00) The MONTH field is padded with a leading zero, if required, to force two digits on output. Ignored on input.
+<DT>_Nopadmon<DD>      (0x20) Suppresses zero padding of the MONTH field; the MONTH is output as one or two digits. Ignored on input.
+<DT>_Padday<DD>(0x00) The DAY field is padded with a leading zero, if required, to force two digits on output. Ignored on input.
+<DT>_Nopadday<DD>      (0x40) Suppresses zero padding of the DAY field, so the DAY is output as either one or two digits. Ignored on input.
+<DT>_2digyr<DD>(0x00) The YEAR is output as a 2-digit number (the century is omitted). Ignored on input.
+<DT>_4digyr<DD>(0x80) The YEAR is output as a 4-digit number. Ignored on input.
+</DL>
+Symbolic constants for all valid combinations of dformat options are defined in SCRIPT.H. The _Dmy, _Ymd, _Mdy, or _Cntrydate option is always specified first, followed by suppress options in alphabetical order, followed by pad options in alphabetical order, followed by the year format option. Default options (value equal to 0x00) may be omitted; _Padmon and _Padday are defaults and are always omitted. For example: _Mdy, _Ymd_Noday_Nopadmon_4digyr, _Dmy_4digyr, _Ymd_Nopadday_Nopadmon_4digyr.
+
+<P>
+The following options apply to tformat:
+<DL COMPACT>
+<DT>_Flexhr<DD>(0x00) On input, the time is read in either 12-hour or 24-hour format, depending on the format encountered. Trailing am/pm strings are allowed only for 12-hour times; an invalid date/time error is returned if an am/pm string is encountered after a 24-hour time. On output, the time is processed using the format (12-hour or 24-hour) specified in the current dtcopts structure. This option allows time strings to be processed in a country-independent manner while allowing for time strings which may have been written in a different format.
+<DT>_12hr<DD>  (0x01) Specifies 12-hour time format with trailing am/pm strings.
+<DT>_24hr<DD>  (0x02) Specifies 24-hour time format.
+<DT>_Cntryhr<DD>       (0x03) On both input and output, the time is processed using the format (12-hour or 24-hour) specified in the current dtcopts structure. This option allows time strings to be processed in a country-independent manner.
+<DT>_Nohr<DD>  (0x04) Suppresses the HOUR field in the time string.
+<DT>_Nomin<DD> (0x08) Suppresses the MINUTES field in the time string.
+<DT>_Nosec<DD> (0x10) Suppresses the SECONDS field in the time string.
+<DT>_No100ths<DD>      (0x20) Suppresses the 100THS (hundredths of seconds) field in the time string.
+<DT>_Padtime<DD>       (0x00) The left-most time field is padded with a leading zero if required to ensure output of two digits. (The remaining fields are always zero padded to two digits.) This option is ignored on input.
+<DT>_Nopadtime<DD>     (0x40) Suppresses zero padding of the left-most time field, so this field is output as either one or two digits. (The remaining fields are always zero padded to two digits.) This option is ignored on input.
+</DL>
+Symbolic constants for all valid combinations of tformat options are defined in SCRIPT.H. The hour format (_12hr, _24hr, _Flexhr, or _Cntryhr) option is always specified first, followed by suppress options in order of significance, followed by pad options in alphabetical order. Default options (value equal to 0x00) may be omitted. For example: _12hr, _24hr_Nosec_No100ths, _Cntryhr_No100ths_Nopadtime.
+
+<P>
+The following options apply to precision:
+<DL COMPACT>
+<DT>precision<DD>      (0..30, or _Cdigits) Specifies the maximum or required number of digits to the right of the decimal point. When used with a __FXP... code, precision indicates the number of digits to the right of the decimal point when the internal value is treated as a decimal number. No decimal point and no trailing digits are written if precision is zero.
+<DT>_Cdigits<DD>       (0x1F) The number of currency digits specified in the current dcopts structure is to be used as the value for precision. This allows currency amounts to be processed in a country-independent manner whether or not a currency symbol is written with the result.
+<DT>_Fix<DD>   (0x00) Forces precision digits to the right of the decimal point by appending trailing zeros if required. This option is ignored on input.
+<DT>_Float<DD> (0x80) Allows at most precision digits to the right of the decimal point. Trailing zeros are not written, so the actual number of precision digits varies. In addition, the decimal point is suppressed if no digits appear to the right of the decimal point. This option is ignored on input.
+<DT>_Fill<DD>  (0x40) Forces precision characters (digits and space characters) to the right of the decimal point. Trailing spaces are written in place of trailing zeros if precision is greater than the number of significant digits in precision. If the decimal point is suppressed, it is also written using the space character. (Note that this inserts space characters between the mantissa and exponent in exponential format.) This maintains decimal alignment without appending trailing zeros to the result. This option causes trailing space characters to be skipped on input.
+<DT>_Round<DD> (0x00) The final significant digit of the result is rounded if required. "Round to nearest" is the rounding method employed. (If both destinations are equally near, then "rounding away from zero" is performed).
+<DT>_Trunc<DD> (0x20) The final digit of the result is not rounded. Less significant digits are truncated.
+</DL>
+Symbolic constants for all valid combinations of precision options are defined in SCRIPT.H. The numeric value of precision (or _Cdigits) is always specified first with a leading underscore, followed by any other options in alphabetical order. Default options (options with a value of 0x00) may be omitted. For example: _15, _Cdigits, _0_Round, _2_Float, _10_Fix_Trunc.
+
+<P>
+The following options apply to width:
+<DL COMPACT>
+<DT>width<DD>  (0..126) Specifies the total width of the input or output field, in characters. Under no conditions will more than width characters beprocessed. A width of zero (_Nolimit) specifies the maximum possible field width (at least 126 characters).
+<DT>_Nolimit<DD>       (0x00) Designates the maximum supported width (at least 126 characters).
+</DL>
+WARNING!        When reading strings, the string field width (width) must not exceed the defined length of the destination string variable minus one byte for the terminal NULL or subsequent data will be overwritten.
+
+<P>
+The following options apply to radix:
+<DL COMPACT>
+<DT>radix<DD>  (2..36) The result is written or read in the base indicated by radix. radix must be in the range 2..36 (2 denotes binary, 8 denotes octal, 16 denotes hexadecimal, etc.).
+</DL>
+Many of these formatting options depend on values which are maintained in the current dcopts and dtcopts structures. See the Data Conversion technical notes and Date/Time Manipulation technical notes for more information about these structures and their options.
+
+<H2><A NAME="HEAD0016">Script Codes: Console I/O
+</A></H2>
+
+The following codes make all applicable console I/O functionality available within output scripts. Because these codes access the console I/O system directly, they may only be used in scripts which will be interpreted by <A HREF="rscript.htm#_cput_script">_cput_script</A>. Use of these codes with any other scripted I/O function will produce undefined results. (The only exceptions are _BEL, _BS, _TAB, _LF, and _CR which may be used with <A HREF="rscript.htm#_put_script">_put_script</A> since STDOUT will interpret them correctly).
+
+<P>
+Note that when a console I/O code modifies the behavior of the console I/O system, those changes remain in effect after the script has been processed. For example, if the _ATTR code is used to select a new text attribute, then that attribute remains in effect even after the script has been processed. See Script Codes: Saving/Restoring the Console I/O State for additional codes which may be used to preserve the console I/O state within a script.
+<PRE>
+Script code, arg(s)   Parameter listDescription
+
+
+_BEL                  -             (0x07) Beep. Same as <A HREF="rconsole.htm#_cput_beep">_cput_beep</A>.
+
+_BS                   -             (0x08) Backspace. Moves the cursor
+                                    once in the
+                                    direction opposite the current
+                                    cursor advance
+                                    direction. Same as <A HREF="rconsole.htm#_move_back">_move_back</A>.
+
+_TAB                  -             (0x09) Tab. Advances the cursor to
+                                    the next
+                                    screen column position which is a
+                                    multiple of
+                                    eight columns from the left edge of
+                                    the current
+                                    clipping region. Same as
+                                    <A HREF="rconsole.htm#_goto_x">_goto_x</A>((int(x/8)+1)*8).
+
+_LF                   -             (0x0A) Line feed. Moves the cursor
+                                    down one
+                                    row without changing the current
+                                    column. Same
+                                    as <A HREF="rconsole.htm#_move_down">_move_down</A>.
+
+_NL                   -             (0x0B) Newline. Same as
+                                    <A HREF="rconsole.htm#_cput_newline">_cput_newline</A>.
+
+_FF                   -             (0x0C) Form feed. Clears the entire
+                                    current
+                                    window or screen (even if a
+                                    clipping region is
+                                    enabled).
+
+_CR                   -             (0x0D) Carriage return. Moves the
+                                    cursor to the
+                                    left-most column of the current
+                                    clipping region.
+                                    Same as <A HREF="rconsole.htm#_goto_left">_goto_left</A>.
+
+_NEXT                 -             (0x16) Move cursor to next cursor
+                                    position.
+                                    Moves the cursor once in the
+                                    current cursor
+                                    advance direction. Same as
+                                    <A HREF="rconsole.htm#_move_next">_move_next</A>.
+
+_UP                   -             (0x17) Move cursor up. Moves the
+                                    cursor up
+                                    one row. Same as <A HREF="rconsole.htm#_move_up">_move_up</A>.
+
+_RIGHT                -             (0x18) Move cursor right. Moves the
+                                    cursor
+                                    right one column. Same as
+                                    <A HREF="rconsole.htm#_move_right">_move_right</A>.
+
+_LEFT                 -             (0x19) Move cursor left. Moves the
+                                    cursor left
+                                    one column. Same as <A HREF="rconsole.htm#_move_left">_move_left</A>.
+
+_DOWN                 -             (0x1A) Move cursor down. Moves the
+                                    cursor
+                                    down one row. Same as <A HREF="rconsole.htm#_move_down">_move_down</A>.
+
+_AFILLEOL,attr        -             (0xFF,0x40) Attribute fill to end
+                                    of line. Sets all
+                                    attributes from the cursor position
+                                    to the end of
+                                    the current line to a specified
+                                    attribute. The
+                                    cursor position remains unchanged.
+                                    Same as
+                                    <A HREF="rconsole.htm#_afill_eol">_afill_eol</A>.
+
+_AFILLINE,attr        -             (0xFF,0x41) Attribute fill line.
+                                    Sets all attributes
+                                    on the current line to a specified
+                                    attribute. The
+                                    cursor position remains unchanged.
+                                    Same as
+                                    <A HREF="rconsole.htm#_afill_line">_afill_line</A>.
+
+_AFILLN,attr,count    -             (0xFF,0x42) Attribute fill N
+                                    positions. Sets a
+                                    specified number of attributes on
+                                    the current
+                                    line to a specified attribute. The
+                                    cursor position
+                                    remains unchanged. Same as
+                                    <A HREF="rconsole.htm#_afill_n">_afill_n</A>.
+
+_AFILLREG,attr        -             (0xFF,0x43) Attribute fill region.
+                                    Sets all
+                                    attributes in the current clipping
+                                    region to a
+                                    specified attribute. The cursor
+                                    position remains
+                                    unchanged. Same as <A HREF="rconsole.htm#_afill_region">_afill_region</A>.
+
+_ATTR,attr            -             (0x10) Set text attribute. Sets the
+                                    current text
+                                    attribute (the attribute used to
+                                    display text) to a
+                                    specified value. Same as <A HREF="rconsole.htm#_set_attr">_set_attr</A>.
+
+_ATTRF,aflags         -             (0xFF,0x44) Set attribute flags.
+                                    Sets the current
+                                    attribute flags to indicate if
+                                    bold, blink, or
+                                    background bold attributes should
+                                    be forced
+                                    when displaying text in the current
+                                    text
+                                    attribute. Same as <A HREF="rconsole.htm#_set_attrflags">_set_attrflags</A>.
+
+_BKBOLDM              -             (0xFF,0x45) Set background bold
+                                    mode.
+                                    Reprograms the active display
+                                    adapter to
+                                    support high-intensity background
+                                    attributes
+                                    instead of blinking text. Same as
+                                    <A HREF="rconsole.htm#_set_bkboldmode">_set_bkboldmode</A>.
+
+_BKBOLDON             -             (0x11) Background bold on. Sets the
+                                    high
+                                    intensity background bit in the
+                                    current text
+                                    attribute if currently supported by
+                                    the active
+                                    display adapter. Same as
+                                    <A HREF="rconsole.htm#_bkbold_on">_bkbold_on</A>.
+
+_BKBOLDOFF            -             (0x12) Background bold off. Clears
+                                    the high
+                                    intensity background bit in the
+                                    current text
+                                    attribute if currently supported by
+                                    the active
+                                    display adapter. Same as
+                                    <A HREF="rconsole.htm#_bkbold_off">_bkbold_off</A>.
+
+_BKCOLOR,color        -             (0x13) Set background color. Sets
+                                    the
+                                    background color for the current
+                                    text attribute.
+                                    Same as <A HREF="rconsole.htm#_set_bkcolor">_set_bkcolor</A>.
+
+_BLINKM               -             (0xFF,0x46) Set blink mode.
+                                    Reprograms the
+                                    active display adapter to support
+                                    blinking text
+
+                                    instead of high-intensity
+                                    background attributes.
+                                    Same as <A HREF="rconsole.htm#_set_blinkmode">_set_blinkmode</A>.
+
+_BLINKON              -             (0x14) Blink on. Sets the blink bit
+                                    in the current
+                                    text attribute if currently
+                                    supported by the active
+                                    display adapter. Same as <A HREF="rconsole.htm#_blink_on">_blink_on</A>.
+
+_BLINKOFF             -             (0x15) Blink off. Clears the blink
+                                    bit in the
+                                    current text attribute if currently
+                                    supported by
+                                    the active display adapter. Same as
+                                    <A HREF="rconsole.htm#_blink_off">_blink_off</A>.
+
+_BOLDON               -             (0x1B) Bold on. Sets the bold bit
+                                    in the current
+                                    text attribute. Same as <A HREF="rconsole.htm#_bold_on">_bold_on</A>.
+
+_BOLDOFF              -             (0x1C) Bold off. Clears the bold
+                                    bit in the
+                                    current text attribute. Same _as
+                                    bold_off.
+
+_CLREOL               -             (0x1D) Clear to end of line. Clears
+                                    the current
+                                    line from the cursor position to
+                                    the end of the
+                                    line by writing space characters
+                                    (0x20) in the
+                                    default text attribute. The cursor
+                                    position
+                                    remains unchanged. Same as
+                                    <A HREF="rconsole.htm#_clr_eol">_clr_eol</A>.
+
+_CLRLINE              -             (0x1E) Clear line. Clears the
+                                    current line by
+                                    writing space characters (0x20) in
+                                    the default
+                                    text attribute. The cursor position
+                                    remains
+                                    unchanged. Same as <A HREF="rconsole.htm#_clr_line">_clr_line</A>.
+
+_CLRN,count           -             (0x1F Clear N positions. Clears a
+                                    specified
+                                    number of columns on the current
+                                    line by
+                                    writing space characters (0x20) in
+                                    the default
+                                    text attribute. The cursor position
+                                    remains
+                                    unchanged. Same as <A HREF="rconsole.htm#_clr_n">_clr_n</A>.
+
+_CLRREG               -             (0x80) Clear region. Fills the
+                                    current clipping
+                                    region with space characters (0x20)
+                                    in the
+                                    default text attribute. The cursor
+                                    position
+                                    remains unchanged. Same as
+                                    <A HREF="rconsole.htm#_clr_region">_clr_region</A>.
+
+_CURSON               -             (0x81) Cursor on. Turns the
+                                    hardware cursor on.
+                                    Same as <A HREF="rconsole.htm#_cursor_on">_cursor_on</A>.
+
+_CURSOFF              -             (0x82) Cursor off. Turns the
+                                    hardware cursor
+                                    off. Same as <A HREF="rconsole.htm#_cursor_off">_cursor_off</A>.
+
+_CURSOR,end,start     -             (0xFF,0x47) Set cursor shape. Sets
+                                    the display
+                                    cursor starting and ending scan
+                                    lines to specified
+                                    values. Same as <A HREF="rconsole.htm#_set_cursor">_set_cursor</A>. (Note:
+                                    A scan line
+                                    value of 255 must be specified
+                                    using the _255
+                                    or _0xFF equates.)
+
+_DATTR,attr           -             (0x83) Set default attribute. Sets
+                                    the default
+                                    attribute used for clearing,
+                                    inserting, and
+                                    scrolling. Same as <A HREF="rconsole.htm#_set_dattr">_set_dattr</A>.
+
+_DELLINE              _             (0xFF,0x48) Delete line. Deletes
+                                    the current line
+                                    from the current clipping region.
+                                    Lines below
+                                    the current line are scrolled up
+                                    and a new, blank
+                                    line is scrolled in at the bottom
+                                    of the clipping
+                                    region. Same as <A HREF="rconsole.htm#_del_line">_del_line</A>.
+
+_DIRECTION,xdist,ydist-             (0xFF,0x49) Set cursor advance
+                                    direction.
+                                    Specifies the horizontal and
+                                    vertical distance
+                                    which the cursor moves after each
+                                    character is
+                                    displayed. Same as <A HREF="rconsole.htm#_set_direction">_set_direction</A>.
+                                    (Note: a
+
+                                    distance of -1 must be specified
+                                    using the _255
+                                    or _0xFF equates.)
+
+_DIRDOWN              -             (0x84) Advance down. Sets the
+                                    cursor advance
+                                    direction to ADV_DOWN, so the
+                                    cursor moves
+                                    down one row after each character
+                                    is displayed.
+                                    Same as <A HREF="rconsole.htm#_set_direction">_set_direction</A> (ADV_DOWN).
+
+_DIRLEFT              -             (0x85) Advance left. Sets the
+                                    cursor advance
+                                    direction to ADV_LEFT, so the
+                                    cursor moves
+                                    one column to the left after each
+                                    character is
+                                    displayed. Same as <A HREF="rconsole.htm#_set_direction">_set_direction</A>
+                                    (ADV_LEFT).
+
+_DIRRIGHT             -             (0x86) Advance right. Sets the
+                                    cursor advance
+                                    direction to ADV_RIGHT, so the
+                                    cursor moves
+                                    one column to the right (the
+                                    default direction)
+                                    after each character is displayed.
+                                    Same as
+                                    <A HREF="rconsole.htm#_set_direction">_set_direction</A> (ADV_RIGHT).
+
+_DIRUP                -             (0x87) Advance up. Sets the cursor
+                                    advance
+                                    direction to ADV_UP, so the cursor
+                                    moves up
+                                    one row after each character is
+                                    displayed. Same
+                                    as <A HREF="rconsole.htm#_set_direction">_set_direction</A> (ADV_UP).
+
+_FGCOLOR,color        -             (0x88) Set foreground color. Sets
+                                    the foreground
+                                    color for the current text
+                                    attribute. Same as
+                                    <A HREF="rconsole.htm#_set_fgcolor">_set_fgcolor</A>.
+
+_FILLEOL,char,attr    -             (0xFF,0x4A) Fill to end of line.
+                                    Sets all
+                                    characters and attributes from the
+                                    cursor to the
+                                    end of the current line to a
+                                    specified character
+                                    and attribute. The cursor position
+                                    remains
+                                    unchanged. Same as <A HREF="rconsole.htm#_fill_eol">_fill_eol</A>.
+
+_FILLINE,char,attr    -             (0xFF,0x4B) Fill line. Sets all
+                                    characters and
+                                    attributes on the current line to a
+                                    specified
+                                    character and attribute. The cursor
+                                    position
+                                    remains unchanged. Same as
+                                    <A HREF="rconsole.htm#_fill_line">_fill_line</A>.
+
+_FILLN,char,attr,count-             (0xFF,0x4C) Fill N positions. Sets
+                                    a specified
+                                    number of characters on the current
+                                    line to a
+                                    specified character and attribute.
+                                    The cursor
+                                    position remains unchanged. Same as
+                                    <A HREF="rconsole.htm#_fill_n">_fill_n</A>.
+
+_FILLREG,char,attr    -             (0xFF,0x4D) Fill region. Sets all
+                                    characters and
+                                    attributes in the current clipping
+                                    region to a
+                                    specified character and attribute.
+                                    Same as
+                                    <A HREF="rconsole.htm#_fill_region">_fill_region</A>.
+
+_GOBOTTOM             -             (0x89) Go to bottom margin. Moves
+                                    the cursor
+                                    to the bottom row of the current
+                                    clipping region.
+                                    Same as <A HREF="rconsole.htm#_goto_bottom">_goto_bottom</A>.
+
+_GOEND                -             (0x8A) Go to end. Moves the cursor
+                                    to the
+                                    lower right corner of the current
+                                    clipping region.
+                                    Same as <A HREF="rconsole.htm#_goto_end">_goto_end</A>.
+
+_GOHOME               -             (0x8B) Go to home. Moves the cursor
+                                    to the
+                                    upper left corner of the current
+                                    clipping region.
+                                    Same as <A HREF="rconsole.htm#_goto_home">_goto_home</A>.
+
+_GOLEFT               -             (0x8C) Go to left margin. Moves the
+                                    cursor to
+
+                                    the left-most column of the current
+                                    clipping
+                                    region. Same as <A HREF="rconsole.htm#_goto_left">_goto_left</A>.
+
+_GORIGHT              -             (0x8D) Go to right margin. Moves
+                                    the cursor to
+                                    the right-most column of the
+                                    current clipping
+                                    region. Same as <A HREF="rconsole.htm#_goto_right">_goto_right</A>.
+
+_GOTOP                -             (0x8E) Go to top margin. Moves the
+                                    cursor to
+                                    the top row of the current clipping
+                                    region. Same
+                                    as <A HREF="rconsole.htm#_goto_top">_goto_top</A>.
+
+_GOX,xpos             -             (0x8F) Go to X position. Moves the
+                                    cursor to a
+                                    specified column. The left-most
+                                    column in the
+                                    current clipping region is column
+                                    zero. Same as
+                                    <A HREF="rconsole.htm#_goto_x">_goto_x</A>.
+
+_GOY,ypos             -             (0x90) Go to Y position. Moves the
+                                    cursor to a
+                                    specified row. The top row in the
+                                    current
+                                    clipping region is row zero. Same
+                                    as <A HREF="rconsole.htm#_goto_y">_goto_y</A>.
+
+_GOXY,xpos,ypos       -             (0x91) Go to X,Y position. Moves
+                                    the cursor to
+                                    a specified row and column. The
+                                    upper left
+                                    corner of the current clipping
+                                    region is position
+                                    0,0. Same as <A HREF="rconsole.htm#_goto_xy">_goto_xy</A>.
+
+_INSLINE              -             (0xFF,0x4E) Insert line. Inserts a
+                                    blank line at
+                                    the cursor in the current clipping
+                                    region. The
+                                    current line and all lines below it
+                                    are scrolled
+                                    down one line. Same as <A HREF="rconsole.htm#_ins_line">_ins_line</A>.
+
+_PUTATTR,attr         -             (0xFF,0x4F) Put attribute. Sets the
+                                    next attribute
+                                    on the current line to the
+                                    specified attribute and
+                                    advances the cursor. Same as
+                                    <A HREF="rconsole.htm#_cput_attr">_cput_attr</A>.
+
+_PUTNATTR,attr,count  -             (0xFF,0x50) Put attribute N times.
+                                    Sets a
+                                    specified number of attributes on
+                                    the current
+                                    line to the specified attribute and
+                                    advances the
+                                    cursor. Same as <A HREF="rconsole.htm#_cput_nattr">_cput_nattr</A>.
+
+_PUTCHRI,char         -             (0x02) Put character. Puts a
+                                    character to the
+                                    display without interpreting it.
+                                    Same as
+                                    <A HREF="rconsole.htm#_cput_chri">_cput_chri</A>. (This code is an alias
+                                    for _CHRI.)
+
+_PUTNCHRI,char,count  -             (0x92) Put character N times. Puts
+                                    a character
+                                    to the display a specified number
+                                    of times
+                                    without interpreting it. Same as
+                                    <A HREF="rconsole.htm#_cput_nchri">_cput_nchri</A>.
+                                    (_REP should be used to display an
+                                    interpreted
+                                    character a specified number of
+                                    times.)
+
+_PUTSTRI,string       -             (0x03) Put string. Puts a string to
+                                    the display
+                                    without interpreting it. Same as
+                                    <A HREF="rconsole.htm#_cput_stri">_cput_stri</A>. (This
+                                    code is an alias for _STRI.)
+
+_PUTSTRCI,width,string-             (0x93) Put centered string. Puts a
+                                    centered
+                                    string to the display without
+                                    interpreting it. The
+                                    string is centered within a region
+                                    starting at the
+                                    current cursor position and
+                                    extending width
+                                    positions in the cursor advance
+                                    direction. Same
+                                    as <A HREF="rconsole.htm#_cput_strci">_cput_strci</A>.
+
+_PUTSTRJI,width,string-             (0x94) Put justified string. Puts a
+                                    right-justified
+                                    string to the display without
+                                    interpreting it. The
+                                    string is justified within a region
+                                    starting at the
+                                    current cursor position and
+                                    extending width
+
+                                    positions in the cursor advance
+                                    direction. Same
+                                    as <A HREF="rconsole.htm#_cput_strji">_cput_strji</A>.
+
+  _REGION,left,top,wid-             (0x95) Set clipping region
+  th,height                         coordinates. Specifies
+                                    a new clipping region with an upper
+                                    left corner
+                                    at (left,top) and with a specified
+                                    width and
+                                    height. If the clipping region is
+                                    currently
+                                    disabled, it is NOT automatically
+                                    enabled. Same
+                                    as <A HREF="rconsole.htm#_set_region">_set_region</A>.
+
+_REGON                -             (0x96) Region on. Enables the
+                                    current clipping
+                                    region. This restricts console I/O
+                                    output to the
+                                    currently-defined clipping region.
+                                    Cursor is
+                                    moved to the upper left corner
+                                    (0,0) of the
+                                    clipping region. Same as
+                                    <A HREF="rconsole.htm#_region_on">_region_on</A>.
+
+_REGOFF               -             (0x97) Region off. Disables the
+                                    current clipping
+                                    region. This effectively extends
+                                    the clipping
+                                    region to the entire window or
+                                    screen. Cursor
+                                    returns to position it occupied
+                                    before clipping
+                                    region was enabled. Same as
+                                    <A HREF="rconsole.htm#_region_off">_region_off</A>.
+
+_RELXY,xdist,ydist    -             (0x98) Move cursor to relative X,Y
+                                    position.
+                                    Moves the cursor a specified
+                                    distance relative to
+                                    its current position. Same as
+                                    <A HREF="rconsole.htm#_rel_xy">_rel_xy</A>. (Note: a
+                                    distance of -1 must be specified
+                                    using the _255
+                                    or _0xFF equates.)
+
+_RESETATTR            -             (0x99) Reset text attribute to
+                                    default. Resets the
+                                    current text attribute and
+                                    attribute flags. The
+                                    current text attribute is set to
+                                    the default text
+                                    attribute, and the text attribute
+                                    flags are cleared.
+                                    Same as <A HREF="rconsole.htm#_reset_attr">_reset_attr</A>.
+
+_SCRLDOWN,count       -             (0xFF,0x51) Scroll down. Scrolls
+                                    the current
+                                    clipping region down a specified
+                                    number of
+                                    lines. Same as <A HREF="rconsole.htm#_scroll_down">_scroll_down</A>.
+
+_SCRLUP,count         -             (0xFF,0x52) Scroll up. Scrolls the
+                                    current
+                                    clipping region up a specified
+                                    number of lines.
+                                    Same as <A HREF="rconsole.htm#_scroll_up">_scroll_up</A>.
+
+_VBATTR,attr          -             (0xFF,0x53) Set video border
+                                    attribute. Sets the
+                                    video border color to match the
+                                    background
+                                    color of a given text attribute.
+                                    Same as
+                                    <A HREF="rconsole.htm#_set_vbordattr">_set_vbordattr</A>.
+
+_VBCOLOR,color        -             (0xFF,0x54) Set video border color.
+                                    Sets the
+                                    video border color to a specified
+                                    color. Same as
+                                    <A HREF="rconsole.htm#_set_vborder">_set_vborder</A>.
+
+_VBON                 -             (0xFF,0x55) Video border on. Turns
+                                    the video
+                                    border on if it is currently off.
+                                    Same as
+                                    <A HREF="rconsole.htm#_vborder_on">_vborder_on</A>.
+
+_VBOFF                -             (0xFF,0x56) Video border off. Turns
+                                    the video
+                                    border off if it is currently
+                                    visible. Same as
+                                    <A HREF="rconsole.htm#_vborder_off">_vborder_off</A>.
+</PRE>
+
+As used above, xdist and ydist indicate a signed distance to move in columns and rows, with negative values denoting motion up and to the left and positive values denoting motion down and to the right, as supported by the <A HREF="rconsole.htm#_rel_xy">_rel_xy</A> function. <A HREF="rexit.htm#start">start</A> and end designate normalized starting and ending cursor scan lines (where 0 denotes the top of the character cell and 255 denotes the bottom) as supported by the <A HREF="rconsole.htm#_set_cursor">_set_cursor</A> function. attr denotes a text attribute in the format supported by_set_attr. aflags denotes attribute flags as supported by <A HREF="rconsole.htm#_set_attrflags">_set_attrflags</A>. color denotes a foreground or background color as supported by <A HREF="rconsole.htm#_set_bkcolor">_set_bkcolor</A>. xpos and ypos denote origin 0 X and Y coordinates (column and row positions, respectively).
+
+<P>
+The following example demonstrates the power and flexibility of the console I/O script codes. This example fills the screen with a black on cyan background, then creates a centered box with light gray on blue attributes, then draws a border around the box with a centered heading at the top. All of this output is performed by a single call to <A HREF="rscript.htm#_cput_script">_cput_script</A>, as shown below:
+<PRE><CODE>
+#include "script.h"
+#include "console.h"
+   ...
+   <A HREF="rscript.htm#_cput_script">_cput_script</A>(_FILLREG _177 _BLACK_CYAN _REGION _20 _5 _40 _16 _REGON
+      _AFILLREG _LTGRAY_BLUE _ATTR _WHITE_BLUE "Õ" _REP _38 "Í"
+      _DIRDOWN "¸", _REP _16 "³" _DIRLEFT "¾" _REP _38 "Í"
+      _DIRUP "Ô" _REP _16 "³" _DIRRIGHT _PUTSTRCI _40 __Arg_P
+      _GOXY _1 _1,"Current Stock Quotes");
+...
+           /* define 40x16 centered box */
+           /* enable clipping region (box) */
+           /* fill box with ltgray on blue */
+           /* border is white on blue */
+           /* draw top border */
+           /* set direction DOWN */
+           /* draw right border */
+           /* set direction LEFT */
+           /* draw bottom border */
+           /* set direction UP */
+           /* draw left border */
+           /* right direction RIGHT */
+           /* display centered string */
+           /* position inside border */
+           ...
+</CODE></PRE>
+<H2><A NAME="HEAD0017">Script Codes: Saving/Restoring Console I/O State
+</A></H2>
+
+As previously mentioned, console I/O state changes within a script remain in effect after the script has been processed. However, many applications need to be able to restore the original state of the console I/O system (e.g., cursor position, cursor shape, current text attribute) after output has been performed. The __GET... and __SET... codes support this functionality within scripts. These codes also allow scripts to select attribute tables and perform other actions within scripts which cannot be performed with the foregoing console I/O codes alone. These codes are only supported by <A HREF="rscript.htm#_cput_script">_cput_script</A>. Use of these codes with any other scripted I/O function will produce undefined results.
+
+<P>
+Script code, arg(s)   Parameter listDescription
+
+<PRE>
+__GETATBL             char *        (0xFF,0x60) (0xFF,0x61)
+__GETATBL_P           char * *      (0xFD,0xFF,0x61)
+__GETATBL_N           char * near * (0xFE,0xFF,0x61) Get attribute
+__GETATBL_F           char * far *  table address.
+                                    Saves the current attribute table
+                                    address.
+                                    (__GETATBL can only be used with
+                                    the
+                                    _v..._script functions.)
+
+__SETATBL             char *        (0xFF,0x62) (0xFF,0x63)
+__SETATBL_P           char * *      (0xFD,0xFF,0x63)
+__SETATBL_N           char * near * (FEh,FFh,63h) Set attribute table
+__SETATBL_F           char * far *  address. Sets
+                                    the attribute table address to a
+                                    saved or
+                                    specified value. Same as
+                                    <A HREF="rconsole.htm#_set_attrtbl">_set_attrtbl</A>.
+
+__GETATTR             char          (0x9C) (0x9D) (0xFD,0x9D)
+__GETATTR_P           char *        (0xFE,0x9D) Get
+__GETATTR_N           char near *   text attribute. Saves the current
+__GETATTR_F           char far *    text attribute.
+                                    (__GETATTR can only be used with
+                                    the
+                                    _v..._script functions.) Same as
+                                    <A HREF="rconsole.htm#_get_attr">_get_attr</A>.
+
+__SETATTR             char          (0x9E) (0x9F) (0xFD,0x9F)
+__SETATTR_P           char *        (0xFE,0x9F) Set
+__SETATTR_N           char near *   text attribute. Sets the text
+__SETATTR_F           char far *    attribute to a saved
+                                    or specified value. Same as
+                                    <A HREF="rconsole.htm#_set_attr">_set_attr</A>.
+
+__GETATTRF            char          (0xA0) (0xA1) (0xFD,0xA1)
+__GETATTRF_P          char *        (0xFE,0xA1) Get
+__GETATTRF_N          char near *   attribute flags. Saves the current
+__GETATTRF_F          char far *    text attribute
+                                    flags. (__GETATTRF can only be used
+                                    with the
+                                    _v..._script functions.) Same as
+                                    <A HREF="rconsole.htm#_get_attrflags">_get_attrflags</A>.
+
+__SETATTRF            char          (0xA2) (0xA3) (0xFD,0xA3)
+__SETATTRF_P          char *        (0xFE,0xA3) Set
+__SETATTRF_N          char near *   attribute flags. Sets the text
+__SETATTRF_F          char far *    attribute flags to a
+                                    saved or specified value. Same as
+                                    <A HREF="rconsole.htm#_set_attrflags">_set_attrflags</A>.
+
+__GETBKBOLDM          char          90xFF,0x64) (0xFF,0x65)
+__GETBKBOLDM_P        char *        (0xFD,0xFF,0x65)
+__GETBKBOLDM_N        char near *   (0xFE,0xFF,0x65) Get BKBOLD mode.
+__GETBKBOLDM_F        char far *    Saves
+                                    the current blink/
+                                    background bold mode setting
+                                    for the active display adapter.
+                                    (The saved value
+                                    is 1 if BKBOLD is currently
+                                    supported, 0
+                                    otherwise.) (__GETBKBOLDM can only
+                                    be
+                                    used with the _v..._script
+                                    functions.)
+
+__SETBKBOLDM          char          (0xFF,0x66) (0xFF,0x67)
+__SETBKBOLDM_P        char *        (0xFD,0xFF,0x67)
+__SETBKBOLDM_N        char near *   (0xFE,0xFF,0x67) Set BKBOLD mode.
+__SETBKBOLDM_F        char far *    Sets
+                                    blink/
+                                    background bold mode for the active
+                                    display adapter to a saved or
+                                    specified setting.
+                                    (The value must be 1 if BKBOLD is
+                                    to be
+                                    supported, 0 otherwise.)
+
+__GETCURSOR           char [4]      (0xA4) (0xA5) (0xFD,0xA5)
+__GETCURSOR_P         char * [4]    (0xFE,0xA5) Get
+__GETCURSOR_N         char near *   cursor shape and state. Saves the
+__GETCURSOR_F         [4]           current cursor
+                      char far *    shape and on/off state. The
+                      [4]           argument is
+                                    expected to point to a 4-byte
+                                    array. The first
+                                    two bytes contain the cursor shape
+                                    in the same
+                                    format supported by <A HREF="rconsole.htm#_get_cursor">_get_cursor</A>.
+                                    The third byte
+                                    is 1 if the cursor is on, 0
+                                    otherwise. The last
+                                    byte is reserved. (__GETCURSOR can
+                                    only be
+                                    used with the _v..._script
+                                    functions.) Same as
+                                    <A HREF="rconsole.htm#_get_cursor">_get_cursor</A>.
+
+__SETCURSOR           char [4]      (0xA6) (0xA7) (0xFD,0xA7)
+__SETCURSOR_P         char * [4]    (0xFE,0xA7) Set
+__SETCURSOR_N         char near *   cursor shape and state. Sets the
+__SETCURSOR_F         [4]           cursor to a
+                      char far * [4]saved or specified shape and state.
+                                    The
+                                    argument is expected to be a 4-byte
+                                    array or a
+                                    pointer to a 4-byte array. The
+                                    first two bytes
+                                    must contain the cursor shape in
+                                    the same
+                                    format supported by <A HREF="rconsole.htm#_set_cursor">_set_cursor</A>.
+                                    The third byte
+                                    is 1 if the cursor is to be turned
+                                    on, 0 otherwise.
+                                    The last byte is reserved.
+
+__GETDATTR            char          (0xFF,0x68) (0xFF,0x69)
+__GETDATTR_P          char *        (0xFD,0xFF,0x69)
+__GETDATTR_N          char near *   (0xFE,0xFF,0x69) Get default
+__GETDATTR_F          char far *    attribute. Saves
+                                    the current default attribute.
+                                    (__GETDATTR
+                                    can only be used with the
+                                    _v..._script functions.)
+                                    Same as <A HREF="rconsole.htm#_get_dattr">_get_dattr</A>.
+
+__SETDATTR            char          (0xFF,0x6A) (0xFF,0x6B)
+__SETDATTR_P          char *        (0xFD,0xFF,0x6B)
+__SETDATTR_N          char near *   (0xFE,0xFF,0x6B) Set default
+__SETDATTR_F          char far *    attribute. Sets the
+                                    default attribute to a saved or
+                                    specified value.
+                                    Same as <A HREF="rconsole.htm#_set_dattr">_set_dattr</A>.
+
+__GETDIREC            int           (0xFF,0x6C) (0xFF,0x6D)
+__GETDIREC_P          int *         (0xFD,0xFF,0x6D)
+__GETDIREC_N          int near *    (0xFE,0xFF,0x6Fh) Get cursor
+__GETDIREC_F          int far *     advance
+                                    direction. Saves the current cursor
+                                    advance
+                                    direction. (__GETDIREC can only be
+                                    used with
+                                    the _v..._script functions.) Same
+                                    as
+                                    <A HREF="rconsole.htm#_get_direction">_get_direction</A>.
+
+__SETDIREC            int           (0xFF,0x6E) (0xFF,0x6F)
+__SETDIREC_P          int *         (0xFD,0xFF,0x6F)
+__SETDIREC_N          int near *    (0xFE,0xFF,0x6F) Set cursor advance
+__SETDIREC_F          int far *     direction.
+                                    Sets the cursor advance direction
+                                    to a saved or
+                                    specified value. Same as
+                                    <A HREF="rconsole.htm#_set_direction">_set_direction</A>.
+
+__GETREGION           char [6]      (0xA8) (0xA9) (0xFD,0xA9)
+__GETREGION_P         char * [6]    (0xFE,0xA9) Get
+__GETREGION_N         char near *   clipping region coordinates and
+__GETREGION_F         [6]           state. Saves the
+                      char far *    current clipping region coordinates
+                      [6]           and on/off
+                                    state. The argument is expected to
+                                    be a pointer
+                                    to a 6-byte array. The first four
+                                    bytes contain
+                                    the coordinates (top, left, width,
+                                    height). The
+                                    fifth byte is 1 if the clipping
+                                    region is enabled,
+                                    0 otherwise. The last byte is
+                                    reserved.
+                                    (__GETREGION can only be used with
+                                    the
+                                    _v..._script functions.)
+
+__SETREGION           char [6]      (0xAA) (0xAB) (0xFD,0xAB)
+__SETREGION_P         char * [6]    (0xFE,0xAB) Set
+__SETREGION_N         char near *   clipping region coordinates and
+__SETREGION_F         [6]           state. Sets the
+                      char far * [6]clipping region coordinates and
+                                    on/off state to a
+                                    saved or specified value. The
+                                    argument is
+                                    expected to be a 6-byte array or a
+                                    pointer to a
+                                    6-byte array. The first four bytes
+                                    must contain
+                                    the coordinates (top, left, width,
+                                    height). The
+                                    fifth byte must be 1 if the
+                                    clipping region is to
+                                    be enabled, 0 otherwise. The last
+                                    byte is
+                                    reserved.
+
+__GETVBORDER          int           (0xFF,0x70) (0xFF,0x71)
+__GETVBORDER_P        int *         (0xFD,0xFF,0x71)
+__GETVBORDER_N        int near *    (0xFE,0xFF,0x71) Get video border
+__GETVBORDER_F        int far *     color and
+                                    state. Saves the current video
+                                    border color and
+                                    video border on/off state. The
+                                    border color is
+                                    saved in the low (first) byte of
+                                    the int value.
+                                    The last byte is 1 if the video
+                                    border is enabled,
+                                    0 otherwise. (__GETVBORDER can only
+                                    be
+                                    used with the _v..._script
+                                    functions.)
+
+__SETVBORDER          int           (0xFF,0x72) (0xFF,0x73)
+__SETVBORDER_P        int *         (0xFD,0xFF,0x73)
+__SETVBORDER_N        int near *    (0xFE,0xFF,0x73) Set video border
+__SETVBORDER_F        int far *     color and
+                                    state. Sets the video border color
+                                    and video
+                                    border on/off state to a saved or
+                                    specified value.
+                                    The border color must occupy the
+                                    low (first)
+                                    byte of the int value. The last
+                                    byte must be 1 if
+                                    the video border is to be enabled,
+                                    0 otherwise.
+
+__GETX                char          (0xFF,0x74) (0xFF,0x75)
+__GETX_P              char *        (0xFD,0xFF,0x75)
+__GETX_N              char near *   (0xFE,0xFF,0x75) Get X position.
+__GETX_F              char far *    Saves the
+                                    current cursor column position.
+                                    (__GETX can
+                                    only be used with the _v..._script
+                                    functions.)
+                                    Same as <A HREF="rconsole.htm#_where_x">_where_x</A>.
+
+__SETX                char          (0xFF,0x76) (0xFF,0x77)
+__SETX_P              char *        (0xFD,0xFF,0x77)
+__SETX_N              char near *   (0xFE,0xFF,0x77) Set X position.
+__SETX_F              char far *    Moves the
+                                    cursor to a saved or specified
+                                    column position.
+                                    Same as <A HREF="rconsole.htm#_goto_x">_goto_x</A>.
+
+__GETY                char          (0xFF,0x78) (0xFF,0x79)
+__GETY_P              char *        (0xFD,0xFF,0x79)
+__GETY_N              char near *   (0xFE,0xFF,0x79) Get Y position.
+__GETY_F              char far *    Saves the
+                                    current cursor row position.
+                                    (__GETY can only
+                                    be used with the _v..._script
+                                    functions.) Same as
+                                    <A HREF="rconsole.htm#_where_y">_where_y</A>.
+
+__SETY                char          (0xFF,0x7A) (0xFF,0x7B)
+__SETY_P              char *        (0xFD,0xFF,0x7B)
+__SETY_N              char near *   (0xFE,0xFF,0x7B) Set Y position.
+__SETY_F              char far *    Moves the
+                                    cursor to a saved or specified row
+                                    position.
+                                    Same as <A HREF="rconsole.htm#_goto_y">_goto_y</A>.
+
+__GETXY               int           (0xAC) (0xAD) (0xFD,0xAD)
+__GETXY_P             int *         (0xFE,0xAD)
+__GETXY_N             int near *    Get X,Y position. Saves the current
+__GETXY_F             int far *     cursor
+                                    position. The X position is saved
+                                    in the low
+                                    (first) byte of the int value.
+                                    (__GETXY can
+                                    only be used with the _v..._script
+                                    functions.)
+                                    Same as <A HREF="rconsole.htm#_where_xy">_where_xy</A>.
+
+__SETXY               int           (0xAE) (0xAF) (0xFD,0xAF)
+__SETXY_P             int *         (0xFE,0xAF) Set
+__SETXY_N             int near *    X,Y position. Moves the cursor to a
+__SETXY_F             int far *     saved or
+                                    specified position. The X position
+                                    must occupy
+                                    the low (first) byte of the int
+                                    value. Same as
+                                    <A HREF="rconsole.htm#_goto_xy">_goto_xy</A>.
+
+</PRE>
+
+Numbers in brackets ([4], [6]) indicate the size of the character array, in bytes.
+
+<P>
+The __GET...P codes are used most often in situations where the programmer does not have access to the parameter list, as in a C or C++ environment (using the _?put_script and _?get_script functions). The __GET... codes without suffixes (e.g., __GETATBL, __GETXY) are useful with the _v?put_script and _v?get_script functions, since they store the returned value in the next position in the parameter list, where it would be expected if it were being read from the parameter list. This allows saved values to be stored in the same script from which they will be restored, as in the following example:
+<PRE><CODE>
+#include "script.h"
+   ...
+   int paramlist[] = {0,0,23};
+
+   <A HREF="rscript.htm#_vcput_script">_vcput_script</A>(__GETXY __GETATTRF _GOBOTTOM _GOLEFT "Backup time remaining: "
+                    _BOLDON __CHAR _Nolimit _Default " minutes" _CLREOL, paramlist);
+
+           /* save cursor position */
+           /* save attribute flags */
+           /* move to left,bottom */
+           /* display bold message */
+           /* force BOLD */
+           /* clear rest of line */
+   ...
+   <A HREF="rscript.htm#_vcput_script">_vcput_script</A>(__SETXY __SETATTRF, paramlist);
+           /* restore cursor, attr flags - using same parameter list */
+   ...
+</CODE></PRE>
+This particular script produces the following output on the bottom line of the display:
+
+<P>
+Backup time remaining: 23 minutes
+
+<P>
+Note that this script does not disturb the cursor position or attribute flags. This makes it ideal for use by a background task (e.g., using the multitasking system) since it will not affect the behavior of other tasks which may also be using the console I/O system.
+
+<H2><A NAME="HEAD0018">Script Codes: User/Reserved
+</A></H2>
+
+The following escape code is reserved for use in user extensions to the scripting language. This code is intended to be used as the first byte of two-byte (or longer) script codes which may be followed by user-defined arguments. Using this method, up to 256 user codes may be defined and supported with only minor adjustments to the scripted I/O source code.
+
+<P>
+Script code, arg(s)   Parameter listDescription
+
+<PRE>
+_USER                 -             (0x7F,ANY) Reserved for user
+                                    extensions to the
+                                    scripting language.
+</PRE>
+All other unassigned codes are reserved for use in future releases of Spontaneous Assembly.
+
+<H2><A NAME="HEAD0019">Optimizing the Scripted I/O Functions
+</A></H2>
+
+Because the scripted I/O functions must support the full range of script functionality at run time, many Spontaneous Assembly functions are linked into the final program to support the scripted I/O system. These functions include all formatted data conversion and console I/O functions. This occurs whether or not the applicable codes are actually used within scripts.
+
+<P>
+If you are not using all of the scripted I/O codes in your application, chances are good that you can significantly reduce the size of the scripted I/O system by following the simple steps outlined below. Because the optimization is performed at the assembly language level, you will need an assembler. The optimization is accomplished as follows:
+<OL>
+<LI>    Indicate the script codes which you will not need by editing SCRIPT.CIN and SCRIPT.H and commenting out the unnecessary codes. Both SCRIPT.CIN and SCRIPT.H are ASCII text files and must be edited using a text editor. Make sure that you comment out the same codes in both files (some codes have slightly different names in C and assembly). Codes are commented out in SCRIPT.CIN by placing a semicolon at the beginning of the line on which each unneeded code is defined. These codes are used as key words for conditional assembly within the scripted I/O source code-if the codes are not defined, the applicable portion of the scripting engine is not assembled.
+<LI>    Run the CSTRIP utility (included with Spontaneous Assembly 3.0) on the edited SCRIPT.CIN to produce a new SCRIPT.INC. CSTRIP displays a detailed help screen if you type "CSTRIP" at the DOS prompt.
+<LI>    Use REBUILD to reassemble and replace the appropriate scripted I/O source files in their libraries. Unnecessary code will be automatically removed. REBUILD is documented in Appendix B of your Spontaneous Assembly 3.0 documentation.
+<LI>    Use the new (edited) SCRIPT.H file as your new scripted I/O header file when assembling your own source files.
+</OL>
+If you attempt to use scripted I/O codes which you removed from your SCRIPT.H file, the compiler will not recognize the code names and will produce an error at compile time. If this happens, use another script code, or repeat the steps listed above, re-editing your SCRIPT.CIN and SCRIPT.H files to include the needed codes.
+
+<H2><A NAME="HEAD001A">Linking Requirements for Scripted I/O Functions
+</A></H2>
+
+The scripted I/O functions require a numeric coprocessor or 8087 compatible emulator. In addition, when any of the scripted I/O functions are used, the appropriate floating-point conversion library must also be linked in. These libraries are named "_FPCcm.LIB", where c indicates the C compiler (B, M, T, or Z for Borland, Microsoft, TopSpeed, or Zortech) and m indicates the memory model (T, S, M, C, or L for TINY, SMALL, MEDIUM, COMPACT, and LARGE; the LARGE model libraries should be used for HUGE model programs). _FPCNm.LIB should be used if a numeric coprocessor will be present while the program is running or if the __FLOAT, __DOUBLE, or __LDOUBLE script options are not used.
+</BOBY>
+</HTML>

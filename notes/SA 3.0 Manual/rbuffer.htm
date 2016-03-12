@@ -1,0 +1,508 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Buffer Mainpulation Reference</TITLE>
+</HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Buffer Mainpulation</H1>
+<P ALIGN=CENTER>Reference Section </P>
+<UL>
+<LI><A HREF="TOC.htm">Table of Contents</A>
+<LI><A HREF="index.htm">Function Index</A>
+<LI><A HREF="gindex.htm">Group Index
+</UL>
+<A HREF="rbuffer.htm#_buf_ccpy">_buf_ccpy</A><BR>
+<A HREF="rbuffer.htm#_buf_cmp">_buf_cmp</A><BR>
+<A HREF="rbuffer.htm#_buf_cmpi">_buf_cmpi</A><BR>
+<A HREF="rbuffer.htm#_buf_cpy">_buf_cpy</A><BR>
+<A HREF="rbuffer.htm#_fbuf_ccpy">_fbuf_ccpy</A><BR>
+<A HREF="rbuffer.htm#_fbuf_cmp">_fbuf_cmp</A><BR>
+<A HREF="rbuffer.htm#_fbuf_cmpi">_fbuf_cmpi</A><BR>
+<A HREF="rbuffer.htm#_fbuf_cpy">_fbuf_cpy</A><BR>
+<H2><A NAME="_buf_ccpy">_buf_ccpy</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Copies the contents of one buffer, up to a given character, to another buffer.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;bufmanip.h&gt
+<BR>		int _buf_ccpy(void **srcbuf, unsigned int *srcsize, void **destbuf, unsigned int *destsize, int chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if srcbuf was copied in its entirety into destbuf and a byte matching chr was not encountered.
+<BR>
+<BR>	srcbuf	pointer to the byte following the last byte in srcbuf
+<BR>	srcsize	0 (no bytes remaining in srcbuf to copy)
+<BR>	destbuf	pointer to the byte following the last byte copied into destbuf
+<BR>	destsize	number of remaining (unused) bytes in destbuf
+<BR>
+<BR>	0 if the contents of srcbuf up to and including the first character matching chr were copied into destbuf.
+<BR>
+<BR>	srcbuf	pointer to the byte following the byte in srcbuf that matches chr
+<BR>	srcsize	number of remaining bytes in srcbuf that were not copied into destbuf
+<BR>	destbuf	pointer to the byte following the last byte copied into destbuf
+<BR>	destsize	number of remaining (unused) bytes in destbuf
+<BR>
+<BR>	-1 if destbuf could not hold the entire contents of srcbuf and a byte matching chr was not found among the bytes copied.
+<BR>
+<BR>	srcbuf	pointer to the first byte in srcbuf that was not copied into destbuf
+<BR>	srcsize	number of remaining bytes in srcbuf that were not copied into destbuf
+<BR>	destbuf	pointer to the byte following the last byte copied into destbuf
+<BR>	destsize	0 (no unused bytes remaining in destbuf)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function copies bytes from srcbuf to destbuf. Copying starts with the first byte of srcbuf and continues until a byte matching chr is copied or until the lesser of srcsize or destsize bytes have been copied, whichever comes first.
+<BR>
+<BR>	The buffer pointers are advanced past the last character copied, and the buffer sizes in srcsize and destsize are each reduced to reflect the new count of bytes remaining in each buffer starting at the new pointer positions. srcsize indicates the remaining number of unprocessed bytes in srcbuf; destsize indicates the remaining available space in destbuf.
+<BR>
+<BR>	srcbuf and destbuf must not overlap if destbuf is higher in memory than srcbuf. If srcsize is zero, 1 is returned. If destsize is zero, -1 is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char sbuf[] = "AAAAABBBBBBBBBBBBCCCCCCCCCCCCCC\
+	   	     DDDDDDDDDDDDDDDEFFFFF";
+	   char dbuf[100];
+	   int status;
+	   unsigned int srcsize=sizeof(sbuf)-1,destsize=sizeof(dbuf)-1;
+	   void *srcbuf = sbuf, *destbuf = dbuf;
+
+	   status = _buf_ccpy(&ampsrcbuf,&ampsrcsize,&ampdestbuf,&ampdestsize,'E');
+	   switch(status)
+	   {
+	      case 1: _put_str("Entire buffer copied"); break;
+	      case 0: _put_str("Remainder of buffer needs copied"); 
+	         _buf_cpy(&ampsrcbuf, &ampsrcsize, &ampdestbuf, &ampdestsize);
+	         break;
+	      case -1: _put_str("Destination buffer not large enough");
+	         default: break;
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char sbuf[] = "AAAAABBBBBBBBBBBBCCCCCCCCCCCCCC\
+	   	     DDDDDDDDDDDDDDDEFFFFF";
+	   char dbuf[100];
+	   unsigned srcsize, destsize;
+	   ...
+	   srcsize = sizeof(sbuf);
+	   destsize = sizeof(dbuf);
+	   lea si,sbuf	    /* SI = offset source buffer */
+	   mov cx,srcsize/* CX = source size */
+	   pushss
+	   pop es	 	/* ES = DS = SS in small data */
+	   lea di,dbuf	    /* DI = offset destination buf */
+	   mov dx,destsize/* DX = destination size */
+	   mov al,'E'	/* AL = 'stop' character (chr) */
+	   buf_ccpy();	/* copy characters */
+	    ja label_010/* chars copied, chr not found */
+	    jb label_020/* destbuf full, chr not found */
+	   ... 	 	/* all chars copied, to 'E' */
+	   ...
+	label_010:
+	   ... 	 	/* entire buffer copied */
+	label_020:
+	   ... 	 	/* destination buf too small */
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_BUFCCPY.ASM		  <B>ASM equiv</B>	BUF_CCPY
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rbuffer.htm#_buf_cpy">_buf_cpy</A>, <A HREF="rbuffer.htm#_fbuf_ccpy">_fbuf_ccpy</A>, <A HREF="rmemanip.htm#_mem_ccpy">_mem_ccpy</A>
+<BR></DL>
+<H2><A NAME="_buf_cmp">_buf_cmp</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compares the contents of one buffer with another and indicates the position of mismatching bytes or the bytes following the last bytes compared.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;bufmanip.h&gt
+<BR>		int _buf_cmp(void **buffer1, unsigned int *buf1size, void **buffer2, unsigned int *buf2size);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if the contents of buffer1 are greater than the contents of buffer2.
+<BR>	buffer1		pointer to the byte in buffer1 that is different from the corresponding byte of buffer2
+<BR>	buf1size		size of buffer1 from the mismatched byte to the end of buffer1
+<BR>	buffer2		pointer to the byte in buffer2 that is different from the corresponding byte of buffer1
+<BR>	buf2size		size of buffer2 from the mismatched byte to the end of buffer2
+<BR>
+<BR>	0 if the contents of buffer1 and buffer2 are identical up through the end of the smaller buffer.
+<BR>	buffer1		pointer to the byte following the last byte compared in buffer1
+<BR>	buf1size		number of bytes remaining in buffer1 that were not compared (either buf1size, buf2size or both will be zero)
+<BR>	buffer2		pointer to the byte following the last byte compared in buffer2
+<BR>	buf2size		number of bytes remaining in buffer2 that were not compared (either buf1size, buf2size or both will be zero)
+<BR>
+<BR>	-1 if the contents of buffer1 are less than the contents of buffer2. 
+<BR>	buffer1		pointer to the byte in buffer1 that is different from the corresponding byte of buffer2
+<BR>	buf1size		size of buffer1 from the mismatched byte to the end of buffer1
+<BR>	buffer2		pointer to the byte in buffer2 that is different from the corresponding byte of buffer1
+<BR>	buf2size		size of buffer2 from the mismatched byte to the end of buffer2
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function compares each byte of buffer1 and buffer2. The comparison starts with the first byte of each buffer and continues with subsequent bytes until corresponding bytes differ or until one of the buffers has been exhausted. This function returns pointers to the mismatching bytes (if any) in buffer1 and buffer2. If no mismatching bytes are found, a pointer is returned to the uncompared bytes in the larger buffer. This function returns 1 if buffer1 is greater than buffer2, 0 if both buffers are equal, and -1 if the contents of buffer1 is less than buffer2.
+<BR>
+<BR>	If 0 is returned for buf1size or buf2size, the corresponding buffer is exhausted and both buffers are identical through the end of the exhausted buffer. 0 is returned for both buf1size and buf2size only if both buffers are identical in size and content.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char b1[] = "AAAAABBBBBBBBBBBBCCCCCCCCCCCCCC\
+	   	   DDDDDDDDDDDDDDDEFFFFF";
+	   char b2[] = "AAAAABBBBBBBBBBBBCCCCCCCCCCCCCC\
+	   	   DDDDDDDDDDDDDDDEFFFFFGHIJ";
+	   int status;
+	   unsigned int buf1size=sizeof(b1)-1, buf2size=sizeof(b2)-1;
+	   void *buffer1 = b1, *buffer2 = b2;
+
+	   status = _buf_cmp(&ampbuffer1, &ampbuf1size, &ampbuffer2, &ampbuf2size);
+	   switch(status)
+	   {
+	      case  0: _put_str("Buffers are identical"); break;
+	      case -1:
+	      case  1: _put_str("Buffer1 -&gt ");
+	         _put_str(buffer1);/* display rest of buffer1 */
+	         _put_str("\n\rBuffer2 -&gt ");
+	         _put_str(buffer2);/* display rest of buffer2 */
+	         break;
+	         default: break;
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	char b1[]="AAAAABBBBBBBBBBBBCCCCCCCCCCCCCCDDDDDDDDDDDDDDDEFFFFF";
+	char b2[]="AAAAABBBBBBBBBBBBCCCCCCCCCCCCCC\
+	      DDDDDDDDDDDDDDDEFFFFFGHIJ";
+	char *str;
+	int status;
+	unsigned int buf1size = sizeof(b1)-1, buf2size = sizeof(b2)-1;
+	void *buffer1 = b1, *buffer2 = b2;
+	   ...
+	   mov si,buffer1/* DS:SI -&gt source buffer */
+	   mov cx,buf1size/* CX = source size */
+	   pushss
+	   pop es	 	/* ES = SS (small data model) */
+	   mov di,buffer2/* ES:DI -&gt destination buffer */
+	   mov dx,buf2size/* DX = destination size */
+	   buf_cmp();	/* are buffers equal? */
+	    je label_010/*   y: continue */
+	   str = "Buffer1 -&gt ";/*   n: display differences */
+	   mov si,str
+	   put_str();	/* prep difference buf1 */
+	   mov si,buffer1
+	   put_str();	/* write buf1 differences */
+	   put_newline();
+	   str = "Buffer2 -&gt ";
+	   mov si,str
+	   put_str();	/* prep difference buf2 */
+	   mov si,buffer2
+	   put_str();	/* write buf2 differences */
+	label_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_BUFCMP.ASM		  <B>ASM equiv</B>	BUF_CMP
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rbuffer.htm#_buf_cmp">_buf_cmp</A>, <A HREF="rbuffer.htm#_fbuf_cmp">_fbuf_cmp</A>, <A HREF="rmemanip.htm#_mem_cmp">_mem_cmp</A>, <A HREF="rstring.htm#_str_cmp">_str_cmp</A>
+<BR></DL>
+<H2><A NAME="_buf_cmpi">_buf_cmpi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compares the contents of one buffer with the contents of another (ignoring case) and indicates the position of mismatching bytes or the bytes following the last bytes compared.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;bufmanip.h&gt
+<BR>		int _buf_cmpi(void **buffer1, unsigned int *buf1size, void **buffer2, unsigned int *buf2size);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if the contents of buffer1 are greater than the contents of buffer2.
+<BR>	buffer1		pointer to the byte in buffer1 that is different from the corresponding byte of buffer2
+<BR>	buf1size		size of buffer1 from the mismatched byte to the end of buffer1
+<BR>	buffer2		pointer to the byte in buffer2 that is different from the corresponding byte of buffer1
+<BR>	buf2size		size of buffer2 from the mismatched byte to the end of buffer2
+<BR>
+<BR>	0 if the contents of buffer1 and buffer2 are identical up through the end of the smaller buffer.
+<BR>	buffer1		pointer to the byte following the last byte compared in buffer1
+<BR>	buf1size		number of bytes remaining in buffer1 that were not compared (either buf1size, buf2size or both will be zero)
+<BR>	buffer2		pointer to the byte following the last byte compared in buffer2
+<BR>	buf2size		number of bytes remaining in buffer2 that were not compared (either buf1size, buf2size or both will be zero)
+<BR>
+<BR>	-1 if the contents of buffer1 are less than the contents of buffer2.
+<BR>	buffer1		pointer to the byte in buffer1 that is different from the corresponding byte of buffer2
+<BR>	buf1size		size of buffer1 from the mismatched byte to the end of buffer1
+<BR>	buffer2		pointer to the byte in buffer2 that is different from the corresponding byte of buffer1
+<BR>	buf2size		size of buffer2 from the mismatched byte to the end of buffer2
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function compares each byte of buffer1 and buffer2. The case of ASCII characters is ignored. The comparison starts with the first byte of each buffer and continues with subsequent bytes until corresponding bytes differ or until one of the buffers has been exhausted. This function returns pointers to the mismatching bytes (if any) in buffer1 and buffer2. If no mismatching bytes are found, a pointer is returned to the uncompared bytes in the larger buffer. This function returns 1 if buffer1 is greater than buffer2, 0 if both buffers are equal, or -1 if the contents of buffer1 is less than buffer2.
+<BR>	If 0 is returned for buf1size or buf2size, the corresponding buffer is exhausted and both buffers are identical (ignoring case) through the end of the exhausted buffer. 0 is returned for both buf1size and buf2size only if both buffers are identical in size and content.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char b1[] = "AAAAABBBBBBBBBBBBCCCCCCCCCCCCCC\
+	   	  DDDDDDDDDDDDDDDEFFFFF";
+	   char b2[] = "AAAAABBBBBBBBBBBBCCCCCCCCCCCCCC\
+	       DDDDDDDDDDDDDDDEFFFFFGHIJ";
+	   int status;
+	   unsigned int buf1size = sizeof(b1)-1, buf2size = sizeof(b2)-1;
+	   void *buffer1 = b1, *buffer2 = b2;
+
+	   status = _buf_cmpi(&ampbuffer1, &ampbuf1size, &ampbuffer2, &ampbuf2size);
+	   switch(status)
+	   {
+	      case  0: _put_str("Buffers are identical"); break;
+	      case -1:
+	      case  1: _put_str("Buffer1 -&gt ");
+	         _put_str(buffer1);/* display rest of buffer1 */
+	         _put_str("\n\rBuffer2 -&gt ");
+	         _put_str(buffer2);/* display rest of buffer2 */
+	         break;
+	         default: break;
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char b1[] = "AAAAABBBBBBBBBBBBCCCCCCCCCCCCCC\
+	   	   DDDDDDDDDDDDDDDEFFFFF";
+	   char b2[] = "AAAAABBBBBBBBBBBBCCCCCCCCCCCCCC\
+	   	   DDDDDDDDDDDDDDDEFFFFFGHIJ";
+	   char *str;
+	   int status;
+	   unsigned int buf1size=sizeof(b1)-1, buf2size=sizeof(b2)-1;
+	   void *buffer1 = b1, *buffer2 = b2;
+	   ...
+	   mov si,buffer1/* DS:SI -&gt source buffer */
+	   mov cx,buf1size/* CX = source size */
+	   mov di,buffer2/* ES:DI -&gt destination buffer */
+	   mov dx,buf2size/* DX = destination size */
+	   buf_cmpi();	/* buffers equal? (ignore case)*/
+	    je label_010/*   y: continue */
+	   str = "Buffer1 -&gt ";/*   n: display differences */
+	   mov si,str
+	   put_str();	/* prep difference buf1 */
+	   mov si,buffer1
+	   put_str();	/* write buf1 differences */
+	   put_newline();
+	   str = "Buffer2 -&gt ";
+	   mov si,str
+	   put_str();	/* prep difference buf2 */
+	   mov si,buffer2
+	   put_str();	/* write buf2 differences */
+	label_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_BUFCMPI.ASM		  <B>ASM equiv</B>	BUF_CMPI
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rbuffer.htm#_buf_cmp">_buf_cmp</A>, <A HREF="rbuffer.htm#_fbuf_cmp">_fbuf_cmp</A>, <A HREF="rmemanip.htm#_mem_cmp">_mem_cmp</A>, <A HREF="rstring.htm#_str_cmp">_str_cmp</A>
+<BR></DL>
+<H2><A NAME="_buf_cpy">_buf_cpy</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Copies the contents of one buffer to another buffer.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;bufmanip.h&gt
+<BR>	int _buf_cpy(void **srcbuf, unsigned int *srcsize, void **destbuf, unsigned int *destsize);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if all the contents of srcbuf were copied into destbuf.
+<BR>	srcbuf	points to byte following last byte of srcbuf
+<BR>	srcsize		0 (no bytes left to copy from srcbuf)
+<BR>	destbuf		points to the byte following the last byte copied into destbuf
+<BR>	destsize		number of remaining (unused) bytes in destbuf
+<BR>
+<BR>	0 if destbuf could not hold the entire contents of srcbuf.
+<BR>	srcbuf		points to first byte in srcbuf that was not copied into destbuf
+<BR>	srcsize		number of remaining bytes in srcbuf that were not copied into destbuf
+<BR>	destbuf		points to the byte following the last byte copied into destbuf
+<BR>	destsize		0 (no unused bytes remaining in destbuf)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function copies the contents of srcbuf into destbuf. Copying starts with the first byte of srcbuf and continues until all the contents of srcbuf have been copied into destbuf, or until destbuf is full, whichever comes first. This function returns pointers to the positions where copying left off and indicates the remaining number of bytes in each buffer.
+<BR>
+<BR>	srcbuf and destbuf must not overlap if destbuf is higher in memory than srcbuf. 0 is returned if srcsize and destsize are both 0 when this function is called.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char sbuf[] = "AAAAAAAABBBBBBBBBBBBCCCCCCCCCCCCDEEEEEEEEEE";
+	   char dbuf[100];
+	   unsigned srcsize, destsize;
+	   void *srcbuf = sbuf, *destbuf = dbuf;
+
+	   srcbuf = sbuf;
+	   srcsize = sizeof(sbuf);
+	   destbuf = dbuf;
+	   while (srcsize != 0)
+	   {
+	      destsize = 10;/* copy 10 bytes at a time */
+	      _buf_cpy(&ampsrcbuf, &ampsrcsize, &ampdestbuf, &ampdestsize);
+	   } 
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char sbuf[] = "AAAAAAAABBBBBBBBBBBBCCCCCCCCCCCCDEEEEEEEEEE";
+	   char dbuf[100];
+	   unsigned srcsize;
+	   void *srcbuf = sbuf, *destbuf = dbuf;
+	   ...
+	   srcbuf = sbuf;
+	   srcsize = sizeof(sbuf);
+	   destbuf = dbuf;
+	   srcsize = sizeof(sbuf);
+	   srcbuf = sbuf;	/* srcbuf -&gt sbuf */
+	   destbuf = dbuf;    /* destbuf -&gt dbuf */
+	   mov si,srcbuf/* DS:SI -&gt sbuf */
+	   mov cx,srcsize/* CX = size of sbuf */
+	   mov di,destbuf/* ES:DI -&gt dbuf */
+	label_010:
+	   mov dx,10	/* number of bytes to copy */
+	   buf_cpy();
+	   testcx,cx	/* is copy complete? */
+	    jnzlabel_010/*   n: copy 10 bytes more */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_BUFCPY.ASM		  <B>ASM equiv</B>	BUF_CPY
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rbuffer.htm#_buf_ccpy">_buf_ccpy</A>, <A HREF="rbuffer.htm#_fbuf_cpy">_fbuf_cpy</A>, <A HREF="rmemanip.htm#_mem_cpy">_mem_cpy</A>, <A HREF="rstring.htm#_str_cpy">_str_cpy</A>
+<BR></DL>
+<H2><A NAME="_fbuf_ccpy">_fbuf_ccpy</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Copies the contents of one buffer, up to a given character, to another buffer.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;bufmanip.h&gt
+<BR>		int _fbuf_ccpy(void * far *srcbuf, unsigned int *srcsize, void * far *destbuf, unsigned int *destsize, int chr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _buf_ccpy.
+<BR>
+<BR></DL>
+<B>Source file</B>	_BUFFCCP.ASM		  <B>ASM equiv</B>	BUF_CCPY
+
+<BR><H2><A NAME="_fbuf_cmp">_fbuf_cmp</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compares the contents of one buffer with another and indicates the position of mismatching bytes or the bytes following the last bytes compared.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;bufmanip.h&gt
+<BR>		int _fbuf_cmp(void * far *buffer1, unsigned int *buf1size, void * far *buffer2, unsigned int *buf2size);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _buf_cmp.
+<BR>
+<BR></DL>
+<B>Source file</B>	_BUFFCMP.ASM		   <B>ASM equiv</B>	BUF_CMP
+
+<BR><H2><A NAME="_fbuf_cmpi">_fbuf_cmpi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compares the contents of one buffer with the contents of another (ignoring case), and indicates the position of mismatching bytes or the bytes following the last bytes compared.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;bufmanip.h&gt
+<BR>		int _fbuf_cmpi(void * far *buffer1, unsigned int *buf1size, void * far *buffer2, unsigned int *buf2size);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _buf_cmpi.
+<BR>
+<BR></DL>
+<B>Source file</B>	_BUFFCMI.ASM		  <B>ASM equiv</B>	BUF_CMPI
+
+<BR><H2><A NAME="_fbuf_cpy">_fbuf_cpy</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Copies the contents of one buffer to another buffer.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;bufmanip.h&gt
+<BR>		int _fbuf_cpy(void * far *srcbuf, unsigned int *srcsize, void * far *destbuf, unsigned int *destsize);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _buf_cpy.
+<BR>
+<BR></DL>
+<B>Source file</B>	_BUFFCPY.ASM		  <B>ASM equiv</B>	BUF_CPY
+
+<BR>
+<BR></BODY>
+<BR></HTML><BR>

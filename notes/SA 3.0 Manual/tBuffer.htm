@@ -1,0 +1,148 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: Buffer Mainpulation</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Buffer Mainpulation</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tBuffer.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tBuffer.htm#HEAD0001">Copying from One Buffer to Another
+</A><BR>
+<A HREF="tBuffer.htm#HEAD0002">Comparing Buffers
+</A><BR>
+<A HREF="tBuffer.htm#HEAD0003">Sample Program
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit consists of functions which compare and move bytes between buffers of arbitrary size. These functions manage both buffers by indicating when the end of either buffer is encountered and maintaining buffer pointers and counts so the operation may be continued after the empty (or full) buffer has been refilled (or emptied). These functions are useful for characters or objects which are read from a source buffer and then modified and written to an output buffer.
+
+<H2><A NAME="HEAD0001">Copying from One Buffer to Another
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rbuffer.htm#_buf_cpy">_buf_cpy</A><DD>       Copies the contents of one buffer to another.
+<DT><A HREF="rbuffer.htm#_buf_ccpy">_buf_ccpy</A><DD>      Copies the contents of one buffer, up to a given character, to another.
+<DT><A HREF="rbuffer.htm#_fbuf_cpy">_fbuf_cpy</A><DD>              Far pointer version of <A HREF="rbuffer.htm#_buf_cpy">_buf_cpy</A> for small data models.
+<DT><A HREF="rbuffer.htm#_fbuf_ccpy">_fbuf_ccpy</A><DD>             Far pointer version of <A HREF="rbuffer.htm#_buf_ccpy">_buf_ccpy</A> for small data models.
+</DL>
+These functions copy data from one buffer to another. Copying terminates when the end of one of the buffers is reached. Upon completion of the operation, the returned pointers and counts reflect the position where copying stopped. <A HREF="rbuffer.htm#_buf_cpy">_buf_cpy</A> copies an entire buffer. <A HREF="rbuffer.htm#_buf_ccpy">_buf_ccpy</A> copies until it encounters a specified character.
+
+<H2><A NAME="HEAD0002">Comparing Buffers
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rbuffer.htm#_buf_cmp">_buf_cmp</A><DD>       Compares the contents of one buffer with another and returns pointers to mismatching bytes or the bytes following the last bytes compared.
+<DT><A HREF="rbuffer.htm#_buf_cmpi">_buf_cmpi</A><DD>      Compares the contents of one buffer with the contents of another (ignoring case) and returns pointers to mismatching bytes or the bytes following the last bytes compared.
+<DT><A HREF="rbuffer.htm#_fbuf_cmp">_fbuf_cmp</A><DD>              Far pointer version of <A HREF="rbuffer.htm#_buf_cmp">_buf_cmp</A> for small data models.
+<DT><A HREF="rbuffer.htm#_fbuf_cmpi">_fbuf_cmpi</A><DD>             Far pointer version of <A HREF="rbuffer.htm#_buf_cmpi">_buf_cmpi</A> for small data models.
+</DL>
+These functions compare data in two different buffers. The comparison terminates when the end of one of the buffers is reached. Upon completion of the operation, the returned pointers and counts reflect the position in each buffer where the comparison stopped. If the buffers are identical up to the end of the smaller one, the size of the exhausted buffer will be returned as zero. The exhausted buffer may be filled with additional data, the pointer set back to the beginning of the buffer, and the size set to the new size of the buffer. The function may then be called again and the comparison will continue where it left off in the larger buffer. <A HREF="rbuffer.htm#_buf_cmp">_buf_cmp</A> uses a case-sensitive comparison to compare buffers. <A HREF="rbuffer.htm#_buf_cmpi">_buf_cmpi</A> ignores the case of ASCII characters during comparison.
+
+<H2><A NAME="HEAD0003">Sample Program
+</A></H2>
+
+The LF2CRLF program shown below demonstrates how some of the buffer manipulation functions are used. The program is listed in its entirety.
+<PRE><CODE>
+#include <dosio.h>
+#include <filedir.h>
+#include <fileio.h>
+#include <progctl.h>
+#include <sastring.h>
+#define LF 10
+#define CR 13
+
+char       buf1[80];                                    /* source buffer */
+char    buf2[320];                                      /* destination buffer */
+char       crlf[] = "\r\n";                             /* insert string */
+char    sfname[80], ch, dfname[80], ftemp[13];
+int        inhandle, outhandle;                 		/* file handles */
+int        bufstat;                                     /* status of buffer copies */
+int        nbytes;
+unsigned int srcsize, destsize = sizeof(buf2)-1, insize = sizeof(crlf)-1;
+void *srcbuf = buf1, *destbuf = buf2;
+void *inbuf = crlf;
+
+char   msg[] = "LF2CRLF   Converts single linefeeds into carriage return/linefeed pairs.\r\n\
+          SYNTAX:   LF2CRLF [path]filename.ext\r\n\
+          NOTES:    This utility converts linefeeds(LF) in the source\r\n\
+          file to carriage return/linefeeds (CR/LF) in the\r\n\
+          destination file. CR/LF pairs from the source file\r\n\
+          are not modified. The destination filename will be\r\n\
+          filename.NEW\r\n";
+int main()
+{
+   if (!_arg_count())
+   {
+      <A HREF="rdosio.htm#_put_str">_put_str</A>(msg);
+      return;
+   }
+   inhandle = <A HREF="rfileio.htm#_openex_h">_openex_h</A>(_arg_next(sfname, &ch),O_RDONLY);
+   if (inhandle == -1)
+   {
+      <A HREF="rdosio.htm#_put_str">_put_str</A>("Unable to open file ");
+      <A HREF="rdosio.htm#_put_str">_put_str</A>(sfname);
+      return;
+   }
+   <A HREF="rfiledir.htm#_split_path">_split_path</A>(dfname, sfname);
+   <A HREF="rfiledir.htm#_split_fname">_split_fname</A>(ftemp, sfname);
+   <A HREF="rstring.htm#_str_cat">_str_cat</A>(dfname, ftemp);                     /* copy path and filename */
+   <A HREF="rstring.htm#_str_cat">_str_cat</A>(dfname, ".new");                    /* append extension */
+   outhandle = <A HREF="rfileio.htm#_open_h">_open_h</A>(dfname, O_RDWR+O_CREAT+O_TRUNC);
+   if (outhandle == -1)
+      <A HREF="rdosio.htm#_put_str">_put_str</A>("Unable to open output file");
+   nbytes = <A HREF="rfileio.htm#_read_h">_read_h</A>(inhandle, buf1, sizeof(buf1)-1);
+   srcsize = nbytes;
+   while (nbytes != 0)
+   {
+      bufstat = <A HREF="rbuffer.htm#_buf_ccpy">_buf_ccpy</A>(&srcbuf, &srcsize, &destbuf, &destsize, LF);
+      if (bufstat == 1)                                 /* is source buffer empty? */
+      {                                                 /*   y: feed it */
+         nbytes = <A HREF="rfileio.htm#_read_h">_read_h</A>(inhandle, buf1, sizeof(buf1)-1);
+         srcbuf = buf1;
+         srcsize = nbytes;
+      }
+      if (bufstat == -1)                                /* is destination buffer full? */
+      {                                                 /*   y: flush it */
+         <A HREF="rfileio.htm#_write_h">_write_h</A>(outhandle, buf2, sizeof(buf2)-1);
+         destbuf = buf2;
+         destsize = sizeof(buf2)-1;
+      }
+      if (bufstat == 0)                                 /* has a linefeed been found? */
+      {                                                 /*   y: CR\LF already exist? */
+         if (*(char*)((char *)destbuf-2) != CR) /*  n: don't copy CR */
+         {                                              /*  y: insert CR in destination buffer */
+            ((char*)destbuf)--;
+            destsize--;
+            bufstat = <A HREF="rbuffer.htm#_buf_cpy">_buf_cpy</A>(&inbuf, &insize, &destbuf, &destsize);
+            inbuf = crlf;
+            insize = sizeof(crlf)-1;
+            if (bufstat == 0)                   		/* did CR\LF fill destination buffer? */
+            {                                           /*   y: flush it */
+               <A HREF="rfileio.htm#_write_h">_write_h</A>(outhandle, buf2, sizeof(buf2)-1);
+               destbuf = buf2;
+               destsize = sizeof(buf2)-1;
+               <A HREF="rbuffer.htm#_buf_cpy">_buf_cpy</A>(&inbuf, &insize, &destbuf, &destsize);
+            }
+         }
+      }
+   }
+   destsize = sizeof(buf2)-1 - destsize;
+   <A HREF="rfileio.htm#_write_h">_write_h</A>(outhandle, buf2, destsize); 				/* flush destination buffer */
+   return;
+}
+</CODE></PRE>
+A sample program similar to the above is provided on the distribution diskettes as REPLACE.C and may be compiled and linked using the following Microsoft C and Borland C command lines:
+
+<P>
+Microsoft C:
+<PRE><CODE>
+cl /c /I\msc\include /I\sa\include replace.c
+link replace,replace,,\sa\lib\_sas \msc\lib\slibce
+</CODE></PRE>
+Borland C:
+<PRE><CODE>
+bcc /c /ms /I\bc\include /I\sa\include replace.c
+tlink \bc\lib\c0s replace,replace,,\sa\lib\_sas \bc\lib\cs
+</CODE></PRE>
+</BOBY>
+</HTML>

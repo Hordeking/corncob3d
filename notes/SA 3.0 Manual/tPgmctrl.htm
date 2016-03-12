@@ -1,0 +1,373 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: Program and Environment Control</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Program and Environment Control</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tPgmctrl.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tPgmctrl.htm#HEAD0001">DOS Environment Structure
+</A><BR>
+<A HREF="tPgmctrl.htm#HEAD0002">Environment Types
+</A><BR>
+<A HREF="tPgmctrl.htm#HEAD0003">Locating Environments
+</A><BR>
+<A HREF="tPgmctrl.htm#HEAD0004">Reading and Writing Environment Variables
+</A><BR>
+<A HREF="tPgmctrl.htm#HEAD0005">Miscellaneous Environment Functions
+</A><BR>
+<A HREF="tPgmctrl.htm#HEAD0006">Parsing the Command Line
+</A><BR>
+<A HREF="tPgmctrl.htm#HEAD0007">Specifying the Command Line Address
+</A><BR>
+<A HREF="tPgmctrl.htm#HEAD0008">Setting the Command Line Parsing Syntax
+</A><BR>
+<A HREF="tPgmctrl.htm#HEAD0009">Executing Child Programs
+</A><BR>
+<A HREF="tPgmctrl.htm#HEAD000A">Miscellaneous Program Control Functions
+</A><BR>
+<A HREF="tPgmctrl.htm#HEAD000B">Sample Program
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit consists of functions which locate environments, read and write environment variables, return the length of environment strings, return the size of environment blocks, copy or create environment blocks, parse command lines, execute child programs or system functions, get the name and path of the executing program, exit to DOS, and get the segment address of the PSP.
+
+<H2><A NAME="HEAD0001">DOS Environment Structure
+</A></H2>
+
+Every DOS program is assigned an environment when it is executed. Each environment is made up of a series of ASCIIZ strings, the last of which is followed by an additional NULL character. Each ASCIIZ string is known as an environment variable string, and the entire double NULL terminated series of strings is known as the environment string. Beginning with DOS 3.0, the environment string is followed by a word count which indicates the number of trailing ASCIIZ strings. This count word and its associated ASCIIZ strings are known as the environment tail. The entire environment resides in the environment block, a DOS memory block allocated specifically for the environment.
+
+<P>
+An entire environment block appears as follows:
+
+<P>
+varstr1 , 0, varstr2 , 0, ..., varstrn , 0, 0, 1, 0, tailstr1 , 0, avail
+
+<P>
+where varstr1 through varstrn represent n ASCII environment variable strings, tailstr1 represents a single environment tail string, and avail represents available environment space. Note that the tail string count word in the sample above has a value of one. This value is undefined for versions of DOS below 3.0. From 3.0 to 4.01, this value is always set to one by DOS and the first and only tail string is the pathname of the program which owns the environment.
+
+<P>
+Each environment variable string appears as follows:
+
+<P>
+varname=value,0
+
+<P>
+where varname is the name of the environment variable and value is the value of that variable. The PATH and COMSPEC environment variables are common examples of this.
+
+<H2><A NAME="HEAD0002">Environment Types
+</A></H2>
+
+Spontaneous Assembly provides access to any environment in the system. Four key environments may be of interest to a program: the inherited environment, the parent environment, the active environment, and the root environment.
+
+<P>
+The root environment is the environment assigned to the primary copy of COMMAND.COM. It is the environment which is inherited by all programs executed by the primary copy of COMMAND.COM.
+
+<P>
+The active environment is the environment assigned to the active copy of COMMAND.COM. (The most recently executed copy of COMMAND.COM is the active copy.) The active environment is the environment which is inherited by all programs executed from the command line. Note that when there are no secondary copies of COMMAND.COM, the active environment and the root environment are one and the same.
+
+<P>
+The parent environment is the environment of the parent program which executed a given program. If a program is executed from the command line or from a batch file, the parent program is the active copy of COMMAND.COM and the parent environment and the active environment are one and the same.
+
+<P>
+The inherited environment is the immediate environment assigned to a given program. If a program is executed from the command line or from a batch file, the inherited environment is a copy of the active environment. If a program is executed from within another program, the inherited environment is either a copy of the parent environment or a copy of an environment defined by the parent. Note that the inherited environment is always a copy of some other environment. No two programs ever share the same environment. Inherited environments are always discarded when a program terminates.
+
+<H2><A NAME="HEAD0003">Locating Environments
+</A></H2>
+
+<A HREF="rpgmctrl.htm#_get_envseg">_get_envseg</A>     Returns the segment address of any program's environment.
+<A HREF="rpgmctrl.htm#_get_curenvseg">_get_curenvseg</A>  Returns the segment address of the current program's inherited environment.
+<A HREF="rpgmctrl.htm#_get_parenvseg">_get_parenvseg</A>  Returns the segment address of the current program's parent environment.
+<A HREF="rpgmctrl.htm#_get_dosenvseg">_get_dosenvseg</A>  Returns the segment address of the active DOS environment.
+<A HREF="rpgmctrl.htm#_get_rootenvseg">_get_rootenvseg</A> Returns the segment address of the DOS root environment.
+
+These functions locate environments of all types anywhere in the system. Each of these functions returns the segment address of a specified environment. This makes it possible to manipulate any environment with any of the program control environment functions. A typedef for segaddr has been included in the PROGCTL.H header file for easier use of the environment functions.
+
+<P>
+The location of the environment assigned to a copy of COMMAND.COM varies from one version of DOS to another. It also depends on whether a particular copy of COMMAND.COM is a primary or secondary copy. These functions return the correct environment address in all cases.
+
+<H2><A NAME="HEAD0004">Reading and Writing Environment Variables
+</A></H2>
+
+<A HREF="rpgmctrl.htm#_get_env">_get_env</A>        Returns a pointer to the value of an environment variable.
+<A HREF="rpgmctrl.htm#_set_env">_set_env</A>        Sets the value of a variable string in an environment.
+
+These functions read and write environment variables in any environment.
+
+<P>
+<A HREF="rpgmctrl.htm#_get_env">_get_env</A> searches a specified environment for a variable and returns a pointer to the value of that variable in the environment. The returned pointer should only be used to read the environment variable. Writing an environment variable directly (instead of using <A HREF="rpgmctrl.htm#_set_env">_set_env</A>) may corrupt the environment.
+
+<P>
+<A HREF="rpgmctrl.htm#_set_env">_set_env</A> searches a specified environment for a variable and sets the value of the variable to a specified string. If the variable does not exist in the environment, it is added. If it exists, its value is changed. If the specified value is a NULL string, the variable is deleted from the environment.
+
+<H2><A NAME="HEAD0005">Miscellaneous Environment Functions
+</A></H2>
+
+<A HREF="rpgmctrl.htm#_environ_len">_environ_len</A>    Returns the length of an environment string.
+<A HREF="rpgmctrl.htm#_environ_size">_environ_size</A>   Returns the size of an environment block.
+<A HREF="rpgmctrl.htm#_copy_envblk">_copy_envblk</A>    Makes a copy of an environment block.
+<A HREF="rpgmctrl.htm#_create_envblk">_create_envblk</A>  Creates an empty environment block.
+
+These functions perform miscellaneous operations on environment blocks and strings.
+
+<P>
+<A HREF="rpgmctrl.htm#_environ_len">_environ_len</A> determines the length of the environment string in a specified environment. This length includes the double NULL termination but not the environment tail. The <A HREF="rpgmctrl.htm#_environ_size">_environ_size</A> function returns the size of the DOS memory block which has been allocated for a specified environment. These two functions are most commonly used when copying or creating environments for use with a child program.
+
+<P>
+The <A HREF="rpgmctrl.htm#_copy_envblk">_copy_envblk</A> and <A HREF="rpgmctrl.htm#_create_envblk">_create_envblk</A> functions create simulated environment blocks. Simulated environment blocks act in all respects like true environment blocks, but they are not linked into the DOS memory chain and are not associated with any specific application. Simulated environments are useful for creating custom environments to be passed to child programs. Environments created by these two functions may be operated on by any of the program control environment functions.
+
+<H2><A NAME="HEAD0006">Parsing the Command Line
+</A></H2>
+
+<A HREF="rpgmctrl.htm#_arg_count">_arg_count</A>      Returns the number of command line arguments.
+<A HREF="rpgmctrl.htm#_arg_next">_arg_next</A>       Returns the next command line argument.
+<A HREF="rpgmctrl.htm#_arg_nth">_arg_nth</A>        Returns a specified command line argument.
+<A HREF="rpgmctrl.htm#_arg_reset">_arg_reset</A>      Resets the current command line argument pointer.
+
+These functions read, count, and select command line arguments using a default or custom parsing syntax. Parsing a command line does not alter the command line in any way.
+
+<P>
+<A HREF="rpgmctrl.htm#_arg_count">_arg_count</A> determines the number of arguments which are present on the command line. <A HREF="rpgmctrl.htm#_arg_nth">_arg_nth</A> returns a specified command line argument, and <A HREF="rpgmctrl.htm#_arg_next">_arg_next</A> returns  the argument which follows the last argument returned. If no arguments have been returned or if <A HREF="rpgmctrl.htm#_arg_reset">_arg_reset</A> is called, <A HREF="rpgmctrl.htm#_arg_next">_arg_next</A> the first command line argument. Arguments may be read from the command line in sequential or random order.
+
+<P>
+Arguments are returned by copying them into a specified buffer in ASCIIZ format. In addition, the most significant character which terminates the argument is reported in the argument chr. (When the terminating character is reported, switch characters and significant separator characters take precedence over insignificant separator characters. See Setting the Command Line Parsing Syntax, below, for a discussion of the different types of separating characters.)
+
+<H2><A NAME="HEAD0007">Specifying the Command Line Address
+</A></H2>
+
+<A HREF="rpgmctrl.htm#cmdln_start">cmdln_start</A>     (Variable) Indicates the starting address of the command line.
+<A HREF="rpgmctrl.htm#cmdln_next">cmdln_next</A>      (Variable) Indicates the offset of the next command line argument.
+<A HREF="rpgmctrl.htm#_set_cmdln">_set_cmdln</A>      Specifies the address of the command line.
+<A HREF="rpgmctrl.htm#_reset_cmdln">_reset_cmdln</A>    Resets the command line address to the default location.
+
+These functions and variables control the command line address for the command line parsing functions. This makes it possible to parse command line information in arbitrary locations. For example, these functions make it possible to read command line information from a file and parse the information in the input buffer. They also allow environment strings containing command line information to be parsed directly in the environment.
+
+<P>
+<A HREF="rpgmctrl.htm#_set_cmdln">_set_cmdln</A> sets the command line address to a specified location. <A HREF="rpgmctrl.htm#_reset_cmdln">_reset_cmdln</A> resets the command line address to the default program command line location at offset 0x81 in the PSP. Both of these functions reset the command line pointer to the <A HREF="rexit.htm#start">start</A> of the command line when the new command line address is established. The use of these functions is optional. The default program command line is parsed if no other address is specified.
+
+<P>
+<A HREF="rpgmctrl.htm#cmdln_start">cmdln_start</A> and <A HREF="rpgmctrl.htm#cmdln_next">cmdln_next</A> are the actual variables used by the command line parsing functions to keep track of the current and starting command line positions. These variables may be read ormodified at any time. If they are modified, the new command line address takes effect immediately. These variables are usually used for processing nested command lines (i.e., for processing "@" files which contain additional command line information).
+
+<H2><A NAME="HEAD0008">Setting the Command Line Parsing Syntax
+</A></H2>
+
+<A HREF="rpgmctrl.htm#_set_argtbls">_set_argtbls</A>    Installs custom parsing tables for use by the command line parser.
+<A HREF="rpgmctrl.htm#_reset_argtbls">_reset_argtbls</A>  Resets the command line parser to use the default parsing tables.
+
+These functions establish the addresses of the command line parsing tables. These tables determine the command line parsing syntax.
+
+<P>
+By default, the command line functions support the same command line syntax supported by most DOS commands. A custom parsing syntax may be specified by calling <A HREF="rpgmctrl.htm#_set_argtbls">_set_argtbls</A>. The parsing syntax may be changed at any time. <A HREF="rpgmctrl.htm#_reset_argtbls">_reset_argtbls</A> resets the parsing syntax to the default syntax.
+
+<P>
+The command line parsing syntax is specified using three tables which identify switch characters and argument separators. Each table is an ASCIIZ string and must reside in DGROUP (global or static non-far data). These tables are used to parse the command line as follows:
+
+<P>
+Insignificant Separator Table. Command line characters found in this table are skipped when they appear before or after an argument. They also terminate an argument. They are not copied into the buffer.
+
+<P>
+Significant Separator Table. Command line characters found in this table terminate an argument. They are never skipped and they are not copied into the buffer.
+
+<P>
+Switch Character Table. Command line characters found in this table mark the beginning of a new argument and end any previous argument. They are copied into the buffer as the first character of an argument.
+
+<P>
+When a command line character is processed, these tables are searched in the following order: Switch Character Table, Significant Separator Table, Insignificant Separator Table. The character is then compared against CR and NULL to check for the end of the command line. The meaning of the CR character may be modified by placing CR in one of the three parsing tables. If the first character in a table is a NULL, that table is ignored.
+
+<P>
+The default parsing tables emulate the command line parsing syntax supported by most DOS commands. The default parsing tables are defined as follows:
+
+<P>
+char Insig_Sep_Table[] = " \t";                 (Space, Tab)
+<P>
+char Sig_Sep_Table[] = ",;+";                   (Comma, Semicolon, Plus)
+<P>
+char Switch_Char_Table[] = "/";                 (Forward Slash)
+
+<P>
+If INHERIT_PTR is specified for any of the table pointers passed to the _set_argtbl function, the currently-installed table remains installed. INHERIT_PTR is defined in SA_DEF.H.
+
+<P>
+When a command line argument is returned by <A HREF="rpgmctrl.htm#_arg_next">_arg_next</A> or <A HREF="rpgmctrl.htm#_arg_nth">_arg_nth</A>, the most significant terminating character is also reported in chr. If a command line argument is followed by insignificant separators as well as a switch or significant separator, then only the switch or significant separator is reported. This allows parsing logic to depend on the most significant characters used to separate arguments.
+
+<P>
+The following example demonstrates the use of custom parsing tables. This example installs a custom switch character table which includes the hyphen as well as the backslash character. The other two tables remain unchanged.
+
+<P>
+#include                 <progctl.h>
+<P>
+#include                 <dosio.h>
+<P>
+#include                 <dataconv.h>
+
+<P>
+static char custom_ssep[] = ",;+-";       /* new signif. sep. table */
+<P>
+char arg_buf[128];                        /* command line argument buffer */
+<P>
+void main()
+<P>
+{
+<P>
+   char chr;
+<P>
+   int args;
+
+<P>
+   <A HREF="rdosio.htm#_put_str">_put_str</A>("\n\rNumber of arguments: ");
+<P>
+   <A HREF="rdosio.htm#_put_str">_put_str</A>(_i_to_dec(_arg_count(), arg_buf));  /* get number of arguments */
+<P>
+   <A HREF="rdosio.htm#_put_str">_put_str</A>("\n\rSecond argument: ");
+<P>
+   <A HREF="rdosio.htm#_put_str">_put_str</A>(_arg_nth(arg_buf, 2, &chr));
+<P>
+   <A HREF="rdosio.htm#_put_str">_put_str</A>("\n\rTerminating character: "); <A HREF="rdosio.htm#_put_chr">_put_chr</A>(chr);
+<P>
+   <A HREF="rpgmctrl.htm#_set_argtbls">_set_argtbls</A>(INHERIT_PTR,custom_ssep,INHERIT_PTR);
+<P>
+   <A HREF="rdosio.htm#_put_str">_put_str</A>("\n\n\rUsing Argument Tables...\n");
+<P>
+   <A HREF="rdosio.htm#_put_str">_put_str</A>("\n\Rnumber of arguments: ");
+<P>
+   <A HREF="rdosio.htm#_put_str">_put_str</A>(_i_to_dec(_arg_count(), arg_buf));  /* get number of arguments */
+<P>
+   <A HREF="rdosio.htm#_put_str">_put_str</A>("\n\Rsecond argument: ");
+<P>
+   <A HREF="rdosio.htm#_put_str">_put_str</A>(_arg_nth(arg_buf, 2, &chr));
+<P>
+   <A HREF="rdosio.htm#_put_str">_put_str</A>("\n\Rterminating character: "); <A HREF="rdosio.htm#_put_chr">_put_chr</A>(chr);
+<P>
+   <A HREF="rpgmctrl.htm#_reset_argtbls">_reset_argtbls</A>(); <A HREF="rdosio.htm#_put_newline">_put_newline</A>();               /* restore default tables */
+<P>
+}
+
+<P>
+When the following command line is passed to the PROGNAME program:
+
+<P>
+progname file1 file2-file3 , file4;
+
+<P>
+then the above example parses this command line as follows:
+<OL>
+<LI>    The call to <A HREF="rpgmctrl.htm#_arg_count">_arg_count</A> (using the default parsing tables) returns a value of three. The three arguments are: "file1", "file2-file3", and "file4".
+<LI>    The first call to <A HREF="rpgmctrl.htm#_arg_nth">_arg_nth</A> (using the default parsing tables) returns "file2-file3". The terminating character in chr is reported as ",". The comma is reported instead of the space because the space is not a significant terminating character or a switch character.
+<LI>    The second call to <A HREF="rpgmctrl.htm#_arg_count">_arg_count</A> (using the custom significant separator table) returns a value of four. The four arguments are: "file1", "file2", "file3", and "file4".
+<LI>    The second call to <A HREF="rpgmctrl.htm#_arg_nth">_arg_nth</A> (using the custom significant separator table) returns "file2". The terminating character is reported as "-".
+</OL>
+Determining the Name and Path of the Executing Program
+<DL COMPACT>
+<DT><A HREF="rpgmctrl.htm#_arg_progname">_arg_progname</A><DD>  Returns the name and path of the executing program.
+</DL>
+This function returns the name and path of the executing program. The returned pathname includes a drive specifier, full path, the program filename, and a terminal NULL. This information is retrieved from the end of the inherited environment and is usually available under DOS versions 3.0 and later. If the name and path cannot be retrieved from the environment for any reason, a NULL path is returned and -1 is returned.
+
+<H2><A NAME="HEAD0009">Executing Child Programs
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rpgmctrl.htm#_exec_prog">_exec_prog</A><DD>     Executes a program.
+<DT><A HREF="rpgmctrl.htm#_exec_proge">_exec_proge</A><DD>    Executes a program using a specified environment.
+<DT><A HREF="rpgmctrl.htm#_exec_sys">_exec_sys</A><DD>      Executes a DOS command, batch file, or program.
+<DT><A HREF="rpgmctrl.htm#_exec_syse">_exec_syse</A><DD>     Executes a DOS command, batch file, or program using a specified environment.
+<DT><A HREF="rpgmctrl.htm#_exit_to_dos">_exit_to_dos</A><DD>   Temporarily passes control to the DOS command processor.
+</DL>
+These functions load and execute child programs, DOS commands, and batch files from within the current program.
+
+<P>
+<A HREF="rpgmctrl.htm#_exec_prog">_exec_prog</A> and <A HREF="rpgmctrl.htm#_exec_proge">_exec_proge</A> execute a specific child program with a specified command line. The child program is passed either an exact copy of the current program environment (_exec_prog) or an exact copy of a specified environment (_exec_proge). The child program must be either a .COM or .EXE file and it must reside in the directory which is specified by the name of the program. These functions return an exit a success or fail value and on success the termcode argument is modified to report the type of termination (normal termination, TSR, critical error, or ctrl-break) to the current program when the child program terminates.
+
+<P>
+_exec_sys and <A HREF="rpgmctrl.htm#_exec_syse">_exec_syse</A> execute a system command (DOS command, batch file, or program) by invoking the command processor defined by the COMSPEC environment variable. The command processor is usually COMMAND.COM. The command processor is passed either an exact copy of the current program environment (_exec_sys) or an exact copy of a specified environment (_exec_syse). The system command is specified on a command line which is passed to the command processor. This command line may contain switches to control the command processor, the name of the system command, and any command line information required by the command. If a batch file or program is to be executed, it is located using the path specified in the environment. Control returns to the current program after the command is executed.
+
+<P>
+<A HREF="rpgmctrl.htm#_exit_to_dos">_exit_to_dos</A> passes control to the command processor, displays a command prompt, and waits for input. Control returns to the calling program when "EXIT" is typed on the command line. This is equivalent to calling <A HREF="rpgmctrl.htm#_exec_syse">_exec_syse</A> with a NULL command string.
+
+<P>
+All of these functions restore the state of the calling program when the child program is executed, including the Ctrl-Break state and DTA.
+
+<H2><A NAME="HEAD000A">Miscellaneous Program Control Functions
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rpgmctrl.htm#_get_psp">_get_psp</A><DD>       Returns the segment address of the Program Segment Prefix.
+<DT>psp<DD>            (Variable) Contains the segment address of the Program Segment Prefix (PSP).
+</DL>
+<A HREF="rpgmctrl.htm#_get_psp">_get_psp</A> and _psp provide access to the address of the current program's Program Segment Prefix. <A HREF="rpgmctrl.htm#_get_psp">_get_psp</A> returns the address of the PSP in all memory models without issuing any DOS calls.
+
+<H2><A NAME="HEAD000B">Sample Program
+</A></H2>
+
+The sample program shown below uses of a number of program control functions and demonstrates the following program control features: defining and installing a custom parsing table, getting the first command line argument, getting the segment address of the DOS environment, using that environment address to search for a "PATH" variable string, and concatenating the command line argument to the current "PATH". The program is listed in its entirety.
+<PRE><CODE>
+#include <dosio.h>
+#include <miscdos.h>
+#include <progctl.h>
+#include <sastring.h>
+
+void help_msg(void);
+char near my_ssep_tbl[] = ",+";       /* new significant sep table (NEAR) */
+char newpath[129];
+char varname[] = "PATH";
+char chr, *arg, far *var;
+static char pathbuff[256];            /* initialize pathbuff to zero */
+int len;
+segaddr dos_seg;
+
+void main()
+{
+   <A HREF="rmiscdos.htm#_chk_version2">_chk_version2</A>();
+
+/* setup and install new separator tables note: ';' not to be as a significant separator */
+   <A HREF="rpgmctrl.htm#_set_argtbls">_set_argtbls</A>(DEFAULT_TBL, my_ssep_tbl, DEFAULT_TBL);
+
+/* process the command line */
+   if((arg = <A HREF="rpgmctrl.htm#_arg_next">_arg_next</A>(newpath, &chr)) == NULL)     /* first argument */
+      help_msg();
+   len = <A HREF="rstring.htm#_str_len">_str_len</A>(newpath);                         /* len = length of command line argument */
+   <A HREF="rstring.htm#_str_upr">_str_upr</A>(newpath);                               /* convert path to uppercase */
+   if((newpath[0] == '/') && (newpath[1] == 'H'))
+      help_msg();                                   /* if help switch, display help message */
+   dos_seg = <A HREF="rpgmctrl.htm#_get_dosenvseg">_get_dosenvseg</A>();                      /* get address of DOS environment */
+   if((var =  <A HREF="rpgmctrl.htm#_get_env">_get_env</A>(varname, dos_seg)) == NULL)
+   {
+      <A HREF="rdosio.htm#_put_str">_put_str</A>("\n\rThe PATH environment variable was not modified.\n\r");
+      exit(0);
+   }
+   len += <A HREF="rstring.htm#_fstr_len">_fstr_len</A>(var);                  /* len = command line string + "PATH" string */
+   if (len > 256)
+   {
+      <A HREF="rdosio.htm#_put_str">_put_str</A>("\n\rPATH was not modified.");
+      <A HREF="rdosio.htm#_put_str">_put_str</A>("\n\rThe resulting PATH variable would be longer than 255 bytes.\n\r");
+      exit(0);
+   }
+   <A HREF="rstring.htm#_str_cpy">_str_cpy</A>(pathbuff, varname);            /* copy "PATH" to pathbuff */
+   pathbuff[0]+_str_len(varname) = '=';    /* create "PATH=" string */
+   <A HREF="rstring.htm#_fstr_cat">_fstr_cat</A>(pathbuff, var);               /* concatenate current "PATH" variable string */
+   <A HREF="rstring.htm#_str_cat">_str_cat</A>(pathbuff, newpath);            /* add new path string */
+   <A HREF="rpgmctrl.htm#_set_env">_set_env</A>(pathbuff, dos_seg);            /* set new "PATH=..." in DOS environment */
+}
+
+void help_msg(void)
+{
+   <A HREF="rdosio.htm#_put_str">_put_str</A>("Syntax:    PATHADD [/H] path_str\n\n\r");
+   <A HREF="rdosio.htm#_put_str">_put_str</A>("Where:     /H gives this help message\n\r");
+   <A HREF="rdosio.htm#_put_str">_put_str</A>("path_str is the path string to be appended to the current path\n\r");
+   exit(0);
+}
+</CODE></PRE>
+The sample program shown above (PATHADD.C) is provided on the distribution diskettes and may be compiled and linked using the following Microsoft C and Borland C command lines:
+
+<P>
+Microsoft C:
+<PRE><CODE>
+cl /c /I\msc\include /I\sa\include pathadd.c
+link pathadd,pathadd,,\sa\lib\_sas \msc\lib\slibce
+</CODE></PRE>
+Borland C:
+<PRE><CODE>
+bcc /c /ms /I\bc\include /I\sa\include pathadd.c
+tlink \bc\lib\c0s pathadd,pathadd,,\sa\lib\_sas \bc\lib\cs
+</CODE></PRE>
+</BOBY>
+</HTML>

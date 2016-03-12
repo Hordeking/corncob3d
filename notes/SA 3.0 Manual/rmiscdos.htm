@@ -1,0 +1,2748 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Miscellaneous DOS Reference</TITLE>
+</HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Miscellaneous DOS</H1>
+<P ALIGN=CENTER>Reference Section </P>
+<UL>
+<LI><A HREF="TOC.htm">Table of Contents</A>
+<LI><A HREF="index.htm">Function Index</A>
+<LI><A HREF="gindex.htm">Group Index
+</UL>
+<A HREF="rmiscdos.htm#_cbrk_check">_cbrk_check</A><BR>
+<A HREF="rmiscdos.htm#_cbrk_disable">_cbrk_disable</A><BR>
+<A HREF="rmiscdos.htm#_cbrk_enable">_cbrk_enable</A><BR>
+<A HREF="rmiscdos.htm#_cbrk_install">_cbrk_install</A><BR>
+<A HREF="rmiscdos.htm#cbrk_pending">cbrk_pending</A><BR>
+<A HREF="rmiscdos.htm#_cbrk_remove">_cbrk_remove</A><BR>
+<A HREF="rmiscdos.htm#_cbrk_restore">_cbrk_restore</A><BR>
+<A HREF="rmiscdos.htm#_cbrk_save">_cbrk_save</A><BR>
+<A HREF="rmiscdos.htm#_ce_install">_ce_install</A><BR>
+<A HREF="rmiscdos.htm#_cem_install">_cem_install</A><BR>
+<A HREF="rmiscdos.htm#_ce_remove">_ce_remove</A><BR>
+<A HREF="rmiscdos.htm#_chk_version">_chk_version</A><BR>
+<A HREF="rmiscdos.htm#_chk_version2">_chk_version2</A><BR>
+<A HREF="rmiscdos.htm#_cmp_version">_cmp_version</A><BR>
+<A HREF="rmiscdos.htm#_dos_errmsg">_dos_errmsg</A><BR>
+<A HREF="rmiscdos.htm#_dos_errmsge">_dos_errmsge</A><BR>
+<A HREF="rmiscdos.htm#_dos_malloc">_dos_malloc</A><BR>
+<A HREF="rmiscdos.htm#_dos_mavail">_dos_mavail</A><BR>
+<A HREF="rmiscdos.htm#_dos_mfree">_dos_mfree</A><BR>
+<A HREF="rmiscdos.htm#_dos_mset">_dos_mset</A><BR>
+<A HREF="rmiscdos.htm#_dos_msize">_dos_msize</A><BR>
+<A HREF="rmiscdos.htm#_dta_restore">_dta_restore</A><BR>
+<A HREF="rmiscdos.htm#_dta_save">_dta_save</A><BR>
+<A HREF="rmiscdos.htm#e_code">e_code</A><BR>
+<A HREF="rmiscdos.htm#_get_cbrk">_get_cbrk</A><BR>
+<A HREF="rmiscdos.htm#_get_cdfree">_get_cdfree</A><BR>
+<A HREF="rmiscdos.htm#_get_cdinfo">_get_cdinfo</A><BR>
+<A HREF="rmiscdos.htm#_get_cdsize">_get_cdsize</A><BR>
+<A HREF="rmiscdos.htm#_get_countryinfo">_get_countryinfo</A><BR>
+<A HREF="rmiscdos.htm#_get_dfree">_get_dfree</A><BR>
+<A HREF="rmiscdos.htm#_get_dinfo">_get_dinfo</A><BR>
+<A HREF="rmiscdos.htm#_get_dsize">_get_dsize</A><BR>
+<A HREF="rmiscdos.htm#_get_dta">_get_dta</A><BR>
+<A HREF="rmiscdos.htm#_get_ecode">_get_ecode</A><BR>
+<A HREF="rmiscdos.htm#_get_lastdrive">_get_lastdrive</A><BR>
+<A HREF="rmiscdos.htm#_get_vect">_get_vect</A><BR>
+<A HREF="rmiscdos.htm#_get_verify">_get_verify</A><BR>
+<A HREF="rmiscdos.htm#_get_version">_get_version</A><BR>
+<A HREF="rmiscdos.htm#_set_cbrk">_set_cbrk</A><BR>
+<A HREF="rmiscdos.htm#_set_country">_set_country</A><BR>
+<A HREF="rmiscdos.htm#_set_dta">_set_dta</A><BR>
+<A HREF="rmiscdos.htm#_set_vect">_set_vect</A><BR>
+<A HREF="rmiscdos.htm#_set_verify">_set_verify</A><BR>
+<A HREF="rmiscdos.htm#_verify_off">_verify_off</A><BR>
+<A HREF="rmiscdos.htm#_verify_on">_verify_on</A><BR>
+<A HREF="rmiscdos.htm#_verify_restore">_verify_restore</A><BR>
+<A HREF="rmiscdos.htm#_verify_save">_verify_save</A><BR>
+<H2><A NAME="_cbrk_check">_cbrk_check</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Allows a ctrl-break event to be processed if one is pending and the DOS ctrl-break flag is set.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void _cbrk_check(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function causes control to pass to the current ctrl-break handler if a ctrl-break event is pending and the DOS ctrl-break flag is set.
+<BR>
+<BR>	Nothing happens if no event is pending, the DOS ctrl-break flag is not set, or ctrl-break events have been disabled using _cbrk_disable. DOS ctrl-break checking is only performed when DOS function calls are processed. Therefore, unless a program issues DOS calls frequently, it will be unresponsive to ctrl-break events. _cbrk_check may be called within unresponsive sections of code to alleviate this problem.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   _cbrk_check();/* pass control if ctrl-break pending */
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	   cbrk_check();/* pass control if ctrl-break pending */
+
+</CODE></PRE>
+<B>Source file</B>	MDCBKCHK.ASM		  <B>ASM equiv</B>	CBRK_CHECK
+
+<BR><H2><A NAME="_cbrk_disable">_cbrk_disable</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Disables all DOS ctrl-break checking
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void _cbrk_disable(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	No return value.
+<BR>	cbrk_pending	cleared (0)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function completely disables DOS ctrl-break checking by deactivating the current ctrl-break handlers. Temporary ctrl-break handlers are installed to keep track of unprocessed ctrl-break events via the cbrk_pending variable. Ctrl-break checking remains disabled until _cbrk_enable is called. This function has no effect on the DOS ctrl-break flag.
+<BR>
+<BR>WARNING! If this function is called, _cbrk_enable must be called before the program terminates or a system crash may result.
+<BR>
+<BR>	Note that DOS function calls 0x09 and 0x0A may be affected by ctrl-C events (^C and a newline are displayed). This occurs even if _cbrk_disable is called. However, calling _cbrk_disable will prevent the ctrl-break handler from receiving control. 
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   _cbrk_disable();/* disable DOS ctrl-break checking */
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt 
+	   cbrk_disable();/* disable DOS ctrl-break checking */
+
+</CODE></PRE>
+<B>Source file</B>	MDCBKDIS.ASM		  <B>ASM equiv</B>	CBRK_DISABLE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_cbrk_enable">_cbrk_enable</A>, <A HREF="rmiscdos.htm#cbrk_pending">cbrk_pending</A>
+<BR></DL>
+<H2><A NAME="_cbrk_enable">_cbrk_enable</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Enables DOS ctrl-break after _cbrk_disable has been called.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void _cbrk_enable(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	No return value.
+<BR>	cbrk_pending	cleared (0)
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function re-enables DOS ctrl-break checking after it has been disabled by _cbrk_disable. It does this by re-installing the ctrl-break handlers which were deactivated by _cbrk_disable. If cbrk_pending is non-zero on entry, a ctrl-break event is then forced. This immediately passes control to the re-installed DOS ctrl-break handler if the DOS ctrl-break flag is set; otherwise, the event is queued by DOS for processing when the state of the DOS ctrl-break flag is changed. If _cbrk_disable was never called, this function has no effect. This function has no effect on the DOS ctrl-break flag.
+<BR>
+<BR>	Note that if cbrk_pending is set to zero immediately prior to calling this function, all ctrl-break events which occurred while _cbrk_disable was in effect will be ignored.
+<BR>
+<BR>WARNING! If _cbrk_disable is called then this function must be called before the program terminates or a system crash may result.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   _cbrk_enable();/* enable DOS ctrl-break checking */
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   cbrk_enable();/* enable DOS ctrl-break checking */
+
+</CODE></PRE>
+<B>Source file</B>	MDCBKDIS.ASM		  <B>ASM equiv</B>	CBRK_ENABLE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_cbrk_disable">_cbrk_disable</A>, <A HREF="rmiscdos.htm#cbrk_pending">cbrk_pending</A>
+<BR></DL>
+<H2><A NAME="_cbrk_install">_cbrk_install</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Installs a DOS ctrl-break handler.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void _cbrk_install(int (*func)(void));
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function installs func in place of the current DOS ctrl-break handler. Once installed, func receives control whenever DOS detects a ctrl-break event which should be processed.
+<BR>
+<BR>	The ctrl-break handler may perform any action, including DOS calls and/or termination of the program. If the ctrl-break handler return to the calling program, the return value is used to indicate whether or not the program should continue execution or be terminated (if the return value is 0 then the program continues where execution left off; otherwise the program terminates).
+<BR>
+<BR>	_cbrk_remove does not need to be called prior to exiting the program. If a ctrl-break handler has been installed, DOS will automatically remove it when the program terminates.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	int control_break (void)/* simple cbrk handler */
+	{
+	   _put_str ("\n\rControl-Break pressed");
+	   return (0);   	 /* continue execution */
+	}
+
+	{
+	   ...
+	   _cbrk_install (control_break); /* install it */
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+
+	{
+	   ...
+	#if __TINY__
+	   mov  dx,cs
+	#else
+	   mov  dx,seg control_break
+	#endif
+	   mov  ax,offset control_break/* DX;AX -&gt new handler */
+	   cbrk_install ();    /* install it */
+	   ...
+	}
+
+	int control_break (void)    /* simple cbrk handler */
+	{
+	   _put_str ("\n\rControl-Break pressed");
+	   return (0);	 	    /* continue execution */
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MDCBINS.ASM		  <B>ASM equiv</B>	CBRK_INSTALL
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_cbrk_remove">_cbrk_remove</A>
+<BR></DL>
+<H2><A NAME="cbrk_pending">cbrk_pending</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Variable) Indicates whether or not ctrl-break events occurred while cbrk_disable was in effect.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	extern char cbrk_pending;
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This char variable is used to keep track of ctrl-break events which occur while cbrk_disable is in effect. When cbrk_enable is called, the re-installed ctrl-break handler (the handler which was active when _cbrk_disable was called) receives control immediately if cbrk_pending is non-zero.
+<BR>
+<BR>	Note that if cbrk_pending is set to zero immediately prior to calling _cbrk_enable, all ctrl-break events which occurred while cbrk_disable was in effect will be ignored.
+<BR>
+<BR></DL>
+<B>Source file</B>	MDPEND.ASM
+<B>ASM equiv</B>â
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_cbrk_disable">_cbrk_disable</A>, <A HREF="rmiscdos.htm#_cbrk_enable">_cbrk_enable</A>
+<BR></DL>
+<H2><A NAME="_cbrk_remove">_cbrk_remove</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Removes an installed DOS ctrl-break handler.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void _cbrk_remove(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function resets the DOS ctrl-break address to the initial ctrl-break address stored in the PSP. This disables any ctrl-break handler installed after the program began execution.
+<BR>
+<BR>	_cbrk_remove does not need to be called prior to exiting the program. If a ctrl-break handler has been installed, DOS will automatically remove it when the program terminates.
+<BR>
+<BR>WARNING! This function uses the _psp global variable. When using Spontaneous Assembly for C/C++, this variable is supplied and initialized by the compiler instead of the Spontaneous Assembly Library.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   _cbrk_remove();   /* reset ctrl-break handler address */
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   cbrk_remove();   /* reset ctrl-break handler address */
+
+</CODE></PRE>
+<B>Source file</B>	MDCBKREM.ASM		  <B>ASM equiv</B>	CBRK_REMOVE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_cbrk_install">_cbrk_install</A>
+<BR></DL>
+<H2><A NAME="_cbrk_restore">_cbrk_restore</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Restores the original state of the DOS ctrl-break flag.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void _cbrk_restore(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function restores the DOS ctrl-break flag to the state which was in effect when _cbrk_save was called. If _cbrk_save was not previously called, the resulting state of the DOS ctrl-break flag is undefined.
+<BR>
+<BR>	_cbrk_save is usually called soon after the program begins executing to save the state of the DOS ctrl-break flag before it is changed by _set_cbrk. _cbrk_restore is then called just before the program terminates to restore the DOS break flag to its original state. If this is not done, the program may alter the DOS break status for subsequent programs.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   _cbrk_save ();  /* save DOS ctrl-break status flag */
+	   ...
+	   _cbrk_restore ();
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   cbrk_save ();  /* save DOS ctrl-break status flag */
+	   ...
+	   cbrk_restore ();
+
+</CODE></PRE>
+<B>Source file</B>	MDCBKSAV.ASM		    <B>ASM equiv</B>	CBRK_RESTORE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_cbrk_save">_cbrk_save</A>
+<BR></DL>
+<H2><A NAME="_cbrk_save">_cbrk_save</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Saves the current state of the DOS ctrl-break flag.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void _cbrk_save(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function determines the current state of the DOS ctrl-break flag and saves it for later restoration by _cbrk_restore.
+<BR>
+<BR>	_cbrk_save is usually called soon after the program begins execution to save the state of the DOS ctrl-break flag before it is changed by _set_cbrk. _cbrk_restore is then called just before the program terminates to restore the DOS break flag to its original state. If this is not done, the program may alter the DOS break status for subsequent programs.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   _cbrk_save ();  /* save DOS ctrl-break status flag */
+	   ...
+	   _cbrk_restore ();  /* restore DOS ctrl-break status flag */
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   cbrk_save ();  /* save DOS ctrl-break status flag */
+	   ...
+	   cbrk_restore (); /* restore DOS ctrl-break status flag */
+
+</CODE></PRE>
+<B>Source file</B>	MDCBKSAV.ASM		  <B>ASM equiv</B>	CBRK_SAVE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_cbrk_restore">_cbrk_restore</A>
+<BR></DL>
+<H2><A NAME="_ce_install">_ce_install</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Installs a critical error handler.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void _ce_install(intaddr ce_handler);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function installs ce_handler in place of the current critical error handler address. Once installed, the function at ce_handler receives control whenever a critical error occurs within DOS.
+<BR>
+<BR>	See a DOS Technical Reference Manual or another DOS reference manual for detailed information about writing custom critical error handlers.
+<BR>
+<BR>	The _ce_remove function may be used to uninstall the installed critical error handler. Alternatively, _ce_install may be called to install an alternate critical error handler. _ce_remove does not need to be called prior to exiting the program. If any critical error handler has been installed (including the Critical Error Manager), DOS will automatically uninstall it when the program terminates.
+<BR>
+<BR>	In most cases, it is advisable to use _cem_install instead of _ce_install. The _cem_install function installs the Critical Error Manager, a predefined critical error handler which greatly simplifies processing of critical errors.
+<BR>
+<BR>	ce_handler should be cast as intaddr when calling this function. This prevents the compiler from generating assembly language SEG instructions, which preclude the use of .COM format in the TINY memory model. Some compilers also require type casting of interrupt functions in parameter lists to eliminate spurious compiler errors.
+<BR>
+<BR>WARNING! The predefined ISRs from the TSR unit install a different critical error handler prior to passing control to a TSR entry point. This means that ce_handler is inactive when a TSR entry point is active. See the TSRs and Device Drivers technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	void interrupt far ce_handler (int bp, int di, int si, int ds,
+		          int es, int dx, int cx, int bx,
+		          int ax, int ip, int cs,
+		          int flags);
+	/* set up critical error handler
+	{
+	   /* handle the critical error here */
+	}
+	...
+	_ce_install ((intaddr) ce_handler);
+		   /* install critical error handler */
+	...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	#ifdef __cplusplus
+	extern "C" void interrupt far ce_handler (int bp, int di,
+	   int si, int ds, int es, int dx, int cx, int bx, int ax,
+	   int ip, int cs, int flags);
+	#else
+	void interrupt far ce_handler (int bp, int di, int si, int ds,
+	   int es, int dx, int cx, int bx, int ax, int ip, int cs,
+	   int flags);
+	#endif
+
+	/* setup critical error handler
+	{
+	   ... 	 /* handle the critical error here */
+	}
+	   ...
+	#if __TINY__
+	   mov  dx,cs /* setup to install critical error handler */
+	#else
+	   mov  dx,seg ce_handler
+	#endif
+	   mov  ax,offset ce_handler
+	   ce_install ();/* install critical error handler
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_MDCEINS.ASM		  <B>ASM equiv</B>	CE_INSTALL
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_cem_install">_cem_install</A>, <A HREF="rmiscdos.htm#_ce_remove">_ce_remove</A>, <A HREF="rtsr.htm#_tsr_init">_tsr_init</A>
+<BR></DL>
+<H2><A NAME="_cem_install">_cem_install</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Installs the Critical Error Manager.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>		void _cem_install(char (*user)(char error, char func_num, char err_inf, char drive, void far * far *addr));
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function installs the Critical Error Manager as the current critical error handler. It also installs user as the address of a user function to be called by the Critical Error Manager whenever a critical error occurs. In large code models, user is a far function; in small code models, user is a near function.
+<BR>
+<BR>	_cem_install may be called repeatedly. Each time it is called, a new user function address may be specified.
+<BR>
+<BR>	The _ce_remove function may be used to uninstall the Critical Error Manager. Alternatively, _ce_install may be called to install an alternate critical error handler. _ce_remove does not need to be called prior to exiting the program. If any critical error handler has been installed (including the Critical Error Manager), DOS will automatically uninstall it when the program terminates.
+<BR>
+<BR>	The Critical Error Manager simplifies processing of critical errors, eliminates "Abort, Retry, Ignore?" messages and allows user-defined functions to be called whenever critical errors occur.
+<BR>
+<BR>	Once installed, the Critical Error Manager receives control whenever a critical error occurs within DOS. If a user function has been specified, that function is called. When the user function returns, the Critical Error Manager performs the action specified by the user function. If no user function is specified, the Critical Error Manager always "fails" the DOS function call which caused the error.
+<BR>
+<BR>	The user function is passed a variety of error information each time a critical error takes place. The user function must support the following syntax:
+<BR>
+<BR>	char user(char error, char func_num, char err_inf, char drive, void far * far *addr);
+<BR>
+<BR>	This function may not issue any DOS function calls except functions 0x00 to 0x0C and 0x59. If any other calls are issued, DOS may crash. When the user function receives control, the following inputs apply (note that these inputs are different than the inputs provided by DOS to a critical error handler):
+<BR>
+<BR>	error	default error code corresponding to this critical error (E_WRPROTECT through E_WRONGDISK, as defined in ECODES.H)
+<BR>
+<BR>	func_num	function call number of the original DOS function call which caused the critical error
+<BR>
+<BR>	err_inf	critical error information (bits 0-2 are defined only if the error occurred on a disk drive):
+<BR>
+<BR>	 bit 0	0=reading, 1=writing
+<BR>	 bits 1-2	00=DOS area (system files), 01=FAT, 10=directory, 11=data area
+<BR>	 bit 3	0=fail not recommended, 1=fail OK
+<BR>	 bit 4	0=retry not allowed, 1=retry allowed
+<BR>	 bit 5	0=ignore not allowed, 1=ignore allowed
+<BR>	 bit 6	(unused)
+<BR>	 bit 7	0=disk drive (drive has drive letter), 1=other device type
+<BR>
+<BR>	drive	uppercase drive letter of drive on which error occurred (if err_inf bit 7 = 0); otherwise, 0=FAT, 1=standard input device, 2=standard output device, 3=NULL device, 4=clock device, -1=unknown character device
+<BR>
+<BR>	addr	address of a pointer to an 8-byte device name if bit 7 of err_inf = 1, undefined otherwise
+<BR>
+<BR>	Note that this error information is organized in such a way as to simplify the construction of an error message describing the problem (i.e., "Drive not ready error reading drive A:" or "Unknown command error on device $CLOCK"). Note also that if DOS 3.0 or later is running, then DOS function call 0x59 can be executed by the user function to obtain information and a recommendation on how to deal with the error.
+<BR>
+<BR>	When the user function has finished its work, it must specify the action to be taken as follows:
+<BR>
+<BR>	CE_IGNORE	  (00) "Ignore"
+<BR>	CE_RETRY	  (01) "Retry"
+<BR>	CE_ABORT	  (02) "Abort"
+<BR>	CE_FAIL	  (03) "Fail"
+<BR>	CE_QUIT	  (0xFF) "Quit"
+<BR>
+<BR>	If an invalid action code is returned, the "fail" option is performed.
+<BR>
+<BR>	The "abort" option (CE_ABORT) is directly supported by all DOS versions 2.0 and greater. If "abort" is requested, DOS is instructed to attempt to abort program execution by issuing an INT 23h (control-break). It is advisable to use the "quit" option instead of "abort." This is especially true if ctrl-break handling has been disabled using _cbrk_disable or its equivalent, if interrupt handlers have been installed, or if other functions have been performed which must be cleaned up prior to program termination. If this rule is not followed, the "abort" may be ignored or a system crash may result.
+<BR>
+<BR>	The "retry" option (CE_RETRY) is directly supported by all DOS versions 2.0 and greater. If "retry" is requested, DOS is instructed to retry the operation which caused the critical error. If the critical error occurs again, control is again passed to the Critical Error Manager.
+<BR>
+<BR>	The "ignore" option (CE_IGNORE) is directly supported by all DOS versions 2.0 and greater. If "ignore" is requested, DOS is instructed to ignore the critical error. Note that when an "ignore" is performed, the values returned by the function call are unpredictable (some versions of DOS even modify registers which would not normally be modified by that particular function call).
+<BR>
+<BR>	Use of the "fail" option is preferred where possible since the return values for "fail" are well-defined and predictable for all versions of DOS.
+<BR>
+<BR>	The "fail" option (CE_FAIL) is similar to the "fail" option supported by DOS versions 3.0 and greater. If "fail" is requested, the Critical Error Manager places an error code in an appropriate register and sets the carry flag; control is then passed to the instruction immediately following the DOS function call which caused the critical error. The Critical Error Manager always supports the "fail" option, regardless of the version of DOS being used.
+<BR>
+<BR>	The "quit" option (CE_QUIT) allows program execution to continue at a specified exit address. This is often used to pass control to a routine which performs some kind of cleanup (i.e., restoring interrupt vectors) before terminating the program. When control is passed to this exit point, registers and flags are set to the values which were in effect when the DOS function call was issued. Care must be exercised when using this option. If the critical error occurred on a device which will be accessed by the cleanup routine, another critical error is likely to occur and the program could end up in an infinite loop. If CE_QUIT is returned, the exit address must be placed in addr.
+<BR>
+<BR>	The "abort", "fail", and "quit" options are always allowed. The "retry" and "ignore" options are always allowed under DOS versions 2.0 and 2.1; DOS 3.0 or greater may not allow them (as indicated in bits 4 and 5 of err_inf when the user function is called). If the user function requests either "retry" or "ignore" when it is not allowed, then the Critical Error Manager performs a "fail" instead. Note that even though the "fail" option is always supported by the Critical Error Manager, there are situations where DOS 3.0 or greater would not support "fail" if the Critical Error Manager were not installed. Bit 3 of err_inf is used to indicate these situations.
+<BR>
+<BR>WARNING! Before installing the Critical Error Manager, _osmajor must be initialized to contain the major DOS version number. 	When using Spontaneous Assembly for C/C++, this variable is supplied and initialized by the compiler instead of the Spontaneous Assembly library.
+<BR>
+<BR>WARNING! The predefined ISRs from the TSR unit install a different user function or critical error handler prior to passing control to a TSR entry point. This means that user is inactive when a TSR entry point is active unless _tsr_initc is called with user specified as the user function address. See the TSRs and Device Drivers technical notes for more information.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   char ce_manager (char error, char func_num,
+	      char err_inf, char drive, void far * far *device);
+	   ...
+	/* new critical error manager */
+	{
+	   ...
+	   return (3);
+	}
+	   _cem_install (ce_manager);/* install it */
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   char ce_manager (char error, char func_num, 
+	      char err_inf, char drive, void far * far *device);
+
+	/* new critical error manager */
+	   {
+	   ...
+	   return (3);
+	   }
+	#if __TINY__
+	   mov  dx,cs
+	#else
+	   mov  dx,seg ce_manager
+	#endif
+	   mov  ax,offset ce_manager
+	      /* DX:AX -&gt new critical error manager */
+	   cem_install ();    /* install it */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_MDCEMNS.ASM		  <B>ASM equiv</B>	CEM_INSTALL
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_ce_install">_ce_install</A>, <A HREF="rmiscdos.htm#_ce_remove">_ce_remove</A>, <A HREF="rtsr.htm#_tsr_init">_tsr_init</A>, <A HREF="rtsr.htm#_tsr_init">_tsr_init</A>
+<BR></DL>
+<H2><A NAME="_ce_remove">_ce_remove</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Removes an installed DOS critical error handler.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void _ce_remove(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function resets the DOS critical error handler address to the initial critical error handler address stored in the PSP. This disables any critical error handler installed after the program began execution. 
+<BR>
+<BR>	This function does not need to be called prior to exiting the program.
+<BR>
+<BR>	If any critical error handler has been installed (including the Critical Error Manager), DOS will automatically uninstall it when the program terminates.
+<BR>
+<BR>WARNING! This function depends on the _psp global variable. When using Spontaneous Assembly for C/C++, this variable is supplied and initialized by the compiler instead of the Spontaneous Assembly library.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   _ce_remove();
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ce_remove();
+
+</CODE></PRE>
+<B>Source file</B>	MDCEREM.ASM		  <B>ASM equiv</B>	CE_REMOVE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_ce_install">_ce_install</A>, <A HREF="rmiscdos.htm#_cem_install">_cem_install</A>
+<BR></DL>
+<H2><A NAME="_chk_version">_chk_version</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Terminates program execution immediately if the current DOS version is unacceptable.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void _chk_version(int minor, int major);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	No return value.
+<BR>	_osmajor	   major DOS version number
+<BR>	_osminor	   minor DOS version number
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function compares the current DOS version number with the required version number in major;minor. The required version number must be 2.0 or greater. If the current version number is greater than or equal to the required version, _osmajor and _osminor 	are initialized using the current DOS version number. If the current version is less than the required version, a DOS-like error message is displayed ("Requires DOS version 2.1 or greater") and the program exits to DOS immediately (with ERRORLEVEL set to 1 if DOS 2.0 or greater is running).
+<BR>
+<BR>	The global variable _psp must be initialized prior to calling this function and assumes _psp is in the same segment as all other Spontaneous Assembly library data.
+<BR>
+<BR>	_psp, _osmajor, and _osminor are supplied and initialized by the compiler instead of the Spontaneous Assembly library.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   _chk_version (0, 3);    /* DOS 3.0 required */
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   mov dx,_psp
+	   mov al,0
+	   mov ah,3
+	   chk_version();  /* DOS 3.0 required */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_MDCHKVR.ASM		  <B>ASM equiv</B>	CHK_VERSION
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_chk_version">_chk_version</A>, <A HREF="rmiscdos.htm#_cmp_version">_cmp_version</A>, <A HREF="rmiscdos.htm#_get_version">_get_version</A>
+<BR></DL>
+<H2><A NAME="_chk_version2">_chk_version2</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Terminates program execution immediately if the current DOS version is 1.0 or 1.1.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void _chk_version2(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	No return value.
+<BR>	_osmajor	major DOS version number
+<BR>	_osminor	minor DOS version number
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function checks the current DOS version number. If the current version number is 2.0 or greater, _osmajor and _osminor 	are initialized using the current DOS version number. If the current version is less than 2.0, a DOS-like error message is displayed (such as "Requires DOS version 2.0 or later") and the program exits to DOS immediately using DOS 1.x function calls.
+<BR>
+<BR>	The global variable _psp must be initialized prior to calling this function and assumes _psp is in the same segment as all other Spontaneous Assembly library data.
+<BR>
+<BR>	_psp, _osmajor, and _osminor are supplied and initialized by the compiler instead of the Spontaneous Assembly library.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   _chk_version2 ();	/* terminate if DOS 1x */
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   mov dx,_psp
+	   chk_version2 (); /* terminate if DOS 1x */
+
+</CODE></PRE>
+<B>Source file</B>	_MDCKVR2.ASM		  <B>ASM equiv</B>	CHK_VERSION2
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_chk_version">_chk_version</A>, <A HREF="rmiscdos.htm#_cmp_version">_cmp_version</A>, <A HREF="rmiscdos.htm#_get_version">_get_version</A>, _version
+
+<BR></DL>
+<H2><A NAME="_cmp_version">_cmp_version</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compares the required DOS version number with the current version.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	int _cmp_version(int minor, int major);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if the DOS version is greater than required version.
+<BR>
+<BR>	0 if the DOS version is equal to required version.
+<BR>
+<BR>	-1 if the DOS version is less than required version.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function compares the required DOS version number with the global version variables _osmajor and _osminor. The return value reflects the result of the comparison.
+<BR>
+<BR>WARNING! Before this function is called, the version variables _osmajor and _osminor must be initialized with the current DOS version number. When using Spontaneous Assembly for C/C++, these variables are supplied and initialized by the compiler instead of the Spontaneous Assembly library.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   switch (_cmp_version (0, 4))
+	   {
+	   case 1:/* Handle the dos version being later than 4.0 */
+	      break;
+	   case 0:/* Handle the dos version being 4.0 */
+	      break;
+	   case -1:/* Handle the DOS ver being earlier than 4.0 */
+	      break;
+	   }
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   ...
+	   mov al,0
+	   mov ah,4
+	   cmp_version ();
+	    ja _main_010/* if DOS later than 4.0 */
+	    jb _main_020/* if DOS earlier than 4.0 */
+	   ... 	 	/* if DOS is 4.0 */
+	   jmp short _main_030
+
+	_main_010:
+	   ... 	 	/* DOS version later than 4.0 */
+	   jmp short _main_030
+
+	_main_020:
+	   ... 	 	/* DOS version earlier than 4.0 */
+	_main_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MDCMPVR.ASM		  <B>ASM equiv</B>	CMP_VERSION
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_chk_version">_chk_version</A>, <A HREF="rmiscdos.htm#_chk_version">_chk_version</A>, <A HREF="rmiscdos.htm#_get_version">_get_version</A>
+<BR></DL>
+<H2><A NAME="_dos_errmsg">_dos_errmsg</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the offset of a DOS error message string.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	char *_dos_errmsg(int e_code);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the error message if e_code was found in the table.
+<BR>
+<BR>	NULL if e_code is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns a pointer to the ASCIIZ error message string associated with the specified DOS error code (e_code). See Appendix A for a complete listing of DOS error codes and error messages.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char *message;
+	   _dos_errmsg (8);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+
+	   mov ax,8
+	   dos_errmsg ();/* DS:SI -&gt error message */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_MDDOSEM.ASM		  <B>ASM equiv</B>	DOS_ERRMSG
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_dos_errmsg">_dos_errmsg</A>, <A HREF="rmiscdos.htm#_get_ecode">_get_ecode</A>
+<BR></DL>
+<H2><A NAME="_dos_errmsge">_dos_errmsge</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the offset of the DOS error message string describing the most recent DOS error.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	char *_dos_errmsge(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the error message if  e_code was found in the table.
+<BR>
+<BR>	NULL if  e_code is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns a pointer to the ASCIIZ error message string associated with the DOS error code in  e_code. See Appendix A for a complete listing of DOS error codes and error messages.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char *message;
+	   _dos_errmsge ();
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+
+	   dos_errmsge ();    /* DS:SI -&gt error message */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_MDDSEME.ASM		  <B>ASM equiv</B>	DOS_ERRMSGE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_dos_errmsg">_dos_errmsg</A>, <A HREF="rmiscdos.htm#e_code">e_code</A>
+<BR></DL>
+<H2><A NAME="_dos_malloc">_dos_malloc</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Allocates a block of DOS memory.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	segaddr _dos_malloc(unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	Segment address (segaddr) of allocated block if successful.
+<BR>
+<BR>	NULL if an error occurred.
+<BR>	 e_code	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function attempts to allocate a DOS memory block which is num paragraphs in size. If the allocation is successful, the segment address of the block is returned.
+<BR>
+<BR>	DOS memory blocks always start on paragraph boundaries and have one paragraph overhead.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   segaddr heapseg = 0;
+	   int newsize, reqsize = 100, blocksize;
+	   heapseg = _dos_malloc (200);
+	   ...
+	   newsize = _dos_mset (heapseg, reqsize);
+	   if (newsize != 0)
+	   {
+	      /* Handle DOS memory control block error */
+	      if (newsize == reqsize)
+	      {
+	         /* insufficient memory to resize block to reqsize */
+	      }
+	   }
+	   ...
+	   blocksize = _dos_msize (heapseg);
+	   ...
+	   if (_dos_mfree (heapseg))
+	   {
+	      /* Handle error in freeing up memory */
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   ...
+	   mov  ax,100
+	   dos_malloc ();	/* DX -&gt allocated block */
+	    jc main_030/* if an error occurred */
+	   ...
+	   mov  ax,200
+	   dos_mset ();	/* AX = size of block */
+	    jnc  main_020	/* if no error, continue */
+	   ... 	 	/* not enough memory to resize */
+	   jmp  short main_020
+	main_020:
+	   ...
+	   dos_msize ();	/* AX = size of block at DX */
+	   ...
+	   dos_mfree ();	/* was block freed? */
+	    jnc  main_030	/* y: continue */
+	   ... 	 	/* n: error in freeing block */
+	main_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MDDSMAL.ASM		  <B>ASM equiv</B>	DOS_MALLOC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_dos_mavail">_dos_mavail</A>, <A HREF="rmiscdos.htm#_dos_mfree">_dos_mfree</A>, <A HREF="rmemanig.htm#_far_malloc">_far_malloc</A>
+<BR></DL>
+<H2><A NAME="_dos_mavail">_dos_mavail</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the size of the largest block of allocable memory.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	unsigned int _dos_mavail(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	Size of largest available DOS memory block, in paragraphs.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the size of the largest block of memory available to DOS for allocation. DOS memory blocks are allocated by calling _dos_malloc.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   unsigned int avail = _dos_mavail ();
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   dos_mavail ();/* AX = # of free paragraphs */
+
+</CODE></PRE>
+<B>Source file</B>	MDDOSMAV.ASM		  <B>ASM equiv</B>	DOS_MAVAIL
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_dos_mfree">_dos_mfree</A>, <A HREF="rmemanig.htm#_far_max">_far_max</A>
+<BR></DL>
+<H2><A NAME="_dos_mfree">_dos_mfree</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Frees a block of allocated memory.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	int _dos_mfree(segaddr dosblk);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if dosblk was successfully freed.
+<BR>
+<BR>	-1 if dosblk couldn't be freed.
+<BR>	 e_code	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function frees the DOS memory block at dosblk, making its memory available for subsequent allocation by _dos_malloc.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   segaddr heapseg = 0;
+	   int newsize, reqsize = 100, blocksize;
+	   heapseg = _dos_malloc (200);
+	   ...
+	   newsize = _dos_mset (heapseg, reqsize);
+	   if (newsize != 0)
+	   {
+	      /* Handle DOS memory control block error */
+	      if (newsize == reqsize)
+	      {
+	         /* insufficient memory to resize block to reqsize */
+	      }
+	   }
+	   ...
+	   blocksize = _dos_msize (heapseg);
+	   ...
+	   if (_dos_mfree (heapseg))
+	   {
+	      /* Handle error in freeing up memory */
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   mov  ax,100
+	   dos_malloc ();	/* DX -&gt allocated block */
+	    jc main_030/* if an error occurred */
+	   ...
+	   mov  ax,200
+	   dos_mset ();	/* AX = size of block */
+	    jnc  main_020	/* if no error, continue */
+	   ... 	 	/* not enough memory to resize */
+	   jmp  short main_020
+	main_020:
+	   ...
+	   dos_msize ();	/* AX = size of block at DX */
+	   ...
+	   dos_mfree ();	/* was bloc freed? */
+	    jnc  main_030	/* y: continue */
+	   ... 	 	/* n: error in freeing block */
+	main_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MDDSMFR.ASM		  <B>ASM equiv</B>	DOS_MFREE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_dos_malloc">_dos_malloc</A>, <A HREF="rmemanig.htm#_far_free">_far_free</A>
+<BR></DL>
+<H2><A NAME="_dos_mset">_dos_mset</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Modifies the size of a block of memory.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	unsigned int _dos_mset(segaddr dosblk, unsigned int new_size);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the size of dosblk was modified successfully.
+<BR>
+<BR>	Maximum allowed size of dosblk (in paragraphs) if an error occurred.
+<BR>	 e_code	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function modifies the size of the allocated DOS memory block at dosblk. 0 is returned if the block size is successfully modified. If the block size cannot be adjusted to the requested size, the new size of the block (in paragraphs) is returned and an error code is returned in  e_code.
+<BR>
+<BR>WARNING! Due to DOS limitations, this function modifies the size of the memory block even if an insufficient memory error occurs while growing the block ( e_code = E_INSMEM).
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   segaddr heapseg = 0;
+	   int newsize, reqsize = 200, blocksize;
+	   heapseg = _dos_malloc (100);
+	   ...
+	   newsize = _dos_mset (heapseg, reqsize);
+	   if (newsize != 0)
+	   {
+	      /* insufficient enough memory to resize block to reqsize */
+	   }
+	   ...
+	   blocksize = _dos_msize (heapseg);
+	   ...
+	   if (_dos_mfree (heapseg))
+	   {
+	      /* error in freeing up memory */
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   mov  ax,100
+	   dos_malloc ();	/* DX -&gt allocated block */
+	    jc main_030/* if an error occurred */
+	   ...
+	   mov  ax,200
+	   dos_mset ();	/* AX = size of block */
+	    jnc  main_020	/* if no error, continue */
+	   ... /* insufficient memory to resize block to reqsize */
+	   jmp  short main_020
+	main_020:
+	...
+	dos_msize ();	 /* AX = size of block at DX */
+	...
+	dos_mfree ();	 /* was block freed? */
+	 jnc  main_030	 /* y: continue */
+	...    	 /* n: error in freeing block */
+	main_030:
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MDDSMST.ASM		  <B>ASM equiv</B>	DOS_MSET
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanig.htm#_far_realloc">_far_realloc</A>
+<BR></DL>
+<H2><A NAME="_dos_msize">_dos_msize</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets the size of a block of memory.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	unsigned int _dos_msize(segaddr dosblk);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The size (in paragraphs) of the memory block at dosblk.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the size, in paragraphs, of the DOS memory block at dosblk. The returned size is undefined if dosblk is an invalid DOS memory block address.
+<BR>
+<BR>	_dos_msize examines DOS memory blocks directly since no DOS function call is provided to determine the size of a memory block.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   segaddr heapseg = 0;
+	   int newsize, reqsize = 100, blocksize;
+	   heapseg = _dos_malloc (200);
+	   ...
+	   newsize = _dos_mset (heapseg, reqsize);
+	   if (newsize == 0)
+	   {
+	      /* Handle DOS memory control block error */
+	   }
+	   if (newsize != reqsize)
+	   {
+	      /* insufficient memory to resize block to reqsize */
+	   }
+	   ...
+	   blocksize = _dos_msize (heapseg);
+	   ...
+	   if (_dos_mfree (heapseg))
+	   {
+	      /* Handle error in freeing up memory */
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   mov  ax,100
+	   dos_malloc ();	/* DX -&gt allocated block */
+	    jc main_030/* if an error occurred */
+	   ...
+	mov  ax,200
+	dos_mset ();	 /* AX = size of block */
+	 jnc  main_020	 /* if no error, continue */
+	... /* insufficient memory to resize block to reqsize */
+	jmp  short main_020
+	main_020:
+	...
+	dos_msize ();	 /* AX = size of block at DX */
+	...
+	dos_mfree ();	 /* was block freed? */
+	 jnc  main_030	 /* y: continue */
+	...    	 /* n: error in freeing block */
+	main_030:
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MDDSMSZ.ASM		  <B>ASM equiv</B>	DOS_MSIZE
+
+<BR><H2><A NAME="_dta_restore">_dta_restore</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Restores the Disk Transfer Address (DTA).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void _dta_restore(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function restores the Disk Transfer Address to the address which was in effect when _dta_save was called. If _dta_save was not previously called, the resulting Disk Transfer Address is undefined.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *dta;
+	   ...
+	   _dta_save ();
+	   _set_dta (dta);
+	   ...
+	   _dta_restore ();
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	void far *dta;
+	   ...
+	   dta_save ();
+	   les di,dta
+	   set_dta ();
+	   ...
+	   dta_restore ();
+	}
+
+</CODE></PRE>
+<B>Source file</B>	MDDTASAV.ASM		  <B>ASM equiv</B>	DTA_RESTORE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_dta_save">_dta_save</A>, <A HREF="rmiscdos.htm#_get_dta">_get_dta</A>, <A HREF="rmiscdos.htm#_set_dta">_set_dta</A>
+<BR></DL>
+<H2><A NAME="_dta_save">_dta_save</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Saves the current Disk Transfer Address (DTA).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void _dta_save(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function determines the current Disk Transfer Address and saves it for later restoration using _dta_restore.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *dta;
+	   ...
+	   _dta_save ();
+	   _set_dta (dta);
+	   ...
+	   _dta_restore ();
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   void far *dta;
+	   ...
+	   dta_save ();
+	   les di,dta
+	   set_dta ();
+	   ...
+	   dta_restore ();
+	}
+
+</CODE></PRE>
+<B>Source file</B>	MDDTASAV.ASM		  <B>ASM equiv</B>	DTA_SAVE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_dta_restore">_dta_restore</A>, <A HREF="rmiscdos.htm#_get_dta">_get_dta</A>, <A HREF="rmiscdos.htm#_set_dta">_set_dta</A>
+<BR></DL>
+<H2><A NAME="e_code">e_code</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	(Variable) Contains the most recent error code.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	extern int e_code;
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This int variable contains the error code which resulted from the last DOS function call error. It is defined in DGROUP (global or static non-far data) and can be accessed directly or via the _get_ecode function.
+<BR>
+<BR>	 e_code is initialized to -1.
+<BR>
+<BR></DL>
+<B>Source file</B>	MDECODE.ASM		  <B>ASM equiv</B>	E_CODE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_dos_errmsg">_dos_errmsg</A>, <A HREF="rmiscdos.htm#_get_ecode">_get_ecode</A>
+<BR></DL>
+<H2><A NAME="_get_cbrk">_get_cbrk</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the state of the DOS ctrl-break flag.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	char _get_cbrk(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The state of the dos control-break flag.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the state of the DOS ctrl-break flag.
+<BR>
+<BR>	Constants which describe the state of the ctrl-break flag are defined in MISCDOS.H, as follows:
+<BR>
+<BR>	BRK_OFF	(0x00) Ctrl-break checking OFF
+<BR>	BRK_ON	(0x01) Ctrl-break checking ON
+<BR>
+<BR>WARNING! DOS always checks for ctrl-break events whenever I/O is performed using a standard input or output function, even if the ctrl-break flag is clear. The DOS ctrl-break flag only indicates whether or not ctrl-break checking is performed during any DOS function call. If ctrl-break checking must be completely disabled, _cbrk_disable must be used.
+<BR>
+<BR>	This occurs even if _cbrk_disable is called. Calling _cbrk_disable, however, will prevent the ctrl-break handler from receiving control.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   if (_get_cbrk ())
+	   {
+	      /* handle control break checking ON */
+	   } else
+	   {
+	      /* handle control break checking OFF */
+	   }
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   get_cbrk ();	/* AL=cbrk status */
+	   cmp al,0
+	    je get_cbrk_010/* if cbrk checking OFF */
+	   ... 	 	/* if cbrk checking ON */
+	   jmp short get_cbrk_020
+
+	get_cbrk_010:
+	   ... 	 	/* control break checking OFF */
+	get_cbrk_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	MDCBKGET.ASM		  <B>ASM equiv</B>	GET_CBRK
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_cbrk_save">_cbrk_save</A>, <A HREF="rmiscdos.htm#_set_cbrk">_set_cbrk</A>
+<BR></DL>
+<H2><A NAME="_get_cdfree">_get_cdfree</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets the amount of free disk space on the current drive.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	long int _get_cdfree(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The amount of free disk space on the current drive, in bytes.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function calculates the free disk space on the current drive from the drive's File Allocation Table information. The free disk space is calculated in bytes. -1 is returned if the current drive is invalid or if a critical error occurred.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   long int disk_free = _get_cdfree ();
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   get_cdfree ();	/* DX;AX = free space */
+	    jncget_cdfree_010/* if successful */
+	   ... 	 	/* if an error occurred */
+	   jmp short get_cdfree_020
+
+	get_cdfree_010:
+	   ...
+	get_cdfree_020:
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_MDCDFRE.ASM		  <B>ASM equiv</B>	GET_CDFREE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_get_cdinfo">_get_cdinfo</A>, <A HREF="rmiscdos.htm#_get_dfree">_get_dfree</A>
+<BR></DL>
+<H2><A NAME="_get_cdinfo">_get_cdinfo</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets File Allocation Table (FAT) information for the current drive.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	int _get_cdinfo(disk_info *buffer);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the function was successful.
+<BR>	buffer		information about the current drive
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns File Allocation Table information about the current drive in buffer. -1 is returned if a critical error occurred.
+<BR>
+<BR>	The disk_info structure is defined in MISCDOS.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char s_clus;/* sectors per cluster */
+<BR>	   unsigned char media;	/* media type (see below) */
+<BR>	   unsigned int b_sec;	/* bytes per sector */
+<BR>	   unsigned int clusters;/* number of clusters */
+<BR>	} disk_info;
+<BR>
+<BR>	The following symbolic constants (defined in MISCDOS.H) represent the various media ID values that may be returned:
+<BR>
+<BR>	HARD_DISK	   (0xF8) Hard/fixed disk
+<BR>	FLOPPY_3D18(0xF0) Floppy 3.5  double sided 18 sector
+<BR>	FLOPPY_3D9	   (0xF9) Floppy 3.5  double sided 9 sector
+<BR>	FLOPPY_5D15(0xF9) Floppy 5.25 double sided 15 sector
+<BR>	FLOPPY_5S9	   (0xFC) Floppy 5.25 single sided 9 sector
+<BR>	FLOPPY_5D9	   (0xFD) Floppy 5.25 double sided 9 sector
+<BR>	FLOPPY_5S8	   (0xFE) Floppy 5.25 single sided 8 sector
+<BR>	FLOPPY_5D8	   (0xFF) Floppy 5.25 double sided 8 sector
+<BR>	FLOPPY_OTHER(0xF0) Floppy disk other
+<BR>
+<BR>	A media ID value of 0xF8 indicates that the current drive is a hard disk; any other number indicates that the current drive is a removable media device.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   disk_info dinfo;
+	   if (_get_cdinfo (&ampdinfo))
+	   {
+	      /* Handle error obtaining information on current drive */
+	   } else
+	   {
+	      ...
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   get_cdinfo ();	/* AX,CX,DX contains info */
+	    jncmain_010/* if successful */
+	   ... 	 	/* if an error occurred */
+	   jmp short main_020
+
+	main_010:
+	   ... 	 	/* process disk info */
+	main_020:
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_MDCDINF.ASM		  <B>ASM equiv</B>	GET_CDINFO
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_get_dinfo">_get_dinfo</A>
+<BR></DL>
+<H2><A NAME="_get_cdsize">_get_cdsize</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets the disk size for the current drive.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	long int _get_cdsize(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The size of the current drive, in bytes, if the disk size was obtained.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the total disk size for the current drive. The disk size is calculated in bytes. -1 is returned if the current drive is invalid or if a critical error occurred.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   long int disk_size = _get_cdsize ();
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+
+	   get_cdsize ();	/* DX;AX = disk size */
+	    jncmain_010/* if successful */
+	   ... 	 	/* if an error occurred */
+	   jmp short main_020
+
+	main_010:
+	   ... 	 	/* process disk size */
+	main_020:
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_MDCDSIZ.ASM		  <B>ASM equiv</B>	GET_CDSIZE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_get_dsize">_get_dsize</A>
+<BR></DL>
+<H2><A NAME="_get_countryinfo">_get_countryinfo</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets the current DOS country information.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>		country *_get_countryinfo(unsigned int cntrycode, country *buffer, unsigned int *rcode);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to buffer if the country information was successfully determined.
+<BR>	buffer	country information
+<BR>	rcode country code for the retrieved country information
+<BR>
+<BR>	NULL if the function was unsuccessful.
+<BR>	rcode undefined
+<BR>	ecode	DOS error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns a pointer to buffer, which contains the current DOS country information for cntrycode. A country code of zero returns information for the current country. The information is returned in buffer in the form of a dcountry 	structure. If the country information is available, the country code is returned in rcode and a pointer is returned to buffer. Otherwise, NULL is returned and the contents of rcode are undefined.
+<BR>
+<BR>	Valid cntrycode values are found in DOS user manuals for DOS 4.x and above and in many programming reference manuals.
+<BR>
+<BR>	The dcountry structure is defined in MISCDOS.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   int cntry_dtformat;	 /* date format */
+<BR>	   char cntry_curstr[5];/* currency symbol (ASCIIZ) */
+<BR>	   char cntry_thdelim[2];/* thousand delimiter (ASCIIZ) */
+<BR>	   char cntry_decdelim[2];/* decimal delimiter (ASCIIZ) */
+<BR>	   char cntry_dtdelim[2];/* date delimiter (ASCIIZ) */
+<BR>	   char cntry_tmdelim[2];/* time delimiter (ASCIIZ) */
+<BR>	   char cntry_curloc;	 /* currency symbol location */
+<BR>	   char cntry_cdigits;	 /* digits after decimal point */
+<BR>	    	 	 /*   for currency */
+<BR>	   char cntry_tmformat;	 /* time format 12/24 hour */
+<BR>	   long cntry_case;	 /* case map */
+<BR>	   char cntry_datadelim[2];/* data delimiter (ASCIIZ) */
+<BR>	   char cntry_reserved[10];/* DOS (reserved) */
+<BR>	} dcountry;
+<BR>
+<BR>	The following symbolic constants may be used to check or modify the information in the cntry_dtformat field (these equates are defined in MISCDOS.H):
+<BR>
+<BR>	CDATE_MDY   (0x0000) For USA (MONTH/DAY/YEAR)
+<BR>	CDATE_DMY(0x0001) For European (DAY/MONTH/YEAR)
+<BR>	CDATE_YMD(0x0002) For Japanese (YEAR/MONTH/DAY)
+<BR>
+<BR>	The following symbolic constants may be used to check or modify the information in the cntry_curloc field (these equates are defined in MISCDOS.H):
+<BR>
+<BR>	CURR_PN		(0x00) Currency symbol precedes the value. There are no spaces between the currency symbol and the value.
+<BR>	CURR_FN	(0x01) Currency symbol follows the value. There are no spaces between the currency symbol and the value.
+<BR>	CURR_P1	(0x02) Currency symbol precedes the value. There is one space between the currency symbol and the value.
+<BR>	CURR_F1	(0x03) Currency symbol follows the value. There is one space between the currency symbol and the value.
+<BR>	CURR_R	(0x04) Currency symbol replaces the decimal delimiter.
+<BR>
+<BR>	The following symbolic constants may be used to check or modify the information in the cntry_tmformat field (these equates are defined in MISCDOS.INC):
+<BR>
+<BR>	CTIME_12HR    (0x00) For 12-hour clock.
+<BR>	CTIME_24HR    (0x01) For 24-hour clock.
+<BR>
+<BR>	Spontaneous Assembly functions do not depend on the data in the dcountry structure. Instead, Spontaneous Assembly formatting functions use the global dcopts and dtcopts structures, which may be initialized to country-specific settings by calling _dtc_init and _dc_init, respectively.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR>	DOS version 2.x returns the country information in a different format than DOS version 3.0 and above. The conversion to dcountry format is handled internally by this function.
+<BR>
+<BR>WARNING! Before using this function, _osmajor must be properly initialized or the structure will not be correctly initialized. When using Spontaneous Assembly For C/C++, this variable is supplied and initialized by the compiler instead of the Spontaneous Assembly library.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   unsigned int rcode;
+	   char buffer[sizeof(dcountry)], decbuf[20];
+	   dcountry *cntry;
+	   ...
+	   if((cntry = _get_countryinfo(0, buffer, &amprcode)) == NULL)
+	      _put_str("Unable to retrieve country information");
+	   else
+	      _put_str(_ui_to_dec(rcode, decbuf)); /* display code */
+	   ...
+
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[sizeof(dcountry)], decbuf[20];
+	   ...
+	   xor ax,ax	/* specify current cntry */
+	   lea si,buffer/* SI -&gt country info buf */
+	   get_countryinfo();/* get current cntry info */
+	    jc label_010
+	   lea si,decbuf/* SI -&gt conversion buf */
+	   ui_to_dec();	/* int -&gt ASCII */
+	   put_str();	/* display code */
+	label_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MDGCTRY.ASM		  <B>ASM equiv</B>	GET_COUNTRYINFO
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_set_country">_set_country</A>
+<BR></DL>
+<H2><A NAME="_get_dfree">_get_dfree</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets the free disk space on a specified drive.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	long int _get_dfree(int drive);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The number of free bytes on drive.
+<BR>
+<BR>	-1 if an error occurred.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function calculates the free disk space on the specified drive using drive's File Allocation Table information. drive must be a valid drive letter ('A' through 'z'). The free disk space is calculated in bytes. -1 is returned if drive is invalid or if a critical error occurred.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   long int disk_free;
+	   disk_free = _get_dfree ('C');
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   mov al,'C'
+	   get_dfree ();	/* DX;AX = free space */
+	    jncmain_010/* if successful */
+	   ... 	 	/* if an error occurred */
+	   jmp short main_020
+	main_010:
+	   ...
+	main_020:
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_MDDFREE.ASM		  <B>ASM equiv</B>	GET_DFREE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_get_cdfree">_get_cdfree</A>, <A HREF="rmiscdos.htm#_get_dinfo">_get_dinfo</A>
+<BR></DL>
+<H2><A NAME="_get_dinfo">_get_dinfo</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets File Allocation Table (FAT) information about the specified drive.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	int _get_dinfo(int drive, disk_info *buffer);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the function was successful.
+<BR>	buffer		information about drive
+<BR>
+<BR>	-1 if an error occurred.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function places File Allocation Table information about drive in buffer. drive must be a drive letter ('A' through 'z'). -1 is returned if drive is an invalid drive letter or if a critical error occurred.
+<BR>
+<BR>	The disk_info structure is defined in MISCDOS.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   unsigned char s_clus;/* sectors per cluster */
+<BR>	   unsigned char media;	/* media type (see below) */
+<BR>	   unsigned int  b_sec;	/* bytes per sector */
+<BR>	   unsigned int  clusters;/* number of clusters */
+<BR>	} disk_info;
+<BR>
+<BR>	The following symbolic constants (defined in MISCDOS.H) represent the various media ID values that may be returned:
+<BR>
+<BR>	HARD_DISK	   (0xF8) Hard/fixed disk
+<BR>	FLOPPY_3D18(0xF0) Floppy 3.5  double sided 18 sector
+<BR>	FLOPPY_3D9	   (0xF9) Floppy 3.5  double sided 9 sector
+<BR>	FLOPPY_5D15(0xF9) Floppy 5.25 double sided 15 sector
+<BR>	FLOPPY_5S9	   (0xFC) Floppy 5.25 single sided 9 sector
+<BR>	FLOPPY_5D9	   (0xFD) Floppy 5.25 double sided 9 sector
+<BR>	FLOPPY_5S8	   (0xFE) Floppy 5.25 single sided 8 sector
+<BR>	FLOPPY_5D8	   (0xFF) Floppy 5.25 double sided 8 sector
+<BR>	FLOPPY_OTHER(0xF0) Floppy disk other
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   disk_info dinfo;
+	   if (_get_dinfo ('C', &ampdinfo) == -1)
+	   {
+	      .../* error obtaining information on drive C */
+	   } else
+	   {
+	      .../* drive info return successfully */
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   mov al,'C'
+	   get_dinfo ();	/* AX,CX,DX contains info */
+	    jncget_dinfo_010/* if successful */
+	   ... 	 	/* if an error occurred */
+	   jmp short get_dinfo_020
+
+	get_dinfo_010:
+	   ... 	 	/* process disk info */
+	get_dinfo_020:
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_MDDINFO.ASM		  <B>ASM equiv</B>	GET_DINFO
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_get_cdinfo">_get_cdinfo</A>
+<BR></DL>
+<H2><A NAME="_get_dsize">_get_dsize</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets the disk size for a specified drive.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	long int _get_dsize(int drive);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The size of drive, in bytes.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the total disk size, in bytes, for the specified drive. drive must be a valid drive letter ('A' through 'z'). -1 is returned if drive is an invalid drive letter or if a critical error occurred.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   long int disk_size;
+	   ...
+	   disk_size = _get_dsize ('C');
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   mov al,'C'
+	   get_dsize ();	/* DX;AX = disk size */
+	    jncmain_010/* if successful */
+	   ... 	 	/* if an error occurred */
+	   jmp short main_020
+	main_010:
+	   ...
+	main_020:
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_MDDSIZE.ASM		  <B>ASM equiv</B>	GET_DSIZE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_get_cdsize">_get_cdsize</A>
+<BR></DL>
+<H2><A NAME="_get_dta">_get_dta</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets the disk transfer address (DTA).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void far *_get_dta(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the current DTA.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the current Disk Transfer Address from DOS.
+<BR>
+<BR>	The DTA is also stored in an internal variable for use by _find_first and _find_next.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *dta;
+	   dta = _get_dta();
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   get_dta ();/* ES:DI = addr of DTA */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_MDDTGET.ASM		  <B>ASM equiv</B>	GET_DTA
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_dta_restore">_dta_restore</A>, <A HREF="rmiscdos.htm#_dta_save">_dta_save</A>, <A HREF="rmiscdos.htm#_set_dta">_set_dta</A></DL>
+<H2><A NAME="_get_ecode">_get_ecode</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the value of  e_code.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	int _get_ecode(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The current value of the  e_code global variable.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the current value of  e_code. This value represents the error code returned by the last failed DOS function call in a Spontaneous Assembly function.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   int error_code = _get_ecode ();
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   get_ecode ();/* AX = error code */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	MDGECODE.ASM		  <B>ASM equiv</B>	GET_ECODE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_dos_errmsg">_dos_errmsg</A>, <A HREF="rmiscdos.htm#e_code">e_code</A>
+<BR></DL>
+<H2><A NAME="_get_lastdrive">_get_lastdrive</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets the total number of logical drives.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	char _get_lastdrive(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The number of logical drives.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the total number of logical drives in the system or the value of LASTDRIVE from the CONFIG.SYS file, whichever is greater.
+<BR>
+<BR>	This function returns a number instead of a letter because many networks support more than 26 logical drives.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char lastdrive;
+	   lastdrive = _get_lastdrive ();
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   get_lastdrive ();
+	   	  /* AL = number of logical drives */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	MDGLSTDR.ASM		  <B>ASM equiv</B>	GET_LASTDRIVE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rfiledir.htm#_get_drive">_get_drive</A>
+<BR></DL>
+<H2><A NAME="_get_vect">_get_vect</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets an interrupt handler address.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void (interrupt far * _get_vect (int intnum))();
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	Address of the interrupt routine.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the address of the interrupt handler which is currently servicing intnum. The interrupt handler address is obtained by issuing a DOS function call.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void (interrupt far *int_handler)();
+	   int_handler = _get_vect(0x24);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   mov bl,0x24
+	   get_vect ();/* DX:AX -&gt interrupt routine */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_MDGVECT.ASM		  <B>ASM equiv</B>	GET_VECT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmischrd.htm#_get_vec">_get_vec</A>, <A HREF="rmischrd.htm#_set_vec">_set_vec</A>
+<BR></DL>
+<H2><A NAME="_get_verify">_get_verify</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets the state of the DOS verify flag.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	char _get_verify(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The current verify flag state.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the current state of the DOS verify flag. When verify is off, disk writes are not verified; when verify is on, all disk writes are verified to ensure that data is properly written.
+<BR>
+<BR>	The following symbolic constants (defined in MISCDOS.H) describe the state of the verify flag:
+<BR>
+<BR>	VER_OFF	(0x00) Disk writes are not verified
+<BR>	VER_ON	(0x01) Disk writes are verified
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   if (_get_verify ())
+	   {
+	      /* Verify is ON */
+	   } else
+	   {
+	      /* Verify is OFF */
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   get_verify ();/* AL = state of verify flag */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	MDGVERIF.ASM		  <B>ASM equiv</B>	GET_VERIFY
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_set_verify">_set_verify</A>, <A HREF="rmiscdos.htm#_verify_save">_verify_save</A>
+<BR></DL>
+<H2><A NAME="_get_version">_get_version</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Gets the current DOS version number.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void _get_version(char *minor, char *major);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	No return value.
+<BR>	minor minor DOS version number
+<BR>	major	major DOS version number
+<BR>	_osminor	   minor DOS version number
+<BR>	_osmajor	major DOS version number
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function determines which version of DOS is currently active and indicates the major version number in major and the minor version number in minor. The version number is then used to initialize _osmajor and _osminor. The major and minor version numbers are returned as origin zero values. The minor version number is treated as a two digit number (i.e., DOS version 3.31 would be indicated with a major version of 0x03 and a minor version of 0x1F).
+<BR>
+<BR>	When using Spontaneous Assembly For C/C++, the _osmajor and _osminor variables are supplied and initialized by the compiler instead of the Spontaneous Assembly library.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char major, minor;
+	   _get_version (&ampminor, &ampmajor);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   get_version (); /* AL=minor version number, 
+	   	  	   AH=major version number */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_MDGVERS.ASM		  <B>ASM equiv</B>	GET_VERSION
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_chk_version">_chk_version</A>, <A HREF="rmiscdos.htm#_chk_version">_chk_version</A>, <A HREF="rmiscdos.htm#_cmp_version">_cmp_version</A>
+<BR></DL>
+<H2><A NAME="_set_cbrk">_set_cbrk</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets or clears the DOS ctrl-break flag.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void _set_cbrk(int state);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sets the DOS ctrl-break flag to the indicated state. The results are undefined if state is invalid.
+<BR>
+<BR>	Constants which describe the state of the ctrl-break flag are defined in MISCDOS.H as follows:
+<BR>
+<BR>	BRK_OFF	(0x00) Ctrl-break checking OFF
+<BR>	BRK_ON	(0x01) Ctrl-break checking ON
+<BR>
+<BR>WARNING! DOS always checks for ctrl-break events whenever I/O is performed using a standard input or output function, even if the ctrl-break flag is clear. The DOS ctrl-break flag only indicates whether or not ctrl-break checking is performed during any DOS function call. If ctrl-break checking must be completely disabled, _cbrk_disable must be used. Note that functions which use DOS function calls 0x09 and 0x0A may be affected by ctrl-C events (^C and a newline are displayed). This occurs even if _cbrk_disable is called. Calling _cbrk_disable, however, will prevent the ctrl-break handler from receiving control.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   _set_cbrk (BRK_OFF);/* Turn control-break checking off */
+	   ...
+	   _set_cbrk (BRK_ON);/* Turn control-break checking back on */
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	mov al,0
+	set_cbrk ();/* Turn control-break checking off */
+	...
+	mov al,1
+	set_cbrk ();/* Turn control-break checking back on */
+	...
+
+</CODE></PRE>
+<B>Source file</B>	_MDCBSET.ASM		  <B>ASM equiv</B>	SET_CBRK
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_cbrk_restore">_cbrk_restore</A>, <A HREF="rmiscdos.htm#_get_cbrk">_get_cbrk</A>
+<BR></DL>
+<H2><A NAME="_set_country">_set_country</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets the current DOS country code (DOS 3.0 or above).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	int _set_country(unsigned int cntrycode);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the country was successfully selected.
+<BR>
+<BR>	-1 if the function was unsuccessful.
+<BR>	 e_code	error code
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function selects the country assigned to cntrycode as the new "current DOS country." 0 is returned if the specified country was successfully selected as the current country. If an invalid country code is used, or if the DOS version is less than 3.0, -1 is returned and an error code is returned in  e_code.
+<BR>
+<BR>	Valid cntrycode values are found in DOS user manuals for DOS 4.x and above and in many programming reference manuals.
+<BR>
+<BR>	This function does NOT affect the Spontaneous Assembly data conversion or date/time formatting functions. Instead, _dtc_init and _dc_init should be used for this purpose. Current country information may be retrieved into a specified dcountry structure by calling _get_countryinfo.
+<BR>
+<BR>	 e_code may be obtained using the _get_ecode function. Symbolic constants for  e_code values are defined in Appendix A.
+<BR>
+<BR>WARNING! Before using this function, _osmajor must be properly initialized or cntrycode will not be set correctly. When using Spontaneous Assembly For C/C++, this variable is supplied and initialized by the compiler instead of the Spontaneous Assembly library.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ...
+	   if(_set_country(31) == -1)
+	      _put_str("Unable to select Netherlands country info");
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char *sptr;
+	   ...
+	   mov ax,3
+	   set_country();
+	    jc label_100
+	   sptr = "Unable to select Latin America country info";
+	   mov si,sptr
+	   put_str();	/* display error message */
+	label_100:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MDSCTRY.ASM		  <B>ASM equiv</B>	SET_COUNTRY
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rdata.htm#_dc_init">_dc_init</A>, <A HREF="rdatetim.htm#_dtc_init">_dtc_init</A>, <A HREF="rmiscdos.htm#_get_countryinfo">_get_countryinfo</A>
+<BR></DL>
+<H2><A NAME="_set_dta">_set_dta</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets the disk transfer address (DTA).
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void _set_dta(void far *dtaddr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sets the Disk Transfer Address to dtaddr. dtaddr is also saved in an internal variable for use by _find_first and _find_next.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *dta;
+	   ...
+	   _dta_save ();
+	   _set_dta (dta);
+	   ...
+	   _dta_restore ();
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   void far *dta;
+	   ...
+	   dta_save ();
+	   les di,dta
+	   set_dta ();
+	   ...
+	   dta_restore ();
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_MDDTSET.ASM		  <B>ASM equiv</B>	SET_DTA
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_dta_restore">_dta_restore</A>, <A HREF="rmiscdos.htm#_dta_save">_dta_save</A>, <A HREF="rmiscdos.htm#_get_dta">_get_dta</A>
+<BR></DL>
+<H2><A NAME="_set_vect">_set_vect</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets an interrupt handler address.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void _set_vect(int intnum, intaddr new_int);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sets the address of the interrupt handler for intnum to new_int. The interrupt handler address is set by issuing a DOS function call.
+<BR>
+<BR>	See the _isr_... functions for flexible, high-level alternatives to the use of this function.
+<BR>
+<BR>	new_int should be cast as intaddr when calling this function. This prevents the compiler from generating assembly language SEG instructions, which preclude the use of .COM format in the TINY memory model. Some compilers also require type casting of interrupt functions in parameter lists to eliminate spurious compiler errors.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	void interrupt far ce_handler (int bp, int di, int si, int ds,
+	   	  	 	int es, int dx, int cx, int bx, 
+	   	  	 	int ax, int ip, int cs, 
+	   	  	 	int flags);
+	/* setup critical error handler
+	{
+	   /* handle the critical error here */
+	}
+	{
+	   void (interrupt far *int_handler)();
+	   int_handler = _get_vect (0x24);
+	   /* get current interrupt function address */
+	   _set_vect (0x24, (intaddr) ce_handler);
+	   /* set vector to new int handler */
+	   ...
+	   _set_vect (0x24, (intaddr) int_handler);
+	   /* restore vector to previous interrupt function */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	void interrupt far ce_handler (int bp, int di, int si, int ds,
+	   	  	 	int es, int dx, int cx, int bx,
+	   	  	 	int ax, int ip, int cs, 
+	   	  	 	int flags)
+	   	  /* setup critical error handler
+	{
+	   	  /* handle the critical error here */
+	}
+	   mov  bl,0x24
+	   get_vect ();	/* DX:AX = current interrupt 
+	   	  	 	   function address */
+	   push dx 	    /* save address */
+	   push ax
+	#if __TINY__
+	   mov  dx,cs
+	#else
+	   mov  dx,seg ce_handler
+	#endif
+	   mov  ax,offset ce_handler/* DX:AX = new interrupt 
+	   	  	 	    handler address */
+	   set_vect ();/* set the vector to new int handler */
+	   ...
+	   pop  ax 	/* restore previous interrupt address */
+	   pop  dx
+	   set_vect ();/* restore previous interrupt function */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MDSVECT.ASM		  <B>ASM equiv</B>	SET_VECT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmischrd.htm#_get_vec">_get_vec</A>, <A HREF="rtsr.htm#_isr_getstat">_isr_getstat</A>, <A HREF="rtsr.htm#_isr_hremove">_isr_hremove</A>, <A HREF="rtsr.htm#_isr_install">_isr_install</A>, <A HREF="rtsr.htm#_isr_remove">_isr_remove</A>, <A HREF="rtsr.htm#_isr_remove">_isr_remove</A>, <A HREF="rmischrd.htm#_set_vec">_set_vec</A>
+<BR></DL>
+<H2><A NAME="_set_verify">_set_verify</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets or clears the DOS verify flag.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void _set_verify(int newstate);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sets the state of the DOS verify flag to newstate. When verify is off, disk writes are not verified; when verify is on, all disk writes are verified to ensure that data is properly written.
+<BR>
+<BR>	The following symbolic constants (defined in MISCDOS.INC) may be used to specify the state of the verify flag:
+<BR>
+<BR>	VER_OFF  (0x00) Disk writes are not verified
+<BR>	VER_ON(0x01) Disk writes are verified
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   _verify_save ();
+	   ...
+	   _set_verify (1);/* turn verify on */
+	   ...
+	   _set_verify (0);/* turn verify off */
+	   ...
+	   _verify_restore ();
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   verify_save ();
+	   ...
+	   mov al,1
+	   set_verify ();	/* turn verify on */
+	   ...
+	   mov al,0
+	   set_verify ();	/* turn verify off */
+	   ...
+	   verify_restore ();
+
+</CODE></PRE>
+<B>Source file</B>	_MDSVERF.ASM		  <B>ASM equiv</B>	SET_VERIFY
+<DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_get_verify">_get_verify</A>, <A HREF="rmiscdos.htm#_verify_restore">_verify_restore</A>
+<BR></DL>
+<H2><A NAME="_verify_off">_verify_off</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Disables DOS write verification.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void _verify_off(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function clears the DOS verify flag, disabling verification of disk writes.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   _verify_off ()
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   verify_off ();
+
+</CODE></PRE>
+<B>Source file</B>	MDVEROFF.ASM		  <B>ASM equiv</B>	VERIFY_OFF
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_set_verify">_set_verify</A>, <A HREF="rmiscdos.htm#_verify_on">_verify_on</A>
+<BR></DL>
+<H2><A NAME="_verify_on">_verify_on</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Enables DOS write verification.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void _verify_on(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sets the DOS verify flag, enabling verification of disk writes.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   _verify_on ()
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   verify_on ();
+
+</CODE></PRE>
+<B>Source file</B>	MDVERON.ASM		  <B>ASM equiv</B>	VERIFY_ON
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_set_verify">_set_verify</A>, <A HREF="rmiscdos.htm#_verify_off">_verify_off</A>
+<BR></DL>
+<H2><A NAME="_verify_restore">_verify_restore</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Restores the original state of the DOS verify flag.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void _verify_restore(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function restores the DOS verify flag to the state which was in effect when _verify_save was called. If _verify_save was not previously called, the resulting state of the DOS verify flag is undefined.
+<BR>
+<BR>	_verify_save is usually called soon after the program begins execution. This saves the state of the DOS ctrl-break flag before it is changed by _set_verify, _verify_on, or _verify_off. _verify_restore is then called just before the program terminates to restore the DOS verify flag to its original state. If this is not done, the program may alter the verify status for subsequent programs.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   _verify_save ();
+	   ...
+	   _set_verify (1);/* turn verify on */
+	   ...
+	   _set_verify (0);/* turn verify off */
+	   ...
+	   _verify_restore ();
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   verify_save ();
+	   ...
+	   mov al,1
+	   set_verify ();	/* turn verify on */
+	   ...
+	   mov al,0
+	   set_verify ();	/* turn verify off */
+	   ...
+	   verify_restore ()
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	MDVERSAV.ASM		  <B>ASM equiv</B>	VERIFY_RESTORE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_verify_save">_verify_save</A>
+<BR></DL>
+<H2><A NAME="_verify_save">_verify_save</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Saves the current state of the DOS verify flag.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;miscdos.h&gt
+<BR>	void _verify_save(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function determines the current state of the DOS verify flag and saves it for later restoration using _verify_restore.
+<BR>
+<BR>	_verify_save is usually called soon after the program begins execution. This saves the state of the DOS ctrl-break flag before it is changed by _set_verify, _verify_on, or _verify_off. _verify_restore is then called just before the program terminates to restore the DOS verify flag to its original state. If this is not done, the program may alter the verify status for subsequent programs.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   _verify_save ();
+	   ...
+	   _set_verify (1);/* turn verify on */
+	   ...
+	   _set_verify (0);/* turn verify off */
+	   ...
+	   _verify_restore ();
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   verify_save ();
+	   ...
+	   mov al,1
+	   set_verify ();	/* turn verify on */
+	   ...
+	   mov al,0
+	   set_verify ();	/* turn verify off */
+	   ...
+	   verify_restore ()
+
+</CODE></PRE>
+<B>Source file</B>	MDVERSAV.ASM		  <B>ASM equiv</B>	VERIFY_SAVE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmiscdos.htm#_verify_restore">_verify_restore</A>
+<BR>
+<BR></BODY>
+<BR></HTML><BR>

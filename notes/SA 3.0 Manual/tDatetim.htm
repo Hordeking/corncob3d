@@ -1,0 +1,377 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: Date and Time Manipulation</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Date and Time Manipulation</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tDatetim.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tDatetim.htm#HEAD0001">Supported Date Formats
+</A><BR>
+<A HREF="tDatetim.htm#HEAD0002">Supported Time Formats
+</A><BR>
+<A HREF="tDatetim.htm#HEAD0003">Getting and Setting System Date and Time
+</A><BR>
+<A HREF="tDatetim.htm#HEAD0004">Manipulating Date and Time Values
+</A><BR>
+<A HREF="tDatetim.htm#HEAD0005">Simple Conversion of Dates and Times to ASCII Strings
+</A><BR>
+<A HREF="tDatetim.htm#HEAD0006">Initializing the Date/Time Formatting Functions
+</A><BR>
+<A HREF="tDatetim.htm#HEAD0007">Converting Date/Time to Formatted ASCII Strings
+</A><BR>
+<A HREF="tDatetim.htm#HEAD0008">Converting Date/Time Strings to Structure Format
+</A><BR>
+<A HREF="tDatetim.htm#HEAD0009">Measuring Time and Delaying Program Execution
+</A><BR>
+<A HREF="tDatetim.htm#HEAD000A">Sample Program
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit consists of functions which get and set the system date and time, manipulate date and time values, convert dates and times to ASCII strings, measure elapsed time, and suspend program execution for specified periods of time.
+
+<H2><A NAME="HEAD0001">Supported Date Formats
+</A></H2>
+
+Three different formats are supported for maintaining and manipulating date information. The date structure, integer and the Julian formats are as follows:
+
+<P>
+Structure format:
+<PRE><CODE>
+typedef struct {
+   unsigned char day;                     /* day (1-31) */
+   unsigned char month;                   /* month (1-12) */
+   unsigned int year;                     /* year (1980-2099) */
+   unsigned char day_of_week;     /* day-of-week (0-6) */
+} std_date;
+</CODE></PRE>
+
+<PRE>
+Integer format:
+
+unsigned int
+   bits 0x09-0x0F        year (0-119, number of years since 1980)
+   bits 0x05-0x08        month (1-12)
+   bits 0x00-0x04        day (1-31)
+
+Julian format:
+
+unsigned int             days elapsed since 01-01-1980
+</PRE>
+Note that dates in the Julian or integer formats can be compared directly to determine relative order. Julian dates may also be subtracted or adjusted directly. The std_date structure is defined in the DATETIME.H header file. All of these date formats support dates from 01-01-1980 through 12-31-2099.
+
+<H2><A NAME="HEAD0002">Supported Time Formats
+</A></H2>
+
+Four different formats are supported for maintaining and manipulating time information. These time formats and their default register assignments are as follows:
+
+<P>
+Structure format:
+<PRE><CODE>
+typedef struct  {
+   unsigned char hseconds;        /* hundredths of seconds (0-99) */
+   unsigned char seconds;         /* seconds (0-59) */
+   unsigned char minutes;         /* minutes (0-31) */
+   unsigned char hours;           /* hours (0-255) */
+} std_time;
+</CODE></PRE>
+
+<PRE>
+Integer format:
+
+unsigned int
+   bits 0x0B-0x0F        hours (0-23)
+   bits 0x05-0x0A        minutes (0-59)
+   bits 0x00-0x04        2-second increments (0-29)
+
+Hundredths of seconds:
+
+unsigned long            hundredths of seconds elapsed since  midnight (0-92159999)
+
+Timer ticks:
+
+unsigned long            number of timer ticks elapsed since  midnight (0-1573039)
+</PRE>
+Note that times in all formats except the structure format can be compared directly to determine relative order. Hundredths or timer ticks may also be subtracted or adjusted directly. Times in the structure format can be added to or subtracted from other times in the same format using functions in this unit. The std_time structure is defined in the DATETIME.H header file.
+
+<H2><A NAME="HEAD0003">Getting and Setting System Date and Time
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rdatetim.htm#_get_clock">_get_clock</A><DD>     Returns the system clock tick count.
+<DT><A HREF="rdatetim.htm#_get_date">_get_date</A><DD>      Fills a date structure with the current system date and day of the week.
+<DT><A HREF="rdatetim.htm#_get_time">_get_time</A><DD>      Fills a time structure with the current system time.
+<DT><A HREF="rdatetim.htm#_set_clock">_set_clock</A><DD>     Sets the system clock tick count.
+<DT><A HREF="rdatetim.htm#_set_date">_set_date</A><DD>      Sets the system date.
+<DT><A HREF="rdatetim.htm#_set_time">_set_time</A><DD>      Sets the system time.
+</DL>
+These functions provide a simple interface for getting or setting the date and time maintained by the system. <A HREF="rdatetim.htm#_get_date">_get_date</A>, <A HREF="rdatetim.htm#_get_time">_get_time</A>, <A HREF="rdatetim.htm#_set_date">_set_date</A>, and <A HREF="rdatetim.htm#_set_time">_set_time</A> all use the structure formats to represent system time, and <A HREF="rdatetim.htm#_get_clock">_get_clock</A> and <A HREF="rdatetim.htm#_set_clock">_set_clock</A> use clock ticks. Since all of these functions depend on the system clock, they all have an effective resolution of .0549 seconds.
+
+<H2><A NAME="HEAD0004">Manipulating Date and Time Values
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rdatetim.htm#_add_time">_add_time</A><DD>      Returns the sum of two times.
+<DT><A HREF="rdatetim.htm#_diff_time">_diff_time</A><DD>     Returns the difference of two times.
+<DT><A HREF="rdatetim.htm#_date_to_days">_date_to_days</A><DD>  Returns the number of days between January 1, 1980 and a given date.
+<DT><A HREF="rdatetim.htm#_days_to_date">_days_to_date</A><DD>  Returns a date for the given number of days since January 1, 1980.
+<DT><A HREF="rdatetim.htm#_get_day">_get_day</A><DD>       Returns the day of the week for a given date.
+<DT><A HREF="rdatetim.htm#_hund_to_time">_hund_to_time</A><DD>  Converts hundredths of seconds into time structure format.
+<DT><A HREF="rdatetim.htm#_time_to_hund">_time_to_hund</A><DD>  Converts a time from structure format to hundredths of seconds.
+<DT><A HREF="rdatetim.htm#_merge_date">_merge_date</A><DD>    Converts a date from structure format to integer format.
+<DT><A HREF="rdatetim.htm#_split_date">_split_date</A><DD>    Converts a date from integer format to time structure format.
+<DT><A HREF="rdatetim.htm#_merge_time">_merge_time</A><DD>    Converts a time from structure format to integer format.
+<DT><A HREF="rdatetim.htm#_split_time">_split_time</A><DD>    Converts a time from integer format to time structure format.
+<DT><A HREF="rdatetim.htm#_ticks_to_time">_ticks_to_time</A><DD> Converts a time from timer ticks format to structure format.
+<DT><A HREF="rdatetim.htm#_time_to_ticks">_time_to_ticks</A><DD> Converts a time from structure format to timer tick format.
+</DL>
+These functions add, subtract, and convert dates and times between all supported formats (except for the more specialized timer ticks format). A function is also provided for determining the day of the week for a given date.
+
+<P>
+<A HREF="rdatetim.htm#_ticks_to_time">_ticks_to_time</A> and <A HREF="rdatetim.htm#_time_to_ticks">_time_to_ticks</A>, when used in conjunction with <A HREF="rdatetim.htm#_get_clock">_get_clock</A> and <A HREF="rdatetim.htm#_set_clock">_set_clock</A>, are faster than the <A HREF="rdatetim.htm#_get_time">_get_time</A> and <A HREF="rdatetim.htm#_set_time">_set_time</A> functions, respectively. <A HREF="rdatetim.htm#_get_time">_get_time</A> and <A HREF="rdatetim.htm#_set_time">_set_time</A> should be used when code size is more important than speed.
+
+<H2><A NAME="HEAD0005">Simple Conversion of Dates and Times to ASCII Strings
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rdatetim.htm#_asc_date">_asc_date</A><DD>      Creates an ASCIIZ date string in MM/DD/YY format.
+<DT><A HREF="rdatetim.htm#_asc_time">_asc_time</A><DD>      Creates an ASCIIZ time string in HH:MM Xm format.
+</DL>
+These functions convert date and time values to simple ASCII strings suitable for displaying or writing to a file. The <A HREF="rdatetim.htm#_date_to_asc">_date_to_asc</A> and <A HREF="rdatetim.htm#_time_to_asc">_time_to_asc</A> functions (discussed later in this chapter) provide more flexible facilities for creating ASCII date and time strings.
+
+<H2><A NAME="HEAD0006">Initializing the Date/Time Formatting Functions
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rdatetim.htm#dtc_addr">dtc_addr</A><DD>       (Variable) Contains the address of the current date/time formatting options structure.
+<DT><A HREF="rdatetim.htm#_dtc_init">_dtc_init</A><DD>      Initializes the current date/time formatting options structure with DOS country information.
+</DL>
+<A HREF="rdatetim.htm#dtc_addr">dtc_addr</A> is a near/far pointer which contains the address of the current date/time options structure (dtcopts). In small data models (TINY, SMALL, MEDIUM), this variable is a near pointer which contains the offset of the structure within DGROUP (global or static non-far data). In large data models (COMPACT, LARGE, HUGE), this variable is a far pointer which contains the segment and offset of the structure.
+
+The current dtcopts structure specifies global date/time conversion formatting options and is used by <A HREF="rdatetim.htm#_asc_to_date">_asc_to_date</A>, <A HREF="rdatetim.htm#_asc_to_time">_asc_to_time</A>, <A HREF="rdatetim.htm#_date_to_asc">_date_to_asc</A>, <A HREF="rdatetim.htm#_time_to_asc">_time_to_asc</A>, and the scripted I/O functions. The behavior of these functions may be changed by modifying this structure or by modifying <A HREF="rdatetim.htm#dtc_addr">dtc_addr</A> to point to a different dtcopts structure.
+
+<P>
+<A HREF="rdatetim.htm#dtc_addr">dtc_addr</A> is initialized with the address of the default dtcopts structure. The dtcopts structure is defined in DATETIME.H, as follows:
+<PRE><CODE>
+typedef struct {
+   char dtc_dtformat;   /* date format MDY/DMY/YMD (country) */
+   char dtc_dtdelim;    /* date delimiter (country) */
+   char dtc_tmformat    /* time format 12/24-hour (country) */
+   char dtc_tmdelim;    /* time delimiter (country) */
+   char dtc_hdelim;         /* delimiter for 100ths (default country decimal delimiter) */
+   char *dtc_amstr;         /* address of AM string (default string is " AM") */
+   char *dtc_pmstr;         /* address of PM string (default string is " PM") */
+} dtcopts;
+</CODE></PRE>
+The default dtcopts structure (in the library) is supplied with standard U.S.A. defaults. The DTC_DEFAULT symbolic constant (defined in DATETIME.H) may be specified for any field which accepts a pointer. This causes the date/time conversion functions to use the default string, shown in the comments above, for each field in which it is specified.
+
+<P>
+The DTCOPTS structure fields are defined as follows:
+
+<P>
+dtc_dtformat    DOS Date format. The default is U.S. format (0). This field is updated by <A HREF="rdatetim.htm#_dtc_init">_dtc_init</A>. DOS is documented as supporting the following formats:
+<PRE>
+            0 = U.S. (MM/DD/YY)
+            1 = European (DD/MM/YY)
+            2 = Japanese (YY/MM/DD)
+</PRE>
+<DL COMPACT>
+<DT>dtc_dtdelim<DD>    Date delimiter. This is the character that separates the specified elements of a date string. The default is "/". This field is updated by <A HREF="rdatetim.htm#_dtc_init">_dtc_init</A>.
+<DT>dtc_tmformat<DD>   DOS time format. The default is 24-hour format (1). This field is updated by <A HREF="rdatetim.htm#_dtc_init">_dtc_init</A>. DOS is documented as supporting the following formats:
+</DL>
+<PRE>
+            0 = 12-hour format (HH:MM:SS.hh AM/PM)
+            1 = 24-hour format (HH:MM:SS.hh)
+</PRE>
+<DL COMPACT>
+<DT>dtc_tmdelim<DD>    Time delimiter. This is the character that separates the hours, minutes and seconds elements of a time string. The default is ":". This field is updated by <A HREF="rdatetim.htm#_dtc_init">_dtc_init</A>.
+<DT>dtc_hdelim<DD>     Hundredths of seconds time delimiter. This is the character that separates the seconds and hundredths of seconds elements in a time field. The default is ".". This field is updated by <A HREF="rdatetim.htm#_dtc_init">_dtc_init</A> to contain the country decimal delimiter character.
+<DT>dtc_amstr<DD>      Address of the "AM" ASCIIZ string. If a string is specified, it is used in place of the default string. If DTC_DEFAULT is specified, the default "AM" string (" AM") is used. The default is DTC_DEFAULT.
+<DT>dtc_pmstr<DD>      Address of the "PM" ASCIIZ string. If a string is specified, it is used in place of the default string. If DTC_DEFAULT is specified, the default "PM" string (" PM") is used. The default is DTC_DEFAULT.
+<DT><A HREF="rdatetim.htm#_dtc_init">_dtc_init</A><DD>updates the current date/time conversion options structure (referenced by <A HREF="rdatetim.htm#dtc_addr">dtc_addr</A>) with the DOS country information for the current or specified country. Updated information includes the date format, date delimiter, time format, time delimiter, and 100ths delimiter. This function does not need to be called if the dtcopts structure already contains the correct information.
+</DL>
+<H2><A NAME="HEAD0007">Converting Date/Time to Formatted ASCII Strings
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rdatetim.htm#_date_to_asc">_date_to_asc</A><DD>   Converts date in a structure to a formatted ASCIIZ string.
+<DT><A HREF="rdatetim.htm#_date_to_asce">_date_to_asce</A><DD>  Converts date in a structure to a formatted ASCII string, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdatetim.htm#_time_to_asc">_time_to_asc</A><DD>   Converts time in a structure to a formatted ASCIIZ string.
+<DT><A HREF="rdatetim.htm#_time_to_asce">_time_to_asce</A><DD>  Converts time in a structure to a formatted ASCII string, returning a pointer to the end of the resulting string.
+</DL>
+These functions convert date and time values from structure format to formatted ASCII strings. The <A HREF="rdatetim.htm#_date_to_asc">_date_to_asc</A> and <A HREF="rdatetim.htm#_time_to_asc">_time_to_asc</A> functions return a pointer to the resulting ASCIIZ string. The <A HREF="rdatetim.htm#_date_to_asce">_date_to_asce</A> and <A HREF="rdatetim.htm#_time_to_asce">_time_to_asce</A> functions create a non-NULL terminated ASCII string and return a pointer to the end of the string to facilitate appending of additional data.
+
+<P>
+The format of the resulting date or time string depends on the current dtcopts structure as well as date and time formatting flags which are specified for each conversion. The current date/time conversion options structure specifies global formatting options such as the country-default time format, the time delimiter character, and the 100ths separator character. These options may be accessed or modified through the <A HREF="rdatetim.htm#dtc_addr">dtc_addr</A> variable. (See <A HREF="rdatetim.htm#dtc_addr">dtc_addr</A>, above, for further information.) Date and time formatting flags are specified using the following symbolic constants (defined in DATETIME.H):
+
+<P>
+Date field order flags:
+<DL COMPACT>
+<DT>DATE_CDATE<DD>     (0x00) Use the country-specific date format ("D/M/Y", "Y/M/D", or "M/D/Y") specified in the current dtcopts structure.
+<DT>DATE_DMY<DD>                        (0x01) Use DAY/MONTH/YEAR format.
+<DT>DATE_YMD<DD>                        (0x02) Use YEAR/MONTH/DAY format.
+<DT>DATE_MDY<DD>                        (0x03) Use MONTH/DAY/YEAR format.
+</DL>
+Date field suppress flags:
+<DL COMPACT>
+<DT>DATE_NOYR<DD>                       (0x04) Suppress the YEAR field.
+<DT>DATE_NOMON<DD>              (0x08) Suppress the MONTH field.
+<DT>DATE_NODAY<DD>              (0x10) Suppress the DAY field.
+</DL>
+Date leading zero flags (ignored by <A HREF="rdatetim.htm#_asc_to_date">_asc_to_date</A>):
+<DL COMPACT>
+<DT>DATE_PADMON<DD>    (0x00) Output a leading zero in the MONTH field.
+<DT>DATE_NOPADMON<DD>  (0x20) No leading zero in MONTH field.
+<DT>DATE_PADDAY<DD>    (0x00) Output a leading zero in the DAY field.
+<DT>DATE_NOPADDAY<DD>  (0x40) No leading zero in DAY field.
+</DL>
+Year digits flags (ignored by <A HREF="rdatetim.htm#_asc_to_date">_asc_to_date</A>):
+<DL COMPACT>
+<DT>DATE_2DIGYR<DD>             (0x00) Output 2 digits in year field ("95").
+<DT>DATE_4DIGYR<DD>             (0x80) Output 4 digits in year field ("1995").
+</DL>
+Two digit year format assumes the years "80" to "99" represent 1980 to 1999 and the years "00" to "79" represent 2000 to 2079.
+
+<P>
+Time format flags:
+<DL COMPACT>
+<DT>TIME_FLEXHR<DD>    (0x00) Writes time using the country-specific time format (12-hour or 24-hour) specified in the current dtcopts structure; reads both 12-hour and 24-hour formats.
+<DT>TIME_12HR<DD>      (0x01) Use 12-hour format.
+<DT>TIME_24HR<DD>      (0x02) Use 24-hour format.
+<DT>TIME_CTIME<DD>     (0x03) Use the country-specific time format (12-hour or 24-hour) from the current dtcopts structure.
+</DL>
+Time field flags:
+<DL COMPACT>
+<DT>TIME_HR<DD>(0x00) Use the HOUR field.
+<DT>TIME_NOHR<DD>      (0x04) Suppress the HOUR field.
+<DT>TIME_MIN<DD>       (0x00) Use the MINUTES field.
+<DT>TIME_NOMIN<DD>     (0x08) Suppress the MINUTES field.
+<DT>TIME_SEC<DD>       (0x00) Use the SECONDS field.
+<DT>TIME_NOSEC<DD>     (0x10) Suppress the SECONDS field.
+<DT>TIME_100THS<DD>    (0x00) Use the 100THS field.
+<DT>TIME_NO100THS<DD>  (0x20) Suppress the 100THS field.
+</DL>
+Time leading zero flags (ignored by <A HREF="rdatetim.htm#_asc_to_time">_asc_to_time</A>):
+<DL COMPACT>
+<DT>TIME_PAD<DD>       (0x00) Pad first output field with a leading zero (e.g. "01:00" instead of "1:00").
+<DT>TIME_NOPAD<DD>     (0x40) Do not pad first field with a leading zero.
+</DL>
+Equates with a value of zero are the defaults and are provided for completeness only.
+
+<H2><A NAME="HEAD0008">Converting Date/Time Strings to Structure Format
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rdatetim.htm#_asc_to_date">_asc_to_date</A><DD>   Converts a formatted ASCII date string to structure date.
+<DT><A HREF="rdatetim.htm#_asc_to_time">_asc_to_time</A><DD>   Converts a formatted ASCII time string to structure date.
+</DL>
+These functions convert formatted or standard ASCII date and time strings to structure format. The expected format of the input date or time string is specified in the current dtcopts structure as well as in the date and time formatting flags which are specified for each conversion. Date and time formatting flags are described in the previous section. For information about the dtcopts structure, see <A HREF="rdatetim.htm#dtc_addr">dtc_addr</A>, above.
+
+<P>
+Only those subfields specified in the formatting flags are actually read and stored; the remaining fields are neither read nor stored. This means that only the specified portions of the destination structure are modified on a successful read. It also means that the input value must be in the specified format or the field values may be interpreted incorrectly.
+
+<P>
+An invalid format error is returned if fewer fields were read than expected, a required field is zero or empty, or no interpretable characters were found in a field. For example, if three date fields are expected when calling ASC_TO_DATE, then "//92", "2/A/92", or "11/12" would generate invalid format errors. An overflow error condition is also returned if numeric overflow occurs in any required field (i.e., the read value exceeds the maximum allowed value for that field).
+
+<P>
+If a date or time string contains more fields than are required for the read, the leading fields must match the specified format and trailing fields are ignored. For example, if DATE_MDY+DATE_NOYR were specified, then "12/31" and "12/31/95" would both be read correctly. If DATE_MDY+DATE_NODAY were specified (only month and year expected), an input string of "12/31" would be interpreted as representing month 12 of the year 2031.
+
+<P>
+Year values in date strings are read in whatever format is encountered (2-digit or 4-digit) regardless of the format specified in the date format flags. When 2-digit year values are converted, values from 80 to 99 are assumed to represent the years 1980 through 1999; other values represent years from 2000 to 2079.
+<P>
+The time format (12- or 24-hour) specified in the format flags is significant. If 12-hour format is specified, then the scripted input function requires a am/pm indicator after the time. This indicator must match the am/pm strings specified in the current date/time conversion options structure, or it must match "a", "p", "am", or "pm" (case-insensitive comparison) with at most one space character between the last digit of the time and the am/pm indicator. An invalid format error is returned if no am/pm indicator is found when 12-hour time format has been specified. This error is also returned if TIME_FLEXHR is specified, the hour value is greater than 12, and a trailing am/pm string is encountered. If 24-hour format is specified, then no attempt is made to match am/pm strings.
+
+<P>
+These functions do not automatically skip leading white space characters. To skip white space characters, call <A HREF="rstring.htm#_str_skipw">_str_skipw</A> or <A HREF="rstring.htm#_str_skips">_str_skips</A> before calling these formatting functions.
+
+<H2><A NAME="HEAD0009">Measuring Time and Delaying Program Execution
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rdatetim.htm#_init_msec">_init_msec</A><DD>     Calibrates the millisecond timer.
+<DT><A HREF="rdatetim.htm#_sleep_msec">_sleep_msec</A><DD>    Suspends program execution for a specified number of milliseconds.
+<DT><A HREF="rdatetim.htm#_sleep_sec">_sleep_sec</A><DD>     Suspends program execution for a specified number of hundredths of a second.
+<DT><A HREF="rdatetim.htm#_tmr_read">_tmr_read</A><DD>      Returns the elapsed time since the last call to <A HREF="rdatetim.htm#_tmr_reset">_tmr_reset</A>.
+<DT><A HREF="rdatetim.htm#_tmr_reset">_tmr_reset</A><DD>     Begins a new timing sequence.
+</DL>
+These functions measure elapsed time and cause program execution to be suspended for specified periods of time.
+
+<P>
+<A HREF="rdatetim.htm#_tmr_reset">_tmr_reset</A> and <A HREF="rdatetim.htm#_tmr_read">_tmr_read</A> measure elapsed time. <A HREF="rdatetim.htm#_tmr_reset">_tmr_reset</A> establishes the starting point from which elapsed time is measured. Elapsed time may then be read at any time by calling <A HREF="rdatetim.htm#_tmr_read">_tmr_read</A>. The timing sequence is not interrupted when <A HREF="rdatetim.htm#_tmr_read">_tmr_read</A> is called. Subsequent calls to <A HREF="rdatetim.htm#_tmr_read">_tmr_read</A> continue to report elapsed time from the initial starting point. <A HREF="rdatetim.htm#_tmr_reset">_tmr_reset</A> may be called at any time to establish a new starting point for the timing sequence. Interrupts must be enabled for these functions to work properly. These functions only support timing sequences of less than 24 hours. Longer sequences may be tracked by periodically calling <A HREF="rdatetim.htm#_tmr_read">_tmr_read</A>, adding the elapsed time into the total elapsed time, and then calling <A HREF="rdatetim.htm#_tmr_reset">_tmr_reset</A> to establish a new starting point.
+
+<P>
+<A HREF="rdatetim.htm#_tmr_reset">_tmr_reset</A> and <A HREF="rdatetim.htm#_tmr_read">_tmr_read</A> depend on the system clock. This means that they have a maximum resolution of .0549 seconds with an accuracy of ñ .0549 seconds.
+
+<P>
+<A HREF="rdatetim.htm#_sleep_sec">_sleep_sec</A> and <A HREF="rdatetim.htm#_sleep_msec">_sleep_msec</A> suspend execution for a specified period of time. <A HREF="rdatetim.htm#_sleep_sec">_sleep_sec</A> is a simple function which has a resolution of 1 clock tick (.0549 seconds) with an effective accuracy of ñ .0549 seconds. <A HREF="rdatetim.htm#_sleep_msec">_sleep_msec</A> is about four times as large as <A HREF="rdatetim.htm#_sleep_sec">_sleep_sec</A>, but it has millisecond resolution (.001 seconds) with an accuracy of better than ñ .0005 seconds. Since <A HREF="rdatetim.htm#_sleep_sec">_sleep_sec</A> depends on the system clock, interrupts must be enabled when it is called. <A HREF="rdatetim.htm#_sleep_msec">_sleep_msec</A>, on the other hand, depends on the "millisecond timer", which measures elapsed time by continuously monitoring system timer zero. Therefore, <A HREF="rdatetim.htm#_sleep_msec">_sleep_msec</A> may be used with interrupts disabled to obtain even greater accuracy.
+
+<P>
+<A HREF="rdatetim.htm#_init_msec">_init_msec</A> is provided for use with <A HREF="rdatetim.htm#_sleep_msec">_sleep_msec</A> and other functions which use the millisecond timer. <A HREF="rdatetim.htm#_init_msec">_init_msec</A> calibrates the millisecond timer by determining the operating mode and reload count of system timer zero. This allows <A HREF="rdatetim.htm#_sleep_msec">_sleep_msec</A> and other millisecond timer functions to operate properly even if the system timer has been reprogrammed. <A HREF="rdatetim.htm#_init_msec">_init_msec</A> should always be called after reprogramming timer zero. If <A HREF="rdatetim.htm#_init_msec">_init_msec</A> is never called, <A HREF="rdatetim.htm#_sleep_msec">_sleep_msec</A> assumes that timer zero is operating in the system default mode (mode three with a reload value of zero).
+
+<H2><A NAME="HEAD000A">Sample Program
+</A></H2>
+
+These date/time functions make it very easy to manipulate and analyze dates and times. The following example uses several date/time functions to calculate the number of days from the current date to a given date, then calculates the day of the week for that date:
+<PRE><CODE>
+#include <dataconv.h>
+#include <datetime.h>
+#include <dosio.h>
+#define CR 13
+void main()
+{
+   char *strindx;
+   char day, datebuf[5];
+   unsigned num_days, curr_days, future_days;
+   static std_date date;
+
+   <A HREF="rdatetim.htm#_get_date">_get_date</A>(&date);
+   curr_days = <A HREF="rdatetim.htm#_date_to_days">_date_to_days</A>(&date);      /* get current number of days since 01-01-1980 */
+    do
+     {
+       <A HREF="rdosio.htm#_put_newline">_put_newline</A>();
+       do {
+       <A HREF="rdosio.htm#_put_str">_put_str</A>("Enter month: ");
+       date.month = <A HREF="rdata.htm#_dec_to_c">_dec_to_c</A>(_get_str(datebuf, 2), &strindx);
+       } while (date.month < 1 || date.month > 12);
+       do {
+       <A HREF="rdosio.htm#_put_str">_put_str</A>("Enter day: ");
+       date.day = <A HREF="rdata.htm#_dec_to_c">_dec_to_c</A>(_get_str(datebuf, 2), &strindx);
+       } while (date.day < 1 || date.day > 31);
+       do {
+       <A HREF="rdosio.htm#_put_str">_put_str</A>("Enter year: ");
+       date.year = <A HREF="rdata.htm#_dec_to_i">_dec_to_i</A>(_get_str(datebuf, 4), &strindx);
+       } while (date.year < 1980 || date.year > 2080);
+        future_days = <A HREF="rdatetim.htm#_date_to_days">_date_to_days</A>(&date);        /* number of days from 01-01-1980 to ?date */
+        num_days = future_days - curr_days;        /* num_days = days remaining until ?date */
+       <A HREF="rdosio.htm#_put_newline">_put_newline</A>();
+       <A HREF="rdosio.htm#_put_str">_put_str</A>("Number of days to ");
+       <A HREF="rdatetim.htm#_days_to_date">_days_to_date</A>(future_days,&date);        /* convert to actual date (June 31 = July 1) */
+       <A HREF="rdosio.htm#_put_str">_put_str</A>(_asc_date(datebuf,&date)); <A HREF="rdosio.htm#_put_str">_put_str</A>(" = ");
+       <A HREF="rdosio.htm#_put_str">_put_str</A>(_i_to_dec(num_days, datebuf));  /* display number of days to ?date */
+       <A HREF="rdosio.htm#_put_newline">_put_newline</A>();
+       <A HREF="rdosio.htm#_put_str">_put_str</A>("The day is: ");
+       switch (_get_day(&date))
+         {
+           case 0: <A HREF="rdosio.htm#_put_str">_put_str</A>("Sunday"); break;
+           case 1: <A HREF="rdosio.htm#_put_str">_put_str</A>("Monday"); break;
+           case 2: <A HREF="rdosio.htm#_put_str">_put_str</A>("Tuesday"); break;
+           case 3: <A HREF="rdosio.htm#_put_str">_put_str</A>("Wednesday"); break;
+           case 4: <A HREF="rdosio.htm#_put_str">_put_str</A>("Thursday"); break;
+           case 5: <A HREF="rdosio.htm#_put_str">_put_str</A>("Friday"); break;
+           case 6: <A HREF="rdosio.htm#_put_str">_put_str</A>("Saturday"); break;
+           default: break;
+         }
+       <A HREF="rdosio.htm#_put_str">_put_str</A>("\n\n\r<CR> to continue: ");
+     } while(_get_chre() == CR);
+}
+</CODE></PRE>
+The sample program shown above (CALCDAY.C) is provided on the distribution diskettes and may be compiled and linked using the following Microsoft C and Borland C command lines:
+
+<P>
+Microsoft C:
+<PRE><CODE>
+cl /c /I\msc\include /I\sa\include calcday.c
+link calcday,calcday,,\sa\lib\_sas \msc\lib\slibce
+</CODE></PRE>
+Borland C:
+<PRE><CODE>
+bcc /c /ms /I\bc\include /I\sa\include calcday.c
+tlink \bc\lib\c0s calcday,calcday,,\sa\lib\_sas \bc\lib\cs
+</CODE></PRE>
+</BOBY>
+</HTML>

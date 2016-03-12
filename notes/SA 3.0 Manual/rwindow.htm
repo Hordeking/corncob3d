@@ -1,0 +1,3219 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Windowing Reference</TITLE>
+</HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Windowing</H1>
+<P ALIGN=CENTER>Reference Section </P>
+<UL>
+<LI><A HREF="TOC.htm">Table of Contents</A>
+<LI><A HREF="index.htm">Function Index</A>
+<LI><A HREF="gindex.htm">Group Index
+</UL>
+<A HREF="rwindow.htm#_draw_wborder">_draw_wborder</A><BR>
+<A HREF="rwindow.htm#_get_backdrop">_get_backdrop</A><BR>
+<A HREF="rwindow.htm#_get_backdropbuf">_get_backdropbuf</A><BR>
+<A HREF="rwindow.htm#_get_whandle">_get_whandle</A><BR>
+<A HREF="rwindow.htm#_get_wlevel">_get_wlevel</A><BR>
+<A HREF="rwindow.htm#_get_wpos">_get_wpos</A><BR>
+<A HREF="rwindow.htm#_get_wspec">_get_wspec</A><BR>
+<A HREF="rwindow.htm#_set_backdrop">_set_backdrop</A><BR>
+<A HREF="rwindow.htm#_set_backdropbuf">_set_backdropbuf</A><BR>
+<A HREF="rwindow.htm#_set_spos">_set_spos</A><BR>
+<A HREF="rwindow.htm#_set_wborder">_set_wborder</A><BR>
+<A HREF="rwindow.htm#_set_wlevel">_set_wlevel</A><BR>
+<A HREF="rwindow.htm#_set_wpos">_set_wpos</A><BR>
+<A HREF="rwindow.htm#_set_wshadow">_set_wshadow</A><BR>
+<A HREF="rwindow.htm#_update_cursor">_update_cursor</A><BR>
+<A HREF="rwindow.htm#_update_off">_update_off</A><BR>
+<A HREF="rwindow.htm#_update_on">_update_on</A><BR>
+<A HREF="rwindow.htm#_update_rect">_update_rect</A><BR>
+<A HREF="rwindow.htm#_update_screen">_update_screen</A><BR>
+<A HREF="rwindow.htm#_update_window">_update_window</A><BR>
+<A HREF="rwindow.htm#_wborder_off">_wborder_off</A><BR>
+<A HREF="rwindow.htm#_wborder_on">_wborder_on</A><BR>
+<A HREF="rwindow.htm#_win_bufsize">_win_bufsize</A><BR>
+<A HREF="rwindow.htm#_win_close">_win_close</A><BR>
+<A HREF="rwindow.htm#_win_create">_win_create</A><BR>
+<A HREF="rwindow.htm#_win_init">_win_init</A><BR>
+<A HREF="rwindow.htm#_win_move">_win_move</A><BR>
+<A HREF="rwindow.htm#_win_open">_win_open</A><BR>
+<A HREF="rwindow.htm#_win_remove">_win_remove</A><BR>
+<A HREF="rwindow.htm#_win_resume">_win_resume</A><BR>
+<A HREF="rwindow.htm#_win_select">_win_select</A><BR>
+<A HREF="rwindow.htm#_win_suspend">_win_suspend</A><BR>
+<H2><A NAME="_draw_wborder">_draw_wborder</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Draws a border within the active window.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	void _draw_wborder(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function draws the border of the active window using the window's current border definition. Drawing the border overwrites any characters in the outermost rows and columns of the window border region. The screen is only affected if auto update is on. The border definition may be set by calling _set_wborder.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   int handle;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = (char *)_rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   bufsize = _win_bufsize (&ampwin);
+	   buffer = (char *)_rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   if ((handle = _win_create (&ampwin, buffer)) == -1)
+	   {
+	      /* Handle the error */
+	   }
+	   _wborder_off ();
+	   ...
+	   _wborder_on ();
+	   _draw_wborder ();
+	   ...
+	   buffer = _win_remove (handle);
+	   if (buffer != NULL)
+	   _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset of block */
+	    jc wborder_030/* if unable to allocate */
+	   pushdi
+	   win_init ();
+	   lea si,win
+	   win_bufsize ();    /* AX = size required buffer */
+	    jc wborder_020/* if buffer would be &gt 64k */
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc wborder_020/* if unable to allocate block */
+	   win_create ();	/* BX = window handle */
+	    jc wborder_020/* if unable to create window */
+	   wborder_on ();
+	   ...
+	   wborder_off ();
+	   draw_wborder ();
+	   ...
+	   win_remove ();	/* DI = offset window buffer */
+	    jncwborder_020/* if successful */
+	   ... 	 	/* if unable to remove window */
+	wborder_020:
+	   pop di	 	/* DI = offset of win workbuf */
+	   rel_free ();
+	wborder_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	WBDRAW.ASM		  <B>ASM equiv</B>	DRAW_WBORDER
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_set_wborder">_set_wborder</A>
+<BR></DL>
+<H2><A NAME="_get_backdrop">_get_backdrop</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the windowing backdrop character and attribute.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	void _get_backdrop(char *chr, char *attr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	No return value.
+<BR>	chr	 backdrop character
+<BR>	attr	backdrop attribute
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function retrieves the current windowing backdrop character and attribute. This is the character/attribute pair which is used to fill any screen area not covered by a window. If a backdrop buffer has been specified using _set_backdropbuf, the backdrop character and attribute are ignored.
+<BR>
+<BR>	_win_init be called before using this function.
+<BR>
+<BR>	This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char chr, attr;
+	   _get_backdrop (&ampchr, &ampattr);/* load vars w/backdrop info */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   get_backdrop ();/* AL=character, AH=attribute */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	_WGBDROP.ASM		  <B>ASM equiv</B>	GET_BACKDROP
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_set_backdrop">_set_backdrop</A>, <A HREF="rwindow.htm#_set_backdrop">_set_backdrop</A>
+<BR></DL>
+<H2><A NAME="_get_backdropbuf">_get_backdropbuf</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the address of the current windowing backdrop buffer.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	void far *_get_backdropbuf(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the current window backdrop buffer if one is installed.
+<BR>
+<BR>	NULL if a backdrop buffer is not installed.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the address of the current windowing backdrop buffer. The backdrop buffer defines the appearance of any screen area not covered by a window. NULL is returned if a backdrop buffer is not currently installed.
+<BR>
+<BR>	If a backdrop buffer is not installed, the backdrop character and attribute define the appearance of screen areas not covered by a window. A backdrop buffer may be installed using _set_backdropbuf. The backdrop character and attribute may be manipulated using _get_backdrop and _set_backdrop.
+<BR>
+<BR>	_win_init must be called before using this function.
+<BR>
+<BR>	This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   segaddr heapseg;
+	   ...
+	   buffer = _rel_malloc (heapseg, _screen_bufsize ());
+	   if (buffer != NULL)
+	   {
+	      _save_screen (buffer);
+	      _set_backdropbuf (buffer);
+	   }
+	   ...
+	   _rel_free (_get_backdropbuf ());
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   screen_bufsize ();
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc g_bkdrpb_010/* if unable to allocate block */
+	   set_backdropbuf ();
+	   ...
+	   get_backdropbuf ();/* ES:DI -&gt backdrop buffer */
+	   rel_free ();
+	    jncg_bkdrpb_010/* if successful */
+	   ... 	 	/* if an error occurred */
+	g_bkdrpb_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_WGBDRPB.ASM		  <B>ASM equiv</B>	GET_BACKDROPBUF
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_set_backdrop">_set_backdrop</A>, <A HREF="rwindow.htm#_set_backdrop">_set_backdrop</A>
+<BR></DL>
+<H2><A NAME="_get_whandle">_get_whandle</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the handle of a window at a specified level.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	int _get_whandle(int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The handle of the window at level num if there is a window at level num.
+<BR>
+<BR>	0 if there is no window at level num.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the handle of the window which is currently at level num. The handle of the active window is returned if num is zero. 0 is returned if num is invalid.
+<BR>
+<BR>	Window levels may be positive or negative. Positive values identify window levels from the top down (the top window is at level one, the next window is at level two, etc.). Negative values identify window levels from the bottom up (the bottom window is at level -1, the next window higher is at level -2, etc.). Level zero refers to the active window.
+<BR>
+<BR>	_win_init must be called before using this function. This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   int handle;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   bufsize = _win_bufsize (&ampwin);
+	   buffer = _rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   if (_win_create (&ampwin, buffer) == 0)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   handle = _get_whandle (1);
+	   if (handle == 0)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   buffer = _win_remove (handle);
+	   if (buffer != NULL)
+	   _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc g_whandle_030/* if unable to allocate block */
+	   pushdi
+	   win_init ();
+	   lea si,win
+	   win_bufsize ();    /* AX = size of required buf */
+	    jc g_whandle_020/* if buffer would be &gt 64k */
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc g_whandle_020/* if unable to allocate block */
+	   win_create ();	/* BX = window handle */
+	    jc g_whandle_020/* if unable to create window */
+	   ...
+	   mov ax,1
+	   get_whandle ();
+	    jc g_whandle_020/* if an error occurred */
+	   ...
+	   win_remove ();	/* DI = offset window buffer */
+	    jncg_whandle_020/* if successful */
+	   ... 	 	/* if unable to remove window */
+	g_whandle_020:
+	   pop di	 	/* DI = offset win work buffer */
+	   rel_free ();
+	g_whandle_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_WGETHDL.ASM		  <B>ASM equiv</B>	GET_WHANDLE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_get_wlevel">_get_wlevel</A>, <A HREF="rwindow.htm#_win_create">_win_create</A>
+<BR></DL>
+<H2><A NAME="_get_wlevel">_get_wlevel</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the level of a window.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	int _get_wlevel(int handle);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The level of the window associated with handle.
+<BR>
+<BR>	0 if handle is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function returns the level of the window associated with handle. The returned level indicates the level of the specified window relative to the top window (the top window is at level one, the next window is at level two, etc.). 0 is returned if handle is invalid. STDWIN is considered an invalid handle since it does not occupy a level.
+<BR>
+<BR>	_win_init must be called before using this function. This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   int handle, level;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   bufsize = _win_bufsize (&ampwin);
+	   buffer = _rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   if ((handle = _win_create (&ampwin, buffer)) == 0)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   level = _get_wlevel (handle);
+	   if (level == 0)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   buffer = _win_remove (handle);
+	   if (buffer != NULL)
+	   _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc g_wlevel_030/* if unable to allocate block */
+	   pushdi
+	   win_init ();
+	   lea si,win
+	   win_bufsize ();    /* AX = size required buffer */
+	    jc g_wlevel_020/* if buffer would be &gt 64k */
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc g_wlevel_020/* if unable to allocate block */
+	   win_create ();	/* BX = window handle */
+	    jc g_wlevel_020/* if unable to create window */
+	   ...
+	   get_wlevel ();	/* AX = window level */
+	    jc g_wlevel_020/* if an error occurred */
+	   ...
+	   win_remove ();	/* DI = offset window buffer */
+	    jncg_wlevel_020/* if successful */
+	   ... 	 	/* if unable to remove window */
+	g_wlevel_020:
+	   pop di
+	   rel_free ();
+	g_wlevel_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_WGETLVL.ASM		  <B>ASM equiv</B>	GET_WLEVEL
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_get_whandle">_get_whandle</A>, <A HREF="rwindow.htm#_set_wlevel">_set_wlevel</A>
+<BR></DL>
+<H2><A NAME="_get_wpos">_get_wpos</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the position of a window.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	int _get_wpos(int handle, int *xpos, int *ypos);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if handle is a valid level or handle.
+<BR>	xpos		signed horizontal window position
+<BR>	ypos		signed vertical window position
+<BR>
+<BR>	-1 if handle is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function indicates the X and Y coordinates of the upper left-hand corner of the window associated with handle. The indicated coordinates (which are returned in xpos and ypos) are signed numbers relative to the upper left-hand corner of the screen (0,0). -1 is returned if handle is invalid.
+<BR>
+<BR>	_win_init must be called before using this function. This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   int handle, x, y;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   bufsize = _win_bufsize (&ampwin);
+	   buffer = _rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   if ((handle = _win_create (&ampwin, buffer)) == -1)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   if (_get_wpos (handle, &ampx, &ampy))
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   buffer = _win_remove (handle);
+	   if (buffer != NULL)
+	   _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc get_wpos_030/* if unable to allocate block */
+	   pushdi
+	   win_init ();
+	   lea si,win
+	   win_bufsize ();    /* AX = size required buffer */
+	    jc get_wpos_020/* if buffer would be &gt 64k */
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc get_wpos_020/* if unable to allocate block */
+	   win_create ();	/* BX = window handle */
+	    jc get_wpos_020/* if unable to create window */
+	   ...
+	   get_wpos ();	/* AX = xpos, DX = ypos */
+	    jc get_wpos_020
+	   ...
+	   win_remove ();	/* DI = offset window buffer */
+	    jncget_wpos_020/* if successful */
+	   ... 	 	/* if unable to remove window */
+	get_wpos_020:
+	   pop di	 	/* DI = offset win work buffer */
+	   rel_free ();
+	get_wpos_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_WGETPOS.ASM		  <B>ASM equiv</B>	GET_WPOS
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_set_wpos">_set_wpos</A>
+<BR></DL>
+<H2><A NAME="_get_wspec">_get_wspec</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the specifications of a window.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	int _get_wspec(int handle, void far *buffer);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the function was successful.
+<BR>	buffer		specifications of the window associated with handle
+<BR>
+<BR>	-1 if handle is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function makes a copy of the current window specifications for the window associated with handle. handle may be a window handle or level. If the function was successful, the window specifications are placed in buffer in the form of a sawin definition structure and 0 is returned. -1 is returned if handle is invalid.
+<BR>
+<BR>	The sawin window definition structure is defined in WINDOW.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   int left;	 	 /* left margin of window */
+<BR>	   int top;	 	 /* top row of window */
+<BR>	   unsigned char width;	 /* width of window (in columns) */
+<BR>	   unsigned char height;/* height of widow (in rows) */
+<BR>	   unsigned char dattr; /* window default attribute */
+<BR>	   unsigned char tprows;/* number of top border rows */
+<BR>	   unsigned char rtcols;/* number of right border columns */
+<BR>	   unsigned char bmrows;/* number of bottom border rows */
+<BR>	   unsigned char ltcols;/* number of left border columns */
+<BR>	   void * border;	 /* pointer to the border descriptor */
+<BR>	   unsigned char battr;	 /* border attribute */
+<BR>	   char horz;	 	 /* shadow horizontal offset */
+<BR>	   char vert;	 	 /* shadow vertical offset */
+<BR>	   unsigned char stype;	 /* shadow type flags */
+<BR>	   void * shadow;	 /* pointer to shadow descriptor */
+<BR>	   unsigned char sattr;	 /* shadow attribute (shadowed area's color) */
+<BR>	   void * attrtbl; 	 /* pointer to the window attribute table */
+<BR>	   unsigned char curstate;/* cursor on/off state */
+<BR>	   unsigned int curshape;/* cursor shape */
+<BR>	}sawin;
+<BR>
+<BR>	_win_init must be called before using this function. This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   int handle;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   bufsize = _win_bufsize (&ampwin);
+	   buffer = _rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   if ((handle = _win_create (&ampwin, buffer)) == -1)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   if (_get_wspec (handle, &ampwin))
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   buffer = _win_remove (handle);
+	   if (buffer != NULL)
+	   _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc g_wspec_030/* if unable to allocate block */
+	   pushdi
+	   win_init ();
+	   lea si,win
+	   win_bufsize ();    /* AX = size required buffer */
+	    jc g_wspec_020/* if buffer would be &gt 64k */
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc g_wspec_020/* if unable to allocate block */
+	   win_create ();	/* BX = window handle */
+	    jc g_wspec_020/* if unable to create window */
+	   ...
+	   get_wspec ();
+	    jc g_wspec_020/* if an error occurred */
+	   ...
+	   win_remove ();	/* DI = offset window buffer */
+	    jncg_wspec_020/* if successful */
+	   ... 	 	/* if unable to remove window */
+	g_wspec_020:
+	   pop di	 	/* DI = offset win work buffer */
+	   rel_free ();
+	g_wspec_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_WGETSPC.ASM		  <B>ASM equiv</B>	GET_WSPEC
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_win_create">_win_create</A>
+<BR></DL>
+<H2><A NAME="_set_backdrop">_set_backdrop</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets the windowing backdrop character and attribute.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	void _set_backdrop(int chr, int attr);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sets the backdrop character and attribute to chr and attr. This is the character/attribute pair which is used to fill any screen area not covered by a window. The screen is updated immediately using chr and attr if auto update is on and no backdrop buffer has been specified. This function has no effect if a backdrop buffer has been specified using _set_backdropbuf.
+<BR>
+<BR>	attr is interpreted as an attribute table code if an attribute table has been installed for STDWIN; otherwise, attr is interpreted as an attribute.
+<BR>
+<BR>	_win_init must be called before using this function. This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   _set_backdrop ('°', BLUE + (WHITE * 16));
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	...
+	mov al,177
+	mov ah,(BLUE + (WHITE*16))
+	set_backdrop ();
+	...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_WSBDROP.ASM		  <B>ASM equiv</B>	SET_BACKDROP
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_get_backdrop">_get_backdrop</A>, <A HREF="rwindow.htm#_set_backdrop">_set_backdrop</A>
+<BR></DL>
+<H2><A NAME="_set_backdropbuf">_set_backdropbuf</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Installs a windowing backdrop buffer.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	void _set_backdropbuf(void far *bdropbuf);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function assigns bdropbuf as the backdrop buffer for the windowing system. The backdrop buffer defines the appearance of any screen area not covered by a window. If auto update is on and a buffer address is specified, the screen is immediately updated using the backdrop buffer. If auto update is on and -1 is specified for bdropbuf, the screen is immediately updated with the backdrop character and attribute. The screen remains unchanged if auto update is off.
+<BR>
+<BR>	bdropbuf must contain screen information in the format returned by the _save_screen function. Using any other buffer format will produce undefined results. Note that a specific screen may be used as the windowing backdrop by saving it with _save_screen and then passing that buffer address to this function.
+<BR>
+<BR>	_win_init must be called before using this function. This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   segaddr heapseg;
+	   ...
+	   buffer = _rel_malloc (heapseg, _screen_bufsize ());
+	   if (buffer != NULL)
+	   {
+	      _save_screen (buffer);
+	      _set_backdropbuf (buffer);
+	   }
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	segaddr heapseg;
+	   ...
+	   mov es,heapseg
+	   screen_bufsize ();
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc s_bdropb_010/* if unable to allocate block */
+	   save_screen ();
+	   set_backdropbuf ();
+	   ...
+	s_bdropb_010:
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_WSBDRPB.ASM		  <B>ASM equiv</B>	SET_BACKDROPBUF
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_get_backdrop">_get_backdrop</A>, <A HREF="rconsole.htm#_save_screen">_save_screen</A>, <A HREF="rwindow.htm#_set_backdrop">_set_backdrop</A>
+<BR></DL>
+<H2><A NAME="_set_spos">_set_spos</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets a window shadow position.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	int _set_spos(int handle, int shorz, int svert);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the shadow was successfully repositioned.
+<BR>
+<BR>	-1 if handle is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sets the shadow position for the window associated with handle. The shadow is repositioned relative to the position of the window, with shorz specifying the horizontal offset in columns and svert specifying the vertical offset in rows. Positive offsets specify right and downward displacements; negative offsets specify left and upward displacements. The shadow immediately appears in its new position on the screen if the window is open and auto update is enabled; otherwise, the screen is unaffected. If handle is invalid, -1 is returned and the screen remains unaffected. 0 is returned otherwise.
+<BR>
+<BR>	_win_init must be called before using this function. This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   int handle;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   bufsize = _win_bufsize (&ampwin);
+	   buffer = _rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   if ((handle = _win_create (&ampwin, buffer)) == -1)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   if (_set_spos (handle, 3, 3))
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   buffer = _win_remove (handle);
+	   if (buffer != NULL)
+	   _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc set_spos_030/* if unable to allocate block */
+	   pushdi
+	   win_init ();
+	   lea si,win
+	   win_bufsize ();    /* AX = size required buffer */
+	    jc set_spos_020/* if buffer would be &gt 64k */
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc set_spos_020/* if unable to allocate block */
+	   win_create ();	/* BX = window handle */
+	    jc set_spos_020/* if unable to create window */
+	   ...
+	   mov al,3
+	   mov ah,al
+	   set_spos ();
+	    jc set_spos_020/* if an error occurred */
+	   ...
+	   win_remove ();	/* DI = offset window buffer */
+	    jncset_spos_020/* if successful */
+	   ... 	 	/* if unable to remove window */
+	set_spos_020:
+	   pop di	 	/* DI = offset of win workbuf */
+	   rel_free ();
+	set_spos_030:
+	   ...
+	   }
+
+</CODE></PRE>
+<B>Source file</B>	_WSETSPS.ASM		  <B>ASM equiv</B>	SET_SPOS
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_set_wshadow">_set_wshadow</A>, <A HREF="rwindow.htm#_win_create">_win_create</A>
+<BR></DL>
+<H2><A NAME="_set_wborder">_set_wborder</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Defines the border attribute and characters for a window.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	int _set_wborder(int handle, int battr, void *descriptor);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the function was successful.
+<BR>
+<BR>	-1 if handle is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sets the border attribute and border characters for the window associated with handle. If the window is open and auto update is on, the new border definition takes effect on the screen immediately; otherwise, the screen remains unaffected. 0 is returned if the function was successful. -1 is returned and the window remains unchanged if handle is invalid.
+<BR>
+<BR>	battr is the attribute used to display the border characters. battr is interpreted as an attribute table code if an attribute table has been installed for the specified window; otherwise, battr is interpreted as an attribute. The border attribute remains unchanged if -1 is specified for battr.
+<BR>
+<BR>	Border characters may be specified in one of two ways. The first method is to select a predefined border by specifying a border style in descriptor. The following symbolic constants (defined in WINDOW.H) represent the six predefined border styles:
+<BR>
+<BR>	BORDER_SINGLE(-2) Single line border
+<BR>	BORDER_DOUBLE(-3) Double line border
+<BR>	BORDER_SNGLDBL(-4) Single horizontal, double vertical line border
+<BR>	BORDER_DBLSNGL(-5) Single vertical, double horizontal line border
+<BR>	BORDER_FULLBLK(-6) Full block border
+<BR>	BORDER_HALFBLK(-7) Half block border
+<BR>
+<BR>	If -1 is specified for descriptor, the border characters remain unchanged.
+<BR>
+<BR>	The second method for specifying borders is to place the address of a custom border descriptor structure in descriptor. The border descriptor structure is defined in WINDOW.H as follows:
+<BR>
+<BR>	typedef struct {/* border descriptor */
+<BR>	   char upper_left;/* upper left corner border character */
+<BR>	   char top;	/* top row border character */
+<BR>	   char upper_right;/* upper right corner border character */
+<BR>	   char right;	/* right side border character */
+<BR>	   char bottom_right;/* bottom right corner border character */
+<BR>	   char bottom;	/* bottom row border character */
+<BR>	   char bottom_left;/* bottom left corner border character */
+<BR>	   char left;	/* left side border character */
+<BR>	} border;
+<BR>
+<BR>	See the Windowing technical notes for a complete discussion on defining custom window borders.
+<BR>
+<BR>	_win_init must be called before using this function. This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   int handle;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   bufsize = _win_bufsize (&ampwin);
+	   buffer = _rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   if ((handle = _win_create (&ampwin, buffer)) == -1)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   if (_set_wborder (handle, -1, BORDER_SNGLDBL))
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   buffer = _win_remove (handle);
+	   if (buffer != NULL)
+	   _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   void *style = BORDER_SNGLDBL;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset of block */
+	    jc s_wborder_030/* unable to allocate block */
+	   pushdi
+	   win_init ();
+	   lea si,win
+	   win_bufsize ();    /* AX = size required buffer */
+	    jc s_wborder_020/* if buffer would be &gt 64k */
+	   rel_malloc ();	/* DI = offset of block */
+	    jc s_wborder_020/* unable to allocate block */
+	   win_create ();	/* BX = window handle */
+	    jc s_wborder_020/* if unable to create window */
+	   ...
+	   mov ah,-1
+	   mov si,style
+	   set_wborder ();
+	    jc s_wborder_020/* if an error occurred */
+	   ...
+	   win_remove ();	/* DI = offset of win buffer */
+	    jncs_wborder_020/* if successful */
+	   ... 	 	/* if unable to remove window */
+	s_wborder_020:
+	   pop di	 	/* DI = offset of win workbuf */
+	   rel_free ();
+	s_wborder_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_WSBORDR.ASM		  <B>ASM equiv</B>	SET_WBORDER
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_draw_wborder">_draw_wborder</A>, <A HREF="rwindow.htm#_set_wshadow">_set_wshadow</A>
+<BR></DL>
+<H2><A NAME="_set_wlevel">_set_wlevel</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets the level of a window.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	int _set_wlevel(int handle, int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the level was successfully set.
+<BR>
+<BR>	-1 if handle or num is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sets the level of the window associated with handle to the level specified by num. If another window already occupies the level specified by num, all windows at and below that level are moved down one level and the window associated with handle is placed at level num. If the top open window is the active window and its level is changed by this function so that it is no longer the top open window, the new top open window is automatically selected as the active window. 0 is returned if the window level was successfully set. -1 is returned if the window level could not be set.
+<BR>
+<BR>	Window levels may be positive or negative. Positive values identify window levels from the top down (the top window is at level one, the next window is at level two, etc.). Negative values identify window levels from the bottom up (the bottom window is at level -1, the next window higher is at level -2, etc.). Level zero refers to the active window and is not valid for num. STDWIN does not occupy a level.
+<BR>
+<BR>	_win_init must be called before using this function. This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   int handle;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   bufsize = _win_bufsize (&ampwin);
+	   buffer = _rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   if ((handle = _win_create (&ampwin, buffer)) == -1)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   if (_set_wlevel (handle, 1))
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   buffer = _win_remove (handle);
+	   if (buffer != NULL)
+	   _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc s_wlevel_030/* if unable to allocate block */
+	   pushdi
+	   win_init ();
+	   lea si,win
+	   win_bufsize ();    /* AX = size required buffer */
+	    jc s_wlevel_020/* if buffer would be &gt 64k */
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc s_wlevel_020/* if unable to allocate block */
+	   win_create ();	/* BX = window handle */
+	    jc s_wlevel_020/* if unable to create window */
+	   ...
+	   mov ax,1
+	   set_wlevel ();
+	    jc s_wlevel_020
+	   ... 	 	/* if an error occurred */
+	   win_remove ();	/* DI = offset of buffer being 
+	   	  	 	   used for window */
+	    jncs_wlevel_020/* if successful */
+	   ... 	 	/* if unable to remove window */
+	s_wlevel_020:
+	   pop di	 	/* DI = offset of win workbuf */
+	   rel_free();
+	s_wlevel_030:
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_WSETLVL.ASM		  <B>ASM equiv</B>	SET_WLEVEL
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_get_wlevel">_get_wlevel</A>, <A HREF="rwindow.htm#_win_select">_win_select</A>
+<BR></DL>
+<H2><A NAME="_set_wpos">_set_wpos</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets the position of a window.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	int _set_wpos(int handle, int xpos, int ypos);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the window position was successfully set.
+<BR>
+<BR>	-1 if handle is invalid.
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function moves the window associated with handle to the X,Y coordinate position specified by xpos and ypos. These coordinates specify the position of the upper left-hand corner of the window and are interpreted as signed numbers relative to the upper left-hand corner of the screen (0,0). The new position is reflected immediately on the screen if auto update is on. The screen remains unchanged if auto update is off. 0 is returned if the window position was successfully set. -1 is returned and the screen is unchanged if the window position could not be set.
+<BR>
+<BR>	_win_init must be called before using this function. This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   int handle;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   bufsize = _win_bufsize (&ampwin);
+	   buffer = _rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   if ((handle = _win_create (&ampwin, buffer)) == -1)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   if (_set_wpos (handle, 1, 1))
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   buffer = _win_remove (handle);
+	   if (buffer != NULL)
+	   _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc set_wpos_030/* if unable to allocate block */
+	   pushdi
+	   win_init ();
+	   lea si,win
+	   win_bufsize ();    /* AX = size required buffer */
+	    jc set_wpos_020/* if buffer would be &gt 64k */
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc set_wpos_020/* if unable to allocate block */
+	   win_create ();	/* BX = window handle */
+	    jc set_wpos_020/* if unable to create window */
+	   ...
+	   mov ax,1
+	   mov dx,ax
+	   set_wpos ();
+	    jc set_wpos_020/* if an error occurred */
+	   ...
+	   win_remove ();	/* DI = offset window buffer */
+	    jncset_wpos_020/* if successful */
+	   ... 	 	/* if unable to remove window */
+	set_wpos_020:
+	   pop di	 	/* DI = offset of win workbuf */
+	   rel_free ();
+	set_wpos_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_WSETWPS.ASM		  <B>ASM equiv</B>	SET_WPOS
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_get_wpos">_get_wpos</A>, <A HREF="rwindow.htm#_win_move">_win_move</A>
+<BR></DL>
+<H2><A NAME="_set_wshadow">_set_wshadow</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets the shadow characters and attributes of a window.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	int _set_wshadow(int handle, int stype, int sattr, void *descriptor);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the shadow characteristics were successfully changed.
+<BR>
+<BR>	-1 if handle is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function sets the shadow attribute and shadow characters for the window associated with handle. If the window is open and auto update is on, 0 is returned and the new shadow definition takes effect on the screen immediately; otherwise, -1 is returned and the screen remains unaffected.
+<BR>
+<BR>	sattr is the attribute used to display the shadow characters. sattr is interpreted as an attribute table code if an attribute table has been installed for the specified window; otherwise, sattr is interpreted as an attribute. If the background color of the specified attribute is BK_TRNSPRNT (all four high bits set in the attribute), the background color of the shadow is transparent. If the specified attribute is S_TRNSPRNT (-2), the entire attribute is transparent. If -1 is specified for sattr, the shadow attribute remains unchanged.
+<BR>
+<BR>	Shadow characters may be specified in one of two ways. A predefined shadow may be selected by specifying a shadow style in descriptor. The following symbolic constants represent the predefined shadow styles:
+<BR>
+<BR>	SHADOW_TRNSPRNT(-2) Transparent shadow 
+<BR>	SHADOW_HALFHGHT(-3) Half-height shadow
+<BR>
+<BR>	If -1 is specified for descriptor, the shadow characters remain unchanged.
+<BR>
+<BR>	Alternatively, a custom shadow may be specified by using a shadow descriptor in descriptor and indicating the shadow type in stype. Shadow descriptor structures are defined in WINDOW.H as follows:
+<BR>
+<BR>	typedef struct {/* shadow descriptor */
+<BR>	   char upper_left;/* upper left corner shadow character */
+<BR>	   char top;	/* top row shadow character */
+<BR>	   char upper_right;/* upper right corner shadow character */
+<BR>	   char right;	/* right side shadow character */
+<BR>	   char bottom_right;/* bottom right corner shadow character */
+<BR>	   char bottom;	/* bottom row shadow character */
+<BR>	   char bottom_left;/* bottom left corner shadow character */
+<BR>	   char left;	 /* left side shadow character */
+<BR>	   char fill;	 /* shadow fill character */
+<BR>	} shadow;
+<BR>
+<BR>	If S_TRNSPRNT (-2) is specified as a shadow character, the character is transparent.
+<BR>
+<BR>	stype specifies the shadow type and state. It may be used to disable the shadow or to indicate the characteristics of a custom shadow. The following symbolic constants (defined in WINDOW.H) may be used to specify the shadow type and state:
+<BR>
+<BR>	S_NORMAL	    (0x00) Normal size shadow characters
+<BR>	S_HALFHGHT	(0x01) Half-height shadow characters
+<BR>	S_HALFWIDTH	(0x02) Half-width shadow characters
+<BR>	S_HALFHW	    (0x03) Half-height and width shadow characters
+<BR>	S_OFF	        (0x80) Shadow not displayed
+<BR>
+<BR>	If a stype of -1 is specified, the shadow type and state remains unchanged. See the technical notes for a detailed explanation of shadow types.
+<BR>
+<BR>	All of the symbolic constants shown above are defined in WINDOW.H. See the Windowing technical notes for a complete discussion on defining custom window shadows.
+<BR>
+<BR>	_win_init must be called before using this function. This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   int handle;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   bufsize = _win_bufsize (&ampwin);
+	   buffer = _rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   if ((handle = _win_create (&ampwin, buffer)) == -1)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   if (_set_wshadow (handle, S_HALFHGHT, BK_TRNSPRNT,
+	      SHADOW_HALFHGHT))
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   buffer = _win_remove (handle);
+	   if (buffer != NULL)
+	   _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   void *style = SHADOW_HALFHGHT;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc s_wshadow_030/* if unable to allocate block */
+	   pushdi
+	   win_init ();
+	   lea si,win
+	   win_bufsize ();    /* AX = size required buffer */
+	    jc s_wshadow_020/* if buffer would be &gt 64k */
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc s_wshadow_020/* if unable to allocate block */
+	   win_create ();	/* BX = window handle */
+	    jc s_wshadow_020/* if unable to create window */
+	   ...
+	   mov al,S_HALFHGHT
+	   mov ah,BK_TRNSPRNT
+	   mov si,style
+	   set_wshadow ();
+	    jc s_wshadow_020/* if an error occurred */
+	   ...
+	   win_remove ();	/* DI = offset window buffer */
+	    jncs_wshadow_020/* if successful */
+	   ... 	 	/* if unable to remove window */
+	s_wshadow_020:
+	   pop di	 	/* DI = offset of win workbuf */
+	   rel_free ();
+	s_wshadow_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_WSSHADO.ASM		  <B>ASM equiv</B>	SET_WSHADOW
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_set_spos">_set_spos</A>, <A HREF="rwindow.htm#_set_wborder">_set_wborder</A>
+<BR></DL>
+<H2><A NAME="_update_cursor">_update_cursor</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Updates the hardware cursor position within the windowing system.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	void _update_cursor(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function forces the hardware cursor to the position and shape specified in the top open window. If this cursor position lies off the edge of the screen, the cursor is disabled. This function updates the cursor whether or not auto update is on.
+<BR>
+<BR>	_win_init must be called before using this function. This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   _update_cursor ()
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   update_cursor ();
+
+</CODE></PRE>
+<B>Source file</B>	WUPDATEC.ASM		  <B>ASM equiv</B>	UPDATE_CURSOR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rconsole.htm#_cursor_off">_cursor_off</A>, <A HREF="rconsole.htm#_cursor_on">_cursor_on</A>, <A HREF="rconsole.htm#_set_cursor">_set_cursor</A>
+<BR></DL>
+<H2><A NAME="_update_off">_update_off</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Turns auto update off.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	void _update_off(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function disables the auto update feature of the windowing system. When auto update is off, windowing functions and Console I/O character output functions do not immediately affect the appearance of the screen. Changes only become visible when auto update is enabled using _update_on or when _update_screen, _update_rect, or _update_window is called.
+<BR>
+<BR>	_win_init must be called before using this function. Auto update is automatically enabled when _win_init is called.
+<BR>
+<BR>	This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   int handle;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   bufsize = _win_bufsize (&ampwin);
+	   buffer = _rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   if ((handle = _win_create (&ampwin, buffer)) == -1)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   _update_off ();
+	   if (_win_move (handle, 1, 1))
+	   {
+	      /* Handle the error */
+	   }
+	   _update_on ();
+	   ...
+	   buffer = _win_remove (handle);
+	   if (buffer != NULL)
+	      _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset memory block */
+	    jc win_move_030/* error allocating memory */
+	   pushdi
+	   win_init ();
+	   lea si,win
+	   win_bufsize ();    /* AX = size required buffer */
+	    jc win_move_020/* if buffer would be &gt 64k */
+	   rel_malloc ();	/* DI = offset memory block */
+	    jc win_move_020/* if unable to allocate */
+	   win_create ();	/* BX = window handle */
+	    jc win_move_020/* if unable to create */
+	      ...
+	   _update_off ();
+	   mov ax,1
+	   mov dx,ax
+	   win_move ();
+	    jc win_move_020/* if an error occurred */
+	   _update_on ();
+	   ...
+	   win_remove ();	/* DI = offset window buffer */
+	    jncwin_move_020/* if successful */
+	   ... 	 	/* if unable to remove window */
+	win_move_020:
+	   pop di	 	/* DI = offset win work buffer */
+	   rel_free ();
+	win_move_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	WUPOFF.ASM		  <B>ASM equiv</B>	UPDATE_OFF
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_update_on">_update_on</A>
+<BR></DL>
+<H2><A NAME="_update_on">_update_on</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Turns auto update on.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	void _update_on(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function enables the auto update feature of the windowing system. When auto update is on, windowing functions and Console I/O output functions immediately affect the appearance of the screen.
+<BR>
+<BR>	_win_init must be called before using this function. Auto update is automatically enabled when _win_init is called.
+<BR>
+<BR>	This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   int handle;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   bufsize = _win_bufsize (&ampwin);
+	   buffer = _rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   if ((handle = _win_create (&ampwin, buffer)) == -1)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   _update_off ();
+	   if (_win_move (handle, 1, 1))
+	   {
+	      /* Handle the error */
+	   }
+	   _update_on ();
+	   ...
+	   buffer = _win_remove (handle);
+	   if (buffer != NULL)
+	      _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc win_move_030/* if unable to allocate block */
+	   pushdi
+	   win_init ();
+	   lea si,win
+	   win_bufsize ();    /* AX = size of required buf */
+	    jc win_move_020/* if buffer would be &gt 64k */
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc win_move_020/* if unable to allocate block */
+	   win_create ();	/* BX = window handle */
+	    jc win_move_020/* if unable to create window */
+	   ...
+	   _update_off ();
+	   mov ax,1
+	   mov dx,ax
+	   win_move ();
+	    jc win_move_020/* if an error occurred */
+	   _update_on ();
+	   ...
+	   win_remove ();	/* DI = offset window buffer */
+	    jncwin_move_020/* if successful */
+	   ... 	 	/* if unable to remove window */
+	win_move_020:
+	   pop di	 	/* DI = offset of win workbuf */
+	   rel_free ();
+	win_move_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	WUPON.ASM			  <B>ASM equiv</B>	UPDATE_ON
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_update_off">_update_off</A>
+<BR></DL>
+<H2><A NAME="_update_rect">_update_rect</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Updates a rectangular region of the screen.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	void _update_rect(int top, int left, int hght, int wdth);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function redisplays the windowing backdrop and open windows as needed to fully update a specified rectangular region of the screen. left and top specify the X and Y coordinates of the upper left corner of the region. The region is hght rows in height and wdth columns in width.
+<BR>
+<BR>	Only the specified portion of the screen is updated. The specified coordinates are unsigned numbers and are relative to the upper left-hand corner of the screen (0,0). The update is performed whether or not auto update is on.
+<BR>
+<BR>	_win_init must be called before using this function. This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   int handle;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   bufsize = _win_bufsize (&ampwin);
+	   buffer = _rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   if ((handle = _win_create (&ampwin, buffer)) == -1)
+	   {
+	      /* Handle the error */
+	   }
+	   _update_off ();
+	   ...
+	   _update_rect (1, 1, 10, 10);
+	   ...
+	   buffer = _win_remove (handle);
+	   if (buffer != NULL)
+	      _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc upd_rect_030/* if unable to allocate block */
+	   pushdi
+	   win_init ();
+	   lea si,win
+	   win_bufsize ();    /* AX = size of required buf */
+	    jc upd_rect_020/* if buffer would be &gt 64k */
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc upd_rect_020/* if unable to allocate block */
+	   win_create ();	/* BX = window handle */
+	    jc upd_rect_020/* if unable to create window */
+	   update_off ();
+	   ...
+	   mov dh,1
+	   mov dl,1
+	   mov ah,10
+	   mov al,10
+	   update_rect ();
+	   ...
+	   update_on ();
+	   win_remove ();	/* DI = offset window buffer */
+	    jncupd_rect_020/* if successful */
+	   	  ... 	/* if unable to remove window */
+	upd_rect_020:
+	   pop di	 	/* DI = offset of win workbuf */
+	   rel_free ();
+	upd_rect_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_WUPDATR.ASM		  <B>ASM equiv</B>	UPDATE_RECT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_update_screen">_update_screen</A>, <A HREF="rwindow.htm#_update_window">_update_window</A>
+<BR></DL>
+<H2><A NAME="_update_screen">_update_screen</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Updates the entire screen.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	void _update_screen(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function redisplays the windowing backdrop and all open windows as needed to fully update the entire screen. The update is performed whether or not auto update is on.
+<BR>
+<BR>	_win_init must be called before using this function. This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   int handle;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   bufsize = _win_bufsize (&ampwin);
+	   buffer = _rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   if ((handle = _win_create (&ampwin, buffer)) == -1)
+	   {
+	      /* Handle the error */
+	   }
+	   _update_off ();
+	   ...
+	   if (_update_window (handle))
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   buffer = _win_remove (handle);
+	   if (buffer != NULL)
+	      _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc upd_win_030/* if unable to allocate block */
+	   pushdi
+	   win_init ();
+	   lea si,win
+	   win_bufsize ();    /* AX = size required buffer */
+	    jc upd_win_020/* if buffer would be &gt 64k */
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc upd_win_020/* if unable to allocate block */
+	   win_create ();	/* BX = window handle */
+	    jc upd_win_020/* if unable to create window */
+	   update_off ();
+	   ...
+	   update_window ();
+	   ...
+	   update_on ();
+	   win_remove ();	/* DI = offset window buffer */
+	    jncupd_win_020/* if successful */
+	   ... 	 	/* if unable to remove window */
+	upd_win_020:
+	   pop di	 	/* DI = offset of win workbuf */
+	   rel_free ();
+	upd_win_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	WUPDATES.ASM		  <B>ASM equiv</B>	UPDATE_SCREEN
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_update_rect">_update_rect</A>, <A HREF="rwindow.htm#_update_window">_update_window</A>
+<BR></DL>
+<H2><A NAME="_update_window">_update_window</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Updates a window.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	int _update_window(int handle);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the window was successfully updated.
+<BR>
+<BR>	-1 if handle is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function redisplays the window associated with handle. If the window is open, the window and shadow are completely redisplayed. If the window is closed, the region beneath the window and shadow is redisplayed. Thiseffectively erases the window from the screen if it was previously visible. If the window is positioned completely off the screen, this function has no effect. -1 is returned if handle is invalid. STDWIN is considered invalid.
+<BR>
+<BR>	_win_init must be called before using this function. This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   int handle;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   bufsize = _win_bufsize (&ampwin);
+	   buffer = _rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   if ((handle = _win_create (&ampwin, buffer)) == -1)
+	   {
+	      /* Handle the error */
+	   }
+	   _update_off ();
+	   ...
+	   _update_screen ();
+	   ...
+	   buffer = _win_remove (handle);
+	   if (buffer != NULL)
+	   _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc upd_scrn_030/* if unable to allocate block */
+	   pushdi
+	   win_init ();
+	   lea si,win
+	   win_bufsize ();    /* AX = size required buffer */
+	    jc upd_scrn_020/* if buffer would be &gt 64k */
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc upd_scrn_020/* if unable to allocate block */
+	   win_create ();	/* BX = window handle */
+	    jc upd_scrn_020/* if unable to create window */
+	   update_off ();
+	   ...
+	   update_screen ();
+	   ...
+	   update_on ();
+	   win_remove ();	/* DI = offset window buffer */
+	    jncupd_scrn_020/* if successful */
+	   ... 	 	/* if unable to remove window */
+	upd_scrn_020:
+	   pop di	 	/* DI = offset of win workbuf */
+	   rel_free ();
+	upd_scrn_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_WUPDATW.ASM		  <B>ASM equiv</B>	UPDATE_WINDOW
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_update_rect">_update_rect</A>, <A HREF="rwindow.htm#_update_screen">_update_screen</A>
+<BR></DL>
+<H2><A NAME="_wborder_off">_wborder_off</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Disables border access within the active window.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	void _wborder_off(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function prevents the console I/O functions from accessing the border region of the active window. This is the default state for each window. The border region remains inaccessible until _wborder_on is called. When border access is disabled, the window's active region is limited to the region which lies entirely within the window borders, and console I/O is relative to the upper left-hand corner of this region (0,0). If _wborder_on was called previously, this function restores the cursor position and clipping region which were in effect before border access was enabled.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   int handle;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   bufsize = _win_bufsize (&ampwin);
+	   buffer = _rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   if ((handle = _win_create (&ampwin, buffer)) == -1)
+	   {
+	      /* Handle the error */
+	   }
+	   _wborder_off ();
+	   ...
+	   _wborder_on ();
+	   _draw_wborder ();
+	   ...
+	   buffer = _win_remove (handle);
+	   if (buffer != NULL)
+	   _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc wborder_030/* if unable to allocate block */
+	   pushdi
+	   win_init ();
+	   lea si,win
+	   win_bufsize ();    /* AX = size required buffer */
+	    jc wborder_020/* if buffer would be &gt 64k */
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc wborder_020/* if unable to allocate block */
+	   win_create ();	/* BX = window handle */
+	    jc wborder_020/* if unable to create window */
+	   wborder_on ();
+	   ...
+	   wborder_off ();
+	   draw_wborder ();
+	   ...
+	   win_remove ();	/* DI = offset window buffer */
+	    jncwborder_020/* if successful */
+	   ... 	 	/* if unable to remove window */
+	wborder_020:
+	   pop di	 	/* DI = offset win work buffer */
+	   rel_free ();
+	wborder_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	WBONOFF.ASM		  <B>ASM equiv</B>	WBORDER_OFF
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_wborder_on">_wborder_on</A>
+<BR></DL>
+<H2><A NAME="_wborder_on">_wborder_on</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Enables border access within the active window.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	void _wborder_on(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function allows the console I/O functions to access the border region of the active window. The border region remains accessible until _wborder_off is called. When border access is enabled, the window's active region is extended to fill the entire window, and console I/O is relative to the upper left-hand corner of the window (0,0). If a clipping region is enabled when border access is enabled, the clipping region is temporarily inactivated.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   int handle;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   bufsize = _win_bufsize (&ampwin);
+	   buffer = _rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   if ((handle = _win_create (&ampwin, buffer)) == -1)
+	   {
+	      /* Handle the error */
+	   }
+	   _wborder_off ();
+	   ...
+	   _wborder_on ();
+	   _draw_wborder ();
+	   ...
+	   buffer = _win_remove (handle);
+	   if (buffer != NULL)
+	   _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc wborder_030/* if unable to allocate block */
+	   pushdi
+	   win_init ();
+	   lea si,win
+	   win_bufsize ();    /* AX = size required buffer */
+	    jc wborder_020/* if buffer would be &gt 64k */
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc wborder_020/* if unable to allocate block */
+	   win_create ();	/* BX = window handle */
+	    jc wborder_010/* if unable to create window */
+	   wborder_on ();
+	   ...
+	   wborder_off ();
+	   draw_wborder ();
+	   ...
+	   win_remove ();	/* DI = offset window buffer */
+	    jncwborder_010/* if successful */
+	   ... 	 	/* if unable to remove window */
+	wborder_020:
+	   pop di	 	/* DI = offset of win work buf */
+	   rel_free ();
+	wborder_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	WBONOFF.ASM		  <B>ASM equiv</B>	WBORDER_ON
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_set_wborder">_set_wborder</A>, <A HREF="rwindow.htm#_wborder_off">_wborder_off</A>
+<BR></DL>
+<H2><A NAME="_win_bufsize">_win_bufsize</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Returns the size of the buffer required by a window.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	int _win_bufsize(const sawin far *winspec);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The required buffer size, in bytes, if the buffer size was successfully determined.
+<BR>
+<BR>	0 if a buffer larger than 64K would be required.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function determines the size of the buffer required for the window defined by winspec. The required buffer size is returned in bytes. This size may used to allocate a buffer for the _win_create function. 0 is returned if the required buffer size would exceed 64K.
+<BR>
+<BR>	winspec must be a structure of type sawin, which is defined in WINDOW.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   int left;		/* left margin of window */
+<BR>	   int top;		/* top row of window */
+<BR>	   unsigned char width;	/* width of window (in columns) */
+<BR>	   unsigned char height;/* height of widow (in rows) */
+<BR>	   unsigned char dattr;	/* window default attribute */
+<BR>	   unsigned char tprows;/* number of top border rows */
+<BR>	   unsigned char rtcols;/* number of right border columns */
+<BR>	   unsigned char bmrows;/* number of bottom border rows */
+<BR>	   unsigned char ltcols;/* number of left border columns */
+<BR>	   void * border;	/* pointer to the border descriptor */
+<BR>	   unsigned char battr;	/* border attribute */
+<BR>	   char horz;		/* shadow horizontal offset */
+<BR>	   char vert;		/* shadow vertical offset */
+<BR>	   unsigned char stype;	/* shadow type flags */
+<BR>	   void * shadow;	/* pointer to shadow descriptor */
+<BR>	   unsigned char sattr;		/* shadow attribute (the shadowed area's color) */
+<BR>	   void * attrtbl;  	/* pointer to the window attribute table */
+<BR>	   unsigned char curstate; /* cursor on/off state */
+<BR>	   unsigned int curshape; /* cursor shape */
+<BR>	} sawin;
+<BR>
+<BR>	Symbolic constants are defined in WINDOW.H for use with the window structure. See the technical notes for detailed instructions on defining windows with this structure.
+<BR>
+<BR>	This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   ...
+	   _rel_malloc (heapseg, _win_bufsize (&ampwin));
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   ...
+	   lea si,win
+	   win_bufsize ();    /* AX = buffer size */
+	    jc w_bufsize_010/* if buffer would be &gt 64k */
+	   mov es,heapseg
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc w_bufsize_010/* if unable to allocate block */
+	   ...
+	w_bufsize_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_WBUFSIZ.ASM		  <B>ASM equiv</B>	WIN_BUFSIZE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_win_create">_win_create</A>
+<BR></DL>
+<H2><A NAME="_win_close">_win_close</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Closes a window.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	int _win_close(int handle);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the window was successfully closed.
+<BR>
+<BR>	-1 if handle is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function closes the window associated with handle. This makes the window invisible. The screen is immediately updated to reflect the change if auto update is on. The screen remains unchanged if auto update is off. If the window associated with handle is the top open window and the active window, the new top open window is automatically selected as the active window.
+<BR>
+<BR>	handle must be any valid window level or handle (except STDWIN). If level 0 is used, the top open window is closed. A closed window may be reopened by calling _win_open.
+<BR>
+<BR>	_win_init must be called before using this function. This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   int handle;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   bufsize = _win_bufsize (&ampwin);
+	   buffer = _rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   if ((handle = _win_create (&ampwin, buffer)) == -1)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   if (_win_close (handle))
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   if (_win_open (handle))
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   buffer = _win_remove (handle);
+	   if (buffer != NULL)
+	   _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc win_close_030/* if unable to allocate block */
+	   pushdi
+	   win_init ();
+	   lea si,win
+	   win_bufsize ();    /* AX = size required buffer */
+	    jc win_close_020/* if buffer would be &gt 64k */
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc win_close_020/* if unable to allocate block */
+	   win_create ();	/* BX = window handle */
+	    jc win_close_020/* if unable to create window */
+	   win_close ();
+	    jc win_close_020/* if an error occurred */
+	   ...
+	   win_open ();
+	    jc win_close_020/* if an error occurred */
+	   ...
+	   win_remove ();	/* DI = offset window buffer */
+	    jncwin_close_020/* if successful */
+	   ... 	 	/* if unable to remove window */
+	win_close_020:
+	   pop di	 	/* DI = offset of win work buf */
+	   rel_free ();
+	win_close_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_WCLOSE.ASM		  <B>ASM equiv</B>	WIN_CLOSE
+<DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_win_open">_win_open</A>, <A HREF="rwindow.htm#_win_remove">_win_remove</A>
+<BR></DL>
+<H2><A NAME="_win_create">_win_create</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Creates a window.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	int _win_create(const sawin *winspec, void far *winbuf);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The handle associated with the new window if the window defined by winspec was successfully created.
+<BR>
+<BR>	-1 if an error occurred.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function creates a window which matches the definition in winspec. The window is created in the open state on top of all other windows. The created window is also auto-selected as the active window. The screen is immediately updated to reflect the change if auto update is on. If no window handles are available, -1 is returned and the window is not created. A total of 4095 window handles may be in use at one time.
+<BR>
+<BR>	winbuf is used by the windowing system to maintain the window contents and information. The required size of winbuf is approximately:
+<BR>
+<BR>	2 * (height + width) + 150 bytes
+<BR>
+<BR>	where height and width are the height and width of the window in rows and columns. The exact buffer size should be determined by calling _win_bufsize prior to allocating the buffer.
+<BR>
+<BR>	winspec must be a structure of type sawin, which is defined in WINDOW.H as follows:
+<BR>
+<BR>	typedef struct {
+<BR>	   int left;		/* left margin of window */
+<BR>	   int top;		/* top row of window */
+<BR>	   unsigned char width;	/* width of window (in columns) */
+<BR>	   unsigned char height;/* height of widow (in rows) */
+<BR>	   unsigned char dattr;	/* window default attribute */
+<BR>	   unsigned char tprows;/* number of top border rows */
+<BR>	   unsigned char rtcols;/* number of right border columns */
+<BR>	   unsigned char bmrows;/* number of bottom border rows */
+<BR>	   unsigned char ltcols;/* number of left border columns */
+<BR>	   void * border;	/* pointer to the border descriptor */
+<BR>	   unsigned char battr;	/* border attribute */
+<BR>	   char horz;		/* shadow horizontal offset */
+<BR>	   char vert;		/* shadow vertical offset */
+<BR>	   unsigned char stype;	/* shadow type flags */
+<BR>	   void * shadow;	/* pointer to shadow descriptor */
+<BR>	   unsigned char sattr;		/* shadow attribute (the shadowed area's color) */
+<BR>	   void * attrtbl;  	/* pointer to the window attribute table */
+<BR>	   unsigned char curstate; /* cursor on/off state */
+<BR>	   unsigned int curshape; /* cursor shape */
+<BR>	} sawin;
+<BR>
+<BR>	Symbolic constants are defined in WINDOW.H for use with the window structure. See the technical notes for detailed instructions on defining windows with this structure.
+<BR>
+<BR>	_win_init must be called before using this function. This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   int handle;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   bufsize = _win_bufsize (&ampwin);
+	   buffer = _rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   if ((handle = _win_create (&ampwin, buffer)) == -1)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   buffer = _win_remove (handle);
+	   if (buffer != NULL)
+	   _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc w_create_030/* if unable to allocate block */
+	   pushdi
+	   win_init ();
+	   lea si,win
+	   win_bufsize ();    /* AX = size required buffer */
+	    jc w_create_020/* if buffer would be &gt 64k */
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc w_create_020/* if unable to allocate block */
+	   win_create ();	/* BX = window handle */
+	    jc w_create_020/* if unable to create window */
+	   ...
+	   win_remove ();	/* DI = offset window buffer */
+	    jncw_create_020/* if successful */
+	   ... 	 	/* if unable to remove window */
+	w_create_020:
+	   pop di	 	/* DI = offset of win work buf */
+	   rel_free ();
+	w_create_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_WCREATE.ASM		  <B>ASM equiv</B>	WIN_CREATE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_win_close">_win_close</A>, <A HREF="rwindow.htm#_win_init">_win_init</A>, <A HREF="rwindow.htm#_win_move">_win_move</A>, <A HREF="rwindow.htm#_win_open">_win_open</A>, <A HREF="rwindow.htm#_win_remove">_win_remove</A></DL>
+<H2><A NAME="_win_init">_win_init</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Initializes the windowing system.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	void _win_init(void far *workbuf);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function initializes the windowing system. STDWIN (full screen mode) is selected as the default active window, auto update is enabled, and workbuf is designated as the windowing system work buffer. This function does not affect the screen in any way. workbuf must be at least WWORKBUF_SIZE bytes in size. WWORKBUF_SIZE is a symbolic constant defined in WINDOW.H.
+<BR>
+<BR>	_console_init must be called before using this function.
+<BR>
+<BR>	_win_init only needs to be called once. Whenever this function is called, the windowing system is re-initialized and internal windowing variables are reset.
+<BR>
+<BR>	This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc win_init_010/* if unable to allocate block */
+	   win_init ();
+	   ...
+	win_init_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_WINIT.ASM		  <B>ASM equiv</B>	WIN_INIT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rconsole.htm#_console_init">_console_init</A>
+<BR></DL>
+<H2><A NAME="_win_move">_win_move</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Moves a window.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	int _win_move(int handle, int relx, int rely);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the window was successfully moved.
+<BR>
+<BR>	-1 if handle is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function moves the window associated with handle to the position which lies relx columns and rely rows from the current window position. relx and rely are signed values, with positive values denoting right and downward motion and negative values denoting left and upward motion. The move is reflected immediately on the screen if the window is currently open and auto update is on. 0 is returned if the function was successful. -1 is returned if handle is invalid.
+<BR>
+<BR>	_win_init must be called before using this function. This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   int handle;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   bufsize = _win_bufsize (&ampwin);
+	   buffer = _rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   if ((handle = _win_create (&ampwin, buffer)) == -1)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   _update_off ();
+	   if (_win_move (handle, 1, 1))
+	   {
+	      /* Handle the error */
+	   }
+	   _update_on ();
+	   ...
+	   buffer = _win_remove (handle);
+	   if (buffer != NULL)
+	   _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc win_move_030/* if unable to allocate block */
+	   pushdi
+	   win_init ();
+	   lea si,win
+	   win_bufsize ();    /* AX = size required buffer */
+	    jc win_move_020/* if buffer would be &gt 64k */
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc win_move_020/* if unable to allocate block */
+	   win_create ();	/* BX = window handle */
+	    jc win_move_020/* if unable to create window */
+	   ...
+	   _update_off ();
+	   mov ax,1
+	   mov dx,ax
+	   win_move ();
+	    jc win_move_020/* if an error occurred */
+	   _update_on ();
+	   ...
+	   win_remove ();	/* DI = offset window buffer */
+	    jncwin_move_020/* if successful */
+	   ... 	 	/* if unable to remove window */
+	win_move_020:
+	   pop di	 	/* DI = offset of win work buf */
+	   rel_free ();
+	win_move_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_WMOVE.ASM		  <B>ASM equiv</B>	WIN_MOVE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_set_wpos">_set_wpos</A>
+<BR></DL>
+<H2><A NAME="_win_open">_win_open</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Opens a window.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	int _win_open(int handle);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the window was successfully opened.
+<BR>
+<BR>	-1 if handle is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function opens the window associated with handle. This makes the window visible. The screen is immediately updated to reflect the change if auto update is on. The screen remains unchanged if auto update is off. If the window associated with handle is the new top open window, and if the previous top open window was also the active window, the new top open window is automatically selected as the active window. 0 is returned if the function was successful. -1 is returned if handle is invalid.
+<BR>
+<BR>	A window must be created using _win_create before it may be opened.
+<BR>
+<BR>	_win_init must be called before using this function. This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   int handle;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   bufsize = _win_bufsize (&ampwin);
+	   buffer = _rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   if ((handle = _win_create (&ampwin, buffer)) == -1)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   if (_win_close (handle))
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   if (_win_open (handle))
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   buffer = _win_remove (handle);
+	   if (buffer != NULL)
+	   _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc win_close_030/* if unable to allocate block */
+	   pushdi
+	   win_init ();
+	   lea si,win
+	   win_bufsize ();    /* AX = size required buffer */
+	    jc win_close_020/* if buffer would be &gt 64k */
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc win_close_020/* if unable to allocate block */
+	   win_create ();	/* BX = window handle */
+	    jc win_close_020/* if unable to create window */
+	   win_close ();
+	    jc win_close_020/* if an error occurred */
+	   ...
+	   win_open ();
+	    jc win_close_020/* if an error occurred */
+	   ...
+	   win_remove ();	/* DI = offset window buffer */
+	    jncwin_close_020/* if successful */
+	   ... 	 	/* if unable to remove window */
+	fwin_close_020:
+	   pop di	 	/* DI = offset of win work buf */
+	   rel_free ();
+	win_close_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_WOPEN.ASM		  <B>ASM equiv</B>	WIN_OPEN
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_win_close">_win_close</A>
+<BR></DL>
+<H2><A NAME="_win_remove">_win_remove</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Removes a window.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	void far *_win_remove(int handle);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the window buffer if the window was successfully removed.
+<BR>
+<BR>	NULL if handle is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function removes the window associated with handle. The window is closed and deleted from the windowing system. If auto update is on, the window is removed from the screen immediately; otherwise, the screen remains unchanged. If the window associated with handle is the top open window and the active window, the new top open window is automatically selected as the active window. If the function was successful, a pointer is returned to the window buffer associated with handle. -1 is returned if handle is invalid.
+<BR>
+<BR>	It is the programmer's responsibility to properly dispose of the window buffer. Typically, the buffer is freed immediately after this function is called to make the buffer memory available for other purposes. The window buffer address is returned to simplify this task.
+<BR>
+<BR>	_win_init must be called before using this function. This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   int handle;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   bufsize = _win_bufsize (&ampwin);
+	   buffer = _rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   if ((handle = _win_create (&ampwin, buffer)) == -1)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   buffer = _win_remove (handle);
+	   if (buffer != NULL)
+	   _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc w_remove_030/* if unable to allocate block */
+	   pushdi
+	   win_init ();
+	   lea si,win
+	   win_bufsize ();    /* AX = size required buffer */
+	    jc w_remove_020/* if buffer would be &gt 64k */
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc w_remove_020/* if unable to allocate block */
+	   win_create ();	/* BX = window handle */
+	    jc w_remove_020/* if unable to create window */
+	   ...
+	   win_remove ();	/* DI = offset window buffer */
+	    jncw_remove_020/* if successful */
+	   ... 	 	/* if unable to remove window */
+	w_remove_020:
+	   pop di	 	/* DI = offset of win work buf */
+	   rel_free ();
+	w_remove_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_WREMOVE.ASM		  <B>ASM equiv</B>	WIN_REMOVE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_win_create">_win_create</A>
+<BR></DL>
+<H2><A NAME="_win_resume">_win_resume</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Resumes windowing.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	void _win_resume(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function resumes windowing after it has been suspended using the _win_suspend function. This function has no affect if _win_suspend was not previously called. This function does not affect the screen.
+<BR>WARNING! This function only restores the state of the windowing system. It does not restore the video mode, screen state, or screen contents. It is the programmer's responsibility to restore the video mode to its original state before calling this function. _restore_vstate may be used for this purpose. After this function has been called, the appearance of the screen may be restored by calling _update_screen.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   _win_resume ()
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   win_resume ();
+
+</CODE></PRE>
+<B>Source file</B>	WSUSPEND.ASM		  <B>ASM equiv</B>	WIN_RESUME
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_update_screen">_update_screen</A>, <A HREF="rwindow.htm#_win_suspend">_win_suspend</A>
+<BR></DL>
+<H2><A NAME="_win_select">_win_select</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Selects the active window.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	int _win_select(int handle);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	0 if the window associated with handle was successfully selected.
+<BR>
+<BR>	-1 if handle is invalid.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function selects the window associated with handle as the active window. The active window is the window to which all console I/O output is directed. The screen is not affected by this function. 0 is returned if the function was successful. -1 is returned if handle is invalid.
+<BR>
+<BR>	Output may be directed to the entire screen by selecting STDWIN as the active window. The STDWIN symbolic constant is defined in WINDOW.H.
+<BR>
+<BR>	_win_init must be called before using this function. This function is for use with the Spontaneous Assembly windowing system.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   void far *buffer;
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize, bufsize;
+	   int handle;
+	   ...
+	   _rel_init (heapseg, heapsize);
+	   buffer = _rel_malloc (heapseg, WWORKBUF_SIZE);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   _win_init (buffer);
+	   bufsize = _win_bufsize (&ampwin);
+	   buffer = _rel_malloc (heapseg, bufsize);
+	   if (buffer == NULL)
+	   {
+	      /* Handle the error */
+	   }
+	   if ((handle = _win_create (&ampwin, buffer)) == -1)
+	   {
+	      /* Handle the error */
+	   }
+	   ...
+	   _win_select (STDWIN);
+	   ...
+	   if (_win_select (handle))
+	   {
+	      /* Handle the error */
+	   }
+	   buffer = _win_remove (handle);
+	   if (buffer != NULL)
+	   _rel_free (buffer);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   sawin win = WIN_DEFAULT;
+	   segaddr heapseg;
+	   unsigned int heapsize;
+	   int size = WWORKBUF_SIZE;
+	   ...
+	   mov es,heapseg
+	   mov ax,heapsize
+	   rel_init ();
+	   mov ax,size
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc w_select_030/* if unable to allocate block */
+	   pushdi
+	   win_init ();
+	   lea si,win
+	   win_bufsize ();    /* AX = size required buffer */
+	    jc w_select_020/* if buffer would be &gt 64k */
+	   rel_malloc ();	/* DI = offset allocated block */
+	    jc w_select_020/* if unable to allocate block */
+	   win_create ();	/* BX = window handle */
+	    jc w_select_020/* if unable to create window */
+	   win_close ();
+	    jc w_select_020/* if an error occurred */
+	   ...
+	   win_open ();
+	    jc w_select_020/* if an error occurred */
+	   ...
+	   mov ax,bx
+	   mov bx,STDWIN
+	   win_select ();
+	    jc w_select_020/* if an error occurred */
+	   ...
+	   mov bx,ax
+	   win_select ();
+	    jc w_select_020/* if an error occurred */
+	   win_remove ();	/* DI = offset window buffer */
+	    jncw_select_020/* if successful */
+	   ... 	 	/* if unable to remove window */
+	w_select_020:
+	   pop di	 	/* DI = offset win workbuf */
+	   rel_free ();
+	w_select_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_WSLCT.ASM		  <B>ASM equiv</B>	WIN_SELECT
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rwindow.htm#_win_create">_win_create</A>
+<BR></DL>
+<H2><A NAME="_win_suspend">_win_suspend</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Temporarily suspends windowing.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;window.h&gt
+<BR>	void _win_suspend(void);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	None
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function temporarily suspends windowing. It should be called any time the state of the windowing system needs to be preserved before changing video modes or performing any operation which re-initializes the console I/O system. Windowing may be resumed by calling the _win_resume function.
+<BR>
+<BR>	This function does not affect the screen.
+<BR>
+<BR>WARNING! This function only preserves the state of the windowing system. It does not save the state of the video system. It is the programmer's responsibility to save this information and to restore it prior to calling _win_resume. _save_vstate or _save_screen may be used for this purpose.
+<BR>
+<BR>WARNING! After calling this function, the windowing functions should not be used until _win_resume has been called. Failure to adhere to this rule will produce undefined results.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	   ...
+	   _win_suspend();/* suspend windowing */
+	   ...
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	   ...
+	   win_suspend();/* suspend windowing */
+	   ...
+
+</CODE></PRE>
+<B>Source file</B>	WSUSPEND.ASM		  <B>ASM equiv</B>	WIN_SUSPEND
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rconsole.htm#_save_screen">_save_screen</A>, <A HREF="rconsole.htm#_save_vstate">_save_vstate</A>, <A HREF="rwindow.htm#_win_resume">_win_resume</A>
+<BR>
+<BR></BODY>
+<BR></HTML><BR>

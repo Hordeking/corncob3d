@@ -1,0 +1,176 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: File and Directory Management</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>File and Directory Management</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tFiledir.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tFiledir.htm#HEAD0001">Path String Formats
+</A><BR>
+<A HREF="tFiledir.htm#HEAD0002">Manipulating and Identifying Directories and Drives
+</A><BR>
+<A HREF="tFiledir.htm#HEAD0003">Locating Files and Directories
+</A><BR>
+<A HREF="tFiledir.htm#HEAD0004">Manipulating Pathnames
+</A><BR>
+<A HREF="tFiledir.htm#HEAD0005">Converting Pathnames between DOS and Internal Format
+</A><BR>
+<A HREF="tFiledir.htm#HEAD0006">Other File/Directory Manipulation Functions
+</A><BR>
+<A HREF="tFiledir.htm#HEAD0007">Sample Program
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit consists of functions which manipulate files and directories. Each function accepts a pathname which describes the file or directory of interest. Functions are included which do all of the following: test for the existence of a file or directory; change, create, and remove directories; manipulate pathname strings and file attributes; and delete files.
+
+<P>
+Function names end in "_f" or "_h" whenever it may be necessary to clarify whether a function accepts an ASCIIZ pathname ("_f") or a DOS file handle ("_h"). The "_h" suffix is used primarily for functions in the file I/O unit.
+
+<H2><A NAME="HEAD0001">Path String Formats
+</A></H2>
+
+The functions in this unit support an internal format for path strings. This internal format is identical to DOS format except that a path in a path string is always terminated with a backslash character ("\"). However, pathname strings do not require this extra backslash if no path is present (e.g., if they contain only a drive specifier and/or a filename). This format allows the pathname manipulation functions to distinguish between path elements and filenames.
+
+<P>
+The following table demonstrates the relationship between internal format and DOS format:
+<PRE>
+DOS Format                      Internal Format                 Different?
+
+C:                              C:                              No
+C:\                             C:\                             No                                        
+TEST.CPP                        TEST.CPP                        No                                        
+C:TEST.CPP                      C:TEST.CPP                      No                                        
+C:\TEST.CPP                     C:\TEST.CPP                     No                                        
+C:SPONTASM                      C:SPONTASM\                     Yes                                       
+C:SPONTASM\TEST.CPP             C:SPONTASM\TEST.CPP             No                                  
+C:\LANGS\SPONTASM               C:\LANGS\SPONTASM\              Yes                                 
+C:\LANGS\SPONTASM\TEST.CPP      C:\LANGS\SPONTASM\TEST.CPP      No                                  
+</PRE>
+Unless otherwise specified, the functions in this unit accept path strings in either internal format or DOS format, and they only return path strings in internal format. Internal format is required by a function only if it is necessary to distinguish between path-only and path-filename strings.
+
+<H2><A NAME="HEAD0002">Manipulating and Identifying Directories and Drives
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rfiledir.htm#_ch_dir">_ch_dir</A><DD>Changes the current directory.
+<DT><A HREF="rfiledir.htm#_expand_path">_expand_path</A><DD>   Expands a partial path to a full path.
+<DT><A HREF="rfiledir.htm#_get_curdir">_get_curdir</A><DD>    Returns a string which describes the current working directory on a specified drive.
+<DT><A HREF="rfiledir.htm#_get_cwd">_get_cwd</A><DD>       Returns a string which describes the current working directory on the active drive.
+<DT><A HREF="rfiledir.htm#_get_drive">_get_drive</A><DD>     Gets the drive letter of the current drive.
+<DT><A HREF="rfiledir.htm#_mk_dir">_mk_dir</A><DD>Creates a new directory.
+<DT><A HREF="rfiledir.htm#_rm_dir">_rm_dir</A><DD>Removes an empty directory.
+<DT><A HREF="rfiledir.htm#_set_drive">_set_drive</A><DD>     Selects a new disk drive.
+</DL>
+These functions determine drive and path information, create and remove subdirectories, and select the current drive and/or path.
+
+<P>
+<A HREF="rfiledir.htm#_ch_dir">_ch_dir</A>, <A HREF="rfiledir.htm#_mk_dir">_mk_dir</A>, and <A HREF="rfiledir.htm#_rm_dir">_rm_dir</A> each accept a full or partial path and a drive specifier in a pathname string. If the operation is to take place on the active drive, the drive specifier may be omitted from the pathname string. Similarly, if the operation is to take place on the current path of a drive, the path may be omitted from the pathname string.
+
+<P>
+The <A HREF="rfiledir.htm#_expand_path">_expand_path</A> function validates a partial path and returns the full path. The partial path string may include a filename. For example, if the current working directory on drive C: were "\SPONTASM" and the partial path "TEST.CPP" were passed to <A HREF="rfiledir.htm#_expand_path">_expand_path</A>, then "C:\SPONTASM\TEST.CPP" would be returned. <A HREF="rfiledir.htm#_expand_path">_expand_path</A> would also indicate that the returned path refers to a filename rather than a subdirectory.
+
+<P>
+<A HREF="rfiledir.htm#_get_cwd">_get_cwd</A> and <A HREF="rfiledir.htm#_get_curdir">_get_curdir</A> return complete ASCIIZ path strings which describe the current directory on a given drive. <A HREF="rfiledir.htm#_get_cwd">_get_cwd</A> returns the current working directory on the active or default drive. <A HREF="rfiledir.htm#_get_curdir">_get_curdir</A> returns the current directory on the specified drive. A string returned by either of these functions includes a drive specifier as well as a trailing backslash character. For example, these functions might produce the following string:
+
+<P>
+"C:\LANGS\SPONTASM\"
+
+<P>
+<A HREF="rfiledir.htm#_ch_dir">_ch_dir</A>, <A HREF="rfiledir.htm#_mk_dir">_mk_dir</A>, <A HREF="rfiledir.htm#_rm_dir">_rm_dir</A>, and <A HREF="rfiledir.htm#_expand_path">_expand_path</A> always expect directory names as arguments. Therefore, they accept path strings in either internal or DOS format.
+
+<P>
+<A HREF="rfiledir.htm#_get_drive">_get_drive</A> returns the ASCII uppercase drive letter which identifies the current drive. <A HREF="rfiledir.htm#_set_drive">_set_drive</A> changes the current drive.
+
+<H2><A NAME="HEAD0003">Locating Files and Directories
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rfiledir.htm#_access_f">_access_f</A><DD>      Determines the accessibility of a file or directory.
+<DT><A HREF="rfiledir.htm#_exist_f">_exist_f</A><DD>       Determines if a file, directory, or volume label exists and if its attributes match those provided.
+<DT><A HREF="rfiledir.htm#_find_first">_find_first</A><DD>    Finds the first file which matches the name and attributes provided.
+<DT><A HREF="rfiledir.htm#_find_next">_find_next</A><DD>     Finds the next file which matches the name and attributes specified with a previous <A HREF="rfiledir.htm#_find_first">_find_first</A>.
+<DT><A HREF="rfiledir.htm#_search_path">_search_path</A><DD>   Searches for a file.
+</DL>
+These functions locate and verify the existence of specified files and directories.
+
+<P>
+The <A HREF="rfiledir.htm#_access_f">_access_f</A> and <A HREF="rfiledir.htm#_exist_f">_exist_f</A> functions are generally used to determine whether or not a file or directory exists. A complete path may be specified. Wildcard characters, however, are not allowed in the filename.
+
+<P>
+<A HREF="rfiledir.htm#_find_first">_find_first</A> and <A HREF="rfiledir.htm#_find_next">_find_next</A> search a specified directory for any file or directory which matches a filename template. Detailed information is returned about each matching file, including the file's name, size, attributes, and date/time stamp.
+
+<P>
+The <A HREF="rfiledir.htm#_search_path">_search_path</A> function searches for a file (or a file matching a filename template) in the current directory and all directories in an arbitrary path string. The full path and filename (or filename template, if one was used) is returned as an ASCIIZ string.
+
+<H2><A NAME="HEAD0004">Manipulating Pathnames
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rfiledir.htm#_merge_drive">_merge_drive</A><DD>   Merges a drive specifier from one path string into another path string.
+<DT><A HREF="rfiledir.htm#_merge_drvpath">_merge_drvpath</A><DD> Merges a drive specifier and path from one path string into another.
+<DT><A HREF="rfiledir.htm#_merge_ext">_merge_ext</A><DD>     Merges a filename extension from one path string into another path string.
+<DT><A HREF="rfiledir.htm#_merge_fname">_merge_fname</A><DD>   Merges a filename from one path string into another path string.
+<DT><A HREF="rfiledir.htm#_merge_fnamext">_merge_fnamext</A><DD> Merges a filename and extension from one path string into another path string.
+<DT><A HREF="rfiledir.htm#_merge_path">_merge_path</A><DD>    Merges a path from one path string into another path string.
+<DT><A HREF="rfiledir.htm#_split_drive">_split_drive</A><DD>   Returns a drive specifier string from a pathname.
+<DT><A HREF="rfiledir.htm#_split_drvpath">_split_drvpath</A><DD> Returns a drive specifier and path string from a pathname.
+<DT><A HREF="rfiledir.htm#_split_ext">_split_ext</A><DD>     Returns a file extension string from a pathname.
+<DT><A HREF="rfiledir.htm#_split_fname">_split_fname</A><DD>   Returns a filename string from a pathname.
+<DT><A HREF="rfiledir.htm#_split_fnamext">_split_fnamext</A><DD> Returns a filename and extension string from a pathname.
+<DT><A HREF="rfiledir.htm#_split_path">_split_path</A><DD>    Returns a path string from a pathname.
+</DL>
+These functions extract elements from path strings and merge elements from one path string into another. These functions are similar to the makepath and splitpath functions provided with Microsoft's C products and fnmerge and fnsplit provided with Borland's Turbo C. However, the _merge_... functions are more powerful than their C counterparts because they can merge specific path elements from one string into another even if other path elements are present in either string.
+
+<P>
+The _merge_... functions copy a specified path element from one path string to another. The source and/or destination strings may be partial or full pathname strings or NULL strings. If the source string is a NULL string, the appropriate element of the destination string is removed (if it exists). Otherwise, the appropriate element from the source string replaces the one in the destination string. Note that the path portion of each pathname string must end with a backslash or the last path element will be mistaken for a filename.
+
+<P>
+The _split_... functions return a specified pathname element from a pathname string. If the specified element does not exist, a NULL string is returned.
+
+<H2><A NAME="HEAD0005">Converting Pathnames between DOS and Internal Format
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rfiledir.htm#_fix_path">_fix_path</A><DD>      Converts a path string from internal format to DOS format.
+<DT><A HREF="rfiledir.htm#_term_path">_term_path</A><DD>     Converts a path string from DOS format to internal format.
+</DL>
+These functions convert path strings between internal format and DOS format. They are intended only for converting path strings which do not include a filename.
+
+<P>
+<A HREF="rfiledir.htm#_fix_path">_fix_path</A> converts a path string to DOS format by removing any terminal backslash character which does not indicate a root directory. This function is most often used when preparing a path string for display. It should also be used to prepare a path string for direct use with a DOS function since DOS will return an error if it is passed a subdirectory name with a terminal backslash. DOS 2.1 may, in some cases, return an error code even after it has successfully performed the requested directory operation.
+
+<P>
+<A HREF="rfiledir.htm#_term_path">_term_path</A> converts a path string to internal format by appending a terminal backslash character (unless the string already ends with a backslash or a colon). This function is intended for use only with path strings which do not include a filename.
+
+<H2><A NAME="HEAD0006">Other File/Directory Manipulation Functions
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rfiledir.htm#_fix_filename">_fix_filename</A><DD>  Forces the filename portion of a path string into the form of a valid filename.
+<DT><A HREF="rfiledir.htm#_getmode_f">_getmode_f</A><DD>     Gets the access mode of a file, directory, or volume label.
+<DT><A HREF="rfiledir.htm#_mk_temp">_mk_temp</A><DD>       Generates a unique filename from a template.
+<DT><A HREF="rfiledir.htm#_remove_f">_remove_f</A><DD>      Deletes a file.
+<DT><A HREF="rfiledir.htm#_rename_f">_rename_f</A><DD>      Renames a file or directory.
+<DT><A HREF="rfiledir.htm#_setmode_f">_setmode_f</A><DD>     Changes the access mode of a file.
+</DL>
+These functions remove and rename files, create temporary filenames from a template, get and set file attributes, and validate filenames.
+
+<P>
+The <A HREF="rfiledir.htm#_fix_filename">_fix_filename</A> function is used to validate a filename in a path string. If required, it truncates the filename and extension to 8 filename characters and 3 extension characters. If an extension does not exist, a period is not returned in the resulting filename.
+
+<P>
+The <A HREF="rfiledir.htm#_getmode_f">_getmode_f</A> and <A HREF="rfiledir.htm#_setmode_f">_setmode_f</A> functions are used to obtain or alter the attributes of a file. <A HREF="rfiledir.htm#_getmode_f">_getmode_f</A> may also be used to obtain the attributes of a subdirectory. However, because these functions are used almost exclusively with files, they accept only DOS-compatible path strings.
+
+<P>
+The <A HREF="rfiledir.htm#_mk_temp">_mk_temp</A> function is similar to the mktemp function provided in many C libraries. It is used to generate unique filenames. <A HREF="rfiledir.htm#_mk_temp">_mk_temp</A> supports a more flexible template--any hook character (?) in the filename portion of the template is replaced with an ascii number between 0 and 9 until an unused filename is encountered. The template may include a complete path.
+
+<P>
+The <A HREF="rfiledir.htm#_remove_f">_remove_f</A> function deletes a file.
+
+<P>
+The <A HREF="rfiledir.htm#_rename_f">_rename_f</A> function is commonly used to rename files. This function can also be used to move files from one directory to another directory on the same drive. When using DOS 3.0 or higher, <A HREF="rfiledir.htm#_rename_f">_rename_f</A> can also be used to rename directories.
+
+<H2><A NAME="HEAD0007">Sample Program
+</A></H2>
+
+The REPLACE.C program uses a number of file and directory management functions and demonstrates how they are used. This program is described at the end of the buffer manipulation unit and is included on the distribution diskettes.
+</BOBY>
+</HTML>

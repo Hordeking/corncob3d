@@ -1,0 +1,514 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: Data Conversion</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Data Conversion</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tData.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tData.htm#HEAD0001">Naming Conventions
+</A><BR>
+<A HREF="tData.htm#HEAD0002">Numeric-to-String Conversion-Integer
+</A><BR>
+<A HREF="tData.htm#HEAD0003">String-to-Numeric Conversion-Integer
+</A><BR>
+<A HREF="tData.htm#HEAD0004">Fixed-Point Integers
+</A><BR>
+<A HREF="tData.htm#HEAD0005">Numeric-to-String Conversion-Fixed-Point
+</A><BR>
+<A HREF="tData.htm#HEAD0006">String-to-Numeric Conversion-Fixed-Point
+</A><BR>
+<A HREF="tData.htm#HEAD0007">BCD-to-String and String-to-BCD Conversion
+</A><BR>
+<A HREF="tData.htm#HEAD0008">Converting Between Integers and BCD Numbers
+</A><BR>
+<A HREF="tData.htm#HEAD0009">Numeric-to-String Conversion-Floating-Point
+</A><BR>
+<A HREF="tData.htm#HEAD000A">String-to-Numeric Conversion-Floating-Point
+</A><BR>
+<A HREF="tData.htm#HEAD000B">Initializing the Data Conversion Formatting Functions
+</A><BR>
+<A HREF="tData.htm#HEAD000C">Formatting and Unformatting Numeric Strings
+</A><BR>
+<A HREF="tData.htm#HEAD000D">Sample Program
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit consists of functions which perform numeric-to-string and string-to-numeric data conversion on integer, floating-point, fixed-point integer, and BCD numeric types. Functions are also included which format ASCII numeric strings, convert formatted ASCII numeric strings to standard format ASCII numeric strings, and convert BCD numbers to and from integers.
+
+<P>
+The integer conversion functions read or write ASCII strings representing numbers in base 10 (decimal), base 16 (hexadecimal), or in a specified base from 2 to 36. The floating-point, fixed-point, BCD conversion, and formatting functions read or write ASCII strings in base 10 (decimal). Supported integer numeric types include char, int, long, and quad in both signed and unsigned representations. Supported fixed-point numeric types include int, long, and quad in both signed and unsigned representations. Supported floating-point types include float (32 bit), double (64 bit), and long double (80 bit) reals. The supported bcd numeric type is a packed ten byte (80 bit) signed BCD format.
+
+<P>
+The numeric-to-string and string-to-numeric formatting functions in this unit support the following formatting options:
+<PRE>
+Formatting Option                                        Examples
+
+Currency symbol string (arbitrary or country-specific)      "$1.23", "Cr$1,23", ...
+Currency symbol position (arbitrary or country-specific)    "1.23 ù", "1,23ú", ...
+Thousands delimiter (arbitrary or country-specific)         "1,234.56", "1.234,56", ...
+Decimal delimiter (arbitrary or country-specific)           "1.23", "1,23", ...
+Precision (arbitrary or country-specific)               "1.23", "1.23456" (0 to 30 digits)
+Maximum field width                                     (0 to 126 characters)
+Positive number representation                      "123", "CR 123", "+123", "123+", ...
+Negative number representation                      "-123", "(123)", "< 123 >", "123-", ...
+Truncated or rounded result                         1.226 to "1.22" or "1.23"
+Fixed, floating, padded digits to right of decimal point    1.200 to "1.2", "1.200", or "1.2  "
+Use a leading zero for numbers between -1 and 1             "0.123" or ".123"
+Exponent indicator string                                   "1.2E34", "1.2x10^34", ...
+Minimum number of digits in the exponent            "1.2e3", "1.2e03", "1.2e003", "1.2e0003"
+Optional "+" for positive exponents                 "1.2e+34" or "1.2e34"
+Output format:       integer, exponential, non-exponential, or flex-exponential
+</PRE>
+<H2><A NAME="HEAD0001">Naming Conventions
+</A></H2>
+
+Numeric-to-string conversion functions follow a naming convention of numeric_TO_string, where numeric is a descriptive name for the numeric type and string is a descriptive name for the string type. String-to-numeric conversion functions follow a naming convention of string_TO_numeric.
+
+<P>
+The descriptive names used for numeric and string types are as follows:
+<PRE>
+Descriptive Name  Description                       Range or Radix
+
+uc                unsigned char                                0 to 255
+c                 char                                      -128 to 127
+ui                unsigned int                                 0 to 65,535
+i                 int                                    -32,768 to 32,767
+ul                unsigned long                                0 to 4,294,967,295
+l                 long                                      -231 to 231-1
+uq                uquad                                        0 to 264-1
+q                 quad                                      -263 to 263-1
+ufixpi            fixed-point unsigned int                  0.00 to 655.35*
+fixpi             fixed-point int                        -327.68 to 327.67*
+ufixpl            fixed-point unsigned long                 0.00 to 42,949,672.95*
+fixpl             fixed-point long                -21,474,836.48 to 21,474,836.47*
+ufixpq            fixed-point uquad                         0.00 to 184,467,440,737,095,516.15*
+fixpq             fixed-point quad    -92,233,720,368,547,758.08 to 92,233,720,368,547,758.07*
+bcd               binary coded decimal (packed)          -1018+1 to 1018-1
+f                 float (32-bit real)                Ò1.17x10-38 to Ò3.40x1038
+d                 double (64-bit real)              Ò2.22x10-308 to Ò1.79x10308
+ld                long double (80-bit real)        Ò3.36x10-4932 to Ò1.19x104932
+
+asc               ASCII string of alphanumeric digits2 Û radix Û 36
+dec               ASCII string of decimal digitsradix = 10
+hex               ASCII string of hexadecimal digitsradix = 16
+</PRE>
+*The position of the decimal point in a fixed-point number must be specified. This representation assumes a fixed-point precision of two.
+
+<P>
+Because C does not supply defined types for 64-bit integers or BCD values, the following typedefs are provided to simplify the use of 64-bit integer and BCD types in C applications: uquad for unsigned 64-bit integers, quad for signed 64-bit integers and bcd for binary coded decimal values. The bcd, quad and uquad types are defined using typedef, as follows:
+<PRE><CODE>
+typedef signed char quad[8];
+typedef unsigned char uquad[8];
+typedef unsigned char bcd[10];
+</CODE></PRE>
+<H2><A NAME="HEAD0002">Numeric-to-String Conversion-Integer
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rdata.htm#_uc_to_hex">_uc_to_hex</A><DD>     Converts an unsigned char to a hexadecimal ASCIIZ string.
+<DT><A HREF="rdata.htm#_uc_to_hexe">_uc_to_hexe</A><DD>    Converts an unsigned char to a hexadecimal ASCII string, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_ui_to_hex">_ui_to_hex</A><DD>     Converts an unsigned int to a hexadecimal ASCIIZ string.
+<DT><A HREF="rdata.htm#_ui_to_hexe">_ui_to_hexe</A><DD>    Converts an unsigned int to a hexadecimal ASCII string, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_uc_to_dec">_uc_to_dec</A><DD>     Converts an unsigned char to a decimal ASCIIZ string.
+<DT><A HREF="rdata.htm#_uc_to_dece">_uc_to_dece</A><DD>    Converts an unsigned char to a decimal ASCII string, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_c_to_dec">_c_to_dec</A><DD>      Converts a char to a decimal ASCIIZ string.
+<DT><A HREF="rdata.htm#_c_to_dece">_c_to_dece</A><DD>     Converts a char to a decimal ASCII string, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_ui_to_dec">_ui_to_dec</A><DD>     Converts an unsigned int to a decimal ASCIIZ string.
+<DT><A HREF="rdata.htm#_ui_to_dece">_ui_to_dece</A><DD>    Converts an unsigned int to a decimal ASCII string, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_i_to_dec">_i_to_dec</A><DD>      Converts a int to a decimal ASCIIZ string.
+<DT><A HREF="rdata.htm#_i_to_dece">_i_to_dece</A><DD>     Converts a int to a decimal ASCII string, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_ul_to_dec">_ul_to_dec</A><DD>     Converts an unsigned long to a decimal ASCIIZ string.
+<DT><A HREF="rdata.htm#_ul_to_dece">_ul_to_dece</A><DD>    Converts an unsigned long to a decimal ASCII string, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_l_to_dec">_l_to_dec</A><DD>      Converts a long to a decimal ASCIIZ string.
+<DT><A HREF="rdata.htm#_l_to_dece">_l_to_dece</A><DD>     Converts a long to a decimal ASCII string, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_uq_to_dec">_uq_to_dec</A><DD>     Converts a uquad to a decimal ASCIIZ string.
+<DT><A HREF="rdata.htm#_uq_to_dece">_uq_to_dece</A><DD>    Converts a uquad to a decimal ASCII string, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_q_to_dec">_q_to_dec</A><DD>      Converts a quad to a decimal ASCIIZ string.
+<DT><A HREF="rdata.htm#_q_to_dece">_q_to_dece</A><DD>     Converts a quad to a decimal ASCII string, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_uc_to_asc">_uc_to_asc</A><DD>     Converts an unsigned char to an ASCIIZ string in a given radix.
+<DT><A HREF="rdata.htm#_uc_to_asce">_uc_to_asce</A><DD>    Converts an unsigned char to an ASCII string in a given radix, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_c_to_asc">_c_to_asc</A><DD>      Converts a char to an ASCIIZ string in a given radix.
+<DT><A HREF="rdata.htm#_c_to_asce">_c_to_asce</A><DD>     Converts a char to an ASCII string in a given radix, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_ui_to_asc">_ui_to_asc</A><DD>     Converts an unsigned int to an ASCIIZ string in a given radix.
+<DT><A HREF="rdata.htm#_ui_to_asce">_ui_to_asce</A><DD>    Converts an unsigned int to an ASCII string in a given radix, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_i_to_asc">_i_to_asc</A><DD>      Converts a int to an ASCIIZ string in a given radix.
+<DT><A HREF="rdata.htm#_i_to_asce">_i_to_asce</A><DD>     Converts a int to an ASCII string in a given radix, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_ul_to_asc">_ul_to_asc</A><DD>     Converts an unsigned long to an ASCIIZ string in a given radix.
+<DT><A HREF="rdata.htm#_ul_to_asce">_ul_to_asce</A><DD>    Converts an unsigned long to an ASCII string in a given radix, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_l_to_asc">_l_to_asc</A><DD>      Converts a long to an ASCIIZ string in a given radix.
+<DT><A HREF="rdata.htm#_l_to_asce">_l_to_asce</A><DD>     Converts a long to an ASCII string in a given radix, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_uq_to_asc">_uq_to_asc</A><DD>     Converts a uquad to an ASCIIZ string in a given radix.
+<DT><A HREF="rdata.htm#_uq_to_asce">_uq_to_asce</A><DD>    Converts a uquad to an ASCII string in a given radix, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_q_to_asc">_q_to_asc</A><DD>      Converts a quad to an ASCIIZ string in a given radix.
+<DT><A HREF="rdata.htm#_q_to_asce">_q_to_asce</A><DD>     Converts a quad to an ASCII string in a given radix, returning a pointer to the end of the resulting string.
+</DL>
+These functions convert a numeric value to a string of alphanumeric ASCII digits. The ..._to_asc and ..._to_asce functions accept a radix as an input and convert the numeric value to a string of alphanumeric ASCII digits in the given radix. The ..._to_hex, ..._to_hexe, ..._to_dec and ..._to_dece functions convert the numeric value directly to a hexadecimal or decimal ASCII string. All numeric-to-string functions output uppercase ASCII letters for digits above decimal nine. For example, in base 11 and above, 1010 is represented as "A" rather than "a".
+
+<P>
+The ..._to_dec functions produce output strings in decimal ASCII integer format, which is a special case of the standard non-exponential format. Strings in this format may be used with the formatting functions described later in this chapter. Decimal ASCII integer format is defined as follows:
+<DL COMPACT>
+<DT>[-][d...]d<DD>       (where d denotes any decimal digit)
+</DL>
+Function names which end with an "e" denote functions which return a pointer to the character after the end of the resulting string. These functions do NOT terminate the resulting string with a NULL. Functions which accept signed input values always place a minus sign at the beginning of the resulting string if the input value is negative.
+<P>
+The following example takes advantage of the fact that <A HREF="rdata.htm#_ui_to_dece">_ui_to_dece</A> returns a pointer to the end of the resulting string:
+<PRE><CODE>
+#include                 <dosio.h>
+#include                 <dataconv.h>
+#include                 <sastring.h>
+
+char xy_msg[] = "X,Y coordinates: (";
+char xy_coord[11];
+char *ptr;
+
+void main(void)
+{
+   ptr = <A HREF="rdata.htm#_i_to_dece">_i_to_dece</A>(23,xy_coord);
+   *ptr++ = ',';
+   ptr = <A HREF="rdata.htm#_i_to_dece">_i_to_dece</A>(45,ptr+1);
+   *ptr++ = ')';
+   *ptr = 0;
+   <A HREF="rdosio.htm#_put_str">_put_str</A>(_str_cat(xy_msg, xy_coord));
+}
+</CODE></PRE>
+In the example above, the displayed string would be "X,Y coordinates: (23,45)".
+
+<H2><A NAME="HEAD0003">String-to-Numeric Conversion-Integer
+</A></H2>
+<DL COMPACT>
+<DT>_asc_to_uc<DD>     Converts an ASCII string to an unsigned char in a given radix.
+<DT>_asc_to_c<DD>      Converts an ASCII string to a char in a given radix.
+<DT>_asc_to_ui<DD>     Converts an ASCII string to an unsigned int in a given radix.
+<DT>_asc_to_i<DD>      Converts an ASCII string to a int in a given radix.
+<DT>_asc_to_ul<DD>     Converts an ASCII string to an unsigned long in a given radix.
+<DT>_asc_to_l<DD>      Converts an ASCII string to a long in a given radix.
+<DT>_asc_to_uq<DD>     Converts an ASCII string to a uquad in a given radix.
+<DT>_asc_to_q<DD>      Converts an ASCII string to a quad in a given radix.
+<DT>_dec_to_uc<DD>     Converts a decimal ASCII string to an unsigned char.
+<DT>_dec_to_c<DD>      Converts a decimal ASCII string to a char.
+<DT>_dec_to_ui<DD>     Converts a decimal ASCII string to an unsigned int.
+<DT>_dec_to_i<DD>      Converts a decimal ASCII string to a int.
+<DT>_dec_to_ul<DD>     Converts a decimal ASCII string to an unsigned long.
+<DT>_dec_to_l<DD>      Converts a decimal ASCII string to a long.
+<DT>_dec_to_uq<DD>     Converts a decimal ASCII string to a uquad.
+<DT>_dec_to_q<DD>      Converts a decimal ASCII string to a quad.
+<DT>_hex_to_uc<DD>     Converts a hexadecimal ASCII string to an unsigned char.
+<DT>_hex_to_ui<DD>     Converts a hexadecimal ASCII string to an unsigned int.
+</DL>
+These functions convert digits from an ASCII string to a binary value. The _hex_to_... and _dec_to_... functions interpret the characters from the string as hexadecimal or decimal digits, respectively. The _asc_to_... functions interpret the characters as digits in a specified radix from 2 to 36. The unsigned functions treat leading plus or minus signs as invalid characters; the signed functions accept a single leading plus or minus sign.
+
+<P>
+Both upper and lowercase ASCII letters are recognized as digits in the range 1010 to 3510 . For example, in base 11 and above, either "A" or "a" is equivalent to 1010 , and in base 36, both "Z" and "z" are accepted as 3510 .
+
+<P>
+All of the string-to-numeric conversion functions return a pointer to the first string character which is not a valid digit. Leading white space characters are not automatically skipped since this is not always desirable. If white space characters should be skipped, call <A HREF="rstring.htm#_str_skipw">_str_skipw</A> or <A HREF="rstring.htm#_str_skips">_str_skips</A> before calling the string-to-numeric function.
+
+<P>
+The integer string-to-numeric conversion functions are subject to overflow. The char and int functions provide simple overflow checking. In the event of overflow, 1 is returned in the global <A HREF="rutility.htm#c_code">c_code</A> condition variable, an index pointer is advanced past the entire number, and the return value is undefined. This provides some overflow checking without hindering execution speed; it also allows overflow to be ignored without writing additional code. The long and quad functions do notcheck for overflow because it cannot be done without seriously hindering execution speed. If overflow occurs, the return value is undefined. Note that the _hex_to_... functions do not provide an overflow return. Instead, they provide a return which indicates that more hexadecimal digits remain to be processed.
+
+<H2><A NAME="HEAD0004">Fixed-Point Integers
+</A></H2>
+
+Fixed-point integers are true integer values with an implied number of decimal digits to the right of an implied decimal point. The precision of a fixed-point number specifies the fixed number of digits to the right of the decimal point. (Restated, fixed-point integers have implied exponents of ˛precision or a value of fixed-point˛10˛precision.)
+
+<P>
+For example, a fixed-point integer value of 54,321 with a precision of 3 represents 54321e-3 or 54.321. A fixed-point integer value of 10,025 in U.S. monetary units (precision of 2), represents 10,025 cents or $100.25.
+
+<P>
+The precision of a fixed-point value is only specified when the _dec_to_fixp or _fixp_to_dec data conversion functions are called. In all other respects, fixed-point integers are treated as integer values. Because fixed-point integers are manipulated using standard integer math routines, they provide a fast, tight alternative to floating-point values.
+
+<P>
+WARNING!        It is the responsibility of the programmer to keep track of the precision of each fixed-point value. When fixed-point values are multiplied, their precisions must be added to determine the precision of the result. When fixed-point values are divided, the precision of the divisor must be subtracted from the precision of the dividend. Negative precisions are not supported. Standard integer values have a precision of 0.
+
+<H2><A NAME="HEAD0005">Numeric-to-String Conversion-Fixed-Point
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rdata.htm#_ufixpi_to_dec">_ufixpi_to_dec</A><DD> Converts a fixed-point unsigned int to a decimal ASCIIZ string.
+<DT><A HREF="rdata.htm#_fixpi_to_dec">_fixpi_to_dec</A><DD>  Converts a fixed-point int to a decimal ASCIIZ string.
+<DT><A HREF="rdata.htm#_ufixpi_to_dece">_ufixpi_to_dece</A><DD>Converts a fixed-point unsigned int to a decimal ASCII string, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_fixpi_to_dece">_fixpi_to_dece</A><DD> Converts a fixed-point int to a decimal ASCII string, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_ufixpl_to_dec">_ufixpl_to_dec</A><DD> Converts a fixed-point unsigned long to a decimal ASCIIZ string.
+<DT><A HREF="rdata.htm#_fixpl_to_dec">_fixpl_to_dec</A><DD>  Converts a fixed-point long to a decimal ASCIIZ string.
+<DT><A HREF="rdata.htm#_ufixpl_to_dece">_ufixpl_to_dece</A><DD>Converts a fixed-point unsigned long to a decimal ASCII string, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_fixpl_to_dece">_fixpl_to_dece</A><DD> Converts a fixed-point long to a decimal ASCII string, returning a pointer to the end of the resulting string.
+<DT>_ufixpq_to_dec<DD> Converts a fixed-point uquad to a decimal ASCIIZ string.
+<DT>_fixpq_to_dec<DD>  Converts a fixed-point quad to a decimal ASCIIZ string.
+<DT>_ufixpq_to_dece<DD>Converts a fixed-point uquad to a decimal ascii string, returning a pointer to the end of the resulting string.
+<DT>_fixpq_to_dece<DD> Converts a fixed-point quad to a decimal ASCII string, returning a pointer to the end of the resulting string.
+</DL>
+The fixp_to_dec functions convert fixed-point numeric values to strings of ASCII digits. These functions allow fixed-point numeric values to be maintained as integers and output with an embedded decimal point. (See Fixed-Point Integers, above, for a discussion of fixed-point integers.)
+
+<P>
+Functions which write out an ASCIIZ string return a pointer to the beginning of the resulting string. Function with names which end with an "e" write out non-NULL terminated ASCII strings and return a pointer to the first character past the end of the string. This makes it possible to append additional characters very rapidly. Functions which accept signed input values always place a minus sign at the beginning of the resulting string if the input value is negative.
+
+<P>
+The fixp_to_dec functions create output strings in decimal ASCII fixed-point format, which is a special case of standard non-exponential format. Strings in this format may be used with theformatting functions described later in this chapter. Decimal ASCII fixed-point format is defined as follows:
+<DL COMPACT>
+<DT>[-][d...][.][d...]<DD>       (where d denotes any decimal digit)
+</DL>
+<H2><A NAME="HEAD0006">String-to-Numeric Conversion-Fixed-Point
+</A></H2>
+<DL COMPACT>
+<DT>_dec_to_ufixpi<DD> Converts a decimal ASCII string to a fixed-point unsigned int.
+<DT>_dec_to_fixpi<DD>  Converts a decimal ASCII string to a fixed-point int.
+<DT>_dec_to_ufixpl<DD> Converts a decimal ASCII string to a fixed-point unsigned long.
+<DT>_dec_to_fixpl<DD>  Converts a decimal ASCII string to a fixed-point long.
+<DT>_dec_to_ufixpq<DD> Converts a decimal ASCII string to a fixed-point uquad.
+<DT>_dec_to_fixpq<DD>  Converts a decimal ASCII string to a fixed-point quad.
+</DL>
+These functions convert decimal ASCII strings to fixed-point integer values. The unsigned functions treat leading plus or minus signs as invalid characters; the signed functions accept a single leading plus or minus sign. All functions recognize a decimal character (".") as a valid character. (See Fixed-Point Integers, above, for a discussion of fixed-point integers.)
+
+<P>
+All of the fixed-point-to-numeric functions return a pointer to the first string character which is not a valid digit. Leading white space characters are not automatically skipped since this is not always desirable. To skip leading white space characters, call <A HREF="rstring.htm#_str_skipw">_str_skipw</A> or <A HREF="rstring.htm#_str_skips">_str_skips</A> before calling the fixed-point-to-numeric function.
+
+<P>
+The integer fixed-point-to-numeric conversion functions are subject to overflow. The int functions provide simple overflow checking. In the event of overflow, 1 is returned in the global <A HREF="rutility.htm#c_code">c_code</A> condition variable, an index pointer is advanced past the entire number, and the return value is undefined. This provides some overflow checking without hindering execution speed; it also allows overflow to be ignored without writing additional code. The long and quad functions do not check for overflow because checking cannot be done without seriously hindering execution speed. If overflow occurs, the return value is undefined.
+
+<H2><A NAME="HEAD0007">BCD-to-String and String-to-BCD Conversion
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rdata.htm#_bcd_to_dec">_bcd_to_dec</A><DD>    Converts a bcd number to a decimal ASCIIZ string.
+<DT><A HREF="rdata.htm#_bcd_to_dece">_bcd_to_dece</A><DD>   Converts a bcd number to a decimal ASCII string, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_dec_to_bcd">_dec_to_bcd</A><DD>    Converts an ASCII string to a bcd number.
+</DL>
+The <A HREF="rdata.htm#_bcd_to_dec">_bcd_to_dec</A>... functions convert numeric bcd values to strings of decimal ASCII digits. These functions support the same packed bcd format which is supported by the 8087 numeric coprocessor. However, these functions do NOT require a numeric coprocessor.
+
+<P>
+The <A HREF="rdata.htm#_bcd_to_dec">_bcd_to_dec</A>... functions accept signed input values and always place a minus sign at the beginning of the resulting string if the input value is negative. <A HREF="rdata.htm#_bcd_to_dec">_bcd_to_dec</A> writes out an ASCIIZ string and returns a pointer to the beginning of the resulting string. <A HREF="rdata.htm#_bcd_to_dece">_bcd_to_dece</A> writes out a non-NULL terminated ASCII string and returns a pointer to the first character past the end of the string. This makes it possible to append additional characters more rapidly than is possible with <A HREF="rdata.htm#_bcd_to_dec">_bcd_to_dec</A>.
+
+<P>
+<A HREF="rdata.htm#_dec_to_bcd">_dec_to_bcd</A> converts digits from an ASCII string to a bcd value. This function accepts an optional leading plus or minus sign followed by the ASCII digits to convert. The returned pointer points to the first string character which is not a valid digit. <A HREF="rdata.htm#_dec_to_bcd">_dec_to_bcd</A> does not check for overflow. Leading white space characters are not automatically skipped since this is not always desirable. To skip leading white space characters, call <A HREF="rstring.htm#_str_skipw">_str_skipw</A> or <A HREF="rstring.htm#_str_skips">_str_skips</A> before calling the string-to-numeric function.
+
+<P>
+The <A HREF="rdata.htm#_bcd_to_dec">_bcd_to_dec</A> functions create output strings in decimal ASCII integer format, which is a special case of standard non-exponential format. Strings in this format may be used with the numeric formatting functions described later in this chapter. Decimal ASCII integer format is defined as follows:
+<DL COMPACT>
+<DT>[-][d...]d<DD>       (where d denotes any decimal digit)
+</DL>
+<H2><A NAME="HEAD0008">Converting Between Integers and BCD Numbers
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rdata.htm#_q_to_bcd">_q_to_bcd</A><DD>      Converts a quad to a BCD number.
+<DT><A HREF="rdata.htm#_bcd_to_q">_bcd_to_q</A><DD>      Converts a BCD number to a quad.
+</DL>
+These functions provide conversion facilities between quad integers and packed bcd numbers. The format of the packed bcd number is the same format supported by the 8087 numeric coprocessor. These functions do NOT require a numeric coprocessor and are provided to allow integer math facilities to be used for bcd numbers.
+
+<H2><A NAME="HEAD0009">Numeric-to-String Conversion-Floating-Point
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rdata.htm#_f_to_dec">_f_to_dec</A><DD>      Converts a float to a decimal ASCIIZ string in standard exponential format.
+<DT><A HREF="rdata.htm#_f_to_dece">_f_to_dece</A><DD>     Converts a float        to a decimal ASCII string in standard exponential format, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_f_to_decn">_f_to_decn</A><DD>     Converts a float        to a decimal ASCIIZ string in standard non-exponential format.
+<DT><A HREF="rdata.htm#_f_to_decne">_f_to_decne</A><DD>    Converts a float        to a decimal ASCII string in standard non-exponential format, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_d_to_dec">_d_to_dec</A><DD>      Converts a double       to a decimal ASCIIZ string in standard exponential format.
+<DT><A HREF="rdata.htm#_d_to_dece">_d_to_dece</A><DD>     Converts a double       to a decimal ASCII string in standard exponential format, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_d_to_decn">_d_to_decn</A><DD>     Converts a double       to a decimal ASCIIZ string in standard non-exponential format.
+<DT><A HREF="rdata.htm#_d_to_decne">_d_to_decne</A><DD>    Converts a double       to a decimal ASCII string in standard non-exponential format, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_ld_to_dec">_ld_to_dec</A><DD>     Converts a long double  to a decimal ASCIIZ string in standard exponential format.
+<DT><A HREF="rdata.htm#_ld_to_dece">_ld_to_dece</A><DD>    Converts a long double to a decimal ASCII string in standard exponential format, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_ld_to_decn">_ld_to_decn</A><DD>    Converts a long double to a decimal ASCIIZ string in standard non-exponential format.
+<DT><A HREF="rdata.htm#_ld_to_decne">_ld_to_decne</A><DD>   Converts a long double to a decimal ASCII string in standard non-exponential format, returning a pointer to the end of the resulting string.
+</DL>
+These functions convert a floating-point numeric value to a decimal ASCII string in standard exponential or non-exponential format. A numeric coprocessor or 8087 compatible emulator is required for these functions. When these functions are used, the appropriate floating-point conversion library (_FPC??.LIB) must also be linked in.
+
+<P>
+The ..._to_dec and ..._to_dece functions convert the floating-point value directly to an ASCII string in standard exponential format. The ..._to_decn and ..._to_decne functions convert the floating-point value directly to an ASCII string in standard non-exponential format. These standard formats are defined as follows:
+
+<P>
+Standard Exponential Format:
+
+<P>
+[-]d[.][d...]e[-]d[d...](where d denotes any decimal digit)
+
+<P>
+Standard Non-Exponential Format:
+
+<P>
+[-][d...]d[.][d...]      (where d denotes any decimal digit)
+
+<P>
+Functions which write out an ASCIIZ string return a pointer to the beginning of the resulting string. Functions with names which end with an "e" write out non-NULL terminated ASCII strings andreturn a pointer to the end of the resulting string. This makes it possible to append additional characters very rapidly.
+
+<P>
+A minus sign is always written at the beginning of the resulting string if the input value is negative. No decimal point is written if there are no digits after the decimal point (e.g., "12345" and "1e2"). Floating-point numbers in the range -1 < n < 1 which are converted to non-exponential format are written with a leading zero (e.g., 1.234e-2 is converted to "0.01234" in non-exponential format).
+
+<H2><A NAME="HEAD000A">String-to-Numeric Conversion-Floating-Point
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rdata.htm#_dec_to_f">_dec_to_f</A><DD>      Converts an ASCII string to a float.
+<DT><A HREF="rdata.htm#_dec_to_d">_dec_to_d</A><DD>      Converts an ASCII string to a double.
+<DT><A HREF="rdata.htm#_dec_to_ld">_dec_to_ld</A><DD>     Converts an ASCII string to a long double.
+</DL>
+These functions convert digits from a standard exponential or non-exponential format ASCII string to a floating-point value. A numeric coprocessor or 8087 compatible emulator is required for these functions. When these functions are used, the appropriate floating-point conversion library (_FPC??.LIB) must also be linked in.
+
+<P>
+These functions accept an optional leading plus or minus sign followed by the ASCII digits to convert. The following characters are also allowed in the string: a leading minus sign ("-"), a decimal point ("."), the default exponent indicator ("e"), and a minus sign in the exponent (as in "-1.23e-4"). A pointer is returned to the first string character which is not a valid character. Leading white space characters are not automatically skipped. To skip leading white space characters, call <A HREF="rstring.htm#_str_skipw">_str_skipw</A> or <A HREF="rstring.htm#_str_skips">_str_skips</A> before calling these string-to-numeric functions.
+
+<P>
+The numeric result of these functions uses IEEE floating-point format (interpretable by the 8087 numeric coprocessor).
+
+<H2><A NAME="HEAD000B">Initializing the Data Conversion Formatting Functions
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rdata.htm#dc_addr">dc_addr</A><DD>(Variable) Contains the address of the current data conversion options structure.
+<DT><A HREF="rdata.htm#_dc_init">_dc_init</A><DD>       Initializes the current data conversion options structure with DOS country information.
+</DL>
+<A HREF="rdata.htm#dc_addr">dc_addr</A> is a near/far pointer that contains the address of the current data conversion options structure (dcopts). In small data models (TINY, SMALL, MEDIUM), this variable is a near pointer which contains the offset of the structure within DGROUP (global or static non-far data). In large data models (COMPACT, LARGE, HUGE), this variable is a far pointer which contains the segment and offset of the structure.
+
+The current dcopts structure specifies global data conversion formatting options and is used by <A HREF="rdata.htm#_form_to_dec">_form_to_dec</A>, <A HREF="rdata.htm#_dec_to_form">_dec_to_form</A>, and the scripted I/O functions. The behavior of these functions may be changed by modifying this structure or by modifying <A HREF="rdata.htm#dc_addr">dc_addr</A> to point to a different dcopts structure.
+
+<P>
+<A HREF="rdata.htm#dc_addr">dc_addr</A> is initialized with the address of the default dcopts structure. The default dcopts structure is defined in DATACONV.H as follows:
+<PRE><CODE>
+typedef struct {
+   char * dc_leadplus;            /* leading plus string pointer ("+") */
+   char * dc_trailplus;                   /* trailing plus string pointer (NULL) */
+   char * dc_leadneg;                     /* leading neg string pointer ("-") */
+   char * dc_trailneg;                    /* trailing neg string pointer (NULL) */
+   char * dc_expstr;                      /* exponent string pointer ("e") */
+   char dc_curstr[6];                     /* ASCIIZ currency string ("$") */
+   char dc_thdelim;                       /* thousands delimiter (",") */
+   char dc_decdelim;                      /* decimal delimiter (".") */
+   char dc_curdigits;                     /* currency digits after decimal point (2) */
+   unsigned char dc_flags;        /* currency location, use "+" in exp, suppress
+                                                     leading zero, min number of exponent digits */
+} dcopts;
+</CODE></PRE>
+The DC_DEFAULT symbolic constant (defined in DATACONV.H) may be specified for any field which accepts a pointer. This causes the data conversion functions to use the default string, shown in the comments above, for each field in which it is specified.
+
+<P>
+Each field in the dcopts structure specifies a data conversion option. The dcopts structure fields are defined as follows:
+<DL COMPACT>
+<DT>dc_leadplus<DD>    Address of the leading positive sign indicator string. If DC_DEFAULT is specified, the default "+" string is assumed. If a string address is specified, that string is used in place of the default "+" string. This string precedes positive decimal strings if the DC_PLUS formatting flag is specified (see <A HREF="rdata.htm#_dec_to_form">_dec_to_form</A>).
+<DT>dc_trailplus<DD>   Address of the trailing positive sign indicator string. If DC_DEFAULT is specified, a NULL string is assumed. If a string address is specified, that string is used instead. This string follows positive ASCII decimal strings if the DC_PLUS formatting flag is specified (see <A HREF="rdata.htm#_dec_to_form">_dec_to_form</A>).
+<DT>dc_leadneg<DD>     Address of the leading minus sign indicator string. If DC_DEFAULT is specified, the default "-" string is assumed. If a string address is specified, that string is used in place of the default "-" string. This string precedes negative ASCII decimal strings.
+<DT>dc_trailneg<DD>    Address of the trailing negative sign indicator string. If DC_DEFAULT is specified, a NULL string is assumed. If a string address is specified, that string is used instead. This string follows negative ASCII decimal strings.
+<DT>dc_expstr<DD>      Address of the exponent indicator string. If DC_DEFAULT is specified, the default "e" exponent indicator is assumed. If a string address is specified, it is used in place of the default "e" exponent indicator.
+<DT>dc_curstr<DD>      Currency symbol string (ASCIIZ). If a currency format is selected, this immediate string either precedes or follows the decimal ASCII string depending on the state of the DC_CPRECEDE bit in the dc_flags field. The default string is "$". This field is updated by <A HREF="rdata.htm#_dc_init">_dc_init</A>. (This field is defined as a string instead of a string pointer for compatibility with DOS country information.)
+<DT>dc_thdelim<DD>     Thousands delimiter character. This character appears after every third significant digit from right to left, starting at the decimal point in the decimal ASCII string. The default character is the comma. This character only appears if the DC_THOUS formatting flag is specified (see <A HREF="rdata.htm#_dec_to_form">_dec_to_form</A>). This field is updated by <A HREF="rdata.htm#_dc_init">_dc_init</A>.
+<DT>dc_decdelim<DD>    Decimal delimiter character. This character separates the integer and fractional portions of the decimal ASCII string. The default character is a period. This field is updated by <A HREF="rdata.htm#_dc_init">_dc_init</A>.
+<DT>dc_curdigits<DD>   Number of digits to the right of the decimal point in country-specific currency strings. The default is 2 digits. This field is updated by <A HREF="rdata.htm#_dc_init">_dc_init</A>.
+<DT>dc_flags<DD>       Miscellaneous formatting information (see the dc_flag equates below). All bits are clear by default. Portions of this field are updated by <A HREF="rdata.htm#_dc_init">_dc_init</A>.
+</DL>
+The following symbolic constants (defined in DATACONV.H) may be used to check or modify the information in the dc_flags field:
+<DL COMPACT>
+<DT>DC_CPRECEDE<DD>             (0x00) Currency symbol precedes the number (default)
+<DT>DC_CFOLLOW<DD>              (0x01) Currency symbol follows the number
+<DT>DC_NOEXPPLUS<DD>            (0x00) No "+" on positive exponent strings (default)
+<DT>DC_EXPPLUS<DD>              (0x04) Use "+" on positive exponent strings
+<DT>DC_LEADZERO<DD>             (0x00) Use leading zero if number would <A HREF="rexit.htm#start">start</A> with "." (default)
+<DT>DC_NOLEADZERO<DD>           (0x08) No leading zero if number would <A HREF="rexit.htm#start">start</A> with "."
+<DT>DC_MINEXP1<DD>              (0x00) Use minimum of 1 digit in exponent (default)
+<DT>DC_MINEXP2<DD>              (0x40) Use minimum of 2 digits in exponent
+<DT>DC_MINEXP3<DD>              (0x80) Use minimum of 3 digits in exponent
+<DT>DC_MINEXP4<DD>              (0xC0) Use minimum of 4 digits in exponent
+</DL>
+Defines with a value of zero are the defaults and are provided for completeness only.
+<DL COMPACT>
+<DT><A HREF="rdata.htm#_dc_init">_dc_init</A><DD>updates the current data conversion options structure (referenced by <A HREF="rdata.htm#dc_addr">dc_addr</A>) with the DOS country information for the current or specified country. Updated information includes the currency string, thousands delimiter, decimal delimiter, currency digits, and currency symbol position. (The currency position is stored by setting DC_CURR_PN or DC_CURR_FN in dc_flags and prefixing or appending the appropriate number of space characters to the currency symbol string specified in dc_curstr.) This function does not need to be called if the dcopts structure already contains the correct information.
+</DL>
+<H2><A NAME="HEAD000C">Formatting and Unformatting Numeric Strings
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rdata.htm#_dec_to_form">_dec_to_form</A><DD>   Converts a decimal ASCII numeric string to a formatted decimal ASCIIZ numeric string.
+<DT><A HREF="rdata.htm#_dec_to_forme">_dec_to_forme</A><DD>  Converts a decimal ASCII numeric string to a formatted decimal ASCII numeric string, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_fdec_to_form">_fdec_to_form</A><DD>  Converts a standard decimal ASCII string to a formatted decimal ASCIIZ string using far pointers.
+<DT><A HREF="rdata.htm#_fdec_to_forme">_fdec_to_forme</A><DD> Converts a standard decimal ASCII string to a formatted decimal ASCII string using far pointers, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_form_to_dec">_form_to_dec</A><DD>   Converts a formatted decimal ASCII string to a standard decimal ASCIIZ string.
+<DT><A HREF="rdata.htm#_form_to_dece">_form_to_dece</A><DD>  Converts a formatted decimal ASCII string to a standard decimal ASCII string, returning a pointer to the end of the resulting string.
+<DT><A HREF="rdata.htm#_fform_to_dec">_fform_to_dec</A><DD>  Converts a formatted decimal ASCII string to a standard decimal ASCIIZ string using far pointers.
+<DT><A HREF="rdata.htm#_fform_to_dece">_fform_to_dece</A><DD> Converts a formatted decimal ASCII string to a standard decimal ASCII string using far pointers, returning a pointer to the end of the resulting string.
+</DL>
+The <A HREF="rdata.htm#_dec_to_form">_dec_to_form</A>... and <A HREF="rdata.htm#_fdec_to_form">_fdec_to_form</A>... functions convert decimal ASCII strings to formatted decimal ASCII strings. Strings are formatted by fixing the precision to the right of the decimal point (if applicable), inserting thousands separators, currency symbols, etc. Input strings must be in standard exponential or standard non-exponential format with an optional leading plus sign character for positive values.
+
+<P>
+The <A HREF="rdata.htm#_form_to_dec">_form_to_dec</A>... and <A HREF="rdata.htm#_fform_to_dec">_fform_to_dec</A>... functions strip formatting characters from formatted decimal ASCII strings to create exponential or non-exponential decimal ASCII strings.
+
+<P>
+<A HREF="rdata.htm#_dec_to_form">_dec_to_form</A>, <A HREF="rdata.htm#_fdec_to_form">_fdec_to_form</A>, <A HREF="rdata.htm#_form_to_dec">_form_to_dec</A>, and <A HREF="rdata.htm#_fform_to_dec">_fform_to_dec</A> return a pointer to the resulting ASCIIZ string. <A HREF="rdata.htm#_dec_to_forme">_dec_to_forme</A>, <A HREF="rdata.htm#_fdec_to_forme">_fdec_to_forme</A>, <A HREF="rdata.htm#_fform_to_dece">_fform_to_dece</A>, and <A HREF="rdata.htm#_form_to_dece">_form_to_dece</A> return a pointer to the end of the resulting non-NULL terminated string. This makes it possible to append additional characters very rapidly. Leading white space characters are not automatically skipped. To skip leading white space characters, call <A HREF="rstring.htm#_str_skipw">_str_skipw</A> or <A HREF="rstring.htm#_str_skips">_str_skips</A> before calling these formatting functions.
+
+<P>
+A numeric coprocessor is NOT required for these formatting functions.
+
+<P>
+When formatting is performed, the precision of the result is specified and the result is never allowed to exceed a specified number of characters (width). The format of the result is specified in three places: 1) the current data conversion options structure; 2) numeric formatting flags which specify plus sign, currency, thousands, and exponential format options, and 3) precision flags which specify rounding, truncation, and significant digit formatting options. For the <A HREF="rdata.htm#_dec_to_form">_dec_to_form</A> functions, these options designate the final appearance of the formatted output string. For the <A HREF="rdata.htm#_form_to_dec">_form_to_dec</A> functions, these options indicate the expected format of the formatted input string.
+
+<P>
+The current data conversion options structure specifies global formatting options such as sign indicator strings, thousands delimiter, decimal delimiter, currency symbol location, currency precision, exponent string, exponent sign suppression, minimum number of exponent digits, and zero suppression before the decimal point. These options may be accessed or modified through the <A HREF="rdata.htm#dc_addr">dc_addr</A> variable. (See <A HREF="rdata.htm#dc_addr">dc_addr</A>, above, for further information.)
+
+<P>
+Numeric formatting options are specified using the following symbolic constants (defined in DATACONV.H):
+<DL COMPACT>
+<DT>DC_NOPLUS<DD>      (0x00) No plus sign is written if the value is positive. On input, no plus sign is allowed.
+<DT>DC_PLUS<DD>(0x10) A plus sign is written if the value is positive. On input, a plus sign is allowed and is specifically checked for. The plus sign is read or written using the leading/trailing plus sign strings which are specified in the current dcopts structure.
+<DT>DC_NOCURRENCY<DD>  (0x00) No currency symbol is inserted into the result. On input, no currency symbols are allowed.
+<DT>DC_CURRENCY<DD>    (0x08) A currency symbol is inserted into the result in the position specified in the current dcopts structure. On input, currency symbols are checked for and removed if present. The currency symbol and insertion position are specified in the current dcopts structure.
+<DT>DC_NOTHOUS<DD>     (0x00) Thousands separators are not used in the result. On input, thousands separators are not allowed.
+<DT>DC_THOUS<DD>       (0x04) Thousands separators are used in the result. On input, thousands separators are allowed. Separators appear only to the left of the decimal point.
+<DT>DC_NOEXP<DD>       (0x00) The result is written in non-exponential form; NULL is returned if the result exceeds width. On input, exponential format is specifically disallowed; if an exponential number is read, then only the mantissa is converted (the exponent is ignored).
+<DT>DC_EXP<DD> (0x01) The result is written in exponential form; NULL is returned if the result exceeds width. On input, exponential format is allowed.
+<DT>DC_FLEX<DD>(0x02) The result is written in non-exponential form if possible; precision indicates the maximum or required number of digits to the right of the decimal point. On input, exponential format is allowed. This format supports all possible output values in a more consistent and visually pleasing form than the "G" or "g" formats supported by printf. The result is written in exponential form if the non-exponential result would exceed width. If exponential form must be used, the maximum possible number of digits are written to the right of the decimal point; NULL is returned if the exponential result would exceed width.
+</DL>
+Precision flags are specified by bitwise ORing together the constants from the following list (defined in DATACONV.H) into the specified precision value:
+<DL COMPACT>
+<DT>DC_ROUND<DD>       (0x00) The result is rounded if required. "Round to nearest" is the rounding method employed. If both destinations are equidistant, then "rounding away from zero" is performed.
+<DT>DC_TRUNC<DD>       (0x20) The result is not rounded. Less significant digits are truncated.
+<DT>DC_FIX<DD> (0x00) Forces precision digits to the right of the decimal point by appending trailing zeros if necessary. This option is ignored on input.
+<DT>DC_FILL<DD>(0x40) Forces precision characters to the right of the decimal point by replacing trailing zeros with the space character. If the decimal point is suppressed, it is also replaced with the space character. (Note that this inserts space characters between the mantissa and exponent in exponential format.) This option causes trailing space characters to be skipped after the mantissa on input.
+<DT>DC_FLOAT<DD>       (0x80) Allows at most precision digits to right of the decimal point. Trailing zeros are not written. The decimal point is suppressed if there are no digits to the right of the decimal point. This option is ignored on input.
+</DL>
+In addition, the following constant allows the precision of currency strings to be specified in a country-independent manner whether or not a currency symbol is written. This constant is used in place of the precision value specified in the precision parameter:
+<DL COMPACT>
+<DT>DC_CDIGITS<DD>     (0x1F) Use the country-specific precision specified for currency in the dc_curdigits field of the current data conversion options structure.
+</DL>
+width must be in the range 0 to 126. A width of 0 denotes "no limit" (which translates into the maximum internally supported width of at least 126 characters).
+
+<P>
+The following table of flags, input strings, and output strings shows the results of some simple combinations of numeric and precision flags. These examples all assume a precision of 2:
+<PRE>
+Input strings:  "155.0023"  "3.1209e1"   "12045"   "3.006e12"
+Numeric flags:  DC_NOEXP    DC_NOEXP     DC_EXP    DC_EXP
+<PRE>
+
+Precision flags output strings:
+<PRE>
+DC_ROUND+DC_FIX    "155.00"    "31.21"    "1.20e4"     "3.01e12"
+DC_ROUND+DC_FILL   "155   "    "31.21"    "1.2 e4"     "3.01e12"
+DC_ROUND+DC_FLOAT  "155"       "31.21"    "1.2e4"      "3.01e12"
+DC_TRUNC+DC_FIX    "155.00"    "31.20"    "1.20e4"     "3.00e12"
+DC_TRUNC+DC_FILL   "155   "    "31.2 "    "1.2 e4"     "3   e12"
+DC_TRUNC+DC_FLOAT  "155"       "31.2"     "1.2e4"      "3e12"
+</PRE>
+Requirements for Using Floating-Point Conversion Functions
+
+<P>
+Most of the ASCII-to-floating-point and floating-point-to-ASCII conversion functions make use of the 80x87 floating-point instruction set. Therefore, the appliction must be linked with floating-point emulation enabled if these functions are used in an application which may be run on a system without a coprocessor. This requirement is documented in the reference section for each function to which it applies.
+
+<P>
+Spontaneous Assembly functions which use 8087 floating-point instructions are NOT present in the standard libraries (_SA?.LIB). Instead, these functions are found in separate floating-point libraries (_FPC??.LIB) which have been pre-assembled to support specific compilers or a numeric coprocessor (no floating-point emulation). These libraries are as follows:
+
+<P>
+Library   Description
+<DL COMPACT>
+<DT>FPCBm.LIB<DD>      Spontaneous Assembly functions which have been assembled specifically for use with Borland/Turbo C/C++
+<DT>FPCMm.LIB<DD>      Spontaneous Assembly functions which have been assembled specifically for use with Microsoft C/C++
+<DT>FPCTm.LIB<DD>      Spontaneous Assembly functions which have been assembled specifically for use with TopSpeed C
+<DT>FPCZm.LIB<DD>      Spontaneous Assembly functions which have been assembled specifically for use with Zortech C++
+<DT>FPCNm.LIB<DD>      Spontaneous Assembly functions which have been assembled for use in systems which have a numeric coprocessor
+</DL>
+In each library name shown above, m denotes a single letter (T, S, M, C, or L) which indicates one of the five standard memory models (TINY, SMALL, MEDIUM, COMPACT, or LARGE).
+
+<P>
+FPCNm.LIB should be used if floating-point facilities are not required by the application.
+
+<P>
+At present, only the floating-point data conversion functions (_DF*.ASM) are included in these special floating-point coprocessor libraries.
+
+<H2><A NAME="HEAD000D">Sample Program
+</A></H2>
+
+The CALC sample program described in the Integer Math technical notes uses several data conversion functions and demonstrates conversions from asc-to-quad and quad-to-asc in various radices.
+
+</BOBY>
+</HTML>

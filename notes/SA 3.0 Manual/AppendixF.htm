@@ -1,0 +1,505 @@
+<html>
+<head>
+<title>Spontaneous Assembly 3.0 - Appendix F</title>
+</head>
+
+<body>
+
+<H2>APPENDIX F</H2>
+
+       <H3><center>Controlling Reentrancy with the TSR System</center></H3>
+
+<b>Overview</b>
+<p>
+This appendix explains how reentrancy is controlled within the Spontaneous Assembly TSR system. In addition to the automatic facilities described below, other methods (e.g., semaphores) may be used to control reentrancy, but these methods are beyond the scope of this documentation.
+<p>
+In this appendix, reentrancy refers to execution of the same program (not necessarily the same routine) through one or more entry points as a result of external events (e.g., interrupts) before previous entries have finished executing.
+<p>
+By default, the Spontaneous Assembly TSR system automatically prevents reentrant execution of TSR entry points. However, reentrancy is often necessary in a TSR. For example, a TSR may support an alarm window that "pops up" at a specified time as well as a hotkey which displays another window to set the alarm time. The alarm window must always be allowed to pop up when the alarm time is reached, even if the window which is used to set the alarm time is visible. This is not possible if reentrancy is disallowed.
+<p>
+By following the guidelines in this appendix, this kind of reentrant TSR execution is easily supported and managed by the Spontaneous Assembly TSR functions.
+<p>
+<b>Managing Reentrancy</b>
+<p>
+Any program may be made reentrant by following one simple rule: resources not exclusively owned by a particular instance of a routine must be saved when that routine gains control and restored when that routine finishes. A "resource" is data which is not maintained in registers or on the stack (e.g. variables and buffers). A resource is "exclusively owned" only if it is locked while in use to prevent other routines or other instances of the same routine from using it.
+<p>
+System resources (e.g., DOS and BIOS) are automatically locked, saved, and restored by the TSR system when those resources are specified for a particular entry point. System resources are specified in the entry definition structure by using the appropriate resource equates (e.g., _con_kbd) in conjunction with the ..._DEF macros.
+<p>
+Program resources are also automatically locked by the Spontaneous Assembly TSR system if they are specified for a given entry point. By default, the TSR system assumes that the entire TSR is a single program resource which is locked each time any entry point gains control. This safely prevents all reentrancy without any work on the programmer's part. However, this default can be easily changed to allow more than one TSR entry point to be active at a time (as long as they do not require the use of the same program resources).
+<p>
+Program resource locking is managed through the tsr_lockmask variable and the entry_mask field of each entry definition structure. Whenever an ISR attempts to pass control to an entry point, the entry_mask for that entry point is non-destructively ANDed with tsr_lockmask. If the result is non-zero (required resources are in use), the fail function is called instead of the entry point. If the result is zero, the entry_mask is then ORed into tsr_lockmask to lock the entry point's resources, and the entry point receives control. When the entry point finishes execution, tsr_lockmask is ANDed with the logical NOT of entry_mask to indicate that the locked resources are again available for use.
+<p>
+By default, bit 0 of tsr_lockmask is assigned to the entire TSR as a single resource. However, the programmer may assign bits 0 through 14 of this variable to any program resources of their choosing. Bit 15 is reserved for use by the keystroke feeder. Each TSR entry point may then specify its required program resources by setting the appropriate bits in entry_mask. When all required resource bits have been properly set, the TSR will safely operate in a reentrant manner.
+<p>
+<b>WARNING!</b> The TSR resource locking system used by Spontaneous Assembly is straight forward and reliable. If a TSR does not behave as expected, the problem is almost certainly due to overlooked or improperly specified resources. Please follow the troubleshooting guidelines in the section below if resource conflicts are suspected!
+<p>
+<b>Troubleshooting</b>
+<p>
+Improper management of resources can cause unpredictable behavior in a TSR. If a reentrant TSR crashes or behaves unexpectedly, the exact conditions under which the problem occurs should be carefully noted so that the problem may be isolated quickly.
+<p>
+In resolving resource conflicts, the developer should remember that TSR execution always occurs on a last-in-first-out basis. This means that one TSR entry point may interrupt another (or the TSR may interrupt a foreground application), but the interrupt ing entry point always finishes executing before it returns control to the interrupt ed entry point (or application). This means that when a resource conflict is suspected because of erratic behavior, the conflict usually lies between the entry point (or program) which exhibited the behavior and the entry point which was executed just before the behavior was noted.
+<p>
+System resource conflicts occur when the interrupt ing entry point fails to check for resource availability (e.g., DOS) before using the resource. This causes the resource to be corrupted when control is returned to the previous entry point or foreground application. This only occurs when the system resource is not properly noted in the entry definition structure. This problem should be immediately suspected any time the foreground application crashes after the TSR has been activated. It may also be suspected if a TSR crashes just after another TSR entry point has finished execution. This type of conflict is easily solved by adding the overlooked resource to the entry definition structure resource list (specified when the ..._DEF macros are used).
+<p>
+Program resource conflicts are resolved similarly, but these can be the fault of either the interrupt ed entry point and/or the interrupt ing entry point. Program resource conflicts are likely to have less disastrous effects than system resource conflicts. Overlooked program resources can include global variables, buffers, and routines with self-modifying code (data in the code segment). This problem is resolved by identifying the overlooked resource and properly noting it in the entry_mask field of the entry definition structure for any entry point which uses that resource.
+<p>
+<pre>
+
+                          C Function Cross Reference
+
+                 abs. . . . . . . . . . . . . . . . . _abs...
+                 access . . . . . . . . . . . . . . _access_f
+                 allocmem . . . . . . . . . . . . _dos_malloc
+                 _amblksiz. . . . . . . . . . . . .nheap_size
+                 _argc. . . . . . . . . . . . . . ._arg_count
+                 _argv. . . . . . . . . . . . . . . _arg_next
+                 asctime. . . . . . . . . . . . . . _asc_time
+                  . . . . . . . . . . . . . . . ._time_to_asc
+                 atexit . . . . . . . . . . . . . . ._on_exit
+                 atoi . . . . . . . . . . . . . . . _asc_to_c
+                  . . . . . . . . . . . . . . . . . _asc_to_i
+                 atol . . . . . . . . . . . . . . . _asc_to_l
+                 bcd. . . . . . . . . . . . . . ._bcd_to_quad
+                  . . . . . . . . . . . . . . . ._quad_to_bcd
+                 _bios_keybrd . . . . . . . . . _get_keyflags
+                 _bios_timeofday. . . . . . . . _tick_to_time
+                  . . . . . . . . . . . . . . . _time_to_tick
+                 bsearch. . . . . . . . . . . . . _bin_search
+                 calloc . . . . . . . . . . . . . _far_calloc
+                  . . . . . . . . . . . . . . . ._near_calloc
+                  . . . . . . . . . . . . . . . . _rel_calloc
+                 cgets. . . . . . . . . . . . . . . _cget_str
+                 chdir. . . . . . . . . . . . . . . . _ch_dir
+                 chmod. . . . . . . . . . . . . . ._getmode_f
+                 chsize . . . . . . . . . . . . . _setfsize_h
+                 clock. . . . . . . . . . . . . . ._get_clock
+                 close. . . . . . . . . . . . . . . ._close_h
+                 clreol . . . . . . . . . . . . . . ._clr_eol
+                 clrscr . . . . . . . . . . . . . _clr_region
+                 coreleft . . . . . . . . . . . . ._far_avail
+                  . . . . . . . . . . . . . . . . _near_avail
+                  . . . . . . . . . . . . . . . . ._rel_avail
+                 country. . . . . . . . . . ._get_countryinfo
+                  . . . . . . . . . . . . . . . ._set_country
+                 cprintf. . . . . . . . . . . . ._cput_script
+                 cputs. . . . . . . . . . . . . . . _cput_str
+                 creat. . . . . . . . . . . . . . . _create_h
+                 creatnew . . . . . . . . . . . . . _create_h
+                 creattemp. . . . . . . . . . . . . ._mk_temp
+                 cscanf . . . . . . . . . . . . ._cget_script
+                 ctime. . . . . . . . . . . . . . . _asc_time
+                  . . . . . . . . . . . . . . . ._time_to_asc
+                 ctrlbrk. . . . . . . . . . . . _cbrk_install
+                 delay. . . . . . . . . . . . . . _sleep_msec
+                 delline. . . . . . . . . . . . . . _del_line
+                 difftime . . . . . . . . . . . . ._diff_time
+                 directvideo. . . . . . . . . . .direct_video
+                 div. . . . . . . . . . . . . . . . . _div...
+                 _dos_allocmen. . . . . . . . . . _dos_malloc
+                 _dos_close . . . . . . . . . . . . ._close_h
+                 _dos_findfirst . . . . . . . . . _find_first
+                 _dos_findnext. . . . . . . . . . ._find_next
+                 _dos_freemem . . . . . . . . . . ._dos_mfree
+                 _dos_getftime. . . . . . . . . . _getftime_h
+                 _dos_getdrive. . . . . . . . . . ._get_drive
+                 _dos_gettime . . . . . . . . . . . _get_time
+                 _dos_open. . . . . . . . . . . . . . _open_h
+                  . . . . . . . . . . . . . . . . . _openex_h
+                 _dos_read. . . . . . . . . . . . . . _read_h
+                 _dos_setblock. . . . . . . . . . . _dos_mset
+                  . . . . . . . . . . . . . . . . ._dos_msize
+                 _dos_setdate . . . . . . . . . . . _set_date
+                 _dos_setdrive. . . . . . . . . . ._set_drive
+                 _dos_setfileattr . . . . . . . . ._getmode_f
+                  . . . . . . . . . . . . . . . . ._setmode_f
+                 _dos_setftime. . . . . . . . . . _setftime_h
+                 _dos_settime . . . . . . . . . . . _set_time
+                 _dos_setvect . . . . . . . . . . . ._set_vec
+                  . . . . . . . . . . . . . . . . . _set_vect
+                 _dos_write . . . . . . . . . . . . ._write_h
+                 dup. . . . . . . . . . . . . . . . . ._dup_h
+                 dup2 . . . . . . . . . . . . . . . . _dup2_h
+                 ecvt . . . . . . . . . . . . . ._d_to_dec...
+                  . . . . . . . . . . . . . . . ._f_to_dec...
+                  . . . . . . . . . . . . . . . _ld_to_dec...
+                 environ. . . . . . . . . . . . . _get_envseg
+                 eof. . . . . . . . . . . . . . . . . ._eof_h
+                 errno. . . . . . . . . . . . . . . . .e_code
+                  . . . . . . . . . . . . . . . . ._get_ecode
+                 exec.... . . . . . . . . . . . . . ._exec...
+                 _exit. . . . . . . . . . . . . . . . . _exit
+                 exit . . . . . . . . . . . . . _exit_cleanup
+                 _expand. . . . . . . . . . . . _near_realloc
+                 farcalloc. . . . . . . . . . . . _far_calloc
+                 farcoreleft. . . . . . . . . . . ._far_avail
+                 farfree. . . . . . . . . . . . . . _far_free
+                 farmalloc. . . . . . . . . . . . _far_malloc
+                 farrealloc . . . . . . . . . . ._far_realloc
+                 fclose . . . . . . . . . . . . . . ._close_h
+                 feof . . . . . . . . . . . . . . . . ._eof_h
+                 fflush . . . . . . . . . . . . . . ._flush_h
+                 filelength . . . . . . . . . . . _getfsize_h
+                 fgetc. . . . . . . . . . . . . . . _hget_chr
+                 fgetchar . . . . . . . . . . . . . ._get_chr
+                 fgetpos. . . . . . . . . . . . . . . _tell_h
+                 fgets. . . . . . . . . . . . . . . _hget_str
+                  . . . . . . . . . . . . . . . . ._hget_line
+                 filelength . . . . . . . . . . . _getfsize_h
+                 fnmerg . . . . . . . . . . . . . ._merge_...
+                 fnsplit. . . . . . . . . . . . . ._split_...
+                 fopen. . . . . . . . . . . . . . . . _open_h
+                 fprintf. . . . . . . . . . . . ._hput_script
+                 fputc. . . . . . . . . . . . . . . _hput_chr
+                 fputchar . . . . . . . . . . . . . ._put_chr
+                 fputs. . . . . . . . . . . . . . . _hput_str
+                 fread. . . . . . . . . . . . . . . . _read_h
+                 free . . . . . . . . . . . . . . . _far_free
+                  . . . . . . . . . . . . . . . . ._near_free
+                  . . . . . . . . . . . . . . . . . _rel_free
+                 fscanf . . . . . . . . . . . . ._hget_script
+                 fseek. . . . . . . . . . . . . . . _lseek...
+                 ftell. . . . . . . . . . . . . . . . _tell_h
+                 ftime. . . . . . . . . . . . . . . _get_time
+                 fwrite . . . . . . . . . . . . . . ._write_h
+                 getc . . . . . . . . . . . . . . . _hget_chr
+                 getch. . . . . . . . . . . . . . . _cget_chr
+                 getchar. . . . . . . . . . . . . . ._get_chr
+                 getche . . . . . . . . . . . . . ._cget_chre
+                 getcurdir. . . . . . . . . . . . _get_curdir
+                 getcwd . . . . . . . . . . . . . . ._get_cwd
+                 getdate. . . . . . . . . . . . . . _get_date
+                 getdfree . . . . . . . . . . . . ._get_dfree
+                 getdrive . . . . . . . . . . . . ._get_drive
+                 getdta . . . . . . . . . . . . . . ._get_dta
+                 getenv . . . . . . . . . . . . . . ._get_env
+                  . . . . . . . . . . . . . . ._get_curenvseg
+                  . . . . . . . . . . . . . . ._get_dosenvseg
+                  . . . . . . . . . . . . . . . . _get_envseg
+                  . . . . . . . . . . . . . . ._get_parenvseg
+                  . . . . . . . . . . . . . . _get_rootenvseg
+                 getfat . . . . . . . . . . . . . ._get_dinfo
+                 getfatd. . . . . . . . . . . . . _get_cdinfo
+                 getftime . . . . . . . . . . . . _getftime_h
+                 getpsp . . . . . . . . . . . . . . ._get_psp
+                 gets . . . . . . . . . . . . . . . ._get_str
+                 gettext. . . . . . . . . . . ._read_textattr
+                 gettextcolor . . . . . . . . . . . _get_attr
+                  . . . . . . . . . . . . . . . . ._get_dattr
+                 _get_textinfo. . . . . . . . . . _get_region
+                 _gettextposition . . . . . . . . . _where_xy
+                 _fcvt. . . . . . . . . . . . . ._d_to_dec...
+                  . . . . . . . . . . . . . . . ._f_to_dec...
+                  . . . . . . . . . . . . . . . _ld_to_dec...
+                 getvect. . . . . . . . . . . . . . ._get_vec
+                  . . . . . . . . . . . . . . . . . _get_vect
+                 getverify. . . . . . . . . . . . _get_verify
+                 gotoxy . . . . . . . . . . . . . . ._goto_xy
+                  . . . . . . . . . . . . . . . . . . _goto_x
+                  . . . . . . . . . . . . . . . . . . _goto_y
+                 harderr. . . . . . . . . . . . . _ce_install
+                 hardresume . . . . . . . . . . ._cem_install
+                 hardretn . . . . . . . . . . . ._cem_install
+                 get_drive. . . . . . . . . . . . ._get_drive
+                 hfree. . . . . . . . . . . . . . ._dos_mfree
+                 highvideo. . . . . . . . . . . . . ._bold_on
+                 insline. . . . . . . . . . . . . . _ins_line
+                 isalnum. . . . . . . . . . . . . . _is_alnum
+                 isalpha. . . . . . . . . . . . . . _is_alpha
+                 isascii. . . . . . . . . . . . . . _is_ascii
+                 isatty . . . . . . . . . . . . . . ._is_atty
+                 iscntrl. . . . . . . . . . . . . . _is_cntrl
+                 isdigit. . . . . . . . . . . . . . _is_digit
+                 isgraph. . . . . . . . . . . . . . _is_graph
+                 islower. . . . . . . . . . . . . . _is_lower
+                 isprint. . . . . . . . . . . . . . _is_print
+                 ispunct. . . . . . . . . . . . . . _is_punct
+                 isspace. . . . . . . . . . . . . . _is_space
+                 isupper. . . . . . . . . . . . . . _is_upper
+                 isxdigit . . . . . . . . . . . . ._is_xdigit
+                 itoa . . . . . . . . . . . . . . . _c_to_asc
+                  . . . . . . . . . . . . . . . . . _i_to_asc
+                 kbhit. . . . . . . . . . . . . . _ccheck_key
+                  . . . . . . . . . . . . . . . . ._check_key
+                 labs . . . . . . . . . . . . . . . . _abs...
+                 ldiv . . . . . . . . . . . . . . . . _div...
+                 lfind. . . . . . . . . . . . . . _lin_search
+                 lowvideo . . . . . . . . . . . . . _bold_off
+                 lsearch. . . . . . . . . . . . . _lin_search
+                 lseek. . . . . . . . . . . . . . . _lseek...
+                 ltoa . . . . . . . . . . . . . ._l_to_asc...
+                  . . . . . . . . . . . . . . . ._l_to_dec...
+                 _makepath. . . . . . . . . . . . ._merge_...
+                 malloc . . . . . . . . . . . . ._near_malloc
+                  . . . . . . . . . . . . . . . . _far_malloc
+                  . . . . . . . . . . . . . . . . _rel_malloc
+                 memccpy. . . . . . . . . . . . . . _mem_ccpy
+                 memchr . . . . . . . . . . . . . . ._mem_chr
+                 memcmp . . . . . . . . . . . . . . ._mem_cmp
+                 memcpy . . . . . . . . . . . . . . ._mem_cpy
+                 memicmp. . . . . . . . . . . . . . _mem_cmpi
+                 memmove. . . . . . . . . . . . . . ._mem_mov
+                 memset . . . . . . . . . . . . . . ._mem_set
+                 mkdir. . . . . . . . . . . . . . . . _mk_dir
+                 mktemp . . . . . . . . . . . . . . ._mk_temp
+                 movedata . . . . . . . . . . . . . ._mem_mov
+                 movetext . . . . . . . . . . ._move_textattr
+                 movmem . . . . . . . . . . . . . . ._mem_mov
+                 _nfree . . . . . . . . . . . . . ._near_free
+                 _nmalloc . . . . . . . . . . . ._near_malloc
+                 nosound. . . . . . . . . . . . . ._sound_off
+                 open . . . . . . . . . . . . . . . . _open_h
+                 _osmajor . . . . . . . . . . . . . ._osmajor
+                 _osminor . . . . . . . . . . . . . ._osminor
+                 _osversion . . . . . . . . . . . . ._version
+                 perror . . . . . . . . . . . . . _dos_errmsg
+                 printf . . . . . . . . . . . . . _put_script
+                 _psp . . . . . . . . . . . . . . . ._get_psp
+                  . . . . . . . . . . . . . . . . . . . ._psp
+                 putc . . . . . . . . . . . . . . . _hput_chr
+                 putch. . . . . . . . . . . . . . . _cput_chr
+                 putchar. . . . . . . . . . . . . . ._put_chr
+                 putenv . . . . . . . . . . . . . . ._set_env
+                 puts . . . . . . . . . . . . . . . ._put_str
+                 puttext. . . . . . . . . . . _write_textattr
+                 qsort. . . . . . . . . . . . . ._array_qsort
+                  . . . . . . . . . . . . . . . . _quick_sort
+                 rand . . . . . . . . . . . . . . . . _rand_w
+                 random . . . . . . . . . . . . . . ._randr_w
+                 randomize. . . . . . . . . . . . ._rand_init
+                 read . . . . . . . . . . . . . . . . _read_h
+                 realloc. . . . . . . . . . . . ._far_realloc
+                  . . . . . . . . . . . . . . . _near_realloc
+                  . . . . . . . . . . . . . . . ._rel_realloc
+                 remove . . . . . . . . . . . . . . _remove_h
+                 rename . . . . . . . . . . . . . . _rename_h
+                 rewind . . . . . . . . . . . . . _lseekbof_h
+                 rmdir. . . . . . . . . . . . . . . . _rm_dir
+                 scanf. . . . . . . . . . . . . . _get_script
+                 _searchenv . . . . . . . . . . ._search_path
+                 searchpath . . . . . . . . . . ._search_path
+                 setcbrk. . . . . . . . . . . . ._cbrk_enable
+                 setdisk. . . . . . . . . . . . . ._set_drive
+                 setdta . . . . . . . . . . . . . . ._set_dta
+                 setftime . . . . . . . . . . . . _setftime_h
+                 setmem . . . . . . . . . . . . . . ._mem_set
+                 setmode. . . . . . . . . . . . . ._setmode_f
+                 settime. . . . . . . . . . . . . _setftime_h
+                 setvect. . . . . . . . . . . . . . ._set_vec
+                  . . . . . . . . . . . . . . . . . _set_vect
+                 setverify. . . . . . . . . . . . _set_verify
+                 _setvideomode. . . . . . . . . . ._set_vmode
+                 sleep. . . . . . . . . . . . . . ._sleep_sec
+                 sound. . . . . . . . . . . . . . . _sound_on
+                 spawn... . . . . . . . . . . . _exec_prog...
+                 _splitpath . . . . . . . . . . . ._split_...
+                 sprintf. . . . . . . . . . . . ._sput_script
+                 srand. . . . . . . . . . . . . . . rand_seed
+                 sscanf . . . . . . . . . . . . ._sget_script
+                 stime. . . . . . . . . . . . . . . _set_time
+                 stpcpy . . . . . . . . . . . . . . _str_cpye
+                 strcat . . . . . . . . . . . . . . ._str_cat
+                 strchr . . . . . . . . . . . . . . ._str_chr
+                 strcmp . . . . . . . . . . . . . . ._str_cmp
+                 strcpy . . . . . . . . . . . . . . ._str_cpy
+                  . . . . . . . . . . . . . . . . . _str_cpye
+                 strcspn. . . . . . . . . . . . . . _str_cspn
+                 _strdate . . . . . . . . . . . . . _asc_date
+                  . . . . . . . . . . . . . . . ._date_to_asc
+                 strerror . . . . . . . . . . . ._dos_errmsge
+                 stricmp. . . . . . . . . . . . . . _str_cmpi
+                 strlen . . . . . . . . . . . . . . ._str_len
+                 strlwr . . . . . . . . . . . . . . ._str_lwr
+                 strncat. . . . . . . . . . . . . . _str_ncat
+                 strncmp. . . . . . . . . . . . . . _str_ncmp
+                 strncmpi . . . . . . . . . . . . ._str_ncmpi
+                 strncpy. . . . . . . . . . . . . . _str_ncpy
+                 strnicmp . . . . . . . . . . . . ._str_ncmpi
+                 strnset. . . . . . . . . . . . . . _str_nset
+                 strtod . . . . . . . . . . . . . . _asc_to_d
+                  . . . . . . . . . . . . . . . . . _asc_to_f
+                  . . . . . . . . . . . . . . . . . _dec_to_d
+                  . . . . . . . . . . . . . . . . . _dec_to_f
+                 strtold. . . . . . . . . . . . . ._asc_to_ld
+                  . . . . . . . . . . . . . . . . ._dec_to_ld
+                 strpbrk. . . . . . . . . . . . . . _str_pbrk
+                 strrchr. . . . . . . . . . . . . . _str_rchr
+                 strrev . . . . . . . . . . . . . . ._str_rev
+                 strset . . . . . . . . . . . . . . ._str_set
+                 strspn . . . . . . . . . . . . . . ._str_spn
+                 strstr . . . . . . . . . . . . . . ._str_str
+                 _strtime . . . . . . . . . . . . . _asc_time
+                  . . . . . . . . . . . . . . . ._time_to_asc
+                 strtok . . . . . . . . . . . . . . ._str_tok
+                 strtol . . . . . . . . . . . . . . _asc_to_l
+                 strtoul. . . . . . . . . . . . . . _asc_to_l
+                 strupr . . . . . . . . . . . . . . ._str_upr
+                 swab . . . . . . . . . . . . . . . _mem_swab
+                 system . . . . . . . . . . . . ._exec_sys...
+                 tell . . . . . . . . . . . . . . . . _tell_h
+                 textattr . . . . . . . . . . . . . _set_attr
+                 textbackground . . . . . . . . ._set_bkcolor
+                 textcolor. . . . . . . . . . . ._set_fgcolor
+                 textmode . . . . . . . . . . . . ._set_vmode
+                 time . . . . . . . . . . . . . . . _get_time
+                 tmpnam . . . . . . . . . . . . . . ._mk_temp
+                 toascii. . . . . . . . . . . . . . _to_ascii
+                 tolower. . . . . . . . . . . . . . _to_lower
+                 toupper. . . . . . . . . . . . . . _to_upper
+                 ultoa. . . . . . . . . . . . . . . _l_to_asc
+                 unlink . . . . . . . . . . . . . . _remove_f
+                 _version . . . . . . . . . . . . . ._version
+                 wherex . . . . . . . . . . . . . . _where_xy
+                 wherey . . . . . . . . . . . . . . _where_xy
+                 window . . . . . . . . . . . . . _set_region
+                 write. . . . . . . . . . . . . . . ._write_h
+
+
+            Scripted I/O Function-to-Code Cross Reference
+
+                 Codes for all ..._script functions:
+                                  
+            _c_to_dec,
+            _dec_to_c. . . . . . . . . . . . . . .__BYTE
+            _i_to_dec,
+            _dec_to_i. . . . . . . . . . . . . . . __INT
+            _l_to_dec,
+            _dec_to_l. . . . . . . . . . . . . . .__LONG
+            _q_to_dec,
+            _dec_to_q. . . . . . . . . . . . . . .__QUAD
+            _c_to_asc,
+            _asc_to_c. . . . . . . . . . . . . __ASCBYTE
+            _i_to_asc,
+            _asc_to_i. . . . . . . . . . . . . .__ASCINT
+            _l_to_asc,
+            _asc_to_l. . . . . . . . . . . . .__ASCDLONG
+            _q_to_asc,
+            _asc_to_q. . . . . . . . . . . . . __ASCQUAD
+            _fixpi_to_dec,
+            _dec_to_fixpi. . . . . . . . . . . .__FXPINT
+            _fixpl_to_dec,
+            _dec_to_fixpl. . . . . . . . . . . __FXPLONG
+            _fixpq_to_dec,
+            _dec_to_fixpq. . . . . . . . . . . __FXPQUAD
+            _f_to_dec,
+            _dec_to_f. . . . . . . . . . . . . . __FLOAT
+            _d_to_dec,
+            _dec_to_d. . . . . . . . . . . . . .__DOUBLE
+            _ld_to_dec,
+            _dec_to_ld . . . . . . . . . . . . __LDOUBLE
+            _bcd_to_dec,
+            _dec_to_bcd. . . . . . . . . . . . . . __BCD
+            _l_to_asc,
+            _asc_to_l. . . . . . . . . . . . . __NEARPTR
+            _date_to_asc,
+            _asc_to_date . . . . . . . . . . . . .__DATE
+            _time_to_asc,
+            _asc_to_time . . . . . . . . . . . . .__TIME
+            _cput_beep,
+            _put_beep. . . . . . . . . . . . . . . _BEEP
+            _cput_chr,
+            _hput_chr,
+            _put_chr,
+            _cget_chr,
+            _hget_chr,
+            _get_chr . . . . . . . . . . . . . . .__CHAR
+            _cput_newline,
+            _put_newline . . . . . . . . . . . . . . _NL
+            _cput_str,
+            _hput_str,
+            _put_str,
+            _cget_str,
+            _hget_str,
+            _get_str . . . . . . . . . . . . . .__STRING
+            
+            _Additional codes for the _cput_script function:
+            
+            _afill_eol . . . . . . . . . . . . _AFILLEOL
+            _afill_line. . . . . . . . . . . . _AFILLINE
+            _afill_n . . . . . . . . . . . . . . _AFILLN
+            _afill_reg . . . . . . . . . . . . _AFILLREG
+            _bkbold_off. . . . . . . . . . . ._BKBOLDOFF
+            _bkbold_on . . . . . . . . . . . . _BKBOLDON
+            _blink_off . . . . . . . . . . . . _BLINKOFF
+            _blink_on. . . . . . . . . . . . . ._BLINKON
+            _bold_off. . . . . . . . . . . . . ._BOLDOFF
+            _bold_on . . . . . . . . . . . . . . _BOLDON
+            _clr_eol . . . . . . . . . . . . . . _CLREOL
+            _clr_line. . . . . . . . . . . . . ._CLRLINE
+            _clr_n . . . . . . . . . . . . . . . . _CLRN
+            _clr_region. . . . . . . . . . . . . _CLRREG
+            _cput_attr . . . . . . . . . . . . ._PUTATTR
+            _cput_chri . . . . . . . . . . . . ._PUTCHRI
+            _cput_linefeed . . . . . . . . . . . . . _FF
+            _cput_nattr. . . . . . . . . . . . _PUTNATTR
+            _cput_nchri. . . . . . . . . . . . _PUTNCHRI
+            _cput_return . . . . . . . . . . . . . . _CR
+            _cput_strci. . . . . . . . . . . . _PUTSTRCI
+            _cput_stri . . . . . . . . . . . . ._PUTSTRI
+            _cput_strji. . . . . . . . . . . . _PUTSTRJI
+            _cursor_off. . . . . . . . . . . . ._CURSOFF
+            _cursor_on . . . . . . . . . . . . . _CURSON
+            _del_line. . . . . . . . . . . . . ._DELLINE
+            _direc_down. . . . . . . . . . . . ._DIRDOWN
+            _direc_left. . . . . . . . . . . . ._DIRLEFT
+            _direc_right . . . . . . . . . . . _DIRRIGHT
+            _direc_up. . . . . . . . . . . . . . ._DIRUP
+            _fill_eol. . . . . . . . . . . . . ._FILLEOL
+            _fill_line . . . . . . . . . . . . ._FILLINE
+            _fill_n. . . . . . . . . . . . . . . ._FILLN
+            _fill_region . . . . . . . . . . . ._FILLREG
+            _get_attr. . . . . . . . . . . . . __GETATTR
+            _get_attrflags . . . . . . . . . .__GETATTRF
+            _get_attrtbl . . . . . . . . . . . __GETATBL
+            _get_dattr . . . . . . . . . . . .__GETDATTR
+            _get_direction . . . . . . . . . .__GETDIREC
+            _goto_bottom . . . . . . . . . . . _GOBOTTOM
+            _goto_end. . . . . . . . . . . . . . ._GOEND
+            _goto_home . . . . . . . . . . . . . _GOHOME
+            _goto_left . . . . . . . . . . . . . _GOLEFT
+            _goto_right. . . . . . . . . . . . ._GORIGHT
+            _goto_top. . . . . . . . . . . . . . ._GOTOP
+            _goto_x. . . . . . . . . . . . . . . . ._GOX
+                                                  __SETX
+            _goto_xy . . . . . . . . . . . . . . . _GOXY
+                                                 __SETXY
+            _goto_y. . . . . . . . . . . . . . . .__SETY
+                                                    _GOY
+            _ins_line. . . . . . . . . . . . . ._INSLINE
+            _move_down . . . . . . . . . . . . . . _DOWN
+            _move_left . . . . . . . . . . . . . . _LEFT
+            _move_next . . . . . . . . . . . . . . _NEXT
+            _move_right. . . . . . . . . . . . . ._RIGHT
+            _move_up . . . . . . . . . . . . . . . . _UP
+            _region_off. . . . . . . . . . . . . _REGOFF
+            _region_on . . . . . . . . . . . . . ._REGON
+            _rel_xy. . . . . . . . . . . . . . . ._RELXY
+            _reset_attr. . . . . . . . . . . ._RESETATTR
+            _scroll_down . . . . . . . . . . . _SCRLDOWN
+            _scroll_up . . . . . . . . . . . . . _SCRLUP
+            _set_attr. . . . . . . . . . . . . __SETATTR
+                                                   _ATTR
+            _set_attrflags . . . . . . . . . . . ._ATTRF
+                                              __SETATTRF
+            _set_attrtbl . . . . . . . . . . . __SETATBL
+            _set_bkboldmode. . . . . . . . . . ._BKBOLDM
+            _set_bkcolor . . . . . . . . . . . ._BKCOLOR
+            _set_blinkmode . . . . . . . . . . . _BLINKM
+            _set_border. . . . . . . . . . . . ._VBCOLOR
+            _set_cursor. . . . . . . . . . . . . _CURSOR
+            _set_dattr . . . . . . . . . . . .__SETDATTR
+                                                  _DATTR
+            _set_direction . . . . . . . . . ._DIRECTION
+                                              __SETDIREC
+            _set_fgcolor . . . . . . . . . . . ._FGCOLOR
+            _set_region. . . . . . . . . . . . . _REGION
+            _set_vbordattr . . . . . . . . . . . _VBATTR
+            _vborder_off . . . . . . . . . . . . ._VBOFF
+            _vborder_on. . . . . . . . . . . . . . _VBON
+            _where_xy. . . . . . . . . . . . . . .__GETX
+                                                  __GETY
+                                                 __GETXY
+
+</pre>
+</body>
+<html>
+

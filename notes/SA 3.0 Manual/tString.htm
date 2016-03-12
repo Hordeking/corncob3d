@@ -1,0 +1,206 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: String Manipulation</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>String Manipulation</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tString.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tString.htm#HEAD0001">Determining String Lengths
+</A><BR>
+<A HREF="tString.htm#HEAD0002">Finding the Terminating NULL of a String
+</A><BR>
+<A HREF="tString.htm#HEAD0003">Copying Strings
+</A><BR>
+<A HREF="tString.htm#HEAD0004">Concatenating Strings
+</A><BR>
+<A HREF="tString.htm#HEAD0005">Comparing Strings
+</A><BR>
+<A HREF="tString.htm#HEAD0006">Converting Character Case in a String
+</A><BR>
+<A HREF="tString.htm#HEAD0007">Setting Characters in a String
+</A><BR>
+<A HREF="tString.htm#HEAD0008">Reversing the Characters in a String
+</A><BR>
+<A HREF="tString.htm#HEAD0009">Skipping Space Characters in a String
+</A><BR>
+<A HREF="tString.htm#HEAD000A">Aligning Strings
+</A><BR>
+<A HREF="tString.htm#HEAD000B">Removing Trailing Space Characters from a String
+</A><BR>
+<A HREF="tString.htm#HEAD000C">Counting the Number of Matching Characters in a String
+</A><BR>
+<A HREF="tString.htm#HEAD000D">Searching for Characters in a String
+</A><BR>
+<A HREF="tString.htm#HEAD000E">Locating Path Elements in a String
+</A><BR>
+<A HREF="tString.htm#HEAD000F">Tokenizing a String
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit consists of functions which do the following: determine the length of strings; copy, concatenate, and compare strings; convert the case of characters in strings; search for characters in strings; search for sub-strings in strings; tokenize strings, and justify strings. This unit also includes functions which return a pointer to the end of a string, determine the number of characters in a string which match (or mismatch) characters in a specified character set, set the characters in a string to a specified character, reverse all the characters in a string, and return a pointer past any whitespace at the beginning of a string.
+
+<P>
+These functions operate on ASCIIZ strings (arrays of characters terminated with a NULL (0x00) character).
+
+<P>
+Functions which follow the _str_... naming convention operate on near strings in small data models and far strings in large data models. Each of these _str_... functions has a far counterpart with a _fstr_... naming convention. The _fstr_... functions are identical to their _str_... counterparts except that they work on far strings in both large and small data models. These functions are provided to make it possible to manipulate strings on relative and far heaps in small data models without changing to a large data model. The _str_... and _fstr_... versions of any given function are unique only in the small data models. Either version of a given function calls the same underlying code in the large data models. Because this is the only distinction between the two types of functions, only the _str_... functions are described below.
+
+<P>
+The CPU direction flag must be clear before calling any of these functions. (Most C programs never modify the direction flag.)
+
+<H2><A NAME="HEAD0001">Determining String Lengths
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rstring.htm#_str_len">_str_len</A><DD>       Returns the length of a string.
+</DL>
+This function returns the length of a string. The terminating NULL character is never counted in the returned string length.
+
+<H2><A NAME="HEAD0002">Finding the Terminating NULL of a String
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rstring.htm#_str_end">_str_end</A><DD>       Returns a pointer to the end of a string.
+</DL>
+This function returns a pointer to the terminating NULL of a string.
+
+<H2><A NAME="HEAD0003">Copying Strings
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rstring.htm#_str_cpy">_str_cpy</A><DD>       Copies a string to another location.
+<DT><A HREF="rstring.htm#_str_cpye">_str_cpye</A><DD>      Copies a string to another location and returns a pointer to the end of the copy.
+<DT><A HREF="rstring.htm#_str_ncpy">_str_ncpy</A><DD>      Copies a portion of a string to another location.
+</DL>
+These functions copy strings from one location to another. The buffer receiving the copy must be large enough to hold it or data following the buffer will be overwritten. <A HREF="rstring.htm#_str_cpy">_str_cpy</A> is used to copy an entire string including the terminating NULL. <A HREF="rstring.htm#_str_ncpy">_str_ncpy</A> copies a specified number of characters from the beginning of a string. The copy is NULL terminated. <A HREF="rstring.htm#_str_cpye">_str_cpye</A> copies an entire string returning a pointer to the terminating NULL of the copy.
+
+<H2><A NAME="HEAD0004">Concatenating Strings
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rstring.htm#_str_cat">_str_cat</A><DD>       Appends one string to the end of another.
+<DT><A HREF="rstring.htm#_str_cate">_str_cate</A><DD>      Appends one string to the end of another, returning a pointer to the end of the modified string.
+<DT><A HREF="rstring.htm#_str_ncat">_str_ncat</A><DD>      Appends a portion of one string to the end of another.
+<DT><A HREF="rstring.htm#_str_ncate">_str_ncate</A><DD>     Appends a portion of one string to the end of another, returning a pointer to the end of the modified string.
+</DL>
+These functions append one string to the end of another string. There must be sufficient room for the target string to grow or data following that string will be overwritten. <A HREF="rstring.htm#_str_cat">_str_cat</A> appends an entire string to a target string. <A HREF="rstring.htm#_str_ncat">_str_ncat</A> appends a specified number of characters from one string to a target string. A terminating NULL is placed at the end of the modified target string in both cases. <A HREF="rstring.htm#_str_cate">_str_cate</A> and <A HREF="rstring.htm#_str_ncate">_str_ncate</A> are the same as <A HREF="rstring.htm#_str_cat">_str_cat</A> and <A HREF="rstring.htm#_str_ncat">_str_ncat</A> except that they return a pointer to the end of the modified target string.
+
+<H2><A NAME="HEAD0005">Comparing Strings
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rstring.htm#_str_cmp">_str_cmp</A><DD>       Compares one string against another.
+<DT><A HREF="rstring.htm#_str_cmpi">_str_cmpi</A><DD>      Compares one string against another, ignoring case.
+<DT><A HREF="rstring.htm#_str_ncmp">_str_ncmp</A><DD>      Compares a portion of one string to a portion of another.
+<DT><A HREF="rstring.htm#_str_ncmpi">_str_ncmpi</A><DD>     Compares a portion of one string to a portion of another, ignoring case.
+</DL>
+These functions compare strings by comparing corresponding string characters until differing characters are found or until the terminating NULL of one of the strings is reached. The result of the comparison depends on the relationship of the differing characters. For example, if the differing characters were "N" and "c," the second string would be greater than the first string since the value of "c" (99) is greater than the value of "N" (78). If no differing characters are found, the strings are equal. <A HREF="rstring.htm#_str_cmp">_str_cmp</A> and <A HREF="rstring.htm#_str_cmpi">_str_cmpi</A> compare entire strings with and without case sensitivity. <A HREF="rstring.htm#_str_ncmp">_str_ncmp</A> and <A HREF="rstring.htm#_str_ncmpi">_str_ncmpi</A> compare a specified number of string characters with and without case sensitivity.
+
+<H2><A NAME="HEAD0006">Converting Character Case in a String
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rstring.htm#_str_lwr">_str_lwr</A><DD>       Converts uppercase characters in a string to lowercase.
+<DT><A HREF="rstring.htm#_str_upr">_str_upr</A><DD>       Converts lowercase letters in a string to uppercase.
+</DL>
+These functions convert the case of ASCII characters in a string. Any character other than an ASCII alpha character remains unaffected by these functions.
+
+<H2><A NAME="HEAD0007">Setting Characters in a String
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rstring.htm#_str_set">_str_set</A><DD>       Sets all characters in a string to a specified character.
+<DT><A HREF="rstring.htm#_str_nset">_str_nset</A><DD>      Sets the first n characters of a string to a specified character.
+</DL>
+These functions set all or some characters in a string to a specified character. The terminating NULL remains unaffected.
+
+<H2><A NAME="HEAD0008">Reversing the Characters in a String
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rstring.htm#_str_rev">_str_rev</A><DD>       Reverses the order of the characters in a string.
+</DL>
+This function reverses all the characters in a string, leaving the terminating NULL at the end of the modified string.
+
+<H2><A NAME="HEAD0009">Skipping Space Characters in a String
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rstring.htm#_str_skips">_str_skips</A><DD>     Skips past space characters in a string.
+<DT><A HREF="rstring.htm#_str_skipw">_str_skipw</A><DD>     Skips past whitespace characters in a string.
+</DL>
+These functions skip whitespace characters at the front of a string. Each function skips a different set of whitespace characters.
+
+<H2><A NAME="HEAD000A">Aligning Strings
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rstring.htm#_str_center">_str_center</A><DD>             Centers a string within a buffer.
+<DT><A HREF="rstring.htm#_str_left">_str_left</A><DD>                       Left justifies a string within a buffer.
+<DT><A HREF="rstring.htm#_str_right">_str_right</A><DD>              Right justifies a string within a buffer.
+</DL>
+These functions left, center, or right justify a string within a specified string buffer. The alignment is performed using a specified pad character.
+
+<P>
+<A HREF="rstring.htm#_str_center">_str_center</A> pads a string on the left and right with an equal number of specified pad characters. If an odd number of pad characters is required, the additional character is padded on the right.
+
+<P>
+<A HREF="rstring.htm#_str_left">_str_left</A> left justifies a string within a buffer by padding on the right with a specified pad character.
+
+<P>
+<A HREF="rstring.htm#_str_right">_str_right</A> right justifies a string within a buffer by padding on the left with a specified pad character.
+
+<H2><A NAME="HEAD000B">Removing Trailing Space Characters from a String
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rstring.htm#_str_trims">_str_trims</A><DD>     Removes space characters from the end of a string.
+<DT><A HREF="rstring.htm#_str_trimw">_str_trimw</A><DD>     Removes whitespace characters from the end of a string.
+</DL>
+These functions trim whitespace characters from the end of a string. Each function trims a different set of whitespace characters.
+
+<H2><A NAME="HEAD000C">Counting the Number of Matching Characters in a String
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rstring.htm#_str_cspn">_str_cspn</A><DD>      Determines the number of characters at the beginning of a string which do not match any character in a given character set.
+<DT><A HREF="rstring.htm#_str_spn">_str_spn</A><DD>       Determines the number of characters at the beginning of a string which match any character in a given character set.
+</DL>
+These functions compute the size of the front of a string where all the characters match (or mismatch) characters in a given character set. The counting stops at the first mismatching (or matching) character or the terminating NULL of the string, whichever comes first.
+
+<H2><A NAME="HEAD000D">Searching for Characters in a String
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rstring.htm#_str_chr">_str_chr</A><DD>       Searches a string for the first occurrence of a character.
+<DT><A HREF="rstring.htm#_str_chri">_str_chri</A><DD>      Searches a string for the first occurrence of a character, ignoring case.
+<DT><A HREF="rstring.htm#_str_chrn">_str_chrn</A><DD>      Searches a string for the first occurrence of a character which is not the given character.
+<DT><A HREF="rstring.htm#_str_chrni">_str_chrni</A><DD>     Searches a string for the first occurrence of a character which is not the given character, ignoring case.
+<DT><A HREF="rstring.htm#_str_pbrk">_str_pbrk</A><DD>      Searches a string for the first occurrence of any character which is in a set of characters.
+<DT><A HREF="rstring.htm#_str_pbrkn">_str_pbrkn</A><DD>     Searches a string for the first occurrence of any character which is not in a set of characters.
+<DT><A HREF="rstring.htm#_str_rchr">_str_rchr</A><DD>      Searches a string for the last occurrence of a character.
+<DT><A HREF="rstring.htm#_str_rchri">_str_rchri</A><DD>     Searches a string for the last occurrence of a character, ignoring case.
+<DT><A HREF="rstring.htm#_str_rchrn">_str_rchrn</A><DD>     Searches a string for the last occurrence of a character which is not the given character.
+<DT><A HREF="rstring.htm#_str_rchrni">_str_rchrni</A><DD>    Searches a string for the last occurrence of a character which is not the given character, ignoring case.
+</DL>
+These functions locate specified characters in a string. The functions come in two varieties: those which search for a specified character and those which search for a character that does not match a specified character. Also, some of these functions search from the beginning of the string and some search from the end. Some functions ignore ASCII character case while searching, and some look for a match (or mismatch) from another string of characters. All of these functions return pointers to the matching (or mismatching) characters in the string. The naming convention for these functions is as follows: "chr" indicates that the function searches for a character, "pbrk" indicates that the function searches for any character in a specified character set, "r" indicates reverse searching, "n" indicates not the specified character or character set, and "i" indicates ignoring of ASCII character case.
+
+<P>
+Searching for a Substring in a String
+<DL COMPACT>
+<DT><A HREF="rstring.htm#_str_str">_str_str</A><DD>       Searches a string for the first occurrence of a substring.
+<DT><A HREF="rstring.htm#_str_stri">_str_stri</A><DD>      Searches a string for the first occurrence of a substring, ignoring case.
+</DL>
+These functions locate a substring within a string with and without case sensitivity. If the substring is found, a pointer is returned to the beginning of the substring in the string being searched.
+
+<H2><A NAME="HEAD000E">Locating Path Elements in a String
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rstring.htm#_str_drive">_str_drive</A><DD>     Locates a drive specifier substring in a pathname string.
+<DT><A HREF="rstring.htm#_str_drvpath">_str_drvpath</A><DD>   Locates a drive specifier and path substring in a pathname string.
+<DT><A HREF="rstring.htm#_str_ext">_str_ext</A><DD>       Locates a filename extension substring in a string.
+<DT><A HREF="rstring.htm#_str_fname">_str_fname</A><DD>     Locates a filename substring in a string.
+<DT><A HREF="rstring.htm#_str_fnamext">_str_fnamext</A><DD>   Locates a filename/extension substring in a string.
+<DT><A HREF="rstring.htm#_str_path">_str_path</A><DD>      Locates a path substring in a string.
+</DL>
+These functions locate and size elements in path/filename strings. Paths may be NULL, partial, or full paths including a drive specifier, path, filename, and extension. Each function returns a pointer to the <A HREF="rexit.htm#start">start</A> of the appropriate element and the length of that element. If the element being searched for is not present, a length of zero is returned and the returned string pointer indicates the expected position of the element in the string. Some of these functions require paths without filenames to be in internal path string format (see the File/Directory technical notes for an explanation of the internal path string format).
+
+<H2><A NAME="HEAD000F">Tokenizing a String
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rstring.htm#_str_toks">_str_toks</A><DD>      Initializes a string for subsequent tokenization by <A HREF="rstring.htm#_str_tok">_str_tok</A>.
+<DT><A HREF="rstring.htm#_str_tok">_str_tok</A><DD>       Breaks a string into tokens by matching characters in the string with a set of delimiting characters.
+</DL>
+These functions tokenize strings. They consider the input string to be a sequence of zero or more tokens with each token separated by one or more delimiting characters. The initializing function, <A HREF="rstring.htm#_str_toks">_str_toks</A>, accepts a pointer to the string of tokens. Subsequent calls to the tokenizing function, <A HREF="rstring.htm#_str_tok">_str_tok</A>, search the string for the next character which matches a specified set of delimiters. If a delimiter is found, it is replaced with a NULL character to mark the end of a token and a pointer is returned to the beginning of the token. Each subsequent call to <A HREF="rstring.htm#_str_tok">_str_tok</A> delimits and points to the next token in the string. Note that the original string is broken into tokens and is destroyed by <A HREF="rstring.htm#_str_tok">_str_tok</A>. <A HREF="rstring.htm#_str_toks">_str_toks</A> does not modify the string in any way.
+</BOBY>
+</HTML>

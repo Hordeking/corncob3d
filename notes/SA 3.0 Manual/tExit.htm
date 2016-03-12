@@ -1,0 +1,142 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Tech. Notes: Start/Exit</TITLE></HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Start/Exit</H1>
+<P ALIGN=CENTER>Technical Notes </P>
+<A HREF="tExit.htm#HEAD0000">Overview
+</A><BR>
+<A HREF="tExit.htm#HEAD0001">Startup Code
+</A><BR>
+<A HREF="tExit.htm#HEAD0002">Starting a Program
+</A><BR>
+<A HREF="tExit.htm#HEAD0003">Specifying Additional Termination Functions
+</A><BR>
+<A HREF="tExit.htm#HEAD0004">Exiting a Program
+</A><BR>
+<A HREF="tExit.htm#HEAD0005">Using the Startup Code
+</A><BR>
+<A HREF="tExit.htm#HEAD0006">Creating a Stack with C/C++
+</A><BR>
+<H2><A NAME="HEAD0000">Overview
+</A></H2>
+
+This unit provides startup and exit code to replace the standard startup and exit code provided with C compilers.
+
+<H2><A NAME="HEAD0001">Startup Code
+</A></H2>
+
+A significant C optimization that is often overlooked is replacing the compiler's startup code. The size of the Spontaneous Assembly startup code is minimal (roughly 100 bytes), while the startup code provided with C compilers is generally several thousand bytes in size. C programs can use the Spontaneous Assembly startup code if Spontaneous Assembly library routines will be used in place of their C counterparts. C++ programs should NOT use the Spontaneous Assembly startup code.
+
+<P>
+WARNING!        The startup code provided by compilers performs initializations for compiler library functions. The Spontaneous Assembly startup code is intended for C programs that use the Spontaneous Assembly library in place of the compiler's library.
+
+<P>
+The startup code is contained entirely in the _start function. The startup code also includes the <A HREF="rexit.htm#_exit">_exit</A> and <A HREF="rexit.htm#_exit_ok">_exit_ok</A> functions (described below). Generally, only those setup functions are performed by _start which are difficult to perform later (e.g., remembering the segment address of the PSP in models other than TINY). Other initialization or setup required by specific library functions must be performed using separate initialization functions provided for that purpose. This allows initialization code to be included in the final program on an as-needed basis.
+
+<H2><A NAME="HEAD0002">Starting a Program
+</A></H2>
+<DL COMPACT>
+<DT>_start<DD> Accepts control from DOS, passes control to main, and returns control to DOS when main terminates.
+<DT>main<DD>   Starting point for program execution.
+</DL>
+_start accepts control from DOS, performs a minimal amount of housekeeping (i.e., stores the PSP address, sets up segment registers, normalizes the stack pointers in the SMALL and MEDIUM models), shrinks the program down to its minimum acceptable size, and passes control to main. _start is never called directly. Instead, _start is linked with the object module containing main.
+
+<P>
+main is called by _start and serves as the starting point for the program. When main has finished executing, it usually returns to _start, terminating the program.
+
+<P>
+WARNING! main is NOT called with the standard argc, argv, and env parameters. Spontaneous Assembly command line parsing functions should be used instead.
+
+<H2><A NAME="HEAD0003">Specifying Additional Termination Functions
+</A></H2>
+<DL COMPACT>
+<DT>_on_exit<DD>                        Adds a cleanup function to the list of exit cleanup functions.
+</DL>
+This function maintains a list of functions to be executed before exiting to DOS. A maximum of 16 functions can be added to the <A HREF="rexit.htm#_on_exit">_on_exit</A> list. Functions in the <A HREF="rexit.htm#_on_exit">_on_exit</A> list are executed in last-in/first-out (LIFO) order. Functions added to this list are executed only if an <A HREF="rexit.htm#_on_exit">_on_exit</A>-aware function is called to return to DOS, as in the following example:
+<PRE><CODE>
+                         ...
+   <A HREF="rexit.htm#_on_exit">_on_exit</A> (restore_ints);                     /* add function to restore interrupts */
+                         ...
+   <A HREF="rexit.htm#_exit_cleanup">_exit_cleanup</A> (1);                                   /* execute ON_EXIT list before exiting */
+</CODE></PRE>
+The following functions are <A HREF="rexit.htm#_on_exit">_on_exit</A>-aware: <A HREF="rexit.htm#_exit_cleanup">_exit_cleanup</A>, <A HREF="rtsr.htm#_progid_hremtsr">_progid_hremtsr</A>, <A HREF="rtsr.htm#_progid_remtsr">_progid_remtsr</A>, <A HREF="rtsr.htm#_tsr_hremove">_tsr_hremove</A>, and <A HREF="rtsr.htm#_tsr_remove">_tsr_remove</A>.
+
+<H2><A NAME="HEAD0004">Exiting a Program
+</A></H2>
+<DL COMPACT>
+<DT><A HREF="rexit.htm#_exit">_exit</A><DD>  Exits to DOS with a specified ERRORLEVEL.
+<DT><A HREF="rexit.htm#_exit_ok">_exit_ok</A><DD>       Exits to DOS with an ERRORLEVEL of 0.
+<DT>_exit_cleanup<DD>  Exits to DOS with a specified ERRORLEVEL, after executing all functions in <A HREF="rexit.htm#_on_exit">_on_exit</A> list.
+</DL>
+These functions set an ERRORLEVEL and terminate the program. <A HREF="rexit.htm#_exit">_exit</A> and <A HREF="rexit.htm#_exit_cleanup">_exit_cleanup</A> set a specified ERRORLEVEL. <A HREF="rexit.htm#_exit_ok">_exit_ok</A> forces an ERRORLEVEL of 0. The program may also be terminated by returning from main (this is equivalent to calling <A HREF="rexit.htm#_exit">_exit</A>). ERRORLEVEL is set to the value returned by main.
+
+<P>
+<A HREF="rexit.htm#_exit">_exit</A> and <A HREF="rexit.htm#_exit_ok">_exit_ok</A> are only available when the Spontaneous Assembly startup code has been used. Otherwise the standard C exit function should be used (this function cleans up after the compiler's startup code).
+
+<P>
+By default, the <A HREF="rexit.htm#_exit">_exit</A> and <A HREF="rexit.htm#_exit_ok">_exit_ok</A> functions perform the normal file closing cleanup performed by DOS when a program terminates. The programmer may use <A HREF="rexit.htm#_on_exit">_on_exit</A> and <A HREF="rexit.htm#_exit_cleanup">_exit_cleanup</A> to maintain and execute a list of additional termination functions (e.g., restoring interrupt vectors or flushing buffers) to be performed prior to exiting the program (see Specifying Additional Termination Functions in this chapter).
+
+<H2><A NAME="HEAD0005">Using the Startup Code
+</A></H2>
+
+_start does not reside in the Spontaneous Assembly library files (_SA?.LIB) because it cannot be linked into the final program automatically. Special handling is required to use _start.
+
+<P>
+_start must be linked manually into the final program, and its object file must be the first object file linked. Linking order is important to these files because they define the segment order of the selected memory model as well as the starting program offset in the TINY model.
+
+<P>
+Four versions of _start are provided:
+<DL COMPACT>
+<DT>_START?.OBJ<DD>    Standard startup code. DOSSEG segment ordering is used.
+<DT>_NSTART?.OBJ<DD>   Startup code for non-TSR programs which use TSR functions, or for TSRs where main is compiled with Microsoft C 6.0 or earlier, Zortech C/C++, or TopSpeed C/C++. TSR segment ordering is used and main is expected to be in a resident code segment.
+<DT>_TSTART?.OBJ<DD>   Startup code for TSRs. TSR segment ordering is used and _start and main are expected to be in a transient code segment.
+<DT>_DSTARTT.OBJ<DD>   Startup code for device drivers. TSR segment ordering is used.
+</DL>
+The "?" in the file names above must be replaced with T, S, M, C, or L to denote TINY, SMALL, MEDIUM, COMPACT, or LARGE.
+
+<H2><A NAME="HEAD0006">Creating a Stack with C/C++
+</A></H2>
+<DL COMPACT>
+<DT>STACK_1K<DD>       (Macro) Causes a 1k stack to be linked into the program.
+<DT>STACK_2K<DD>       (Macro) Causes a 2k stack to be linked into the program.
+<DT>STACK_4K<DD>       (Macro) Causes a 4k stack to be linked into the program.
+<DT>STACK_8K<DD>       (Macro) Causes a 8k stack to be linked into the program.
+<DT>STACK_16K<DD>      (Macro) Causes a 16k stack to be linked into the program.
+<DT>STACK_32K<DD>      (Macro) Causes a 32k stack to be linked into the program.
+</DL>
+One of the housekeeping functions performed by <A HREF="rexit.htm#start">start</A> is normalization of the stack. The startup code provided by C compilers defines the stack at run time by allocating the stack at the end of program data. This is less efficient than defining a standard stack within the program, and is incompatible with TSRs. For these reasons, a stack must be linked from the library when using startup code provided by Spontaneous Assembly. This is accomplished by invoking the <A HREF="rexit.htm#STACK_1K">STACK_1K</A>, <A HREF="rexit.htm#STACK_2K">STACK_2K</A>, <A HREF="rexit.htm#STACK_4K">STACK_4K</A>, <A HREF="rexit.htm#STACK_8K">STACK_8K</A>, <A HREF="rexit.htm#STACK_16K">STACK_16K</A>, and <A HREF="rexit.htm#STACK_32K">STACK_32K</A>. The size indicated in the name of each macro indicates the amount of stack space that is linked into the program when that macro is used.
+
+<P>
+Creating a Program Which Uses Spontaneous Assembly Startup Code
+
+<P>
+It is a relatively simple matter to create a new program that uses the Spontaneous Assembly startup code. The steps are as follows:
+<OL>
+<LI>      Create a C source file with the main function required by C and C++.
+<LI>      Define the program stack as described above.
+<LI>    Link the Spontaneous Assembly startup code (_START?.OBJ, _NSTART?.OBJ, _TSTART?.OBJ, or _DSTARTT.OBJ) into the final program. The startup code should be the first module linked.
+</OL>
+If MS-LINK were used and the name of the C source file were PROGMAIN.C, the linker commands would look like this in the MEDIUM model:
+<PRE><CODE>
+LINK
+Object Modules [.OBJ]: _startm progmain
+Run File [STARTM.EXE]: progname
+List File [NUL.MAP]:
+Libraries [.LIB]: _sam.lib
+</CODE></PRE>
+Or to link a program as a TSR:
+<PRE><CODE>
+LINK
+Object Modules [.OBJ]: _tstartm progmain
+Run File [STARTM.EXE]: progname
+List File [NUL.MAP]:
+Libraries [.LIB]: _sam.lib _tsam.lib
+</CODE></PRE>
+The examples above would create MEDIUM model executable files (as indicated by the use of _SAM.LIB, the medium model library) named progname.EXE.
+
+<P>
+Note that in the examples above, the Spontaneous Assembly startup code file is always listed first. Also, the Spontaneous Assembly library file (_SAM.LIB) is specified as a library (not as an object file) to allow the linker to link in only those Spontaneous Assembly functions it needs. Finally, both the resident (_SAM.LIB) and transient (_TSAM.LIB) versions of the Spontaneous Assembly library must be linked into the program if transient functions are used in the TSR. This is demonstrated in the second example above.
+</BOBY>
+</HTML>

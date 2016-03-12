@@ -1,0 +1,2019 @@
+<HTML>
+<HEAD>
+<TITLE>Spontaneous Assembly 3.0 Online Manual - Memory Manipulation Reference</TITLE>
+</HEAD>
+<BODY>
+
+<H1 ALIGN=CENTER>Memory Manipulation</H1>
+<P ALIGN=CENTER>Reference Section </P>
+<UL>
+<LI><A HREF="TOC.htm">Table of Contents</A>
+<LI><A HREF="index.htm">Function Index</A>
+<LI><A HREF="gindex.htm">Group Index
+</UL>
+<A HREF="rmemanip.htm#_fmem_ccpy">_fmem_ccpy</A><BR>
+<A HREF="rmemanip.htm#_fmem_chr">_fmem_chr</A><BR>
+<A HREF="rmemanip.htm#_fmem_chri">_fmem_chri</A><BR>
+<A HREF="rmemanip.htm#_fmem_chrn">_fmem_chrn</A><BR>
+<A HREF="rmemanip.htm#_fmem_chrni">_fmem_chrni</A><BR>
+<A HREF="rmemanip.htm#_fmem_cmp">_fmem_cmp</A><BR>
+<A HREF="rmemanip.htm#_fmem_cmpi">_fmem_cmpi</A><BR>
+<A HREF="rmemanip.htm#_fmem_cpy">_fmem_cpy</A><BR>
+<A HREF="rmemanip.htm#_fmem_cpye">_fmem_cpye</A><BR>
+<A HREF="rmemanip.htm#_fmem_cspn">_fmem_cspn</A><BR>
+<A HREF="rmemanip.htm#_fmem_lwr">_fmem_lwr</A><BR>
+<A HREF="rmemanip.htm#_fmem_mem">_fmem_mem</A><BR>
+<A HREF="rmemanip.htm#_fmem_memi">_fmem_memi</A><BR>
+<A HREF="rmemanip.htm#_fmem_mov">_fmem_mov</A><BR>
+<A HREF="rmemanip.htm#_fmem_pbrk">_fmem_pbrk</A><BR>
+<A HREF="rmemanip.htm#_fmem_pbrkn">_fmem_pbrkn</A><BR>
+<A HREF="rmemanip.htm#_fmem_rev">_fmem_rev</A><BR>
+<A HREF="rmemanip.htm#_fmem_set">_fmem_set</A><BR>
+<A HREF="rmemanip.htm#_fmem_skips">_fmem_skips</A><BR>
+<A HREF="rmemanip.htm#_fmem_skipw">_fmem_skipw</A><BR>
+<A HREF="rmemanip.htm#_fmem_spn">_fmem_spn</A><BR>
+<A HREF="rmemanip.htm#_fmem_swab">_fmem_swab</A><BR>
+<A HREF="rmemanip.htm#_fmem_upr">_fmem_upr</A><BR>
+<A HREF="rmemanip.htm#_mem_ccpy">_mem_ccpy</A><BR>
+<A HREF="rmemanip.htm#_mem_chr">_mem_chr</A><BR>
+<A HREF="rmemanip.htm#_mem_chri">_mem_chri</A><BR>
+<A HREF="rmemanip.htm#_mem_chrn">_mem_chrn</A><BR>
+<A HREF="rmemanip.htm#_mem_chrni">_mem_chrni</A><BR>
+<A HREF="rmemanip.htm#_mem_cmp">_mem_cmp</A><BR>
+<A HREF="rmemanip.htm#_mem_cmpi">_mem_cmpi</A><BR>
+<A HREF="rmemanip.htm#_mem_cpy">_mem_cpy</A><BR>
+<A HREF="rmemanip.htm#_mem_cpye">_mem_cpye</A><BR>
+<A HREF="rmemanip.htm#_mem_cspn">_mem_cspn</A><BR>
+<A HREF="rmemanip.htm#_mem_lwr">_mem_lwr</A><BR>
+<A HREF="rmemanip.htm#_mem_mem">_mem_mem</A><BR>
+<A HREF="rmemanip.htm#_mem_memi">_mem_memi</A><BR>
+<A HREF="rmemanip.htm#_mem_mov">_mem_mov</A><BR>
+<A HREF="rmemanip.htm#_mem_pbrk">_mem_pbrk</A><BR>
+<A HREF="rmemanip.htm#_mem_pbrkn">_mem_pbrkn</A><BR>
+<A HREF="rmemanip.htm#_mem_rev">_mem_rev</A><BR>
+<A HREF="rmemanip.htm#_mem_set">_mem_set</A><BR>
+<A HREF="rmemanip.htm#_mem_skips">_mem_skips</A><BR>
+<A HREF="rmemanip.htm#_mem_skipw">_mem_skipw</A><BR>
+<A HREF="rmemanip.htm#_mem_spn">_mem_spn</A><BR>
+<A HREF="rmemanip.htm#_mem_swab">_mem_swab</A><BR>
+<A HREF="rmemanip.htm#_mem_upr">_mem_upr</A><BR>
+<H2><A NAME="_fmem_ccpy">_fmem_ccpy</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Copies the contents of a block to another location, up to a given character or a maximum number of characters.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>		void far *_fmem_ccpy (void far *destblk, const void far *srcblk, int chr, unsigned int *num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _mem_ccpy.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MMFCCPY.ASM		  <B>ASM equiv</B>	MEM_CCPY
+
+<BR><H2><A NAME="_fmem_chr">_fmem_chr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a block for the first occurrence of a character.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void far *_fmem_chr(const void far *block, int chr, unsigned int *num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See mem_chr.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MMFCHR.ASM		  <B>ASM equiv</B>	MEM_CHR
+
+<BR><H2><A NAME="_fmem_chri">_fmem_chri</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a block for the first occurrence of a character, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void far *_fmem_chri(const void far *block, int chr, unsigned int *num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _mem_chri.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MMFCHRI.ASM		  <B>ASM equiv</B>	MEM_CHRI
+
+<BR><H2><A NAME="_fmem_chrn">_fmem_chrn</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a block for the first occurrence of a character which is not the given character.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void far *_fmem_chrn(const void far *block, int chr, unsigned int *num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See mem_chrn.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MMFCHRN.ASM		  <B>ASM equiv</B>	MEM_CHRN
+
+<BR><H2><A NAME="_fmem_chrni">_fmem_chrni</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a block for the first occurrence of a character which is not the given character, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void far *_fmem_chrni(const void far *block, int chr, unsigned int *num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See mem_chrni.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MMFCHNI.ASM		  <B>ASM equiv</B>	MEM_CHRNI
+
+<BR><H2><A NAME="_fmem_cmp">_fmem_cmp</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compares one block with another.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	int _fmem_cmp(const void far *block1, const void far *block2, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _mem_cmp.
+<BR></DL>
+<B>Source file</B>	_MMFCMP.ASM		    <B>ASM equiv</B>	MEM_CMP
+
+<BR><H2><A NAME="_fmem_cmpi">_fmem_cmpi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compares one block with another, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	int _fmem_cmpi(const void far *block1, const void far *block2, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _mem_cmpi.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MMFCMPI.ASM		  <B>ASM equiv</B>	MEM_CMPI
+
+<BR><H2><A NAME="_fmem_cpy">_fmem_cpy</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Copies the contents of a block to another location.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void far *_fmem_cpy(void far *destblk, const void far *srcblk, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _mem_cpy.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MMFCPY.ASM		  <B>ASM equiv</B>	MEM_CPY
+
+<BR><H2><A NAME="_fmem_cpye">_fmem_cpye</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Copies the contents of a block to another location and returns the address of the end of the destination block.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void far *_fmem_cpye(void far *destblk, const void far *srcblk, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _mem_cpye.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MMFCPYE.ASM		  <B>ASM equiv</B>	MEM_CPYE
+
+<BR><H2><A NAME="_fmem_cspn">_fmem_cspn</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines the number of characters at the beginning of a block which do not match any character in a given character set.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>		unsigned int _fmem_cspn(const void far *block, const void far *charset,
+<BR>	    unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _mem_cspn.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MMFCSPN.ASM		  <B>ASM equiv</B>	MEM_CSPN
+
+<BR><H2><A NAME="_fmem_lwr">_fmem_lwr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts uppercase characters in a block to lowercase.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void far *_fmem_lwr(void far *block, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _mem_lwr.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MMFLWR.ASM		  <B>ASM equiv</B>	MEM_LWR
+
+<BR><H2><A NAME="_fmem_mem">_fmem_mem</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a block for the first occurrence of the contents of another block.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>		int _fmem_mem(void far * * lookblk, unsigned int *looksize, void far * * findblk, unsigned int *findsize);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _mem_mem.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MMFMEM.ASM		  <B>ASM equiv</B>	MEM_MEM
+
+<BR><H2><A NAME="_fmem_memi">_fmem_memi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a block for the first occurrence of another block, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>		int _fmem_memi(void far * * lookblk, unsigned int *looksize, void far * * findblk, unsigned int *findsize);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _mem_memi.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MMFMEMI.ASM		  <B>ASM equiv</B>	MEM_MEMI
+
+<BR><H2><A NAME="_fmem_mov">_fmem_mov</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Copies the contents of a block to another location.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void far *_fmem_mov(void far *destblk, const void far *srcblk, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _mem_mov.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MMFMOV.ASM		  <B>ASM equiv</B>	MEM_MOV
+
+<BR><H2><A NAME="_fmem_pbrk">_fmem_pbrk</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a block for the first occurrence of any character which is in a set of characters.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void far *_fmem_pbrk(const void far *block, const void far *charset,
+<BR>	            unsigned int *num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _mem_pbrk.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MMFPBRK.ASM		  <B>ASM equiv</B>	MEM_PBRK
+
+<BR><H2><A NAME="_fmem_pbrkn">_fmem_pbrkn</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a block for the first occurrence of any character which is not in a set of characters.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void far *_fmem_pbrkn(const void *block, const void far *charset, unsigned int *num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the first occurrence of a character in block that is not in charset if one was found.
+<BR>	num	size of block from matching character to end of block
+<BR>
+<BR>	NULL if all of the characters in block were found in charset.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _mem_pbrkn.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MMFPBKN.ASM		  <B>ASM equiv</B>	MEM_PBRKN
+
+<BR><H2><A NAME="_fmem_rev">_fmem_rev</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Reverses the order of the bytes in a block.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void *_mem_rev(void *block, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to block.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _mem_rev.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MMFREV.ASM		  <B>ASM equiv</B>	MEM_REV
+
+<BR><H2><A NAME="_fmem_set">_fmem_set</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets all characters in a block to a specified character.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void far *_fmem_set(void far *block, int chr, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _mem_set.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MMFSET.ASM		   <B>ASM equiv</B>	MEM_SET
+
+<BR><H2><A NAME="_fmem_skips">_fmem_skips</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Skips past all space characters in a block.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void far *_fmem_skips(const void far *block, unsigned int *num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _mem_skips.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MMFSKPS.ASM		  <B>ASM equiv</B>	MEM_SKIPS
+
+<BR><H2><A NAME="_fmem_skipw">_fmem_skipw</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Skips past all whitespace characters in a block.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void far *_fmem_skipw(const void far *block, unsigned int *num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _mem_skipw.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MMFSKPW.ASM		  <B>ASM equiv</B>	MEM_SKIPW
+
+<BR><H2><A NAME="_fmem_spn">_fmem_spn</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines the number of characters at the beginning of a block which match any character in a given character set.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	unsigned int _fmem_spn(const void far *block, const void far *charset, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _mem_cspn.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MMFSPN.ASM		  <B>ASM equiv</B>	MEM_CSPN
+
+<BR><H2><A NAME="_fmem_swab">_fmem_swab</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Copies the contents of a block to another location after swapping adjacent even and odd numbered bytes.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void far *_fmem_swab(void far *destblk, const void far *srcblk, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _mem_swab.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MMFSWAB.ASM		  <B>ASM equiv</B>	MEM_SWAB
+
+<BR><H2><A NAME="_fmem_upr">_fmem_upr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts lowercase characters in a block to uppercase.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void far *_fmem_upr(void far *block, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	See _mem_upr.
+<BR>
+<BR></DL>
+<B>Source file</B>	_MMFUPR.ASM		  <B>ASM equiv</B>	MEM_UPR
+
+<BR><H2><A NAME="_mem_ccpy">_mem_ccpy</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Copies the contents of a block to another location, up to a given character or a maximum number of characters.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void *_mem_ccpy(void far *destblk, const void *srcblk, int chr, unsigned int *num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the byte immediately following the last copied character if a character matching chr was found in the first num characters of srcblk.
+<BR>	num		actual number of characters copied from srcblk to destblk
+<BR>	destblk		a copy of all the characters in srcblk up to and including the first character from srcblk which matched chr
+<BR>
+<BR>	NULL if chr was not found in srcblk.
+<BR>	destblk		a copy of the first num characters of srcblk
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function copies characters from srcblk to destblk. Copying begins with the first character of srcblk and continues until a character matching chr is copied or until num characters have been copied, whichever comes first. The returned pointer indicates the next available position in dstblk (after the copied characters).
+<BR>
+<BR>	srcblk and destblk must not overlap if destblk is higher in memory than srcblk.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer1[20], buffer2[20];
+	   unsigned int num = 20;
+	   ...
+	   _mem_ccpy ((void *)buffer1, buffer2, 'A', &ampnum);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer1[20], buffer2[20];
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea si,buffer1/* DS:SI-&gtbuffer1 */
+	   lea di,buffer2/* ES:DI-&gtbuffer2 */
+	   mov cx,20
+	   mov al,'A'
+	   mem_ccpy ();	/* copy buffer1 to buffer2 */
+	    jc mem_ccpy_010/* if AL not found in block */
+	   ... 	 	/* if AL found in block */
+	   jmp short mem_ccpy_020
+
+	mem_ccpy_010:
+	   ... 	 	/* 'A' not found in block */
+	mem_ccpy_020:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MMCCPY.ASM		  <B>ASM equiv</B>	MEM_CCPY
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rbuffer.htm#_buf_ccpy">_buf_ccpy</A>, <A HREF="rmemanip.htm#_fmem_ccpy">_fmem_ccpy</A>, <A HREF="rmemanip.htm#_mem_cpy">_mem_cpy</A>
+<BR></DL>
+<H2><A NAME="_mem_chr">_mem_chr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a block for the first occurrence of a character.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void *_mem_chr(const void *block, int chr, unsigned int *num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the first occurrence of chr in block.
+<BR>	num	size of block from chr to end of block
+<BR>
+<BR>	NULL if chr was not found.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches block for chr. The search stops at the first occurrence of chr or after num characters have been checked, whichever comes first. If a character matching chr is found, a pointer to the matching character in block is returned and num contains the size of block from the matching character to the end of block.
+<BR>
+<BR>	If num is zero, NULL is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[20];
+	   void *pointer;
+	   unsigned int num;
+	   ...
+	   pointer = _mem_chr (buffer, 'A', &ampnum);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	/* use "ES:DI" version of function to minimize reg profile, */
+	/*   see SA 3.0 manual for more details */
+	   char buffer[20];
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea di,buffer/* ES:DI-&gtbuffer */
+	   mov cx,20	/* CX = size of buffer */
+	   mov al,'A'
+	   mem_chrdi ();	/* search for the character */
+	    jc mem_chr_010/* if AL not found in buffer */
+	   ... 	 	/* if AL was found in buffer */
+	mem_chr_010:
+	    ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MMCHR.ASM		  <B>ASM equiv</B>	MEM_CHR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanip.htm#_fmem_chr">_fmem_chr</A>, <A HREF="rmemanip.htm#_mem_chr">_mem_chr</A>, <A HREF="rmemanip.htm#_mem_chr">_mem_chr</A>, <A HREF="rstring.htm#_str_chr">_str_chr</A>
+<BR></DL>
+<H2><A NAME="_mem_chri">_mem_chri</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a block for the first occurrence of a character, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void *_mem_chri(const void *block, int chr, unsigned int *num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the first occurrence of chr in block if chr was found.
+<BR>	num		size of block from chr to end of block
+<BR>
+<BR>	NULL if chr was not found.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches block for chr. The case of ASCII characters is ignored. The search stops at the first occurrence of chr or after num characters have been checked, whichever comes first. If a character matching chr is found, a pointer to the matching character in block is returned and num contains the size of block from the matching character to the end of block.
+<BR>
+<BR>	If num is zero, NULL is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[20];
+	   void *pointer;
+	   unsigned int num;
+	   ...
+	   pointer = _mem_chri (buffer, 'A', &ampnum);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	/* use "ES:DI" version of function to minimize reg profile, */
+	/*   see SA 3.0 manual for more details */
+	{
+	   char buffer[20];
+	   ...
+	   pushss
+	   pop es	 	/* ES=SS */
+	   lea di,buffer
+	   mov cx,20	/* CX=bytes to copy */
+	   mov al,'A'	/* AL=character to stop on */
+	   mem_chridi ();	/* was char found? */
+	    jc mem_chri_010/* n: continue */
+	   ... 	 	/* y: handle character */
+	mem_chri_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MMCHRI.ASM		  <B>ASM equiv</B>	MEM_CHRI
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanip.htm#_fmem_chr">_fmem_chr</A>, <A HREF="rstring.htm#_str_chr">_str_chr</A>
+<BR></DL>
+<H2><A NAME="_mem_chrn">_mem_chrn</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a block for the first occurrence of a character which is not the given character.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void *_mem_chrn(const void *block, int chr, unsigned int *num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the first occurrence of a character other than chr in block.
+<BR>	num		size of block from chr to the end of block
+<BR>
+<BR>	NULL if all characters in block are identical to chr.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches block for a character other than chr. The search stops at the first occurrence of a character other than chr or after num characters have been checked, whichever comes first. If a mismatching character is found, a pointer to that character in block is returned and num contains the size of block from the mismatching character to the end of block.
+<BR>
+<BR>	If num is zero, NULL is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[20];
+	   void *pointer;
+	   unsigned int num;
+	   ...
+	   pointer = _mem_chrn (buffer, 'A', &ampnum);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	/* use "ES:DI" version of function to minimize reg profile, */
+	/*   see SA 3.0 manual for more details */
+	   char buffer[20];
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea di,buffer/* ES:DI-&gtbuffer */
+	   mov cx,20	/* CX = size of buffer */
+	   mov al,'A'
+	   mem_chrndi ();	/* search the buffer */
+	    jc mem_chrn_010/* if AL was found in buffer */
+	   ... 	 	/* if other chr was found */
+	mem_chrn_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MMCHRN.ASM		  <B>ASM equiv</B>	MEM_CHRN
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanip.htm#_fmem_chr">_fmem_chr</A>, <A HREF="rstring.htm#_str_chr">_str_chr</A>
+<BR></DL>
+<H2><A NAME="_mem_chrni">_mem_chrni</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a block for the first occurrence of a character which is not the given character, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void *_mem_chrni(const void *block, int chr, unsigned int *num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the first occurrence of a character other than chr in block
+<BR>	num 	 size of block from non-matching chr to end of block.
+<BR>
+<BR>	NULL if all characters in block are identical to chr.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches block for a character other than chr. The case of ASCII characters is ignored. The search stops at the first occurrence of a character other than chr or after num characters have been checked, whichever comes first. If a mismatching character is found, a pointer to that character in block is returned and num contains the size of block from the mismatching character to the end of block.
+<BR>
+<BR>	If num is zero, NULL is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[20];
+	   void *pointer;
+	   unsigned int num;
+	   ...
+	   pointer = _mem_chrni (buffer, 'A', &ampnum);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	/* use "ES:DI" version of function to minimize reg profile, */
+	/*   see SA 3.0 manual for more details */
+	   char buffer[20];
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea di,buffer/* ES:DI-&gtbuffer */
+	   mov cx,20	/* CX = size of buffer */
+	   mov al,'A'
+	   mem_chrnidi ();    /* search the buffer */
+	    jc mem_chrni_010/* if AL was found in buffer */
+	   ... 	 	/* if other chr was found */
+	mem_chrni_010:
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MMCHRNI.ASM		  <B>ASM equiv</B>	MEM_CHRNI
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanip.htm#_fmem_chr">_fmem_chr</A>, <A HREF="rstring.htm#_str_chr">_str_chr</A>
+<BR></DL>
+<H2><A NAME="_mem_cmp">_mem_cmp</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compares one block with another.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	int _mem_cmp(const void *block1, const void far *block2, unsigned int num);
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if block1 &gt block2.
+<BR>
+<BR>	0 if block1 = block2.
+<BR>
+<BR>	-1 if block1 &lt; block2.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function compares each byte of block1 and block2. The comparison starts with the first byte of each block and continues until corresponding bytes differ or until num bytes have been compared. The return value indicates the result of the comparison.
+<BR>
+<BR>	If num is zero, 0 is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	char buffer1[20], buffer2[20];
+	switch (_mem_cmp (buffer1, (void *)buffer2, 20))
+	   {
+	      case 1:/* buffer1 &gt buffer2 */
+	         break;
+	      case 0:/* buffer1 == buffer2 */
+	         break;
+	      case -1:/* buffer1 &lt; buffer2 */
+	         break;
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer1[20], buffer2[20];
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea si,buffer1/* DS:SI-&gtbuffer1 */
+	   lea di,buffer2/* ES:DI-&gtbuffer2 */
+	   mov cx,20
+	   mem_cmp ();	/* compare buffer1 to buffer2 */
+	    jb mem_cmp_020/* if buffer1 &lt; buffer2 */
+	    je mem_cmp_010/* if buffer1 = buffer2 */
+	   ... 	 	/* if buffer1 &gt buffer2 */
+	   jmp short mem_cmp_030
+
+	mem_cmp_010:
+	   ... 	 	/* buffer1 == buffer2 */
+	   jmp short mem_cmp_030
+
+	mem_cmp_020:
+	   ... 	 	/* buffer1 &lt; buffer2 */
+	mem_cmp_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MMCMP.ASM		  <B>ASM equiv</B>	MEM_CMP
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rbuffer.htm#_buf_cmp">_buf_cmp</A>, <A HREF="rmemanip.htm#_fmem_cmp">_fmem_cmp</A>, <A HREF="rmemanip.htm#_mem_cmp">_mem_cmp</A>, <A HREF="rstring.htm#_str_cmp">_str_cmp</A>
+<BR></DL>
+<H2><A NAME="_mem_cmpi">_mem_cmpi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Compares one block to another, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	int _mem_cmpi(const void *block1, const void far *block2, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if block1 &gt block2, ignoring case.
+<BR>
+<BR>	0 if block1 = block2, ignoring case.
+<BR>
+<BR>	-1 if block1 &lt; block2, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function compares each byte of block1 and block2. The case of ASCII characters is ignored. The comparison starts with the first byte of each block and continues until corresponding bytes differ or until num bytes have been compared. The return value indicates the result of the comparison.
+<BR>
+<BR>	If num is zero, 0 is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer1[20], buffer2[20];
+	   switch (_mem_cmpi (buffer1, (void *)buffer2, 20))
+	   {
+	      case 1:/* buffer1 &gt buffer2 */
+	         break;
+	      case 0:/* buffer1 == buffer2 */
+	         break;
+	      case -1:/* buffer1 &lt; buffer2 */
+	         break;
+	   }
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer1[20], buffer2[20];
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea si,buffer1/* DS:SI-&gtbuffer1 */
+	   lea di,buffer2/* ES:DI-&gtbuffer2 */
+	   mov cx,20
+	   mem_cmpi ();	/* compare buffer1 to buffer2 */
+	    jb mem_cmpi_020/* if buffer1 &lt; buffer2 */
+	    je mem_cmpi_010/* if buffer1 = buffer2 */
+	   ... 	 	/* if buffer1 &gt buffer2 */
+	   jmp short mem_cmpi_030
+
+	mem_cmpi_010:
+	   ... 	 	/* buffer1 == buffer2 */
+	   jmp short mem_cmpi_030
+	mem_cmpi_020:
+	    ... 	  	 /* buffer1 &lt; buffer2 */
+	mem_cmpi_030:
+	    ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MMCMPI.ASM		  <B>ASM equiv</B>	MEM_CMPI
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rbuffer.htm#_buf_cmp">_buf_cmp</A>, <A HREF="rmemanip.htm#_fmem_cmp">_fmem_cmp</A>, <A HREF="rmemanip.htm#_mem_cmp">_mem_cmp</A>, <A HREF="rstring.htm#_str_cmp">_str_cmp</A>
+<BR></DL>
+<H2><A NAME="_mem_cpy">_mem_cpy</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Copies the contents of a block to another location.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void *_mem_cpy(void far *destblk, const void *srcblk, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to destblk.
+<BR>	destblk		num bytes from srcblk
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function copies the first num bytes of srcblk into destblk. A pointer to dstblk is returned.
+<BR>
+<BR>	srcblk and destblk must not overlap if destblk is higher in memory than srcblk. If srcblk and destblk do overlap and destblk is higher in memory, _mem_mov should be used in place of _mem_cpy.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer1[20], buffer2[20];
+	   unsigned int num = 20;
+	   ...
+	   _mem_cpy ((void *)buffer1, buffer2, num);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer1[20], buffer2[20];
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea si,buffer1/* DS:SI-&gtbuffer1 */
+	   lea di,buffer2/* ES:DI-&gtbuffer2 */
+	   mov cx,20
+	   mem_cpy ();	/* copy buffer1 to buffer2 */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MMCPY.ASM		  <B>ASM equiv</B>	MEM_CPY
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rbuffer.htm#_buf_cpy">_buf_cpy</A>, <A HREF="rmemanip.htm#_fmem_cpy">_fmem_cpy</A>, <A HREF="rmemanip.htm#_mem_ccpy">_mem_ccpy</A>, <A HREF="rmemanip.htm#_mem_cpy">_mem_cpy</A>, <A HREF="rstring.htm#_str_cpy">_str_cpy</A>
+<BR></DL>
+<H2><A NAME="_mem_cpye">_mem_cpye</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Copies the contents of a block to another location and returns the address of the end of the destination block.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void *_mem_cpye(void far *destblk, const void *srcblk, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the character after the last character copied into destblk.
+<BR>	destblk		num bytes from srcblk
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function copies the first num bytes of srcblk into destblk. The returned pointer identifies the next available position in destblk (past the copied block). A subsequent call to _mem_cpy or _mem_cpye will append data to the result.
+<BR>
+<BR>	srcblk and destblk must not overlap if destblk is higher in memory
+<BR>	than srcblk.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer1[20], buffer2[20];
+	   void *pointer = _mem_cpye ((void *)buffer1, buffer2, 20);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer1[20], buffer2[20];
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea si,buffer1/* DS:SI-&gtbuffer1 */
+	   lea di,buffer2/* ES:DI-&gtbuffer2 */
+	   mov cx,20
+	   mem_cpye ();	/* ES:DI-&gtend of buffer2 */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MMCPYE.ASM		  <B>ASM equiv</B>	MEM_CPYE
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanip.htm#_fmem_cpy">_fmem_cpy</A>, _mem__cpy, <A HREF="rstring.htm#_str_cpy">_str_cpy</A>
+<BR></DL>
+<H2><A NAME="_mem_cspn">_mem_cspn</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines the number of characters at the beginning of a block which do not match any character in a given character set.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>		unsigned int _mem_cspn(const void *block, const void far *charset, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The length of the initial portion of block that contains no characters from charset.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function compares each character in block against all the characters in charset. The function starts with the first character of block and continues until a character in block matches one of the characters in charset or until num characters have been checked, whichever comes first. The return value indicates the number of consecutive characters at block which do not match any character in charset.
+<BR>
+<BR>	If the size of charset is zero, then all characters in block are different than the characters in charset (none) and the size of block is returned.
+<BR>
+<BR>	The length of charset is indicated by the char value at (charset-1). See the example below for one method of defining such a character set.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[20];
+	   int num = 20;
+	   ...
+	   num = _mem_cspn (buffer, (void *)("\4.,:;"+1), num);
+	   /* counts consecutive non-punctuation characters in buffer */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[20], *punct = "\4.,:;";
+	   ...
+	   pushds
+	   pop es	 	/* ES = DS */
+	   mov di,punct
+	   lea si,buffer/* DS:SI-&gtbuffer */
+	   inc di	 	/* ES:DI-&gtstring+1 */
+	   mov cx,20	/* CX = size of buffer */
+	   mem_cspn ();	/* count consecutive non-punct
+	   ... 	 	    chars in buffer */
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MMCSPN.ASM		  <B>ASM equiv</B>	MEM_CSPN
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanip.htm#_fmem_cspn">_fmem_cspn</A>, <A HREF="rmemanip.htm#_mem_pbrk">_mem_pbrk</A>, <A HREF="rstring.htm#_str_cspn">_str_cspn</A>
+<BR></DL>
+<H2><A NAME="_mem_lwr">_mem_lwr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts uppercase characters in a block to lowercase.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void *_mem_lwr(void *block, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to block.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function converts ASCII uppercase letters (A-Z) in block to lowercase letters (a-z). No other characters are modified. num indicates the size of block.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[20];
+	   ...
+	   _mem_lwr (buffer, 20);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	/* use "ES:DI" version of function to minimize reg profile, */
+	/*   see SA 3.0 manual for more details */
+	   char buffer[20];
+	    ...
+	    pushss
+	    pop es  	 /* ES = SS */
+	    lea di,buffer/* ES:DI-&gtbuffer */
+	    mov cx,20
+	    mem_lwrdi ();	 /* convert buffer to lowercase */
+	    ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MMLWR.ASM		  <B>ASM equiv</B>	MEM_LWR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanip.htm#_fmem_lwr">_fmem_lwr</A>, <A HREF="rmemanip.htm#_mem_upr">_mem_upr</A>, <A HREF="rstring.htm#_str_lwr">_str_lwr</A>, <A HREF="rkaractr.htm#_to_lower">_to_lower</A>
+<BR></DL>
+<H2><A NAME="_mem_mem">_mem_mem</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a block for the first occurrence of the contents of another block.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>			int _mem_mem(void **lookblk, unsigned int *looksize, void **findblk, unsigned int *findsize);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if findblk began to match lookblk, but the end of lookblk was encountered before the match was completed.
+<BR>	findblk		address of the character in findblk following the last one successfully matched
+<BR>	findsize		number of remaining characters to match in findblk when the end of lookblk was encountered
+<BR>	lookblk		address of the first character of the partial match in lookblk
+<BR>	looksize		size of lookblk from the start of the partial match to the end of lookblk
+<BR>
+<BR>	0 if findblk was found in lookblk.
+<BR>	lookblk		address of the start of the match in lookblk
+<BR>	looksize		the size of lookblk from the start of the match to the end of lookblk
+<BR>
+<BR>	-1 if findblk was not found in lookblk.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches lookblk for the first occurrence of findblk. 0 is returned if a matching sequence of characters is found. 1 is returned if a partial match is found at the end of lookblk. -1 is returned if no match is found.
+<BR>
+<BR>	If either block size is zero, -1 is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer1[20], buffer2[20];
+	   void *lookblk = buffer1, *findblk = buffer2;
+	   unsigned int looksize, findsize;
+	   int cond;
+
+	   lookblk = "Spontaneous Assembly Library";
+	   looksize = sizeof ("Spontaneous Assembly Library");
+	   findblk = "Library";
+	   findsize = sizeof ("Library");
+	   cond = _mem_mem (&amplookblk, &amplooksize, &ampfindblk,
+	   	  &ampfindsize);
+	   /* cond = 0 */
+	   /* lookblk now points to 'Library' in lookblk */
+	   /* looksize now equals the size of the block 
+	   from 'L' in 'Library' (in lookblk) to the 
+	   end of the block */
+	   lookblk = "Spontaneous Assembly Library";
+	   looksize = sizeof ("Spontaneous Assembly Library");
+	   findblk = "Library files";
+	   findsize = sizeof ("Library files");
+	   cond = _mem_mem (&amplookblk, &amplooksize, &ampfindblk,
+	   	  &ampfindsize);
+	   /* cond = 1 */
+	   /* lookblk now points to 'Library' in lookblk */
+	   /* looksize now equals the size of the block 
+	   from 'L' in 'Library' to the end of the block */
+	   /* findblk now points to ' files' in findblk */
+	   /* findsize now equals the size of the block from
+	   ' ' in ' files' (in findblk) to the end of the block */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char lookblk[20], findblk[20];
+	   ...
+	   pushss
+	   pop es
+	   lea si,findblk/* DS:SI-&gtfindblk */
+	   lea di,lookblk/* ES:DI-&gtlookblk */
+	   mov cx,20	/* CX = size of findblk */
+	   mov dx,20	/* DX = size of lookblk */
+	   mem_mem ();	/* search the memory block */
+	    je mem_mem_010/* if a match was found */
+	    jb mem_mem_020/* if no match was found */
+	   ... 	 	/* partial match */
+	   jmp short mem_mem_030
+
+	mem_mem_010:
+	   ... 	 	/* full match */
+	   jmp short mem_mem_030
+
+	mem_mem_020:
+	   ... 	 	/* no match found */
+	mem_mem_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MMMEM.ASM		  <B>ASM equiv</B>	MEM_MEM
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanip.htm#_fmem_mem">_fmem_mem</A>, <A HREF="rmemanip.htm#_mem_mem">_mem_mem</A>, <A HREF="rstring.htm#_str_str">_str_str</A>
+<BR></DL>
+<H2><A NAME="_mem_memi">_mem_memi</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a block for the first occurrence of another block, ignoring case.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>			int _mem_memi(void **lookblk, unsigned int *looksize, void **findblk, unsigned int *findsize);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	1 if findblk began to match lookblk, but the end of lookblk was encountered before the match was completed.
+<BR>	findblk		address of the character in findblk following the last one successfully matched
+<BR>	findsize		number of remaining characters to match in findblk when the end of lookblk was encountered
+<BR>	lookblk		address of the first character of the partial match in lookblk
+<BR>	looksize	size of lookblk from the start of the partial match to the end of lookblk
+<BR>
+<BR>	0 if findblk was found in lookblk.
+<BR>	lookblk		address of the start of the match in lookblk
+<BR>	looksize		the size of lookblk from the start of the match to the end of lookblk
+<BR>
+<BR>	-1 if findblk was not found in lookblk.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches lookblk for the first occurrence of findblk. The case of ASCII characters is ignored. 0 is returned if a matching sequence of characters is found. 1 is returned if a partial match is found at the end of lookblk. -1 is returned if no match is found.
+<BR>
+<BR>	If either block size is zero, -1 is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer1[20], buffer2[20];
+	   void *lookblk = buffer1, *findblk = buffer2;
+	   unsigned int looksize, findsize;
+	   int cond;
+	   lookblk = "Spontaneous Assembly Library";
+	   looksize = sizeof ("Spontaneous Assembly Library");
+	   findblk = "library";
+	   findsize = sizeof ("library");
+	   cond = _mem_memi (&amplookblk, &amplooksize, &ampfindblk,
+	   	  &ampfindsize);
+	   /* cond = 0 */
+	   /* lookblk now points to 'Library' in lookblk */
+	   /* looksize now equals the size of the block from 'L'
+	   (in lookblk) to the end of the block */
+	   lookblk = "Spontaneous Assembly Library";
+	   looksize = sizeof ("Spontaneous Assembly Library");
+	   findblk = "library files";
+	   findsize = sizeof ("library files");
+	   cond = _mem_memi (&amplookblk, &amplooksize, &ampfindblk,
+	   	  &ampfindsize);
+	   /* cond = 1 */
+	   /* lookblk now points to 'Library' in lookblk */
+	   /* looksize now equals the size of the block from 'L'
+	   (in lookblk) to the end of the block */
+	   /* findblk now points to ' files' in findblk */
+	   /* findsize now equals the size of the block from ' '
+	   (in findblk) to the end of the block */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char lookblk[20], findblk[20];
+	   ...
+	   pushss
+	   pop es
+	   lea si,findblk/* DS:SI-&gtfindblk */
+	   lea di,lookblk/* ES:DI-&gtlookblk */
+	   mov cx,20	/* CX = size of findblk */
+	   mov dx,20	/* DX = size of lookblk */
+	   mem_memi ();	/* search the memory block */
+	    je mem_memi_010/* if a match was found */
+	    jb mem_memi_020/* if no match was found */
+	   ... 	 	/* if a partial match */
+	   jmp short mem_memi_030
+
+	mem_memi_010:
+	   ... 	 	/* full match */
+	   jmp short mem_memi_030
+	mem_memi_020:
+	   ... 	 	/* no match found */
+	mem_memi_030:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MMMEMI.ASM 		  <B>ASM equiv</B>	MEM_MEMI
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanip.htm#_fmem_mem">_fmem_mem</A>, <A HREF="rmemanip.htm#_mem_mem">_mem_mem</A>, <A HREF="rstring.htm#_str_str">_str_str</A>
+<BR></DL>
+<H2><A NAME="_mem_mov">_mem_mov</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Copies the contents of a block to another location.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void *_mem_mov(void far *destblk, const void *srcblk, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to destblk.
+<BR>	destblk	a copy of srcblk
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function copies the contents of srcblk into destblk. Sections of srcblk and destblk may overlap.
+<BR>
+<BR>	If the segments of the memory blocks are not the same, it is assumed that the blocks do not overlap. In this case, characters are simply copied from srcblk to destblk (from the first character to the last).
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[20];
+	   ...
+	   _mem_mov ((void *)(buffer+1), buffer, 20);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[20];
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea di,buffer
+	   inc di	 	/* ES:DI-&gtbuffer+1 */
+	   lea si,buffer/* DS:SI-&gtbuffer */
+	   mov cx,20
+	   mem_mov ();	/* move buffer up one byte */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MMMOV.ASM		  <B>ASM equiv</B>	MEM_MOV
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanip.htm#_fmem_mov">_fmem_mov</A>, <A HREF="rmemanip.htm#_mem_cpy">_mem_cpy</A>, <A HREF="rmemanip.htm#_mem_cpy">_mem_cpy</A>, <A HREF="rstring.htm#_str_cpy">_str_cpy</A>
+<BR></DL>
+<H2><A NAME="_mem_pbrk">_mem_pbrk</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a block for the first occurrence of any character which is in a set of characters.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void *_mem_pbrk(const void *block, const void far *charset, unsigned int *num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the first occurrence of a character in block that is also in charset, if one was found.
+<BR>	num		size of block from the matching character to the end of block
+<BR>
+<BR>	NULL if none of the characters in charset were found in block
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches block for the first occurrence of a character that matches one of the characters in charset. A pointer to the first occurrence of a matching character is returned; num contains the size of block from the matching character to the end of block.
+<BR>
+<BR>	If the size of charset is zero, or if the size of block is zero, NULL is returned.
+<BR>
+<BR>	The length of charset is indicated by the char value at (charset-1). See the example below for one method of defining such a character set.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[20];
+	   void *pointer;
+	   unsigned int num = 20;
+	   ...
+	   pointer = _mem_pbrk (buffer, (void *)("\3ABC"+1), &ampnum);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[20], *abcset = "\3ABC";
+	   ...
+	   pushds
+	   pop es	 	/* ES = DS */
+	   mov di,abcset
+	   inc di	 	/* ES:DI -&gt string+1 */
+	   lea si,buffer/* DS:SI-&gtbuffer */
+	   mov cx,20	/* CX = size of buffer */
+	   mem_pbrk ();	/* search for 'A', 'B', or 'C' */
+	    jc mem_pbrk_010/* if a char not found */
+	   ... 	 	/* if a char found */
+	mem_pbrk_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MMPBRK.ASM		  <B>ASM equiv</B>	MEM_PBRK
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanip.htm#_fmem_pbrk">_fmem_pbrk</A>, <A HREF="rmemanip.htm#_mem_pbrk">_mem_pbrk</A>, <A HREF="rstring.htm#_str_pbrk">_str_pbrk</A>
+<BR></DL>
+<H2><A NAME="_mem_pbrkn">_mem_pbrkn</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Searches a block for the first occurrence of any character which is not in a set of characters.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void *_mem_pbrkn(const void *block, const void far *charset, unsigned int *num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the first occurrence of a character in block that is not in charset, if one was found.
+<BR>	num		size of block from the matching character to the end of block
+<BR>
+<BR>	NULL if all of the characters in block were found in charset.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function searches block for the first occurrence of a character that does not match any character in charset. A pointer to the first occurrence of such a character is returned; num contains the size of block from the mismatching character to the end of block.
+<BR>
+<BR>	If the size of charset is zero, or if the size of block is zero, NULL is returned.
+<BR>
+<BR>	The length of charset is indicated by the char value at (charset-1). See the example below for one method of defining such a character set.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[20];
+	   void *pointer;
+	   unsigned int num = 20;
+	   ...
+	   pointer = _mem_pbrkn (buffer, (void *)("\4.,:;"+1), &ampnum);
+	   /* find first non-punctuation character */
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[20], *punct = "\4.,:;";
+	   ...
+	   pushds
+	   pop es	 	/* ES = DS */
+	   mov di,punct
+	   inc di	 	/* ES:DI -&gt charset+1 */
+	   lea si,buffer/* DS:SI-&gtbuffer */
+	   mov cx,20	/* CX = size of buffer */
+	   mem_pbrkn ();	/* find first non-punct char */
+	    jc mem_pbrkn_010/* if all chars matched */
+	   ... 	 	/* if an unmatched character */
+	mem_pbrkn_010:
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MMPBRKN.ASM		  <B>ASM equiv</B>	MEM_PBRKN
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanip.htm#_fmem_pbrk">_fmem_pbrk</A>, <A HREF="rmemanip.htm#_mem_cspn">_mem_cspn</A>, <A HREF="rmemanip.htm#_mem_pbrk">_mem_pbrk</A>, <A HREF="rstring.htm#_str_pbrk">_str_pbrk</A>
+<BR></DL>
+<H2><A NAME="_mem_rev">_mem_rev</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Reverses the order of the characters in a block.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void *_mem_rev(void *block, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to block.
+<BR>	block	all characters in reverse order
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function reverses all the characters in block. For example, a block containing '0123456789' would be changed to '9876543210'.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[20];
+	   ...
+	   _mem_rev (buffer, 20);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	/* use "ES:DI" version of function to minimize reg profile, */
+	/*   see SA 3.0 manual for more details */
+	   char buffer[20];
+	   pushss
+	   pop es	 /* ES = DS */
+	   mov cx,20/* CX = size of buffer */
+	   mem_revdi ();/* reverse bytes in buffer */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MMREV.ASM		  <B>ASM equiv</B>	MEM_REV
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanip.htm#_fmem_rev">_fmem_rev</A>, <A HREF="rstring.htm#_str_rev">_str_rev</A>
+<BR></DL>
+<H2><A NAME="_mem_set">_mem_set</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Sets all characters in a block to a specified character.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void *_mem_set(void *block, int chr, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to block.
+<BR>	block	contains num instances of chr
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function fills block with num occurrences of the specified character (chr). A pointer to block is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[20];
+	   _mem_set (buffer, 0, 20);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	/* use "ES:DI" version of function to minimize reg profile, */
+	/*   see SA 3.0 manual for more details */
+	   char buffer[20];
+	   ...
+	    pushss
+	    pop es  	 /* ES = SS */
+	    lea di,buffer/* ES:DI-&gtbuffer */
+	    mov cx,20
+	    mov al,' '
+	    mem_setdi ();	 /* set the block to spaces */
+	    ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MMSET.ASM		  <B>ASM equiv</B>	MEM_SET
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanip.htm#_fmem_set">_fmem_set</A>, <A HREF="rstring.htm#_str_set">_str_set</A>
+<BR></DL>
+<H2><A NAME="_mem_skips">_mem_skips</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Skips past all space characters in a block.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void *_mem_skips(const void *block, unsigned int *num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the first non-space character in block.
+<BR>	num		the number of bytes from the first non-space character to the end of block
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function skips past all space characters in block. A pointer to the first non-space character in block is returned; num contains the size of block from the first non-space character to the end of block.
+<BR>
+<BR>	This function defines space characters as the space and tab characters (0x20 and 0x09). If the size of block is zero, the function simply returns a pointer to block.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[20];
+	   void *pointer;
+	   unsigned int num = 20;
+	   ...
+	   pointer = _mem_skips (buffer, &ampnum);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	/* use "ES:DI" version of function to minimize reg profile, */
+	/*   see SA 3.0 manual for more details */
+	   char buffer[20];
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea di,buffer/* ES:DI-&gtbuffer */
+	   mov cx,20	/* CX = size of buffer */
+	   mem_skipsdi ();    /* ES:DI-&gtfirst non-space char */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MMSKIPS.ASM		  <B>ASM equiv</B>	MEM_SKIPS
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanip.htm#_fmem_skips">_fmem_skips</A>, <A HREF="rmemanip.htm#_mem_skipw">_mem_skipw</A>, <A HREF="rstring.htm#_str_skips">_str_skips</A>
+<BR></DL>
+<H2><A NAME="_mem_skipw">_mem_skipw</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Skips past all whitespace characters in a block.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void *_mem_skipw(const void *block, unsigned int *num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to the first non-whitespace character in block.
+<BR>	num		the number of bytes from the first non-whitespace character to the end of block
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function skips past all whitespace characters in block. A pointer to the first non-whitespace character in block is returned; num contains the size of block from the first non-whitespace character to the end of block.
+<BR>
+<BR>	This function defines whitespace characters as the space, tab, carriage return, and linefeed characters (0x20, 0x09, 0x0D and 0x0A).
+<BR>
+<BR>	If num is zero, the function simply returns a pointer to block.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[20];
+	   void *pointer;
+	   unsigned int num = 20;
+	   ...
+	   pointer = _mem_skipw (buffer, &ampnum);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	/* use "ES:DI" version of function to minimize reg profile, */
+	/*   see SA 3.0 manual for more details */
+	   char buffer[20];
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea di,buffer/* ES:DI-&gtbuffer */
+	   mov cx,20	/* CX = size of buffer */
+	   mem_skipwdi ();/* ES:DI-&gt first non-whitespace char */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MMSKIPW.ASM		  <B>ASM equiv</B>	MEM_SKIPW
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanip.htm#_fmem_skipw">_fmem_skipw</A>, <A HREF="rmemanip.htm#_mem_skips">_mem_skips</A>, <A HREF="rstring.htm#_str_skipw">_str_skipw</A>
+<BR></DL>
+<H2><A NAME="_mem_spn">_mem_spn</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Determines the number of characters at the beginning of a block which match any character in a given character set.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	unsigned int _mem_spn(const void *block, const void far *charset, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	The length of the initial portion of block that contains only characters from charset.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function compares each character in block against all the characters in charset. The comparison starts with the first character of block and continues until a character in block does not match one of the characters in charset or until num characters have been checked.
+<BR>
+<BR>	If the length of charset is zero, 0 is returned.
+<BR>	The length of charset is indicated by the char value at (charset-1). See the example below for one method of defining such a character set.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[20];
+	   int num;
+	   ...
+	   num = _mem_spn (buffer, (void *)("\3abc"+1),
+	   	     sizeof (buffer));
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[20], *abcset = "\3abc";
+	   ...
+	   pushds
+	   pop es	 	/* ES = DS */
+	   mov di,string
+	   lea si,buffer/* DS:SI-&gtbuffer */
+	   inc di	 	/* ES:DI-&gtstring + 1 */
+	   mov cx,20	/* CX = size of buffer */
+	   mem_spn ();	/* find number of non-abc chars */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MMSPN.ASM		  <B>ASM equiv</B>	MEM_SPN
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanip.htm#_fmem_spn">_fmem_spn</A>, <A HREF="rstring.htm#_str_spn">_str_spn</A>
+<BR></DL>
+<H2><A NAME="_mem_swab">_mem_swab</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Copies the contents of a block to another location after swapping adjacent even and odd numbered bytes.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void *_mem_swab(void far *destblk, const void *srcblk, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to destblk.
+<BR>	destblk	copy of srcblk with all adjacent even and odd bytes swapped
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function copies the contents of srcblk into destblk a word at a time, swapping the high and low bytes of each word before placing it in destblk. If num is odd, the final unpaired byte is copied into destblk.
+<BR>
+<BR>	If destblk is higher in memory than srcblk, srcblk and destblk must not overlap. The address of the beginning of the table determines whether a byte is odd or even. If the number of bytes to copy is less than two, nothing is copied into destblk.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[20];
+	   pointer = _mem_swab ((void *)buffer, buffer, 20);
+	   ...
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	   char buffer[20];
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea di,buffer/* ES:DI-&gtbuffer */
+	   mov si,di
+	   mov cx,20
+	   mem_swab ();
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MMSWAB.ASM		  <B>ASM equiv</B>	MEM_SWAB
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanip.htm#_fmem_swab">_fmem_swab</A>
+<BR></DL>
+<H2><A NAME="_mem_upr">_mem_upr</A></H2>
+
+<BR><DL>
+<DT><B> Descrip</B>
+<DD> 	Converts lowercase characters in a block to uppercase.
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Syntax</B>
+<DD> 	#include &lt;memmanip.h&gt
+<BR>	void *_mem_upr(void *block, unsigned int num);
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Returns</B>
+<DD> 	A pointer to block.
+<BR>	block block with converted ASCII characters
+<BR>
+<BR></DL>
+<DL>
+<DT><B> Notes</B>
+<DD> 	This function converts ASCII lowercase letters (a-z) in block to uppercase letters (A-Z). No other characters are modified. The size of the block is indicated by num. A pointer to block is returned.
+<BR>
+<BR></DL>
+<DT><B> C/C++ Example</B>
+<DD><CODE><PRE>	{
+	   char buffer[20];
+	   ...
+	   _mem_upr (buffer, 20);
+	}
+
+</CODE></PRE>
+<DT><B> Inline Assembly Example</B>
+<DD><CODE><PRE>	#include &lt;inline.h&gt
+	{
+	/* use "ES:DI" version of function to minimize reg profile, */
+	/*   see SA 3.0 manual for more details */
+	   char buffer[20];
+	   ...
+	   pushss
+	   pop es	 	/* ES = SS */
+	   lea di,buffer/* ES:DI-&gtbuffer */
+	   mov cx,20
+	   mem_uprdi ();	/* convert buffer to uppercase */
+	   ...
+	}
+
+</CODE></PRE>
+<B>Source file</B>	_MMUPR.ASM		  <B>ASM equiv</B>	MEM_UPR
+
+<BR><DL>
+<DT><B>See also</B>
+<DD><A HREF="rmemanip.htm#_fmem_upr">_fmem_upr</A>, <A HREF="rmemanip.htm#_mem_lwr">_mem_lwr</A>, <A HREF="rstring.htm#_str_upr">_str_upr</A>
+<BR>
+<BR></BODY>
+<BR></HTML><BR>
