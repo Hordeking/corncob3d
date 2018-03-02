@@ -142,6 +142,10 @@ void	boss() {
 
 #define memflag
 
+#ifdef ISCORE
+	#undef musicflag
+#endif
+
 int	mygetch() {
 	union REGS	regs;
 	int	c;

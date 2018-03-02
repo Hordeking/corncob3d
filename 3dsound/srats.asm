@@ -11,8 +11,8 @@ qmode	equ	1		; 0 means call from DOS command line
 
 _MODEL	equ	<SMALL>
 
-include		c:\sa\MODEL.INC
-include		c:\sa\include\imath.INC
+include	c:\sa\include\model.inc
+include	c:\sa\include\imath.inc
 include 3dvid.inc
 include pixaddr1.inc
 

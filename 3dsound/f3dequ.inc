@@ -1,18 +1,4 @@
 
-MVPCD	equ	0
-
-windstuff	equ	1
-soundflag	equ	0		; =0 means sound enabled
-leftmarg	equ	20
-printflag	equ	0
-testerflag	equ	1
-qrocket	equ	1
-protection	equ	0
-errortrap	equ	1
-getunivbin	equ	0	; set to one to include univbin data
-
-demover	equ	0
-
 wxmin	equ	0
 wymin	equ	2
 wxmax	equ	4
@@ -142,12 +128,6 @@ bbsize2	equ	bbsize/2
 morttime	equ	10000
 mortrechargetime	equ	6
 
-ethstal	equ	2912
-ethstl2	equ	ethstal*2
-efthstal	equ	2912*4/3
-efthstl2	equ	efthstal*2
-ethrtsf		equ	450		; scale factor for throttle thrust
-edthrtsf	equ	350		; give us much less engine power
 bmrhits		equ	50
 
 bomblst	equ	6000

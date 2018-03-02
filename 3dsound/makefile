@@ -20,64 +20,64 @@ default: 3
 #  username.dat adl.obj
 #	link @3s.lnk
 
-3.obj: 3.asm 3dvid.inc f3dequ.inc usermac.inc
+3.obj: 3.asm 3dvid.inc f3dequ.inc ka.inc engine.inc usermac.inc
 	masm /t /Dshareflag=0 /Dmbflag=1 3.asm
 #	mv 3.obj 3_r.obj
 
-#3_s.obj: 3.asm 3dvid.inc f3dequ.inc usermac.inc
+#3_s.obj: 3.asm 3dvid.inc f3dequ.inc ka.inc usermac.inc
 #	masm /t /Dshareflag=1 /Dmbflag=0 3.asm
 #	mv 3.obj 3_s.obj
 
-f3dvec.obj: f3dvec.asm 3dvid.inc f3dequ.inc
+f3dvec.obj: f3dvec.asm 3dvid.inc f3dequ.inc ka.inc
 	masm /t /Dshareflag=0 /Dmbflag=1 f3dvec
 #	mv f3dvec.obj f3dvec_r.obj
 
-#f3dvec_s.obj: f3dvec.asm 3dvid.inc f3dequ.inc
+#f3dvec_s.obj: f3dvec.asm 3dvid.inc f3dequ.inc ka.inc
 #	masm /t /Dshareflag=1 /Dmbflag=0 f3dvec
 #	mv f3dvec.obj f3dvec_s.obj
 
-strtexp.obj: strtexp.asm f3dequ.inc
+strtexp.obj: strtexp.asm f3dequ.inc ka.inc
 	masm /t /Dshareflag=0 strtexp.asm
 #	mv strtexp.obj strtxp_r.obj
 
-#strtxp_s.obj: strtexp.asm f3dequ.inc
+#strtxp_s.obj: strtexp.asm f3dequ.inc ka.inc
 #	masm /t /Dshareflag=1 strtexp.asm
 #	mv strtexp.obj strtxp_s.obj
 
-defobjs.obj: defobjs.asm f3dequ.inc
+defobjs.obj: defobjs.asm f3dequ.inc ka.inc
 	masm /t /Dshareflag=0 /Dmbflag=1 defobjs.asm
 #	mv defobjs.obj defobj_r.obj
 
-#defobj_s.obj: defobjs.asm f3dequ.inc
+#defobj_s.obj: defobjs.asm f3dequ.inc ka.inc
 #	masm /t /Dshareflag=1 /Dmbflag=0 defobjs.asm
 #	mv defobjs.obj defobj_s.obj
 
-cmdline.obj: cmdline.asm f3dequ.inc
+cmdline.obj: cmdline.asm f3dequ.inc ka.inc
 	masm /t /Dshareflag=0 cmdline
 #	mv cmdline.obj cmdliner.obj
 
-#cmdlines.obj: cmdline.asm f3dequ.inc
+#cmdlines.obj: cmdline.asm f3dequ.inc ka.inc
 #	masm /t /Dshareflag=1 cmdline
 #	mv cmdline.obj cmdlines.obj
 
-map.obj: map.asm f3dequ.inc
+map.obj: map.asm f3dequ.inc ka.inc
 	masm /t /Dshareflag=0 /Dmbflag=1 map.asm
 #	mv map.obj map_r.obj
 
-#map_s.obj: map.asm f3dequ.inc
+#map_s.obj: map.asm f3dequ.inc ka.inc
 #	masm /t /Dshareflag=1 /Dmbflag=0 map.asm
 #	mv map.obj map_s.obj
 
 mat.obj: mat.asm
 	masm /t mat
 
-pict.obj: pict.asm
+pict.obj: pict.asm f3dequ.inc ka.inc
 	masm /t pict
 
 dsqrt.obj: dsqrt.asm
 	masm /t dsqrt
 
-inst.obj: inst.asm 3dvid.inc
+inst.obj: inst.asm 3dvid.inc f3dequ.inc ka.inc
 	masm /t inst
 
 atn.obj: atn.asm

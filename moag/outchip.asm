@@ -48,7 +48,7 @@ _SndOutput proc
 SO_F struc
 	dw	(?)	; old bp
 	db	CPSIZE DUP (?)	; return addr
-addr	dw	(?)	; register adress in sound chip
+address	dw	(?)	; register adress in sound chip
 dataVal	dw	(?)	; data to be written
 SO_F ends
 
@@ -58,7 +58,7 @@ SO_F ends
 	mov	bp, sp
 
 	mov dx, _genAddr            ; get address register of sound chip
-	mov ax, [bp].addr
+	mov ax, [bp].address
 	out	dx, al
 
 ; 12 cyles delay ( 3.6 Mhz )

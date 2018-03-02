@@ -1,0 +1,10 @@
+default: srats.exe
+
+srats.exe: srats.obj csqrt.obj
+	link c:\sa\lib\starts srats csqrt,srats,srats,c:\sa\lib\sas.lib,nul.def
+
+srats.obj: srats.asm
+	masm srats.asm
+
+csqrt.obj: csqrt.asm
+	masm csqrt.asm

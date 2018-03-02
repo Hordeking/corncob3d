@@ -8,7 +8,7 @@
 
 _MODEL	equ	<SMALL>
 
-include		c:\sa\MODEL.INC
+include		c:\sa\include\model.inc
 
 
 .codeseg	lib
@@ -113,7 +113,7 @@ jumptable	dw	offset @codeseg:faradlinit
 
 
 .public		soadlmain
-.proc		soadlmain		AUTO
+.proc		soadlmain	AUTO
 		call	initsound	; initialize the board and everything
 		call	saucerinit
 		ret

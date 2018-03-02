@@ -1,0 +1,11 @@
+
+ Start  Stop   Length Name                   Class
+ 00000H 00C28H 00C29H _TEXT                  CODE
+ 00C30H 0142FH 00800H ATNSEG                 HORSESHIT
+ 01430H 0351BH 020ECH _DATA                  DATA
+ 03520H 0359FH 00080H STACK                  STACK
+
+ Origin   Group
+ 0143:0   DGROUP
+
+Program entry point at 0000:0010

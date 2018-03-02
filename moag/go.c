@@ -12,6 +12,9 @@ INIT int	towerno;
 int	onetower;
 extern char	fileinf[];
 
+INIT struct pilot	curthpilot;
+INIT struct theatert	curtheater;
+
 #ifndef	TU
 
 #define		MYSPAWN		1		/**/
@@ -427,8 +430,8 @@ void	doflag(flag, s)
 	}
 }
 
-INIT struct pilot	curthpilot;
-INIT struct theatert	curtheater;
+/*INIT struct pilot	curthpilot;
+INIT struct theatert	curtheater;*/
 int	copytheat() {
 	union un3	u3;
 	FILE	*fpi, *fpo;
@@ -1111,6 +1114,7 @@ extern	char	scrlist[80];
 		errorbox("Cannot creat 3.cmd!");
 		return;
 	}
+
 	argvec++;
 	while (*argvec != NULL)
 		fprintf(fp, "%s\r\n", *argvec++);

@@ -1,24 +1,6 @@
 
 
-avgthrot	equ	1
 
-jdiag		equ	0
-qtables	equ	1
-dampflag	equ	0
-demorec	equ	1
-delomegflag	equ	0
-fadeflag	equ	1
-finalscreen	equ	0
-larryflag	equ	0
-stestflag	equ	0
-xlatflag	equ	0
-leavegraf	equ	0		; ieee! turn this off!
-diagflag	equ	0
-fptrdiag	equ	0
-simpflag	equ	1
-chopchop	equ	0
-sofsrc		equ	1
-userflag	equ	0
 
 
 IF shareflag EQ 0
@@ -43,6 +25,7 @@ _MODEL	equ	<SMALL>
 
 include		c:\sa\include\model.inc
 include		c:\sa\include\imath.inc
+include 	engine.inc
 include		f3dequ.inc
 include		3dvid.inc
 include		pixaddr1.inc
@@ -8964,23 +8947,31 @@ ENDIF
 
 		cmp	flapflag,0
 		jz	noflapson
+		
+		;Flaps on
 		mov	ax,efthstal
 		mov	thstal,ax
 		mov	ax,efthstl2
 		mov	thstl2,ax
+		;mov	mdsclr1,0ah		; uncomment to have air ball change color for flaps
 		jmp	whocareflap
-	noflapson:
+
+	noflapson:	
+		;Flaps off
 		mov	ax,ethstal
 		mov	thstal,ax
 		mov	ax,ethstl2
 		mov	thstl2,ax
+		;mov	mdsclr1,0ch		; uncomment to have red air ball for no flaps
+		
 	whocareflap:
-		mov	thrtsf,ethrtsf		; assume in nice plane
-		mov	mdsclr1,0ch		; red air ball
+		;Common no matter flaps state
+		mov	thrtsf,ethrtsf			; assume in nice plane
+		mov	mdsclr1,0ch				; red air ball
 		test	obj5dbits,1000h		; are we in a dumpy plane?
 		jz	goniceplane
-		mov	mdsclr1,09h		; blue air ball
-		mov	thrtsf,edthrtsf		; lower horsepower in dumpy plane
+		mov	mdsclr1,09h				; blue air ball
+		mov	thrtsf,edthrtsf			; lower horsepower in dumpy plane
 	goniceplane:
 IF windstuff
 	cmp	windmx,0

@@ -2,7 +2,7 @@
 ; this routine reads in an image file, and places it in the video buffer
 ;
 _MODEL	equ	<SMALL>
-include c:\sa\model.inc
+include c:\sa\include\model.inc
 include 3dvid.inc
 include pixaddr1.inc
 

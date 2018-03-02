@@ -3,7 +3,7 @@
 #define	BLUE	0
 #define	GREEN	2
 #define	CYAN	3
-#define	RED	4
+#define	RED		4
 #define	MAGENTA	1
 #define	BROWN	6
 #define	WHITE	7
@@ -19,7 +19,8 @@
 #define	YELLOW		4
 #define	BRIGHTWHITE	15
 
-#define REALYELLOW 14
+#define	REALYELLOW	14
+
 /*	Screen	*/
 #define	NCOL	80
 #define	NROW	25

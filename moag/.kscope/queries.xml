@@ -1,0 +1,872 @@
+<!DOCTYPE QueryViews>
+<Queries>
+ <QueryView type="1" name="Call Tree: Functions called by 'main.*'">
+  <Query flags="0" type="4"><![CDATA[main.*]]></Query>
+  <Columns>
+   <Column field="5"/>
+   <Column field="0"/>
+   <Column field="1"/>
+   <Column field="6"/>
+  </Columns>
+  <LocationList expanded="0">
+   <Location>
+    <Scope>GetSoundDrvVersion</Scope>
+    <File>/home/jd/programming/corncob3d/moag/csoundc.c</File>
+    <Line>88</Line>
+    <Text><![CDATA[n = GetSoundDrvVersion();]]></Text>
+    <LocationList expanded="0">
+     <Location>
+      <Scope>strlen</Scope>
+      <File>/home/jd/programming/corncob3d/moag/csoundc.c</File>
+      <Line>56</Line>
+      <Text><![CDATA[for (n=0; n < strlen (adlib)+2; n++) str [n] = sig_ptr [n];]]></Text>
+     </Location>
+     <Location>
+      <Scope>memcmp</Scope>
+      <File>/home/jd/programming/corncob3d/moag/csoundc.c</File>
+      <Line>58</Line>
+      <Text><![CDATA[if (!memcmp (adlib, &str [2], strlen (adlib)))]]></Text>
+     </Location>
+     <Location>
+      <Scope>strlen</Scope>
+      <File>/home/jd/programming/corncob3d/moag/csoundc.c</File>
+      <Line>58</Line>
+      <Text><![CDATA[if (!memcmp (adlib, &str [2], strlen (adlib)))]]></Text>
+     </Location>
+     <Location>
+      <Scope>memcpy</Scope>
+      <File>/home/jd/programming/corncob3d/moag/csoundc.c</File>
+      <Line>59</Line>
+      <Text><![CDATA[memcpy (&version, str, sizeof (int ));]]></Text>
+     </Location>
+    </LocationList>
+   </Location>
+   <Location>
+    <Scope>printf</Scope>
+    <File>/home/jd/programming/corncob3d/moag/csoundc.c</File>
+    <Line>90</Line>
+    <Text><![CDATA[printf ("Sound driver not installed.\n");]]></Text>
+    <LocationList expanded="1">
+     <Location>
+      <Scope>__printf_chk</Scope>
+      <File>/usr/include/bits/stdio2.h</File>
+      <Line>104</Line>
+      <Text><![CDATA[return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());]]></Text>
+      <LocationList expanded="1"/>
+     </Location>
+     <Location>
+      <Scope>__va_arg_pack</Scope>
+      <File>/usr/include/bits/stdio2.h</File>
+      <Line>104</Line>
+      <Text><![CDATA[return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());]]></Text>
+      <LocationList expanded="1">
+       <Location>
+        <Scope>__builtin_va_arg_pack</Scope>
+        <File>/usr/include/sys/cdefs.h</File>
+        <Line>342</Line>
+        <Text><![CDATA[#define __va_arg_pack() __builtin_va_arg_pack ()]]></Text>
+        <LocationList expanded="1"/>
+       </Location>
+      </LocationList>
+     </Location>
+     <Location>
+      <Scope>__printf_chk</Scope>
+      <File>/usr/include/bits/stdio2.h</File>
+      <Line>108</Line>
+      <Text><![CDATA[__printf_chk (__USE_FORTIFY_LEVEL - 1, __VA_ARGS__)]]></Text>
+      <LocationList expanded="1"/>
+     </Location>
+    </LocationList>
+   </Location>
+   <Location>
+    <Scope>printf</Scope>
+    <File>/home/jd/programming/corncob3d/moag/csoundc.c</File>
+    <Line>92</Line>
+    <Text><![CDATA[printf ("Sound driver version %x.%x\n", n >> 8, n & 0xff);]]></Text>
+    <LocationList expanded="0">
+     <Location>
+      <Scope>__printf_chk</Scope>
+      <File>/usr/include/bits/stdio2.h</File>
+      <Line>104</Line>
+      <Text><![CDATA[return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());]]></Text>
+     </Location>
+     <Location>
+      <Scope>__va_arg_pack</Scope>
+      <File>/usr/include/bits/stdio2.h</File>
+      <Line>104</Line>
+      <Text><![CDATA[return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());]]></Text>
+     </Location>
+     <Location>
+      <Scope>__printf_chk</Scope>
+      <File>/usr/include/bits/stdio2.h</File>
+      <Line>108</Line>
+      <Text><![CDATA[__printf_chk (__USE_FORTIFY_LEVEL - 1, __VA_ARGS__)]]></Text>
+     </Location>
+    </LocationList>
+   </Location>
+   <Location>
+    <Scope>interact</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>59</Line>
+    <Text><![CDATA[extern void interact(), come(), initscore(), savescore(),]]></Text>
+   </Location>
+   <Location>
+    <Scope>come</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>59</Line>
+    <Text><![CDATA[extern void interact(), come(), initscore(), savescore(),]]></Text>
+   </Location>
+   <Location>
+    <Scope>initscore</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>59</Line>
+    <Text><![CDATA[extern void interact(), come(), initscore(), savescore(),]]></Text>
+   </Location>
+   <Location>
+    <Scope>savescore</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>59</Line>
+    <Text><![CDATA[extern void interact(), come(), initscore(), savescore(),]]></Text>
+   </Location>
+   <Location>
+    <Scope>uglyinit</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>60</Line>
+    <Text><![CDATA[uglyinit(), exit(), nuke(), saybyebye(), initialize();]]></Text>
+   </Location>
+   <Location>
+    <Scope>exit</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>60</Line>
+    <Text><![CDATA[uglyinit(), exit(), nuke(), saybyebye(), initialize();]]></Text>
+   </Location>
+   <Location>
+    <Scope>nuke</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>60</Line>
+    <Text><![CDATA[uglyinit(), exit(), nuke(), saybyebye(), initialize();]]></Text>
+   </Location>
+   <Location>
+    <Scope>saybyebye</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>60</Line>
+    <Text><![CDATA[uglyinit(), exit(), nuke(), saybyebye(), initialize();]]></Text>
+   </Location>
+   <Location>
+    <Scope>initialize</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>60</Line>
+    <Text><![CDATA[uglyinit(), exit(), nuke(), saybyebye(), initialize();]]></Text>
+   </Location>
+   <Location>
+    <Scope>time</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>61</Line>
+    <Text><![CDATA[extern long time(), instdate;]]></Text>
+   </Location>
+   <Location>
+    <Scope>checksum</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>64</Line>
+    <Text><![CDATA[extern void checksum();]]></Text>
+   </Location>
+   <Location>
+    <Scope>farsetsize</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>68</Line>
+    <Text><![CDATA[extern unsigned int farsetsize();]]></Text>
+   </Location>
+   <Location>
+    <Scope>kbhit</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>70</Line>
+    <Text><![CDATA[extern int _fmode, isreg, kbhit(), firsttime;]]></Text>
+   </Location>
+   <Location>
+    <Scope>flushin</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>72</Line>
+    <Text><![CDATA[extern void flushin();]]></Text>
+   </Location>
+   <Location>
+    <Scope>godemo</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>74</Line>
+    <Text><![CDATA[extern void godemo();]]></Text>
+   </Location>
+   <Location>
+    <Scope>prepresetup</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>76</Line>
+    <Text><![CDATA[extern void prepresetup();]]></Text>
+   </Location>
+   <Location>
+    <Scope>musicinit</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>78</Line>
+    <Text><![CDATA[extern void musicinit();]]></Text>
+   </Location>
+   <Location>
+    <Scope>farcoreleft</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>80</Line>
+    <Text><![CDATA[extern unsigned long farcoreleft();]]></Text>
+   </Location>
+   <Location>
+    <Scope>strcpy</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>84</Line>
+    <Text><![CDATA[strcpy(wpath,".\\");]]></Text>
+   </Location>
+   <Location>
+    <Scope>sprintf</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>88</Line>
+    <Text><![CDATA[sprintf(version, "BETA-%s", rversion);]]></Text>
+   </Location>
+   <Location>
+    <Scope>strcpy</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>90</Line>
+    <Text><![CDATA[strcpy(version, rversion);]]></Text>
+   </Location>
+   <Location>
+    <Scope>strcmp</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>92</Line>
+    <Text><![CDATA[if (argc < 2 || strcmp(argv[1], "-_-") != 0) {]]></Text>
+   </Location>
+   <Location>
+    <Scope>printf</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>93</Line>
+    <Text><![CDATA[printf("\n");]]></Text>
+   </Location>
+   <Location>
+    <Scope>printf</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>94</Line>
+    <Text><![CDATA[printf(]]></Text>
+   </Location>
+   <Location>
+    <Scope>printf</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>96</Line>
+    <Text><![CDATA[printf(]]></Text>
+   </Location>
+   <Location>
+    <Scope>printf</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>98</Line>
+    <Text><![CDATA[printf("at the DOS prompt.\n");]]></Text>
+   </Location>
+   <Location>
+    <Scope>printf</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>99</Line>
+    <Text><![CDATA[printf("\n");]]></Text>
+   </Location>
+   <Location>
+    <Scope>exit</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>100</Line>
+    <Text><![CDATA[exit(1);]]></Text>
+   </Location>
+   <Location>
+    <Scope>farcoreleft</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>106</Line>
+    <Text><![CDATA[total = farcoreleft();]]></Text>
+   </Location>
+   <Location>
+    <Scope>farsetsize</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>108</Line>
+    <Text><![CDATA[total = farsetsize(0xffff);]]></Text>
+   </Location>
+   <Location>
+    <Scope>printf</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>111</Line>
+    <Text><![CDATA[printf("\n");]]></Text>
+   </Location>
+   <Location>
+    <Scope>printf</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>112</Line>
+    <Text><![CDATA[printf(]]></Text>
+   </Location>
+   <Location>
+    <Scope>printf</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>114</Line>
+    <Text><![CDATA[printf(]]></Text>
+   </Location>
+   <Location>
+    <Scope>printf</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>124</Line>
+    <Text><![CDATA[printf(]]></Text>
+   </Location>
+   <Location>
+    <Scope>printf</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>126</Line>
+    <Text><![CDATA[printf(]]></Text>
+   </Location>
+   <Location>
+    <Scope>printf</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>128</Line>
+    <Text><![CDATA[printf(]]></Text>
+   </Location>
+   <Location>
+    <Scope>printf</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>130</Line>
+    <Text><![CDATA[printf(]]></Text>
+   </Location>
+   <Location>
+    <Scope>printf</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>133</Line>
+    <Text><![CDATA[printf("\n");]]></Text>
+   </Location>
+   <Location>
+    <Scope>exit</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>134</Line>
+    <Text><![CDATA[exit(137);]]></Text>
+   </Location>
+   <Location>
+    <Scope>strcmp</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>144</Line>
+    <Text><![CDATA[if (argc > 2 && strcmp(argv[2], "-i") == 0) {]]></Text>
+   </Location>
+   <Location>
+    <Scope>strcmp</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>148</Line>
+    <Text><![CDATA[else if (argc > 2 && strcmp(argv[2], "-r") == 0) {]]></Text>
+   </Location>
+   <Location>
+    <Scope>strncmpi</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>152</Line>
+    <Text><![CDATA[if (argc > 3 && strncmpi(argv[3], "-p",2) == 0) {]]></Text>
+   </Location>
+   <Location>
+    <Scope>strcpy</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>153</Line>
+    <Text><![CDATA[strcpy(wpath,argv[3]+2);]]></Text>
+   </Location>
+   <Location>
+    <Scope>strcat</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>154</Line>
+    <Text><![CDATA[strcat(strcpy(fileinf,wpath),"towers.inf");]]></Text>
+   </Location>
+   <Location>
+    <Scope>strcpy</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>154</Line>
+    <Text><![CDATA[strcat(strcpy(fileinf,wpath),"towers.inf");]]></Text>
+   </Location>
+   <Location>
+    <Scope>strncmpi</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>159</Line>
+    <Text><![CDATA[else if (argc > 3 && strncmpi(argv[3], "-z",2) == 0) {]]></Text>
+   </Location>
+   <Location>
+    <Scope>strcpy</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>160</Line>
+    <Text><![CDATA[strcpy(wpath,argv[3]+2);]]></Text>
+   </Location>
+   <Location>
+    <Scope>normal</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>614</Line>
+    <Text><![CDATA[normal();]]></Text>
+   </Location>
+   <Location>
+    <Scope>bold</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>617</Line>
+    <Text><![CDATA[bold();]]></Text>
+   </Location>
+   <Location>
+    <Scope>normal</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>619</Line>
+    <Text><![CDATA[normal();]]></Text>
+   </Location>
+   <Location>
+    <Scope>beep</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>624</Line>
+    <Text><![CDATA[beep();]]></Text>
+    <LocationList expanded="0">
+     <Location>
+      <Scope>MK_FP</Scope>
+      <File>/home/jd/programming/corncob3d/moag/texto.c</File>
+      <Line>276</Line>
+      <Text><![CDATA[now = *(long far *)MK_FP(0x40, 0x6C);]]></Text>
+     </Location>
+     <Location>
+      <Scope>MK_FP</Scope>
+      <File>/home/jd/programming/corncob3d/moag/texto.c</File>
+      <Line>278</Line>
+      <Text><![CDATA[while (*(long far *)MK_FP(0x40, 0x6C) < next)]]></Text>
+     </Location>
+     <Location>
+      <Scope>kbhit</Scope>
+      <File>/home/jd/programming/corncob3d/moag/texto.c</File>
+      <Line>279</Line>
+      <Text><![CDATA[if (kbhit())]]></Text>
+     </Location>
+     <Location>
+      <Scope>sound</Scope>
+      <File>/home/jd/programming/corncob3d/moag/texto.c</File>
+      <Line>282</Line>
+      <Text><![CDATA[sound(FREQ);]]></Text>
+     </Location>
+     <Location>
+      <Scope>MK_FP</Scope>
+      <File>/home/jd/programming/corncob3d/moag/texto.c</File>
+      <Line>283</Line>
+      <Text><![CDATA[while (*(long far *)MK_FP(0x40, 0x6C) < next) {]]></Text>
+     </Location>
+     <Location>
+      <Scope>kbhit</Scope>
+      <File>/home/jd/programming/corncob3d/moag/texto.c</File>
+      <Line>284</Line>
+      <Text><![CDATA[if (kbhit())]]></Text>
+     </Location>
+     <Location>
+      <Scope>nosound</Scope>
+      <File>/home/jd/programming/corncob3d/moag/texto.c</File>
+      <Line>287</Line>
+      <Text><![CDATA[nosound();]]></Text>
+     </Location>
+     <Location>
+      <Scope>sound</Scope>
+      <File>/home/jd/programming/corncob3d/moag/texto.c</File>
+      <Line>289</Line>
+      <Text><![CDATA[sound(FREQ, 1);]]></Text>
+     </Location>
+    </LocationList>
+   </Location>
+   <Location>
+    <Scope>bold</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>633</Line>
+    <Text><![CDATA[bold();]]></Text>
+    <LocationList expanded="1"/>
+   </Location>
+   <Location>
+    <Scope>beep</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>654</Line>
+    <Text><![CDATA[beep();]]></Text>
+    <LocationList expanded="0">
+     <Location>
+      <Scope>MK_FP</Scope>
+      <File>/home/jd/programming/corncob3d/moag/texto.c</File>
+      <Line>276</Line>
+      <Text><![CDATA[now = *(long far *)MK_FP(0x40, 0x6C);]]></Text>
+     </Location>
+     <Location>
+      <Scope>MK_FP</Scope>
+      <File>/home/jd/programming/corncob3d/moag/texto.c</File>
+      <Line>278</Line>
+      <Text><![CDATA[while (*(long far *)MK_FP(0x40, 0x6C) < next)]]></Text>
+     </Location>
+     <Location>
+      <Scope>kbhit</Scope>
+      <File>/home/jd/programming/corncob3d/moag/texto.c</File>
+      <Line>279</Line>
+      <Text><![CDATA[if (kbhit())]]></Text>
+     </Location>
+     <Location>
+      <Scope>sound</Scope>
+      <File>/home/jd/programming/corncob3d/moag/texto.c</File>
+      <Line>282</Line>
+      <Text><![CDATA[sound(FREQ);]]></Text>
+     </Location>
+     <Location>
+      <Scope>MK_FP</Scope>
+      <File>/home/jd/programming/corncob3d/moag/texto.c</File>
+      <Line>283</Line>
+      <Text><![CDATA[while (*(long far *)MK_FP(0x40, 0x6C) < next) {]]></Text>
+     </Location>
+     <Location>
+      <Scope>kbhit</Scope>
+      <File>/home/jd/programming/corncob3d/moag/texto.c</File>
+      <Line>284</Line>
+      <Text><![CDATA[if (kbhit())]]></Text>
+     </Location>
+     <Location>
+      <Scope>nosound</Scope>
+      <File>/home/jd/programming/corncob3d/moag/texto.c</File>
+      <Line>287</Line>
+      <Text><![CDATA[nosound();]]></Text>
+     </Location>
+     <Location>
+      <Scope>sound</Scope>
+      <File>/home/jd/programming/corncob3d/moag/texto.c</File>
+      <Line>289</Line>
+      <Text><![CDATA[sound(FREQ, 1);]]></Text>
+     </Location>
+    </LocationList>
+   </Location>
+   <Location>
+    <Scope>normal</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>657</Line>
+    <Text><![CDATA[normal();]]></Text>
+    <LocationList expanded="1"/>
+   </Location>
+   <Location>
+    <Scope>bold</Scope>
+    <File>/home/jd/programming/corncob3d/moag/moag.c</File>
+    <Line>660</Line>
+    <Text><![CDATA[bold();]]></Text>
+    <LocationList expanded="1"/>
+   </Location>
+   <Location>
+    <Scope>GetSoundDrvVersion</Scope>
+    <File>/home/jd/programming/corncob3d/moag/rolplay.c</File>
+    <Line>194</Line>
+    <Text><![CDATA[extern int GetSoundDrvVersion (void );]]></Text>
+    <LocationList expanded="0">
+     <Location>
+      <Scope>strlen</Scope>
+      <File>/home/jd/programming/corncob3d/moag/csoundc.c</File>
+      <Line>56</Line>
+      <Text><![CDATA[for (n=0; n < strlen (adlib)+2; n++) str [n] = sig_ptr [n];]]></Text>
+     </Location>
+     <Location>
+      <Scope>memcmp</Scope>
+      <File>/home/jd/programming/corncob3d/moag/csoundc.c</File>
+      <Line>58</Line>
+      <Text><![CDATA[if (!memcmp (adlib, &str [2], strlen (adlib)))]]></Text>
+     </Location>
+     <Location>
+      <Scope>strlen</Scope>
+      <File>/home/jd/programming/corncob3d/moag/csoundc.c</File>
+      <Line>58</Line>
+      <Text><![CDATA[if (!memcmp (adlib, &str [2], strlen (adlib)))]]></Text>
+     </Location>
+     <Location>
+      <Scope>memcpy</Scope>
+      <File>/home/jd/programming/corncob3d/moag/csoundc.c</File>
+      <Line>59</Line>
+      <Text><![CDATA[memcpy (&version, str, sizeof (int ));]]></Text>
+     </Location>
+    </LocationList>
+   </Location>
+   <Location>
+    <Scope>GetSoundDrvVersion</Scope>
+    <File>/home/jd/programming/corncob3d/moag/rolplay.c</File>
+    <Line>198</Line>
+    <Text><![CDATA[result = GetSoundDrvVersion();]]></Text>
+    <LocationList expanded="0">
+     <Location>
+      <Scope>strlen</Scope>
+      <File>/home/jd/programming/corncob3d/moag/csoundc.c</File>
+      <Line>56</Line>
+      <Text><![CDATA[for (n=0; n < strlen (adlib)+2; n++) str [n] = sig_ptr [n];]]></Text>
+     </Location>
+     <Location>
+      <Scope>memcmp</Scope>
+      <File>/home/jd/programming/corncob3d/moag/csoundc.c</File>
+      <Line>58</Line>
+      <Text><![CDATA[if (!memcmp (adlib, &str [2], strlen (adlib)))]]></Text>
+     </Location>
+     <Location>
+      <Scope>strlen</Scope>
+      <File>/home/jd/programming/corncob3d/moag/csoundc.c</File>
+      <Line>58</Line>
+      <Text><![CDATA[if (!memcmp (adlib, &str [2], strlen (adlib)))]]></Text>
+     </Location>
+     <Location>
+      <Scope>memcpy</Scope>
+      <File>/home/jd/programming/corncob3d/moag/csoundc.c</File>
+      <Line>59</Line>
+      <Text><![CDATA[memcpy (&version, str, sizeof (int ));]]></Text>
+     </Location>
+    </LocationList>
+   </Location>
+   <Location>
+    <Scope>printf</Scope>
+    <File>/home/jd/programming/corncob3d/moag/rolplay.c</File>
+    <Line>200</Line>
+    <Text><![CDATA[printf ("Sound driver not installed, aborting application");]]></Text>
+    <LocationList expanded="0">
+     <Location>
+      <Scope>__printf_chk</Scope>
+      <File>/usr/include/bits/stdio2.h</File>
+      <Line>104</Line>
+      <Text><![CDATA[return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());]]></Text>
+     </Location>
+     <Location>
+      <Scope>__va_arg_pack</Scope>
+      <File>/usr/include/bits/stdio2.h</File>
+      <Line>104</Line>
+      <Text><![CDATA[return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());]]></Text>
+     </Location>
+     <Location>
+      <Scope>__printf_chk</Scope>
+      <File>/usr/include/bits/stdio2.h</File>
+      <Line>108</Line>
+      <Text><![CDATA[__printf_chk (__USE_FORTIFY_LEVEL - 1, __VA_ARGS__)]]></Text>
+     </Location>
+    </LocationList>
+   </Location>
+   <Location>
+    <Scope>printf</Scope>
+    <File>/home/jd/programming/corncob3d/moag/rolplay.c</File>
+    <Line>204</Line>
+    <Text><![CDATA[printf ("Using sound driver version %x.%x\n", result >> 8, result & 0xff);]]></Text>
+   </Location>
+   <Location>
+    <Scope>SetUp_Melo</Scope>
+    <File>/home/jd/programming/corncob3d/moag/rolplay.c</File>
+    <Line>207</Line>
+    <Text><![CDATA[result = SetUp_Melo (argv [1], "standard.bnk");]]></Text>
+   </Location>
+   <Location>
+    <Scope>Send_Melo</Scope>
+    <File>/home/jd/programming/corncob3d/moag/rolplay.c</File>
+    <Line>212</Line>
+    <Text><![CDATA[do result = Send_Melo ();]]></Text>
+   </Location>
+   <Location>
+    <Scope>kbhit</Scope>
+    <File>/home/jd/programming/corncob3d/moag/rolplay.c</File>
+    <Line>213</Line>
+    <Text><![CDATA[while (!kbhit() && result == NOT_ALL_SENT);]]></Text>
+   </Location>
+   <Location>
+    <Scope>Play_Status</Scope>
+    <File>/home/jd/programming/corncob3d/moag/rolplay.c</File>
+    <Line>216</Line>
+    <Text><![CDATA[do result = Play_Status();]]></Text>
+   </Location>
+   <Location>
+    <Scope>kbhit</Scope>
+    <File>/home/jd/programming/corncob3d/moag/rolplay.c</File>
+    <Line>217</Line>
+    <Text><![CDATA[while ((result == STILL_PLAYING) && !kbhit());]]></Text>
+   </Location>
+   <Location>
+    <Scope>kbhit</Scope>
+    <File>/home/jd/programming/corncob3d/moag/rolplay.c</File>
+    <Line>218</Line>
+    <Text><![CDATA[if(kbhit()) getch();]]></Text>
+   </Location>
+   <Location>
+    <Scope>getch</Scope>
+    <File>/home/jd/programming/corncob3d/moag/rolplay.c</File>
+    <Line>218</Line>
+    <Text><![CDATA[if(kbhit()) getch();]]></Text>
+   </Location>
+   <Location>
+    <Scope>printf</Scope>
+    <File>/home/jd/programming/corncob3d/moag/rolplay.c</File>
+    <Line>220</Line>
+    <Text><![CDATA[else printf ("Error = %d\n", result);]]></Text>
+   </Location>
+   <Location>
+    <Scope>UnInit</Scope>
+    <File>/home/jd/programming/corncob3d/moag/rolplay.c</File>
+    <Line>221</Line>
+    <Text><![CDATA[UnInit ();]]></Text>
+   </Location>
+   <Location>
+    <Scope>center</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>51</Line>
+    <Text><![CDATA[extern void center();]]></Text>
+   </Location>
+   <Location>
+    <Scope>cursor</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>57</Line>
+    <Text><![CDATA[cursor(1, 1);]]></Text>
+   </Location>
+   <Location>
+    <Scope>color</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>58</Line>
+    <Text><![CDATA[color(WHITE, BLACK);]]></Text>
+   </Location>
+   <Location>
+    <Scope>sput</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>64</Line>
+    <Text><![CDATA[sput(buf);]]></Text>
+   </Location>
+   <Location>
+    <Scope>color</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>66</Line>
+    <Text><![CDATA[color(YELLOW, BLUE);]]></Text>
+   </Location>
+   <Location>
+    <Scope>sput</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>72</Line>
+    <Text><![CDATA[sput(buf);]]></Text>
+   </Location>
+   <Location>
+    <Scope>color</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>74</Line>
+    <Text><![CDATA[color(WHITE, BLACK);]]></Text>
+   </Location>
+   <Location>
+    <Scope>sput</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>79</Line>
+    <Text><![CDATA[sput(buf);]]></Text>
+   </Location>
+   <Location>
+    <Scope>color</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>82</Line>
+    <Text><![CDATA[color(YELLOW, BLUE);]]></Text>
+   </Location>
+   <Location>
+    <Scope>sput</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>88</Line>
+    <Text><![CDATA[sput(buf);]]></Text>
+   </Location>
+   <Location>
+    <Scope>color</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>89</Line>
+    <Text><![CDATA[color(BRIGHTWHITE, BLUE);]]></Text>
+   </Location>
+   <Location>
+    <Scope>sput</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>90</Line>
+    <Text><![CDATA[sput(titlemsg);]]></Text>
+   </Location>
+   <Location>
+    <Scope>color</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>92</Line>
+    <Text><![CDATA[color(YELLOW, BLUE);]]></Text>
+   </Location>
+   <Location>
+    <Scope>sput</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>98</Line>
+    <Text><![CDATA[sput(buf);]]></Text>
+   </Location>
+   <Location>
+    <Scope>color</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>101</Line>
+    <Text><![CDATA[color(YELLOW, BLUE);]]></Text>
+   </Location>
+   <Location>
+    <Scope>sput</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>113</Line>
+    <Text><![CDATA[sput(buf);]]></Text>
+   </Location>
+   <Location>
+    <Scope>color</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>116</Line>
+    <Text><![CDATA[color(YELLOW, BLUE);]]></Text>
+   </Location>
+   <Location>
+    <Scope>sput</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>122</Line>
+    <Text><![CDATA[sput(buf);]]></Text>
+   </Location>
+   <Location>
+    <Scope>color</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>123</Line>
+    <Text><![CDATA[color(WHITE, BLUE);]]></Text>
+   </Location>
+   <Location>
+    <Scope>center</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>124</Line>
+    <Text><![CDATA[center(buf, menuwid, msg2);]]></Text>
+   </Location>
+   <Location>
+    <Scope>sput</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>125</Line>
+    <Text><![CDATA[sput(buf);]]></Text>
+   </Location>
+   <Location>
+    <Scope>color</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>127</Line>
+    <Text><![CDATA[color(YELLOW, BLUE);]]></Text>
+   </Location>
+   <Location>
+    <Scope>sput</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>133</Line>
+    <Text><![CDATA[sput(buf);]]></Text>
+   </Location>
+   <Location>
+    <Scope>color</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>136</Line>
+    <Text><![CDATA[color(YELLOW, BLUE);]]></Text>
+   </Location>
+   <Location>
+    <Scope>sput</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>148</Line>
+    <Text><![CDATA[sput(buf);]]></Text>
+   </Location>
+   <Location>
+    <Scope>color</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>151</Line>
+    <Text><![CDATA[color(YELLOW, BLUE);]]></Text>
+   </Location>
+   <Location>
+    <Scope>sput</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>159</Line>
+    <Text><![CDATA[sput(buf);]]></Text>
+   </Location>
+   <Location>
+    <Scope>color</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>162</Line>
+    <Text><![CDATA[color(YELLOW, BLUE);]]></Text>
+   </Location>
+   <Location>
+    <Scope>sput</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>169</Line>
+    <Text><![CDATA[sput(buf);]]></Text>
+   </Location>
+   <Location>
+    <Scope>color</Scope>
+    <File>/home/jd/programming/corncob3d/moag/scrnma.c</File>
+    <Line>171</Line>
+    <Text><![CDATA[color(YELLOW, BLUE);]]></Text>
+   </Location>
+  </LocationList>
+ </QueryView>
+</Queries>

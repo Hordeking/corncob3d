@@ -1,7 +1,7 @@
-iscore.OBJ+
-report_i.OBJ+
-texto.OBj+
-input.OBJ+
-promed_i.OBJ+
+iscore.obj+
+moag.obj+
+report_i.obj+
+texto.obj+
+promed_i.obj+
 mfsa.obj+
-readfont.obj
+input.obj+

@@ -1,6 +1,6 @@
 # Put in the full pathname if not in current dir:
-USERNAME = c:/asm/3d/3dsound/username.dat
-# USERNAME = ./username.dat
+#USERNAME = c:/asm/3d/3dsound/username.dat
+USERNAME = ./username.dat
 
 # Choose text or graphics mode
 O = text
@@ -11,6 +11,7 @@ CC = bcc
 CFLAGS = -c -K -mm -d
 TURBOC = c:\borlandc
 MASM = masm
+LINKM	= tlink /m $(TURBOC)\lib\c0m @moag.lnk, moag, moag, $(TURBOC)\lib\cm
 LINKM_r = tlink /m $(TURBOC)\lib\c0m @moag_r.lnk, moag, moag, $(TURBOC)\lib\cm
 LINKM_s = tlink /m $(TURBOC)\lib\c0m @moag_s.lnk, moag, moag, $(TURBOC)\lib\cm
 LINKM_k = tlink /m $(TURBOC)\lib\c0m @moag_k.lnk, moag, moag, $(TURBOC)\lib\cm
@@ -29,286 +30,134 @@ LINKI = bcc -mm
 # LINKT = pcl [5K,16K,3K]
 # LINKI = pcl [5K,4K,3K]
 
-OBJS_r = moag_r.$(OBJ) misn_r.$(OBJ) ryo.$(OBJ) roster.$(OBJ) hiscore.$(OBJ) \
-	reg_r.$(OBJ) demo_r.$(OBJ) kbjs.$(OBJ) sndedit.$(OBJ) scrnma_r.$(OBJ) \
-	o_m.$(OBJ) input_r.$(OBJ) go_r.$(OBJ) report_r.$(OBJ) promed_r.$(OBJ) \
-	cecode.$(OBJ) 3univs_r.$(OBJ) flash.$(OBJ) init_r.$(OBJ) \
+RFLAGS = -DREGISTERED
+RFLAGS_ASM = /Dshareflag=0
+
+OBJS = moag.$(OBJ) misn.$(OBJ) ryo.$(OBJ) roster.$(OBJ) hiscore.$(OBJ) \
+	reg.$(OBJ) demo.$(OBJ) kbjs.$(OBJ) sndedit.$(OBJ) scrnma.$(OBJ) \
+	o_m.$(OBJ) input.$(OBJ) go.$(OBJ) report.$(OBJ) promed.$(OBJ) \
+	cecode.$(OBJ) 3univs.$(OBJ) flash.$(OBJ) init.$(OBJ) \
 	scroll_m.$(OBJ) ugly.$(OBJ) uglylist.$(OBJ) version.$(OBJ) \
 	regstuff.$(OBJ) readfont.obj mfsa.obj \
 	rolplay.obj rolread.obj insbank.obj csoundc.obj outchip.obj \
 	adldet.obj loadsnd.obj freeup.obj
 
-OBJS_s = moag_s.$(OBJ) misn_s.$(OBJ) ryo.$(OBJ) roster.$(OBJ) hiscore.$(OBJ) \
-	reg_s.$(OBJ) demo_s.$(OBJ) kbjs.$(OBJ) scrnma_s.$(OBJ) o_m.$(OBJ) \
-	input_s.obj go_s.$(OBJ) report_s.$(OBJ) promed_s.$(OBJ) cecode.$(OBJ) \
-	3univs_s.$(OBJ) init_s.$(OBJ) scroll_m.$(OBJ) ugly.$(OBJ) \
-	uglylist.$(OBJ) version.$(OBJ) readfont.obj mfsa.obj \
-	rolplay.obj rolread.obj insbank.obj csoundc.obj outchip.obj \
-	loadsnd.obj adldet.obj freeup.obj
+#reg:
+#	copy texto_r.h texto.h
 
-OBJS_k = moag_k.$(OBJ) misn_k.$(OBJ) ryo.$(OBJ) roster.$(OBJ) hiscore.$(OBJ) \
-	reg_k.$(OBJ) demo_k.$(OBJ) kbjs.$(OBJ) scrnma_s.$(OBJ) o_m.$(OBJ) \
-	input_k.obj go_k.$(OBJ) report_k.$(OBJ) promed_k.$(OBJ) cecode.$(OBJ) \
-	3univs_k.$(OBJ) init_k.$(OBJ) scroll_m.$(OBJ) ugly.$(OBJ) \
-	uglylist.$(OBJ) version.$(OBJ) readfont.obj mfsa.obj outchip.obj \
-	loadsnd.obj adldet.obj freeup.obj csoundc.obj
+#share:
+#	copy texto_s.h texto.h
 
+#sofsrc:
+#	copy texto_s.h texto.h
 
-OBJS_b = moag_b.$(OBJ) misn.$(OBJ) ryo.$(OBJ) roster.$(OBJ) hiscore.$(OBJ) \
-	reg_s.$(OBJ) demo.$(OBJ) kbjs.$(OBJ) scrnma.$(OBJ) o.$(OBJ) \
-	input.$(OBJ) go_s.$(OBJ) report_m.$(OBJ) promed_m.$(OBJ) cecode.$(OBJ) \
-	3univs_m.$(OBJ) flash.$(OBJ) init_s.$(OBJ) scroll_m.$(OBJ) ugly.$(OBJ) \
-	uglylist.$(OBJ) version.$(OBJ)
+reg: $(OBJS)
+	$(LINKM)
 
-reg:
-	copy texto_r.h texto.h
+moag.$(OBJ): moag.c moag.h texto.h
+	$(CC) $(CFLAGS) $(RFLAGS) $(RFLAGS) moag.c
 
-share:
-	copy texto_s.h texto.h
+3univs.$(OBJ): 3univs.c moag.h
+	$(CC) $(CFLAGS) $(RFLAGS) 3univs.c
 
-sofsrc:
-	copy texto_s.h texto.h
+demo.$(OBJ): demo.c moag.h texto.h screens.h
+	$(CC) $(CFLAGS) $(RFLAGS) demo.c
 
-reg: $(OBJS_r)
-	$(LINKM_r)
+go.$(OBJ): go.c moag.h texto.h cecode.h
+	$(CC) $(CFLAGS) $(RFLAGS) go.c
 
-share: $(OBJS_s)
-	$(LINKM_s)
+init.$(OBJ): init.c moag.h
+	$(CC) $(CFLAGS) $(RFLAGS) init.c
 
-sofsrc: $(OBJS_k)
-	$(LINKM_k)
+input.$(OBJ): input.c moag.h
+	$(CC) $(CFLAGS) $(RFLAGS) -oinput.obj input.c
 
-oldshare: $(OBJS_s) tower fixtower.exe
-	$(LINKM_s)
-	fixtower
+misn.$(OBJ): misn.c moag.h texto.h screens.h
+	$(CC) $(CFLAGS) $(RFLAGS) $(RFLAGS) misn.c
 
-beta: $(OBJS_b) tower fixtower.exe
-	$(LINKM_b)
-	fixtower
+promed.$(OBJ): promedal.c moag.h texto.h
+	$(CC) $(CFLAGS) $(RFLAGS) promedal.c
 
-moag_b.$(OBJ):  moag.c moag.h texto.h
-	$(CC) $(CFLAGS) -DBETA=1 moag.c
-	mv moag.$(OBJ) moag_b.$(OBJ)
+reg.$(OBJ): reg.c moag.h texto.h screens.h
+	$(CC) $(CFLAGS) $(RFLAGS) reg.c
 
-moag_s.$(OBJ):  moag.c moag.h texto.h
-	$(CC) $(CFLAGS) moag.c
-	mv moag.$(OBJ) moag_s.$(OBJ)
+report.$(OBJ): report.c moag.h texto.h screens.h
+	$(CC) $(CFLAGS) $(RFLAGS) report.c
 
-moag_r.$(OBJ):  moag.c moag.h texto.h
-	$(CC) $(CFLAGS) -DREGISTERED=1 moag.c
-	mv moag.$(OBJ) moag_r.$(OBJ)
+scrnma.$(OBJ): scrnma.c moag.h texto.h screens.h
+	$(CC) $(CFLAGS) $(RFLAGS) scrnma.c
 
-moag_k.$(OBJ):  moag.c moag.h texto.h
-	$(CC) $(CFLAGS) -DSOFSRC=1 moag.c
-	mv moag.$(OBJ) moag_k.$(OBJ)
 
-readfont.obj:  readfont.asm
-	$(MASM) readfont;
 
-mfsa.$(OBJ):  mfsa.c 
-	$(CC) $(CFLAGS) mfsa.c
+scroll_m.$(OBJ): scroll.c texto.h moag.h screens.h
+	$(CC) $(CFLAGS) $(RFLAGS) -oscroll_m.$(OBJ) scroll.c
 
-misn_r.$(OBJ):  misn.c moag.h texto.h screens.h
-	$(CC) $(CFLAGS) -DREGISTERED=1 misn.c
-	mv misn.$(OBJ) misn_r.$(OBJ)
 
-misn_s.$(OBJ):  misn.c moag.h texto.h screens.h
-	$(CC) $(CFLAGS) misn.c
-	mv misn.$(OBJ) misn_s.$(OBJ)
 
-misn_k.$(OBJ):  misn.c moag.h texto.h screens.h
-	$(CC) $(CFLAGS) misn.c
-	mv misn.$(OBJ) misn_k.$(OBJ)
+adldet.obj: adldet.c
+	$(CC) $(CFLAGS) $(RFLAGS) adldet.c
 
-ryo.$(OBJ):  ryo.c moag.h texto.h
-	$(CC) $(CFLAGS) ryo.c
+cecode.$(OBJ): cecode.c moag.h texto.h cecode.h
+	$(CC) $(CFLAGS) $(RFLAGS) cecode.c
 
-roster.$(OBJ):  roster.c moag.h texto.h screens.h
-	$(CC) $(CFLAGS) roster.c
+csoundc.obj: csoundc.c
+	$(CC) $(CFLAGS) $(RFLAGS) csoundc.c
 
-hiscore.$(OBJ):  hiscore.c moag.h texto.h screens.h
-	$(CC) $(CFLAGS) hiscore.c
+flash.$(OBJ): flash.c moag.h texto.h screens.h
+	$(CC) $(CFLAGS) $(RFLAGS) flash.c
 
-reg_s.$(OBJ):  reg.c moag.h texto.h screens.h
-	$(CC) $(CFLAGS) reg.c
-	mv reg.$(OBJ) reg_s.$(OBJ)
+freeup.obj: freeup.asm
+	$(MASM) $(RFLAGS_ASM) freeup.asm
 
-reg_k.$(OBJ):  reg.c moag.h texto.h screens.h
-	$(CC) $(CFLAGS) reg.c
-	mv reg.$(OBJ) reg_k.$(OBJ)
+hiscore.$(OBJ): hiscore.c moag.h texto.h screens.h
+	$(CC) $(CFLAGS) $(RFLAGS) hiscore.c
 
-reg_r.$(OBJ):  reg.c moag.h texto.h screens.h
-	$(CC) $(CFLAGS) -DREGISTERED=1 reg.c
-	mv reg.$(OBJ) reg_r.$(OBJ)
+insbank.obj: insbank.c
+	$(CC) $(CFLAGS) $(RFLAGS) insbank.c
 
-regstuff.c:  mkregst.exe $(USERNAME)
-	mkregst $(USERNAME)
+kbjs.$(OBJ): kbjs.c moag.h texto.h
+	$(CC) $(CFLAGS) $(RFLAGS) kbjs.c
 
-regstuff.$(OBJ):  regstuff.c
-	$(CC) $(CFLAGS) regstuff.c
+loadsnd.$(OBJ): loadsnd.c
+	$(CC) $(CFLAGS) $(RFLAGS) loadsnd.c
 
-demo_r.$(OBJ):  demo.c moag.h texto.h screens.h
-	$(CC) $(CFLAGS) -DREGISTERED=1 demo.c
-	mv demo.$(OBJ) demo_r.$(OBJ)
+mfsa.$(OBJ): mfsa.c 
+	$(CC) $(CFLAGS) $(RFLAGS) mfsa.c
 
-demo_s.$(OBJ):  demo.c
-	$(CC) $(CFLAGS) demo.c
-	mv demo.$(OBJ) demo_s.$(OBJ)
+outchip.obj: outchip.asm
+	$(MASM) $(RFLAGS_ASM) outchip.asm
 
-demo_k.$(OBJ):  demo.c
-	$(CC) $(CFLAGS) demo.c
-	mv demo.$(OBJ) demo_k.$(OBJ)
+readfont.obj: readfont.asm
+	$(MASM) $(RFLAGS_ASM) readfont.asm
 
-kbjs.$(OBJ):  kbjs.c moag.h texto.h
-	$(CC) $(CFLAGS) kbjs.c
+regstuff.$(OBJ): regstuff.c
+	$(CC) $(CFLAGS) $(RFLAGS) regstuff.c
 
-sndedit.$(OBJ):  sndedit.c moag.h texto.h
-	$(CC) $(CFLAGS) sndedit.c
+rolplay.$(OBJ): rolplay.c
+	$(CC) $(CFLAGS) $(RFLAGS) rolplay.c
 
-scrnma_r.$(OBJ):  scrnma.c moag.h texto.h screens.h
-	$(CC) $(CFLAGS)  -DREGISTERED=1 scrnma.c
-	cp scrnma.$(OBJ) scrnma_r.$(OBJ)
+rolread.$(OBJ): rolread.c
+	$(CC) $(CFLAGS) $(RFLAGS) rolread.c
 
-scrnma_s.$(OBJ):  scrnma.c moag.h texto.h screens.h
-	$(CC) $(CFLAGS) scrnma.c
-	cp scrnma.$(OBJ) scrnma_s.$(OBJ)
+roster.$(OBJ): roster.c moag.h texto.h screens.h
+	$(CC) $(CFLAGS) $(RFLAGS) roster.c
 
-texto_m.$(OBJ):  texto.c moag.h texto.h
-	$(CC) $(CFLAGS) -DMOAG=1 texto.c
-	cp texto.$(OBJ) texto_m.$(OBJ)
-
-grapho_m.$(OBJ):  grapho.c texto.h
-	$(CC) $(CFLAGS) -DMOAG=1 grapho.c
-	cp graph.$(OBJ) graph_m.$(OBJ)
-
-o_m.$(OBJ):  $(O)o_m.$(OBJ)
-	cp $(O)o_m.$(OBJ) o_m.$(OBJ)
-
-texto_n.$(OBJ):  texto.c moag.h texto.h
-	$(CC) $(CFLAGS) texto.c
-	cp texto.$(OBJ) texto_n.$(OBJ)
-
-grapho_n.$(OBJ):  grapho.c texto.h
-	$(CC) $(CFLAGS) grapho.c
-	cp graph.$(OBJ) graph_n.$(OBJ)
-
-o_n.$(OBJ):  $(O)o_n.$(OBJ)
-	cp $(O)o_n.$(OBJ) o_n.$(OBJ)
-
-input_r.$(OBJ):  input.c moag.h
-	$(CC) $(CFLAGS) input.c
-	mv input.obj input_r.obj
-
-input_s.$(OBJ):  input.c moag.h
-	$(CC) $(CFLAGS) input.c
-	mv input.obj input_s.obj
-
-input_k.$(OBJ):  input.c moag.h
-	$(CC) $(CFLAGS) -DSOFSRC=1 input.c
-	mv input.obj input_k.obj
-
-go_s.$(OBJ):  go.c moag.h texto.h cecode.h
-	$(CC) $(CFLAGS) go.c
-	mv go.$(OBJ) go_s.$(OBJ)
-
-go_k.$(OBJ):  go.c moag.h texto.h cecode.h
-	$(CC) $(CFLAGS) -DSOFSRC=1 go.c
-	mv go.$(OBJ) go_k.$(OBJ)
-
-go_r.$(OBJ):  go.c moag.h texto.h cecode.h
-	$(CC) $(CFLAGS) -DREGISTERED=1 go.c
-	mv go.$(OBJ) go_r.$(OBJ)
-
-go_t.$(OBJ):  go.c moag.h texto.h
-	$(CC) $(CFLAGS) -DTU=1 go.c
-	mv go.$(OBJ) go_t.$(OBJ)
-
-report_r.$(OBJ):  report.c moag.h texto.h screens.h
-	$(CC) $(CFLAGS) -DREGISTERED=1 report.c
-	mv report.$(OBJ) report_r.$(OBJ)
-
-report_s.$(OBJ):  report.c moag.h texto.h screens.h
-	$(CC) $(CFLAGS) report.c
-	mv report.$(OBJ) report_s.$(OBJ)
-
-report_k.$(OBJ):  report.c moag.h texto.h screens.h
-	$(CC) $(CFLAGS) -DSOFSRC=1 report.c
-	mv report.$(OBJ) report_k.$(OBJ)
-
-report_i.$(OBJ):  report.c moag.h texto.h screens.h
-	$(CC) $(CFLAGS) -DISCORE report.c
-	mv report.$(OBJ) report_i.$(OBJ)
-
-promed_r.$(OBJ):  promedal.c moag.h texto.h
-	$(CC) $(CFLAGS) -DREGISTERED=1 promedal.c
-	mv promedal.$(OBJ) promed_r.$(OBJ)
-
-promed_s.$(OBJ):  promedal.c moag.h texto.h
-	$(CC) $(CFLAGS) promedal.c
-	mv promedal.$(OBJ) promed_s.$(OBJ)
-
-promed_k.$(OBJ):  promedal.c moag.h texto.h
-	$(CC) $(CFLAGS) -DSOFSRC=1 promedal.c
-	mv promedal.$(OBJ) promed_k.$(OBJ)
-
-promed_i.$(OBJ):  promedal.c moag.h texto.h
-	$(CC) $(CFLAGS) -DISCORE promedal.c
-	mv promedal.$(OBJ) promed_i.$(OBJ)
-
-cecode.$(OBJ):  cecode.c moag.h texto.h cecode.h
-	$(CC) $(CFLAGS) cecode.c
-
-3univs_r.$(OBJ):  3univs.c moag.h
-	$(CC) $(CFLAGS) -DREGISTERED=1 3univs.c
-	mv 3univs.$(OBJ) 3univs_r.$(OBJ)
-
-3univs_s.$(OBJ):  3univs.c moag.h
-	$(CC) $(CFLAGS) 3univs.c
-	mv 3univs.$(OBJ) 3univs_s.$(OBJ)
-
-3univs_k.$(OBJ):  3univs.c moag.h
-	$(CC) $(CFLAGS) -DSOFSRC=1 3univs.c
-	mv 3univs.$(OBJ) 3univs_k.$(OBJ)
-
-3univs_t.$(OBJ):  3univs.c moag.h
-	$(CC) $(CFLAGS) -DTU=1 -DREGISTERED=1 3univs.c
-	mv 3univs.$(OBJ) 3univs_t.$(OBJ)
-
-flash.$(OBJ):  flash.c moag.h texto.h screens.h
-	$(CC) $(CFLAGS) flash.c
-
-init_s.$(OBJ):  init.c moag.h
-	$(CC) $(CFLAGS) init.c
-	mv init.$(OBJ) init_s.$(OBJ)
-
-init_k.$(OBJ):  init.c moag.h
-	$(CC) $(CFLAGS) -DSOFSRC=1 init.c
-	mv init.$(OBJ) init_k.$(OBJ)
-
-init_r.$(OBJ):  init.c moag.h
-	$(CC) $(CFLAGS) -DREGISTERED=1 init.c
-	mv init.$(OBJ) init_r.$(OBJ)
-
-scroll_m.$(OBJ):  scroll.c texto.h moag.h screens.h
-	$(CC) $(CFLAGS) scroll.c
-	mv scroll.$(OBJ) scroll_m.$(OBJ)
-
-scroll_t.$(OBJ):  scroll.c texto.h moag.h screens.h
-	$(CC) $(CFLAGS) -DTOWER scroll.c
-	mv scroll.$(OBJ) scroll_t.$(OBJ)
-
-ugly.$(OBJ):  ugly.c texto.h moag.h
-	$(CC) $(CFLAGS) ugly.c
-
-uglylist.$(OBJ):  uglylist.c
-	$(CC) $(CFLAGS) uglylist.c
-
-uglylist.c:  uglylist
-	sh uglylist.ksh uglylist.c
-
-version.$(OBJ):  version.c
+ryo.$(OBJ): ryo.c moag.h texto.h
+	$(CC) $(CFLAGS) $(RFLAGS) ryo.c
+	
+sndedit.$(OBJ): sndedit.c moag.h texto.h
+	$(CC) $(CFLAGS) $(RFLAGS) sndedit.c
+
+ugly.$(OBJ): ugly.c texto.h moag.h
+	$(CC) $(CFLAGS) $(RFLAGS) ugly.c
+
+uglylist.$(OBJ): uglylist.c
+	$(CC) $(CFLAGS) $(RFLAGS) uglylist.c
+	
+version.$(OBJ): version.c
 	$(CC) $(CFLAGS) version.c
-
+	
+#Housekeeping
 clean:
 	-rm c.err *.mix *.obj *.map *.exe dog 3univ.dat towers.dat
 
@@ -316,68 +165,122 @@ veryclean:
 	-rm c.err *.mix *.obj *.map *.exe dog 3univ.dat towers.dat
 	-rm -r pilot.scr pilot.hsc tht
 
-tu.$(OBJ):  tu.c texto.h screens.h
-	$(CC) $(CFLAGS) tu.c
+#End of MOAG Build
 
-tu:  tu.$(OBJ) o_n.$(OBJ) scroll_t.$(OBJ) input.$(OBJ) \
-						3univs_t.$(OBJ) go_t.$(OBJ)
-	$(LINKT) tu.$(OBJ) o_n.$(OBJ) scroll_t.$(OBJ) input.$(OBJ) \
-						3univs_t.$(OBJ) go_t.$(OBJ)
+#This was some kind of Korn Shell script that generated uglylist.c from uglylist
+#uglylist.c: uglylist
+#	sh uglylist.ksh uglylist.c
 
-tower.$(OBJ):  tower.c texto.h screens.h
-	$(CC) $(CFLAGS) tower.c
 
-tower:  tower.$(OBJ) o_n.$(OBJ) scroll_t.$(OBJ) input.$(OBJ)
-	$(LINKT) tower.$(OBJ) o_n.$(OBJ) scroll_t.$(OBJ) input.$(OBJ)
 
-fixtower.exe:  fixtower.$(OBJ)
+
+
+
+
+#Begin Unknown
+texto_m.$(OBJ): texto.c moag.h texto.h
+	$(CC) $(CFLAGS) -DMOAG=1 texto.c
+	cp texto.$(OBJ) texto_m.$(OBJ)
+
+grapho_m.$(OBJ): grapho.c texto.h
+	$(CC) $(CFLAGS) -DMOAG=1 grapho.c
+	cp graph.$(OBJ) graph_m.$(OBJ)
+
+texto_n.$(OBJ): texto.c moag.h texto.h
+	$(CC) $(CFLAGS) texto.c
+	cp texto.$(OBJ) texto_n.$(OBJ)
+
+grapho_n.$(OBJ): grapho.c texto.h
+	$(CC) $(CFLAGS) grapho.c
+	cp graph.$(OBJ) graph_n.$(OBJ)
+	
+#End Unknown
+
+
+3univs_t.$(OBJ): 3univs.c moag.h
+	$(CC) $(CFLAGS) $(RFLAGS) -DTU=1 -o3univs_t.$(OBJ) 3univs.c
+#	mv 3univs.$(OBJ) 3univs_t.$(OBJ)
+
+
+fixtower.exe: fixtower.$(OBJ)
 	$(LINKS) fixtower.$(OBJ)
 
-fixtower.$(OBJ):  fixtower.c
-	$(CC) $(CFLAGS) fixtower.c
+fixtower.$(OBJ): fixtower.c
+	$(CC) $(CFLAGS) $(RFLAGS) fixtower.c
 
-mkregst.exe:  mkregst.$(OBJ)
+regstuff.c: mkregst.exe $(USERNAME)
+	mkregst $(USERNAME)
+
+mkregst.exe: mkregst.$(OBJ)
 	$(LINKS) mkregst.$(OBJ)
 
-mkregst.$(OBJ):  mkregst.c
-	$(CC) $(CFLAGS) mkregst.c
+mkregst.$(OBJ): mkregst.c
+	$(CC) $(CFLAGS) $(RFLAGS) mkregst.c
 
-iscore.$(OBJ):  iscore.c moag.h texto.h
-	$(CC) $(CFLAGS) iscore.c
 
-iscore:  iscore.$(OBJ) report_i.$(OBJ) o_n.$(OBJ) \
-					input.$(OBJ) promed_i.$(OBJ)
+#ISCORE STUFF?
+
+iscore: iscore.$(OBJ) report_i.$(OBJ) o_n.$(OBJ) \
+					input_i.$(OBJ) promed_i.$(OBJ)
 	$(LINKI) iscore.$(OBJ) report_i.$(OBJ) o_n.$(OBJ) \
-					input.$(OBJ) promed_i.$(OBJ)
+					input_i.$(OBJ) promed_i.$(OBJ)
+#	tlink $(TURBOC)\lib\c0m @iscore.lnk, iscore, iscore, $(TURBOC)\lib\cm
+
+iscore.$(OBJ): iscore.c moag.h texto.h
+	$(CC) $(CFLAGS) $(RFLAGS) iscore.c
+	
+input_i.$(OBJ): input.c moag.h texto.h
+	$(CC) $(CFLAGS) $(RFLAGS) -DISCORE -oinput_i.$(OBJ) input.c
+
+report_i.$(OBJ): report.c moag.h texto.h screens.h
+	$(CC) $(CFLAGS) $(RFLAGS) -DISCORE -oreport_i.$(OBJ) report.c
+
+promed_i.$(OBJ): promedal.c moag.h texto.h
+	$(CC) $(CFLAGS) $(RFLAGS) -DISCORE -opromed_i.$(OBJ) promedal.c
+
+#END ISCORE STUFF?
 
 
-rolplay.obj:	rolplay.c
-	bcc -mm -c rolplay.c
+#TOWER STUFF?
 
-rolread.obj:	rolread.c
-	bcc -mm -c rolread.c
+tower: tower.$(OBJ) o_n.$(OBJ) scroll_t.$(OBJ) input.$(OBJ)
+	$(LINKT) tower.$(OBJ) o_n.$(OBJ) scroll_t.$(OBJ) input_i.$(OBJ)
 
-insbank.obj:	insbank.c
-	bcc -mm -c insbank.c
+tower.$(OBJ): tower.c $(O)o.h screens.h
+	$(CC) $(CFLAGS) $(RFLAGS) tower.c
 
-csoundc.obj:	csoundc.c
-	bcc -mm -c csoundc.c
+scroll_t.$(OBJ): scroll.c texto.h moag.h screens.h
+	$(CC) $(CFLAGS) $(RFLAGS) -oscroll_t.$(OBJ) -DTOWER scroll.c
+
+#END TOWER STUFF?
 
 
-tt.$(OBJ):  tt.c
-	$(CC) $(CFLAGS) tt.c
+#TU.EXE STUFF
 
-tt:  tt.$(OBJ)
-	pcl @tt.pcl
+tu: tu.$(OBJ) o_n.$(OBJ) scroll_t.$(OBJ) input_i.$(OBJ) \
+						3univs_t.$(OBJ) go_t.$(OBJ) report_t.$(OBJ)
+	$(LINKT) tu.$(OBJ) o_n.$(OBJ) scroll_t.$(OBJ) input_i.$(OBJ) \
+						3univs_t.$(OBJ) go_t.$(OBJ) report_t.$(OBJ)
 
-outchip.obj: outchip.asm
-	masm outchip.asm;
+tu.$(OBJ): tu.c texto.h screens.h
+	$(CC) $(CFLAGS) $(RFLAGS) tu.c
 
-freeup.obj: freeup.asm
-	masm freeup.asm;
+report_t.$(OBJ): report.c moag.h texto.h screens.h
+	$(CC) $(CFLAGS) $(RFLAGS) -oreport_t.$(OBJ) report.c
 
-adldet.obj:	adldet.c
-	bcc -mm -c adldet.c
+go_t.$(OBJ): go.c moag.h texto.h
+	$(CC) $(CFLAGS) $(RFLAGS) -DTU -DREGISTERED -ogo_t.$(OBJ) go.c
+	
+#END TU.EXE
 
-loadsnd.obj:	loadsnd.c
-	bcc -mm -c loadsnd.c
+#Builds texto.obj or grapho.obj, depending on what you set O to.
+
+o_m.$(OBJ): $(O)o_m.$(OBJ)
+
+o_n.$(OBJ): $(O)o_n.$(OBJ)
+
+$(O)o_m.$(OBJ): $(O)o.c moag.h $(O)o.h
+	$(CC) $(CFLAGS) $(RFLAGS) -DMOAG=1 -oo_m.$(OBJ) $(O)o.c
+
+$(O)o_n.$(OBJ): $(O)o.c moag.h $(O)o.h
+	$(CC) $(CFLAGS) -oo_n.$(OBJ) $(O)o.c
